@@ -1,0 +1,23 @@
+float64 x
+float64 y
+float64 z
+float64 latitude
+float64 longitude
+float64 height
+float32 spd_east
+float32 spd_north
+float32 spd_down
+float32 heading_angle
+float32 yaw_angle
+float32 yaw_rate
+float32 pitch_angle
+float32 roll_angle
+float32 speed
+float32 spd_lon
+float32 spd_lat
+float32 acce
+float32 acce_lon
+float32 acce_lat
+uint8 flag
+uint8 gps_status
+

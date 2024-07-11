@@ -1,0 +1,19 @@
+[2024-07-07 22:38:53.603] [10211] [info] 10211
+[2024-07-07 22:38:53.604] [10211] [info] point_veh_start_end.strlen().size:9479
+[2024-07-07 22:38:53.604] [10211] [info] veh_start_end.my_key:
+[2024-07-07 22:38:53.604] [10211] [info] GlobalPathPlanning-IDS_Global_Planning_version: G_V1.0.1.20240702_RC
+[2024-07-07 22:38:53.604] [10211] [info] m_map_Area.Road_Directed_Graph.graph.size():0
+[2024-07-07 22:38:53.604] [10211] [info] m_map_Area.all_zone_atr.size():0
+[2024-07-07 22:38:53.604] [10211] [info] 进锁成功
+[2024-07-07 22:38:53.604] [10211] [info] enter VecWaypoint2json
+[2024-07-07 22:38:53.705] [10211] [info] VecWaypoint2json...
+[2024-07-07 22:38:53.705] [10211] [error] error_type_:14
+[2024-07-07 22:38:53.705] [10211] [error] 有错误
+[2024-07-07 22:38:53.705] [10211] [info] 开始写json
+[2024-07-07 22:38:53.705] [10211] [info] writer.EndObject()
+[2024-07-07 22:38:53.705] [10211] [info]  g_StrData = strbuf.GetString()
+[2024-07-07 22:38:53.705] [10211] [info] 规划库服务结束 
+[2024-07-07 22:38:53.705] [10211] [info] VecWaypoint2json time(ms) =0 ms 
+[2024-07-07 22:38:53.705] [10211] [info] VecWaypoint2json successfully
+[2024-07-07 22:38:53.705] [10211] [info] receive_ptr.strlen().size()::214
+[2024-07-07 22:38:53.705] [10211] [info] 出锁成功
