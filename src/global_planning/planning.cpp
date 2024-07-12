@@ -661,249 +661,14 @@
 //     }
 // }
 void Planning::GlobalPathPlanningIntface(std::vector<_TrajectoryPoint>& path) {
-    // threadLogger_->info("Enter GlobalPathPlanning");
-    // path.clear();
+    path.clear();
+    // 路径规划
+    PathPlanning();
+    // 均匀碾压
+    if (vehicle_param_.offset_enable == true) {}
+    // 速度规划
+    SpeedPlanning();
 
-    // time_t start_time, end_time;
-    // time(&start_time);
-
-    // vehicle_commander_ = vehicle_param_.veh_center_2_front + vehicle_param_.veh_center_2_rear_bound; // 获取车长参数
-
-    // start_point_.yaw = start_point_.yaw / 180.0 * M_PI;
-    // start_node_ = FindZoneId(start_point_, start_zone_type_); // 获取起点所在区域
-    // threadLogger_->info("起点所在节点ID:{}", (float32)start_node_);
-    // threadLogger_->info("起点所在节点类型（0：非结构化  1：结构化） ：{}", (float32)start_zone_type_);
-
-    // end_point_.yaw = end_point_.yaw / 180.0 * M_PI;
-    // end_node_ = FindZoneId(end_point_, end_zone_type_);
-    // threadLogger_->info("终点所在节点ID: {}", (float32)end_node_);
-    // threadLogger_->info("终点所在节点类型（0：非结构化  1：结构化） ：{}", (float32)end_zone_type_);
-
-    // if (start_node_ == 0)
-    // {
-    //     threadLogger_->info("传入起点位置异常，返回特殊轨迹给后台");
-    //     error_type_ = static_cast<uint>(ErrorType::START_OUT_OF_MAP);
-    //     last_task_type_ = task_type_;
-    //     return;
-    // }
-
-    // if (end_node_ == 0)
-    // {
-    //     threadLogger_->info("传入终点位置异常，返回特殊轨迹给后台");
-    //     error_type_ = static_cast<uint>(ErrorType::END_OUT_OF_MAP);
-    //     last_task_type_ = task_type_;
-    //     return;
-    // }
-    // threadLogger_->info(" the start_node_ is {}", (float32)start_node_);
-    // threadLogger_->info(" the start_zone_type_ is {}", (float32)start_zone_type_);
-    // threadLogger_->info("  the end_node_ is {}", (float32)end_node_);
-    // threadLogger_->info(" the end_zone_type_ is {}", (float32)end_zone_type_);
-    // threadLogger_->info(" task_type_: {}", (int)task_type_);
-
-    // ChangeBorderType(end_point_);
-
-    // // 在此针对前往装载点的任务进行额外检查
-    // if (task_type_ == static_cast<uint>(TaskType::GO_LOAD_POINT))
-    // {
-    //     if (start_node_ != end_node_)
-    //     {
-    //         threadLogger_->info(" 前往装载等待点任务，检测到起点、终点所在区域不同");
-    //         error_type_ = static_cast<uint>(ErrorType::ERROR_LOADING_WAITTING_POINT);
-    //         last_task_type_ = task_type_;
-    //         return;
-    //     }
-    // }
-
-    // ErrorType temp_error_type;
-    // if (start_node_ == end_node_)
-    // {
-    //     if (task_type_ == static_cast<uint>(TaskType::TEMP_MOVE_CAR)) // 区域内挪车
-    //     {
-    //         temp_error_type = PlanningCase7();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->info(" ...PlanningCase7() failed...");
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //             threadLogger_->info(" ...PlanningCase7() succeed...");
-    //         }
-    //     }
-    //     else if (task_type_ == static_cast<uint>(TaskType::GO_LOAD_POINT))
-    //     {
-    //         temp_error_type = PlanningCase9();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->info(" ...PlanningCase9() failed...");
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //             threadLogger_->info(" ...PlanningCase9() succeed...");
-    //         }
-    //     }
-    //     else if (task_type_ == static_cast<uint>(TaskType::GO_APART_LOADING_POINT))
-    //     {
-    //         temp_error_type = PlanningCase10();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->info(" ...PlanningCase10() failed...");
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //             threadLogger_->info(" ...PlanningCase10() succeed...");
-    //         }
-    //     }
-    //     else if (1 == start_zone_type_)
-    //     {
-    //         // 起始点与终点均为结构化道路
-    //         threadLogger_->info(" ...PlanningCase1() start...");
-
-    //         temp_error_type = PlanningCase1();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->error(" ...PlanningCase1() failed...");
-
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //         }
-    //         threadLogger_->info(" ...PlanningCase1() succeed...");
-    //     }
-    //     else if (0 == start_zone_type_)
-    //     {
-    //         // 起始点与终点均为非结构化道路
-    //         threadLogger_->info(" ...PlanningCase2() start...");
-
-    //         temp_error_type = PlanningCase2();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->error(" ...PlanningCase2() failed...");
-
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //             threadLogger_->info("  ...PlanningCase2() succeed...");
-    //         }
-    //     }
-    // }
-    // else
-    // {
-    //     // 起终点不在同一区域
-
-    //     dijkstra_.threadLogger_ = threadLogger_;
-    //     dijkstra_.InitialDijkstra(road_directed_graph_.graph, start_node_, end_node_);
-    //     if (dijkstra_.searchpath())
-    //     {
-    //         zone_sequence_ = dijkstra_.GetPath();
-    //         vec_path_ = zone_sequence_;
-    //     }
-    //     else
-    //     {
-    //         threadLogger_->error(" ...dijkstra_ failed...");
-
-    //         error_type_ = static_cast<uint>(ErrorType::DIRECTION_MAP_ERROR);
-    //         last_task_type_ = task_type_;
-    //         return;
-    //     }
-    //     threadLogger_->info(" ...dijkstra_ success...");
-
-    //     // 起终点不在同一区域
-    //     if (task_type_ == static_cast<uint>(TaskType::TEMP_MOVE_CAR)) // 挪车任务
-    //     {
-    //         temp_error_type = PlanningCase8();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->error(" ...PlanningCase8() failed...");
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //             threadLogger_->info("  ...PlanningCase8() succeed... ");
-    //         }
-    //     }
-    //     else if (1 == start_zone_type_ && 1 == end_zone_type_)
-    //     {
-    //         // 起始点与终点不在同一区域，且起点终点均为结构化道路
-    //         temp_error_type = PlanningCase3();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->error(" ...PlanningCase3() failed...");
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //             threadLogger_->info("...PlanningCase3() succeed...");
-    //         }
-    //     }
-    //     else if (1 == start_zone_type_ && 0 == end_zone_type_)
-    //     {
-    //         // 起始点和终止点不在同一区域，且起点为结构化道路、终点为非结构化道路
-    //         temp_error_type = PlanningCase4();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->error("...PlanningCase4() failed...");
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //             threadLogger_->info("...PlanningCase4() succeed...");
-    //         }
-    //     }
-    //     else if (0 == start_zone_type_ && 1 == end_zone_type_)
-    //     {
-    //         // 起点终点不在同一区域，且起点在非结构化区域，终点在结构化区域
-    //         temp_error_type = PlanningCase5();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->error("...PlanningCase5() failed...");
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //             threadLogger_->info("...PlanningCase5() succeed...");
-    //         }
-    //     }
-    //     else if (0 == start_zone_type_ && 0 == end_zone_type_)
-    //     {
-    //         // 起始点和终止点不在同一区域，且起点、终点为非结构化道路
-    //         temp_error_type = PlanningCase6();
-    //         if (temp_error_type != ErrorType::SUCCESS)
-    //         {
-    //             threadLogger_->error("...PlanningCase6() failed...");
-
-    //             error_type_ = static_cast<uint>(temp_error_type);
-    //             last_task_type_ = task_type_;
-    //             return;
-    //         }
-    //         else
-    //         {
-    //             threadLogger_->info("...PlanningCase6() succeed...");
-    //         }
-    //     }
-    // }
 
     // if (!global_path_.size())
     // {
@@ -953,7 +718,7 @@ void Planning::GlobalPathPlanningIntface(std::vector<_TrajectoryPoint>& path) {
 
     //     // 将终点添加到全局路径中
     //     // 判断终点与全局路径最后一个点的角度偏差，基于角度偏差信息来判断是否 将其抛弃
-    //     float32 end_point_last_point_angle_diff;
+    //     float end_point_last_point_angle_diff;
     //     end_point_last_point_angle_diff = atan2(end_point_.y - global_path_.back().y, end_point_.x -
     //     global_path_.back().x); if (end_point_last_point_angle_diff < 0)
     //     {
@@ -963,9 +728,10 @@ void Planning::GlobalPathPlanningIntface(std::vector<_TrajectoryPoint>& path) {
     //     // 如果最后一个点没有位于终点后，但是基本与终点重合，也需要进行删除
     //     float64 end_point_last_point_distance;
     //     end_point_last_point_distance = sqrt(pow(end_point_.x - global_path_.back().x, 2) + pow(end_point_.y -
-    //     global_path_.back().y, 2)); if ((fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 /
-    //     M_PI > 90 && fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI < 270) ||
-    //     (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3))
+    //     global_path_.back().y, 2)); if ((fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0
+    //     / M_PI > 90 && fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI < 270) ||
+    //     (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <=
+    //     0.3))
     //     {
     //         global_path_.pop_back();
     //         threadLogger_->info("全局路径最后一个位于实际终点后面，或者最后一个点就是终点，现予以去除");
@@ -1117,7 +883,7 @@ void Planning::GlobalPathPlanningIntface(std::vector<_TrajectoryPoint>& path) {
 // {
 //     for (size_t index = 0; index < temp_path.size(); index++)
 //     {
-//         float32 temp_angle = temp_path.at(index).yaw;
+//         float temp_angle = temp_path.at(index).yaw;
 //         temp_path.at(index).yaw = temp_angle / M_PI * 180;
 //     }
 // }
@@ -1386,13 +1152,13 @@ void Planning::GlobalPathPlanningIntface(std::vector<_TrajectoryPoint>& path) {
 //         // file_out.close();
 
 //         // 遍历整个temp_path，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
-//         // vector<float32> vec_exceeding_speed_index; // 存放整条路径中限速超标的点的索引
-//         float32 L_vehicle = 5.95;
-//         float32 max_Steering_wheel_speed = 0.175;
-//         float32 temp_max_speed;
-//         float32 wheel_delta_angle, wheel_angle1, wheel_angle2;
-//         float32 sampling_distance = 1;
-//         vector<float32> vec_temp_max_speed; // 记录全局路径上基于曲率变化算出限速信息
+//         // vector<float> vec_exceeding_speed_index; // 存放整条路径中限速超标的点的索引
+//         float L_vehicle = 5.95;
+//         float max_Steering_wheel_speed = 0.175;
+//         float temp_max_speed;
+//         float wheel_delta_angle, wheel_angle1, wheel_angle2;
+//         float sampling_distance = 1;
+//         vector<float> vec_temp_max_speed; // 记录全局路径上基于曲率变化算出限速信息
 //         threadLogger_->info("打印temp_max_speed信息");
 
 //         for (int i = 0; i < temp_path.size() - 1; i++) //
@@ -1700,8 +1466,8 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     threadLogger_->info("Enter PlanningCase1");
 
 //     ErrorType temp_error_type;
-//     uint32 start_nearest_id;
-//     uint32 end_nearest_id;
+//     unsigned int start_nearest_id;
+//     unsigned int end_nearest_id;
 //     uint8 start_path_id = -1;
 //     uint8 end_path_id = -1;
 //     global_path_.clear();
@@ -1831,7 +1597,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         Trajectory_Point temp_point;
 //         float64 distance_min = 1000000;
 //         start_trajectory = temp_all_trajectories.at(start_path_id);
-//         for (uint32 i = 0; i < start_trajectory.trajectory.size(); i++)
+//         for (unsigned int i = 0; i < start_trajectory.trajectory.size(); i++)
 //         {
 //             temp_point = start_trajectory.trajectory.at(i);
 
@@ -1846,7 +1612,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         Single_Trajectory end_trajectory;
 //         distance_min = 1000000;
 //         end_trajectory = temp_all_trajectories.at(start_path_id);
-//         for (uint32 j = 0; j < end_trajectory.trajectory.size(); j++)
+//         for (unsigned int j = 0; j < end_trajectory.trajectory.size(); j++)
 //         {
 //             temp_point = end_trajectory.trajectory.at(j);
 
@@ -1860,9 +1626,9 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 
 //         // 计算规划起点与规划终点与对于参考线的位置关系，以此来判断是否需要对其进行hybird A*拼接
 //         bool start_flag = false, end_flag = false;
-//         threadLogger_->info("起点匹配上的参考轨迹ID：{}  ,索引：{}", float32(start_path_id + 1), start_nearest_id);
+//         threadLogger_->info("起点匹配上的参考轨迹ID：{}  ,索引：{}", float(start_path_id + 1), start_nearest_id);
 //         threadLogger_->info("起点所在 的参考轨迹总长：{} ", start_trajectory.trajectory.size());
-//         threadLogger_->info("终点匹配上的参考轨迹ID： {}, 索引：{}", float32(end_path_id + 1), end_nearest_id);
+//         threadLogger_->info("终点匹配上的参考轨迹ID： {}, 索引：{}", float(end_path_id + 1), end_nearest_id);
 //         threadLogger_->info("终点所在的参考轨迹总长：{} ", end_trajectory.trajectory.size());
 
 //         // 判断规划点与其对应参考线的位置关系，横向距离小于阈值，且偏差角度小于10°的，不需要hybird A*进行轨迹拼接
@@ -1876,7 +1642,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         // 计算规划起点与规划终点与对于参考线起点、终点的几何距离，部分情况需要跨区域搜索拟合点
 //         bool start_point_to_next_area = false, end_point_to_pre_area = false;
 //         distance_min = 1000000;
-//         uint32 temp_distance;
+//         unsigned int temp_distance;
 
 //         temp_distance = fabs(start_trajectory.trajectory.size() - start_nearest_id); // 每个index代表1m
 //         if (temp_distance < 37)                                                      //
@@ -2038,7 +1804,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //             p2.speed = 0;
 //             p2.curvature = 0;
 //             p2.slope = 0;
-//             float32 dis = sqrt(pow(start_point_.x - end_point_.x, 2) + pow(end_point_.y - start_point_.y, 2));
+//             float dis = sqrt(pow(start_point_.x - end_point_.x, 2) + pow(end_point_.y - start_point_.y, 2));
 //             p2.distance = dis;
 //             float64 angle;
 //             angle = atan2(end_point_.y - start_point_.y, end_point_.x - start_point_.x);
@@ -2097,7 +1863,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 //     else
 //     {
-//         threadLogger_->error(" Hybrid A star in zone{} failed ", static_cast<float32>(start_node_));
+//         threadLogger_->error(" Hybrid A star in zone{} failed ", static_cast<float>(start_node_));
 //         return ErrorType::PLANNING_FAIL;
 //     }
 // }
@@ -2119,7 +1885,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 //     global_path_.clear();                    // 清空全局轨迹容器
 //     uint8 start_path_id, end_path_id;        // 记录规划起点、规划终点在其对应结构化区域内的参考线索引
-//     uint32 start_nearest_id, end_nearest_id; // 记录规划起点、规划终点在参考线上的投影点索引
+//     unsigned int start_nearest_id, end_nearest_id; // 记录规划起点、规划终点在参考线上的投影点索引
 //     vector<Single_Trajectory> start_all_trajectories, end_all_trajectories;
 //     start_all_trajectories = all_zones_.at(start_node_ - 1).reference_trajs;
 //     end_all_trajectories = all_zones_.at(end_node_ - 1).reference_trajs;
@@ -2149,11 +1915,11 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         Single_Trajectory start_trajectory, end_trajectory;
 //         start_trajectory = start_all_trajectories.at(start_path_id);
 //         end_trajectory = end_all_trajectories.at(end_path_id);
-//         threadLogger_->info("起点匹配上的参考轨迹ID：{}, ,索引：{} ", float32(start_path_id + 1), start_nearest_id);
+//         threadLogger_->info("起点匹配上的参考轨迹ID：{}, ,索引：{} ", float(start_path_id + 1), start_nearest_id);
 
 //         threadLogger_->info("起点所在 的参考轨迹总长：{} ", start_trajectory.trajectory.size());
 
-//         threadLogger_->info("终点匹配上的参考轨迹ID：{},索引：{}", float32(end_path_id + 1), end_nearest_id);
+//         threadLogger_->info("终点匹配上的参考轨迹ID：{},索引：{}", float(end_path_id + 1), end_nearest_id);
 
 //         threadLogger_->info("终点所在 的参考轨迹总长：{} ", end_trajectory.trajectory.size());
 
@@ -2167,7 +1933,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 
 //         // 计算规划起点与规划终点与对于参考线起点、终点的几何距离，部分情况需要跨区域搜索拟合点
 //         bool start_point_to_next_area = false, end_point_to_pre_area = false;
-//         uint32 temp_distance;
+//         unsigned int temp_distance;
 //         temp_distance = fabs(start_trajectory.trajectory.size() - start_nearest_id);
 //         if (temp_distance < 37)
 //         {
@@ -2189,7 +1955,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         A*搜索函数输入形参-规划输入点 uint8 search_zone;                                                //
 //         ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-当前规划区域 vector<Trajectory_Point>
 //         Trajectory_be_searched;                  // ProgressiveHybirdAStar 渐进式hybird
-//         A*搜索函数输入形参-在哪条参考轨迹上搜索hybird A*拟合点 uint32 serach_start_index = 0; //
+//         A*搜索函数输入形参-在哪条参考轨迹上搜索hybird A*拟合点 unsigned int serach_start_index = 0; //
 //         ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-从哪个索引处开始搜索 std::vector<Trajectory_Point>
 //         temp_tra_start, temp_tra_end;       // ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-搜索出的轨迹
 //         int32 Splice_Point_start_index = -1, Splice_Point_end_index = -1; // ProgressiveHybirdAStar 渐进式hybird
@@ -2737,7 +2503,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //                 all_zones_.at(zone_sequence_.at(i) - 1).reference_trajs, temp_path_id))
 //                 {
 //                     threadLogger_->error(" The map file for zone{} does not have path for turn over",
-//                     static_cast<float32>(zone_sequence_.at(i)));
+//                     static_cast<float>(zone_sequence_.at(i)));
 
 //                     return ErrorType::PLANNING_FAIL;
 //                 }
@@ -2897,9 +2663,9 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 //     else
 //     {
-//         threadLogger_->info("The map file for zone {}  does not have any reference path", (float32)start_node_);
+//         threadLogger_->info("The map file for zone {}  does not have any reference path", (float)start_node_);
 
-//         threadLogger_->info("The map file for zone {} does not have any reference path", (float32)end_node_);
+//         threadLogger_->info("The map file for zone {} does not have any reference path", (float)end_node_);
 
 //         return ErrorType::NO_REFERENCELINE;
 //     }
@@ -2923,7 +2689,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 
 //     global_path_.clear();    // 清空全局轨迹容器
 //     uint8 start_path_id;     // 记录规划起点在其对应结构化区域内的参考线索引
-//     uint32 start_nearest_id; // 记录规划起点在参考线上的投影点索引
+//     unsigned int start_nearest_id; // 记录规划起点在参考线上的投影点索引
 //     vector<Single_Trajectory> start_all_trajectories = all_zones_.at(start_node_ - 1).reference_trajs;
 
 //     if (start_all_trajectories.size()) // 区域内均有参考路径才进行后续的规划
@@ -2943,7 +2709,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         Single_Trajectory start_trajectory;
 //         start_trajectory = start_all_trajectories.at(start_path_id);
 
-//         threadLogger_->info("起点匹配上的参考轨迹ID：{}  ,索引：{}", float32(start_path_id + 1), start_nearest_id);
+//         threadLogger_->info("起点匹配上的参考轨迹ID：{}  ,索引：{}", float(start_path_id + 1), start_nearest_id);
 
 //         threadLogger_->info("起点所在 的参考轨迹总长:{}", start_trajectory.trajectory.size());
 
@@ -2955,7 +2721,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 
 //         // 计算规划起点与规划终点与对于参考线起点、终点的几何距离，部分情况需要跨区域搜索拟合点
 //         bool start_point_to_next_area = false;
-//         uint32 temp_distance;
+//         unsigned int temp_distance;
 
 //         temp_distance = fabs(start_trajectory.trajectory.size() - start_nearest_id);
 
@@ -2971,7 +2737,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         A*搜索函数输入形参-规划输入点 uint8 search_zone;                                                //
 //         ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-当前规划区域 vector<Trajectory_Point>
 //         Trajectory_be_searched;                  // ProgressiveHybirdAStar 渐进式hybird
-//         A*搜索函数输入形参-在哪条参考轨迹上搜索hybird A*拟合点 uint32 serach_start_index = 0; //
+//         A*搜索函数输入形参-在哪条参考轨迹上搜索hybird A*拟合点 unsigned int serach_start_index = 0; //
 //         ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-从哪个索引处开始搜索 std::vector<Trajectory_Point>
 //         temp_tra_start, temp_tra_end;       // ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-搜索出的轨迹
 //         int32 Splice_Point_start_index = -1, Splice_Point_end_index = -1; // ProgressiveHybirdAStar 渐进式hybird
@@ -3111,10 +2877,10 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 
 //                             // Trajectory_Point temp_point;
 //                             distance_min = 1000000;
-//                             uint32 nearest_id;
+//                             unsigned int nearest_id;
 //                             temp_traj = start_all_trajectories.at(start_path_id).trajectory;
 
-//                             for (uint32 i = 0; i < temp_traj.size(); i++)
+//                             for (unsigned int i = 0; i < temp_traj.size(); i++)
 //                             {
 //                                 temp_point = temp_traj.at(i);
 
@@ -3204,7 +2970,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //                     all_zones_.at(zone_sequence_.at(i) - 1).reference_trajs, temp_path_id))
 //                     {
 //                         threadLogger_->error(" The map file for zone {} does not have path for turn over ",
-//                         static_cast<float32>(zone_sequence_.at(i)));
+//                         static_cast<float>(zone_sequence_.at(i)));
 
 //                         return ErrorType::PLANNING_FAIL;
 //                     }
@@ -3292,8 +3058,8 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //                         由于结构化区域的参考轨迹可能伸入到非结构化区域，需要找到参考线上距离终点的最近点，以此点为搜索起点
 //                         // Trajectory_Point temp_point;
 //                         distance_min = 1000000;
-//                         uint32 nearest_id;
-//                         for (uint32 i = 0; i < temp_traj.size(); i++)
+//                         unsigned int nearest_id;
+//                         for (unsigned int i = 0; i < temp_traj.size(); i++)
 //                         {
 //                             temp_point = temp_traj.at(i);
 
@@ -3406,7 +3172,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //                     all_zones_.at(zone_sequence_.at(i + 1) - 1).reference_trajs, temp_path_id))
 //                     {
 //                         threadLogger_->error(" The map file for zone {} does not have path for turn over",
-//                         static_cast<float32>(zone_sequence_.at(i + 1)));
+//                         static_cast<float>(zone_sequence_.at(i + 1)));
 
 //                         return ErrorType::PLANNING_FAIL;
 //                     }
@@ -3486,9 +3252,9 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 //     else
 //     {
-//         threadLogger_->info("The map file for zone {} does not have any reference path", (float32)start_node_);
+//         threadLogger_->info("The map file for zone {} does not have any reference path", (float)start_node_);
 
-//         threadLogger_->info("The map file for zone {} does not have any reference path", (float32)end_node_);
+//         threadLogger_->info("The map file for zone {} does not have any reference path", (float)end_node_);
 
 //         return ErrorType::NO_REFERENCELINE;
 //     }
@@ -3512,7 +3278,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 //     global_path_.clear();  // 清空全局轨迹容器
 //     uint8 end_path_id;     // 记录规划起点在其对应结构化区域内的参考线索引
-//     uint32 end_nearest_id; // 记录规划起点在参考线上的投影点索引
+//     unsigned int end_nearest_id; // 记录规划起点在参考线上的投影点索引
 //     vector<Single_Trajectory> end_all_trajectories = all_zones_.at(end_node_ - 1).reference_trajs;
 
 //     if (end_all_trajectories.size()) // 区域内均有参考路径才进行后续的规划
@@ -3534,7 +3300,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         Single_Trajectory end_trajectory;
 //         end_trajectory = end_all_trajectories.at(end_path_id);
 
-//         threadLogger_->info("终点匹配上的参考轨迹ID：{}  ,索引：{}", float32(end_path_id + 1), end_nearest_id);
+//         threadLogger_->info("终点匹配上的参考轨迹ID：{}  ,索引：{}", float(end_path_id + 1), end_nearest_id);
 
 //         threadLogger_->info("终点所在 的参考轨迹总长：{} ", end_trajectory.trajectory.size());
 
@@ -3546,7 +3312,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 
 //         // 计算规划起点与规划终点与对于参考线起点、终点的几何距离，部分情况需要跨区域搜索拟合点
 //         bool end_point_to_pre_area = false;
-//         uint32 temp_distance;
+//         unsigned int temp_distance;
 
 //         temp_distance = fabs(end_nearest_id);
 //         if (temp_distance < 100)
@@ -3561,7 +3327,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         A*搜索函数输入形参-规划输入点 uint8 search_zone;                                                //
 //         ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-当前规划区域 vector<Trajectory_Point>
 //         Trajectory_be_searched;                  // ProgressiveHybirdAStar 渐进式hybird
-//         A*搜索函数输入形参-在哪条参考轨迹上搜索hybird A*拟合点 uint32 serach_start_index = 0; //
+//         A*搜索函数输入形参-在哪条参考轨迹上搜索hybird A*拟合点 unsigned int serach_start_index = 0; //
 //         ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-从哪个索引处开始搜索 std::vector<Trajectory_Point>
 //         temp_tra_start, temp_tra_end;       // ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-搜索出的轨迹
 //         int32 Splice_Point_start_index = -1, Splice_Point_end_index = -1; // ProgressiveHybirdAStar 渐进式hybird
@@ -3594,7 +3360,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //                     all_zones_.at(zone_sequence_.at(i + 1) - 1).reference_trajs, temp_path_id))
 //                     {
 //                         threadLogger_->error(" The map file for zone {}  does not have path for turn over",
-//                         static_cast<float32>(zone_sequence_.at(i + 1)));
+//                         static_cast<float>(zone_sequence_.at(i + 1)));
 
 //                         return ErrorType::PLANNING_FAIL;
 //                     }
@@ -3603,8 +3369,8 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 
 //                     // Trajectory_Point temp_point;
 //                     distance_min = 1000000;
-//                     uint32 nearest_id;
-//                     for (uint32 i = 0; i < temp_traj.size(); i++)
+//                     unsigned int nearest_id;
+//                     for (unsigned int i = 0; i < temp_traj.size(); i++)
 //                     {
 //                         temp_point = temp_traj.at(i);
 
@@ -3665,9 +3431,9 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 
 //                         // Trajectory_Point temp_point;
 //                         distance_min = 1000000;
-//                         uint32 nearest_id;
+//                         unsigned int nearest_id;
 //                         temp_traj = end_trajectory.trajectory;
-//                         for (uint32 i = 0; i < temp_traj.size(); i++)
+//                         for (unsigned int i = 0; i < temp_traj.size(); i++)
 //                         {
 //                             temp_point = temp_traj.at(i);
 
@@ -3712,7 +3478,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //                     all_zones_.at(zone_sequence_.at(i) - 1).reference_trajs, temp_path_id))
 //                     {
 //                         threadLogger_->error(" The map file for zone {}  does not have path for turn over ",
-//                         static_cast<float32>(zone_sequence_.at(i)));
+//                         static_cast<float>(zone_sequence_.at(i)));
 
 //                         return ErrorType::PLANNING_FAIL;
 //                     }
@@ -4033,7 +3799,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 //     else
 //     {
-//         threadLogger_->info("The map file for zone {} does not have any reference path ", (float32)end_node_);
+//         threadLogger_->info("The map file for zone {} does not have any reference path ", (float)end_node_);
 
 //         return ErrorType::NO_REFERENCELINE;
 //     }
@@ -4061,8 +3827,9 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     A*搜索函数输入形参-规划输入点 uint8 search_zone;                                                //
 //     ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-当前规划区域 vector<Trajectory_Point>
 //     Trajectory_be_searched;                  // ProgressiveHybirdAStar 渐进式hybird
-//     A*搜索函数输入形参-在哪条参考轨迹上搜索hybird A*拟合点 uint32 serach_start_index = 0; // ProgressiveHybirdAStar
-//     渐进式hybird A*搜索函数输入形参-从哪个索引处开始搜索 std::vector<Trajectory_Point> temp_tra_start, temp_tra_end;
+//     A*搜索函数输入形参-在哪条参考轨迹上搜索hybird A*拟合点 unsigned int serach_start_index = 0; //
+//     ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-从哪个索引处开始搜索 std::vector<Trajectory_Point>
+//     temp_tra_start, temp_tra_end;
 //     // ProgressiveHybirdAStar 渐进式hybird A*搜索函数输入形参-搜索出的轨迹 int32 Splice_Point_start_index = -1,
 //     Splice_Point_end_index = -1; // ProgressiveHybirdAStar 渐进式hybird
 //     A*搜索函数输入形参-记录规划起点、规划终点处的hybird A*拼接轨迹分别记录规划起点、规划终点的hybird A*拼接点的索引
@@ -4092,7 +3859,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //                 all_zones_.at(zone_sequence_.at(i + 1) - 1).reference_trajs, temp_path_id))
 //                 {
 //                     threadLogger_->error(" The map file for zone {} does not have path for turn over ",
-//                     static_cast<float32>(zone_sequence_.at(i + 1)));
+//                     static_cast<float>(zone_sequence_.at(i + 1)));
 
 //                     return ErrorType::PLANNING_FAIL;
 //                 }
@@ -4100,8 +3867,8 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 
 //                 // Trajectory_Point temp_point;
 //                 distance_min = 1000000;
-//                 uint32 nearest_id;
-//                 for (uint32 i = 0; i < temp_traj.size(); i++)
+//                 unsigned int nearest_id;
+//                 for (unsigned int i = 0; i < temp_traj.size(); i++)
 //                 {
 //                     temp_point = temp_traj.at(i);
 
@@ -4150,7 +3917,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //             all_zones_.at(zone_sequence_.at(i) - 1).reference_trajs, temp_path_id))
 //             {
 //                 threadLogger_->error(" The map file for zone {} does not have path for turn over",
-//                 static_cast<float32>(zone_sequence_.at(i)));
+//                 static_cast<float>(zone_sequence_.at(i)));
 
 //                 return ErrorType::PLANNING_FAIL;
 //             }
@@ -4208,8 +3975,8 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //                 // 由于结构化区域的参考轨迹可能伸入到非结构化区域，需要找到参考线上距离终点的最近点，以此点为搜索起点
 
 //                 distance_min = 1000000;
-//                 uint32 nearest_id;
-//                 for (uint32 i = 0; i < temp_traj.size(); i++)
+//                 unsigned int nearest_id;
+//                 for (unsigned int i = 0; i < temp_traj.size(); i++)
 //                 {
 //                     temp_point = temp_traj.at(i);
 
@@ -4293,7 +4060,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //  * @param [in] temp_path：需设置的路径； max_speed：最大速度
 //  * @param [return]
 //  */
-// void Planning::SetMaxSpeed(std::vector<Trajectory_Point> &temp_path, float32 max_speed)
+// void Planning::SetMaxSpeed(std::vector<Trajectory_Point> &temp_path, float max_speed)
 // {
 //     for (int i = 0; i < temp_path.size(); i++)
 //     {
@@ -4301,9 +4068,9 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 // }
 
-// float32 Planning::CalNearestDistance(Single_Point point, Single_Border border_points)
+// float Planning::CalNearestDistance(Single_Point point, Single_Border border_points)
 // {
-//     float32 temp_distance, min_distance;
+//     float temp_distance, min_distance;
 //     min_distance = DBL_MAX;
 //     for (size_t i = 0; i < border_points.border_points.size(); i++)
 //     {
@@ -4317,98 +4084,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     return min_distance;
 // }
 // /**
-//  * @brief 找到点所在的区域的id号，并获取区域类型
-//  * @param [in] point：起始点/目标点；zone_type：区域类型
-//  * @param [return] 点所在区域id号
-//  */
-// uint8 Planning::FindZoneId(Single_Point point, uint8 &zone_type)
-// {
-//     // LOG(INFO) << "FindZoneId";
-// #if 0
-//     uint8 temp_zone_id = 0;
-//     zone_type = 0;
-//     for (int i = 0; i < all_zones_.size(); i++)
-//     {
-//         if (PointInZone(point, all_zones_.at(i).external_border))
-//         {
-//             temp_zone_id = i + 1;
-//             zone_type = all_zones_.at(i).zone_type;
-//             break;
-//         }
-//     }
-//     return temp_zone_id; // 若遍历所有的区域都没找到点所在区域，则返回0
-// #else
-//     uint8 temp_zone_id = 0;
-//     zone_type = 0;
-//     float32 min_distance = DBL_MAX;
-//     bool flag = false;
-//     threadLogger_->info("地图有{}个区域", all_zones_.size());
 
-//     for (int i = 0; i < all_zones_.size(); i++)
-//     {
-//         if (PointInZone(point, all_zones_.at(i).external_border))
-//         {
-//             temp_zone_id = i + 1;
-//             zone_type = all_zones_.at(i).zone_type;
-//             flag = false;
-//             return temp_zone_id; // 若遍历所有的区域都没找到点所在区域，则返回0
-//         }
-//         flag = true;
-//     }
-//     threadLogger_->info("传入的点没有匹配上任何区域");
-
-//     // 处理传入的终点位于地图边界之外的情况，这种情况大概率出现在前往装载点或卸载点的任务
-//     if ((flag == true) && (task_type_ == static_cast<uint>(TaskType::GO_LOAD_POINT) || task_type_ ==
-//     static_cast<uint>(TaskType::GO_UNLOAD_POINT)) && ((fabs(point.x - end_point_.x) < 1e-3) && (fabs(point.y -
-//     end_point_.y) < 1e-3) && (fabs(point.yaw - end_point_.yaw) < 1e-3)))
-//     {
-//         threadLogger_->info("end point is out border");
-//         for (int i = 0; i < all_zones_.size(); i++)
-//         {
-//             // 根据当前任务，确定终点属于哪个区域
-//             // 计算终点与每个区域的最近点的最小距离
-//             float32 temp_distance = CalNearestDistance(point, all_zones_.at(i).external_border);
-//             threadLogger_->info("i:{} temp_distance:{}", i + 1, temp_distance);
-
-//             if (fabs(temp_distance) + 1e-2 < min_distance)
-//             {
-//                 min_distance = temp_distance;
-//                 temp_zone_id = i + 1;
-//                 zone_type = all_zones_.at(i).zone_type;
-//                 end_point_out_border_ = true;
-//             }
-//         }
-//         return temp_zone_id; // 若遍历所有的区域都没找到点所在区域，则返回0
-//     }
-//     else if ((flag == true) && (task_type_ == static_cast<uint>(TaskType::GO_LOADAREA_WAITAREA) || task_type_ ==
-//     static_cast<uint>(TaskType::GO_LOAD_TRANSITIONS_POINT) || task_type_ ==
-//     static_cast<uint>(TaskType::GO_APART_LOADING_POINT) || task_type_ ==
-//     static_cast<uint>(TaskType::GO_UNLOADAREA_WAITAREA)) &&
-//              ((fabs(point.x - start_point_.x) < 1e-3) && (fabs(point.y - start_point_.y) < 1e-3) && (fabs(point.yaw -
-//              start_point_.yaw) < 1e-3)))
-//     {
-//         threadLogger_->info("last_task_type_ = {}", (int)last_task_type_);
-//         threadLogger_->info("start point is out border");
-
-//         for (int i = 0; i < all_zones_.size(); i++)
-//         {
-//             // 根据当前任务，确定终点属于哪个区域
-//             // 计算终点与每个区域的最近点的最小距离
-//             float32 temp_distance = CalNearestDistance(point, all_zones_.at(i).external_border);
-//             if (fabs(temp_distance) + 1e-2 < min_distance)
-//             {
-//                 min_distance = temp_distance;
-//                 temp_zone_id = i + 1;
-//                 zone_type = all_zones_.at(i).zone_type;
-//                 start_point_out_border_ = true;
-//             }
-//         }
-//         return temp_zone_id; // 若遍历所有的区域都没找到点所在区域，则返回0
-//     }
-
-//     return 0;
-// #endif
-// }
 
 // /**
 //  * @brief 判断点是否在给定的区域边界
@@ -4446,8 +4122,8 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         return false; // 否则在多边形外 或 边上
 // }
 
-// ErrorType Planning::FindReferencePath(Single_Point point, vector<Single_Trajectory> &trajs, uint32 &nearest_id, uint8
-// &path_id, bool flag, map<uint8, double> &v_id, double search_distance)
+// ErrorType Planning::FindReferencePath(Single_Point point, vector<Single_Trajectory> &trajs, unsigned int &nearest_id,
+// uint8 &path_id, bool flag, map<uint8, double> &v_id, double search_distance)
 // {
 //     v_id.clear();
 //     if (flag == true)
@@ -4465,15 +4141,15 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //         return ErrorType::NO_REFERENCELINE;
 //     }
 //     bool temp_bool = false;
-//     uint32 temp_nearest_id;
-//     float32 temp_distance, min_distance;
+//     unsigned int temp_nearest_id;
+//     float temp_distance, min_distance;
 //     min_distance = 1000000;
 //     // 匹配原则
 //     // 同一区域找大致
 //     // 不同区域找最近，并需要结合dijkstra搜索结果进行参考路径筛选
-//     uint32 type = 0;
+//     unsigned int type = 0;
 //     double lat_distance = 0;
-//     for (uint32 i = 0; i < trajs.size(); i++)
+//     for (unsigned int i = 0; i < trajs.size(); i++)
 //     {
 //         threadLogger_->info("当前匹配轨迹ID:{},start:{},curr:{},end:{}", (int)trajs.at(i).id,
 //         (int)trajs.at(i).start_zone_id, (int)trajs.at(i).current_zone_id, (int)trajs.at(i).end_zone_id);
@@ -4550,7 +4226,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     Trajectory_Point temp_traj_point;
 //     threadLogger_->info("traj.trajectory.size():{}", traj.trajectory.size());
 //     int nearest_point_index = -1;
-//     for (uint32 i = 0; i < traj.trajectory.size(); i++)
+//     for (unsigned int i = 0; i < traj.trajectory.size(); i++)
 //     {
 //         temp_traj_point = traj.trajectory.at(i);
 //         float64 temp_distance2 = pow(point.x - temp_traj_point.x, 2) + pow(point.y - temp_traj_point.y, 2);
@@ -4588,7 +4264,8 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //  * @param [in] 点坐标，路径，最近距离(引用)，最近点id(引用)
 //  * @param [return] true：成功；false：失败
 //  */
-// bool Planning::FindNearestPoint(Single_Point point, Single_Trajectory traj, float32 &distance, uint32 &nearest_id)
+// bool Planning::FindNearestPoint(Single_Point point, Single_Trajectory traj, float &distance, unsigned int
+// &nearest_id)
 // {
 //     threadLogger_->info("Enter FindnearestPoint function");
 
@@ -4603,7 +4280,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 //     Trajectory_Point temp_traj_point;
 //     bool flag = false;
-//     for (uint32 i = 0; i < traj.trajectory.size(); i++)
+//     for (unsigned int i = 0; i < traj.trajectory.size(); i++)
 //     {
 
 //         temp_traj_point = traj.trajectory.at(i);
@@ -4639,17 +4316,17 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 // bool Planning::FindPathId(uint8 s_id, uint8 c_id, uint8 e_id, vector<Single_Trajectory> &trajs, uint8 &path_id)
 // {
 //     bool temp = false;
-//     //      threadLogger_->info("...the s_id is "<<(float32)s_id<<"...\n";
-//     //      threadLogger_->info("...the c_id is "<<(float32)c_id<<"...\n";
-//     //      threadLogger_->info("...the e_id is "<<(float32)e_id<<"...\n";
+//     //      threadLogger_->info("...the s_id is "<<(float)s_id<<"...\n";
+//     //      threadLogger_->info("...the c_id is "<<(float)c_id<<"...\n";
+//     //      threadLogger_->info("...the e_id is "<<(float)e_id<<"...\n";
 //     for (int i = 0; i < trajs.size(); i++)
 //     {
 //         uint8 temp_s_id = trajs.at(i).start_zone_id;
 //         uint8 temp_c_id = trajs.at(i).current_zone_id;
 //         uint8 temp_e_id = trajs.at(i).end_zone_id;
-//         //  threadLogger_->info("...the temp_s_id is {}", (float32)temp_s_id << "...\n";
-//         //  threadLogger_->info("...the temp_c_id is {}", (float32)temp_c_id << "...\n";
-//         //  threadLogger_->info("...the temp_e_id is {}", (float32)temp_e_id << "...\n"
+//         //  threadLogger_->info("...the temp_s_id is {}", (float)temp_s_id << "...\n";
+//         //  threadLogger_->info("...the temp_c_id is {}", (float)temp_c_id << "...\n";
+//         //  threadLogger_->info("...the temp_e_id is {}", (float)temp_e_id << "...\n"
 //         //            << "\n";
 
 //         if (s_id == temp_s_id && c_id == temp_c_id && e_id == temp_e_id) //
@@ -4668,8 +4345,8 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //  * @param [in] 无
 //  * @param [return] 无
 //  */
-// void Planning::Interpolate(float64 x0, float64 y0, float32 theta0,
-//                            float64 x1, float64 y1, float32 theta1,
+// void Planning::Interpolate(float64 x0, float64 y0, float theta0,
+//                            float64 x1, float64 y1, float theta1,
 //                            std::vector<Trajectory_Point> &path)
 // {
 //     /*
@@ -4699,11 +4376,11 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     std::vector<Trajectory_Point> path_r;
 //     float64 x = 0.0;
 //     float64 y;
-//     float32 theta;
+//     float theta;
 //     float64 k; // 曲率
 //     Trajectory_Point temp_path_r;
 
-//     uint32 num = floor(fabs(x2_r) / 0.01);
+//     unsigned int num = floor(fabs(x2_r) / 0.01);
 //     float64 delta_x = 0.01 * siG(x2_r);
 //     while (num-- > 0) // 间距0.01m一个点
 //     {
@@ -4737,8 +4414,8 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 // }
 // void Planning::CalAcc(std::vector<Trajectory_Point> &temp_path)
 // {
-//     float32 last_acc;
-//     float32 delta_length = 1.0;
+//     float last_acc;
+//     float delta_length = 1.0;
 //     for (int i = 0; i < temp_path.size() - 10; i++)
 //     {
 
@@ -4888,22 +4565,22 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 // #endif
 // #if 0
-//    uint32 nums = 100;
-//    for(uint32 i = 0; i<temp_path.size(); i++)
+//    unsigned int nums = 100;
+//    for(unsigned int i = 0; i<temp_path.size(); i++)
 //    {
-//      uint32 id1;
+//      unsigned int id1;
 //      if (i <= nums)
 //        id1 = 0;
 //      else
 //        id1 = i - nums;
-//      uint32 id2 = i + nums < temp_path.size() ? i + nums : temp_path.size()-1;
-//      float32 delta_d =
+//      unsigned int id2 = i + nums < temp_path.size() ? i + nums : temp_path.size()-1;
+//      float delta_d =
 //      sqrt(pow(temp_path.at(id1).x-temp_path.at(id2).x,2)+pow(temp_path.at(id1).y-temp_path.at(id2).y,2));//两点之间的弦长
-//      float32 delta_angle = (temp_path.at(id2).yaw - temp_path.at(id1).yaw) / M_PI * 180.0;//两点之间的角度差
+//      float delta_angle = (temp_path.at(id2).yaw - temp_path.at(id1).yaw) / M_PI * 180.0;//两点之间的角度差
 //      delta_angle = fmod(delta_angle+720,360);
 //      if(delta_angle > 180)
 //        delta_angle = -(360 - delta_angle);
-//      float32 curv = delta_angle/delta_d/180*3.1415926;
+//      float curv = delta_angle/delta_d/180*3.1415926;
 //      temp_path.at(i).curvature = curv;
 //    }
 // #endif
@@ -4927,7 +4604,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 // {
 //     temp_path.at(0).distance = 0;
 //     double s = 0;
-//     for (uint32 i = 1; i < temp_path.size(); i++)
+//     for (unsigned int i = 1; i < temp_path.size(); i++)
 //     {
 //         float64 dx = temp_path.at(i).x - temp_path.at(i - 1).x;
 //         float64 dy = temp_path.at(i).y - temp_path.at(i - 1).y;
@@ -4947,20 +4624,20 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 // {
 //     std::vector<Trajectory_Point> path_s;
 //     //    Trajectory_Point temp_point;
-//     uint32 index0 = 0;
+//     unsigned int index0 = 0;
 //     float64 x0 = global_path_.at(index0).x;
 //     float64 y0 = global_path_.at(index0).y;
-//     float32 theta0 = global_path_.at(index0).yaw * M_PI / 180.0;
-//     float32 speed0 = global_path_.at(index0).speed;
+//     float theta0 = global_path_.at(index0).yaw * M_PI / 180.0;
+//     float speed0 = global_path_.at(index0).speed;
 //     float64 x1;
 //     float64 y1;
-//     float32 theta1;
-//     float32 speed1;
+//     float theta1;
+//     float speed1;
 //     temp_path.clear();
 //     path_s.clear();
-//     for (uint32 i = 1; i < global_path_.size(); i++)
+//     for (unsigned int i = 1; i < global_path_.size(); i++)
 //     {
-//         float32 delta_dis = global_path_.at(i).distance - global_path_.at(index0).distance;
+//         float delta_dis = global_path_.at(i).distance - global_path_.at(index0).distance;
 //         if (delta_dis >= 2 || i == global_path_.size() - 1)
 //         {
 //             x1 = global_path_.at(i).x;
@@ -4993,22 +4670,22 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 // {
 //     std::vector<Trajectory_Point> path_s;
 //     Trajectory_Point temp_point;
-//     uint32 index0 = 0;
+//     unsigned int index0 = 0;
 //     float64 x0 = global_path_.at(index0).x;
 //     float64 y0 = global_path_.at(index0).y;
-//     float32 theta0 = global_path_.at(index0).yaw;
-//     float32 speed0 = global_path_.at(index0).speed;
-//     float32 curvature0 = global_path_.at(index0).curvature;
+//     float theta0 = global_path_.at(index0).yaw;
+//     float speed0 = global_path_.at(index0).speed;
+//     float curvature0 = global_path_.at(index0).curvature;
 //     float64 x1;
 //     float64 y1;
-//     float32 theta1;
-//     float32 speed1;
-//     float32 curvature1;
+//     float theta1;
+//     float speed1;
+//     float curvature1;
 //     temp_path.clear();
 //     path_s.clear();
-//     for (uint32 i = 1; i < global_path_.size(); i++)
+//     for (unsigned int i = 1; i < global_path_.size(); i++)
 //     {
-//         float32 delta_dis = global_path_.at(i).distance - global_path_.at(index0).distance;
+//         float delta_dis = global_path_.at(i).distance - global_path_.at(index0).distance;
 //         if (delta_dis >= 0.1 || i == global_path_.size() - 1)
 //         {
 //             x1 = global_path_.at(i).x;
@@ -5019,10 +4696,10 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //             uint16 nums = floor(delta_dis / 0.01) > 0 ? floor(delta_dis / 0.01) : 1;
 //             for (uint16 j = 1; j <= nums; j++)
 //             {
-//                 float32 effec = (0.1 * j) / (0.1 * nums);
+//                 float effec = (0.1 * j) / (0.1 * nums);
 //                 temp_point.x = x0 + effec * (x1 - x0);
 //                 temp_point.y = y0 + effec * (y1 - y0);
-//                 float32 d_theta = theta1 - theta0;
+//                 float d_theta = theta1 - theta0;
 //                 d_theta = fmod(d_theta + 540, 360) - 180;
 //                 temp_point.yaw = theta0 + effec * d_theta;
 //                 temp_point.yaw = fmod(temp_point.yaw + 360, 360);
@@ -5040,113 +4717,7 @@ string Planning::VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp) {
 //     }
 //     threadLogger_->info("Path_interpolation() function   ");
 // }
-// void Planning::ChangeBorderType(Single_Point &point)
-// {
-//     // 若点在边界外，才对边界属性进行修改
-//     if (end_point_out_border_ == true)
-//     {
-//         vehicle_param_.border_change_range = 6;
-//         vehicle_param_.border_sample_inter = 20;
-//         float32 range = vehicle_param_.border_change_range; // 终点附近多大范围内需要改变边界点属性
-//         int N = vehicle_param_.border_sample_inter;         // 降采样参数 隔多少个点
-//         std::vector<Single_Border_Point> temp_border_points;
-//         Single_Border end_zone_border = all_zones_.at(end_node_ - 1).external_border;
-//         // 采用降采样进行边界属性更改 TODO
-//         int up_limit = end_zone_border.border_points.size() / N * N;
-//         threadLogger_->info("up_limit = {}", up_limit);
-//         for (int i = N - 1; i < up_limit; i += N)
-//         {
-//             Single_Border_Point temp_point = end_zone_border.border_points.at(i);
-//             // 计算该段边界点最后一个点与终点的距离
-//             float32 dis = sqrt(pow((point.x - temp_point.x), 2) + pow((point.y - temp_point.y), 2));
-//             if (dis <= (range + 1e-2))
-//             { // 若终点与边界点最后一个点的距离小于阈值 则将该段边界点属性全部更改为可通行
-//                 for (int j = i; j >= i - (N - 1); j--)
-//                 {
-//                     end_zone_border.border_points.at(j).type = 1; // 将其边界属性修改
-//                     threadLogger_->info("change type !!");
-//                 }
-//             }
-//         }
 
-//         // 处理剩余边界点
-//         if (up_limit < end_zone_border.border_points.size())
-//         {
-//             for (int ii = up_limit; ii < end_zone_border.border_points.size(); ii++)
-//             {
-//                 Single_Border_Point temp_point = end_zone_border.border_points.at(ii);
-//                 float32 dis = sqrt(pow((point.x - temp_point.x), 2) + pow((point.y - temp_point.y), 2));
-//                 if (dis <= (range + 1e-2))
-//                 {                                                  // 若终点与边界点最后一个点的距离小于阈值
-//                 则将该段边界点属性全部更改为可通行
-//                     end_zone_border.border_points.at(ii).type = 1; // 将其边界属性修改
-//                     threadLogger_->info("change type !!");
-//                 }
-//             }
-//         }
-//         // 将属性修改后的边界点再放入地图数据中
-//         {
-//             std::unique_lock<std::shared_mutex> lock(global_variable_mutex);
-//             all_zones_.at(end_node_ - 1).external_border.border_points.clear();
-//             all_zones_.at(end_node_ - 1).external_border.border_points = end_zone_border.border_points;
-//         }
-
-//         threadLogger_->info("Change Border's Type Over !!!");
-//     }
-//     else if (start_point_out_border_ == true)
-//     {
-//         vehicle_param_.border_change_range = 3;
-//         vehicle_param_.border_sample_inter = 20;
-//         float32 range = vehicle_param_.border_change_range; // 终点附近多大范围内需要改变边界点属性
-//         int N = vehicle_param_.border_sample_inter;         // 降采样参数 隔多少个点
-//         std::vector<Single_Border_Point> temp_border_points;
-//         Single_Border start_zone_border = all_zones_.at(start_node_ - 1).external_border;
-//         // 采用降采样进行边界属性更改 TODO
-//         int up_limit = start_zone_border.border_points.size() / N * N;
-//         threadLogger_->info("up_limit = {}", up_limit);
-//         for (int i = N - 1; i < up_limit; i += N)
-//         {
-//             Single_Border_Point temp_point = start_zone_border.border_points.at(i);
-//             // 计算该段边界点最后一个点与终点的距离
-//             float32 dis = sqrt(pow((point.x - temp_point.x), 2) + pow((point.y - temp_point.y), 2));
-//             if (dis <= (range + 1e-2))
-//             { // 若终点与边界点最后一个点的距离小于阈值 则将该段边界点属性全部更改为可通行
-//                 for (int j = i; j >= i - (N - 1); j--)
-//                 {
-//                     start_zone_border.border_points.at(j).type = 1; // 将其边界属性修改
-//                     threadLogger_->info("change type !!");
-//                 }
-//             }
-//         }
-
-//         // 处理剩余边界点
-//         if (up_limit < start_zone_border.border_points.size())
-//         {
-//             for (int ii = up_limit; ii < start_zone_border.border_points.size(); ii++)
-//             {
-//                 Single_Border_Point temp_point = start_zone_border.border_points.at(ii);
-//                 float32 dis = sqrt(pow((point.x - temp_point.x), 2) + pow((point.y - temp_point.y), 2));
-//                 if (dis <= (range + 1e-2))
-//                 {                                                    // 若终点与边界点最后一个点的距离小于阈值
-//                 则将该段边界点属性全部更改为可通行
-//                     start_zone_border.border_points.at(ii).type = 1; // 将其边界属性修改
-//                     threadLogger_->info("change type !!");
-//                 }
-//             }
-//         }
-//         // 将属性修改后的边界点再放入地图数据中
-//         {
-//             std::unique_lock<std::shared_mutex> lock(global_variable_mutex);
-//             all_zones_.at(start_node_ - 1).external_border.border_points.clear();
-//             all_zones_.at(start_node_ - 1).external_border.border_points = start_zone_border.border_points;
-//         }
-//         threadLogger_->info("Change Border's Type Over !!!");
-//     }
-//     else
-//     {
-//         threadLogger_->info("Do Not Change Border's Type Over !!!");
-//     }
-// }
 // /*
 //  * @brief 调用hibrid A star算法进行路径规划的接口函数
 //  * @param [in] 起始点坐标，目标点坐标，区域外边界，区域内障碍物边界,规划规则
@@ -5937,7 +5508,7 @@ _TarStartEnd Planning::ParseInputInfo(char* str) {
 }
 
 // bool Planning::ProgressiveHybirdAStar(Single_Point &input_point, uint8 input_node, bool search_direction,
-// std::vector<Trajectory_Point> &input_trajectory, uint32 search_start, int32 &search_index,
+// std::vector<Trajectory_Point> &input_trajectory, unsigned int search_start, int32 &search_index,
 // std::vector<Trajectory_Point> &result_trajectory, uint8 rule_id)
 // {
 //     int64 time_threshold = 0.8 * 1000 * 1000;
@@ -5957,7 +5528,7 @@ _TarStartEnd Planning::ParseInputInfo(char* str) {
 //             temp_end.y = input_trajectory.at(i).y;
 //             temp_end.z = input_trajectory.at(i).z;
 //             temp_end.yaw = input_trajectory.at(i).yaw;
-//             threadLogger_->info("第 {}个候选点，其索引：{} rule_id:{}", float32(cal), i, float32(rule_id));
+//             threadLogger_->info("第 {}个候选点，其索引：{} rule_id:{}", float(cal), i, float(rule_id));
 //             // 到8个点的时候，时间得提升到800ms
 //             if (counter > 4)
 //                 time_threshold = 0.8 * 1000 * 1000;
@@ -5987,7 +5558,7 @@ _TarStartEnd Planning::ParseInputInfo(char* str) {
 //             temp_start.y = input_trajectory.at(i).y;
 //             temp_start.z = input_trajectory.at(i).z;
 //             temp_start.yaw = input_trajectory.at(i).yaw;
-//             threadLogger_->info("第{}个候选点，其索引：{} rule_id:{}", float32(cal), i, float32(rule_id));
+//             threadLogger_->info("第{}个候选点，其索引：{} rule_id:{}", float(cal), i, float(rule_id));
 //             if (counter > 4)
 //                 time_threshold = 0.8 * 1000 * 1000;
 //             if (ApplyHibridAStarWithTime(temp_start, input_point, input_node, result_trajectory, rule_id,
@@ -6174,8 +5745,8 @@ _TarStartEnd Planning::ParseInputInfo(char* str) {
 //     return true;
 // }
 
-// bool Planning::DetermineIfOrNoHybirdAStar(Single_Point &input_point, std::vector<Trajectory_Point> &traj, uint32
-// nearest_point_index, float &lat_distance_)
+// bool Planning::DetermineIfOrNoHybirdAStar(Single_Point &input_point, std::vector<Trajectory_Point> &traj, unsigned
+// int nearest_point_index, float &lat_distance_)
 // {
 //     int max_size = traj.size() - 1;
 //     Single_Point nearest_point;
@@ -6566,7 +6137,7 @@ _TarStartEnd Planning::ParseInputInfo(char* str) {
 //         float64 ddx = sx_.deriv(2, s);
 //         float64 ddy = sy_.deriv(2, s);
 
-//         float32 angle = atan(dy / dx);
+//         float angle = atan(dy / dx);
 //         if (dx < 0)
 //             angle = angle + M_PI;
 //         else if (dx >= 0 && dy < 0)
@@ -6684,7 +6255,7 @@ _TarStartEnd Planning::ParseInputInfo(char* str) {
 //     s_.clear();
 //     s_.push_back(cum);
 
-//     for (uint32 i = 1; i < xs.size(); i++)
+//     for (unsigned int i = 1; i < xs.size(); i++)
 //     {
 //         float64 dx = xs.at(i) - xs.at(i - 1);
 //         float64 dy = ys.at(i) - ys.at(i - 1);
@@ -6696,7 +6267,7 @@ _TarStartEnd Planning::ParseInputInfo(char* str) {
 // }
 // bool Planning::CheckCurvature(std::vector<Trajectory_Point> &tra)
 // {
-//     float32 threshold = 0.15;
+//     float threshold = 0.15;
 //     for (int i = 0; i < tra.size(); i++)
 //     {
 //         if (fabs(tra.at(i).curvature) > threshold)
@@ -6801,3 +6372,147 @@ _TarStartEnd Planning::ParseInputInfo(char* str) {
 //         return true;
 //     return false;
 // }
+// 全局轨迹规划--路径规划
+void Planning::PathPlanning() {
+    threadLogger_->info("Enter PathPlanning");
+    time_t start_time, end_time;
+    time(&start_time);
+    start_point_.yaw = start_point_.yaw / 180.0 * M_PI;
+    end_point_.yaw   = end_point_.yaw / 180.0 * M_PI;
+    threadLogger_->info(" task_type_: {}", (int)task_type_);
+    ErrorType temp_error_type;
+    if (task_type_ == static_cast<uint>(TaskType::TEMP_MOVE_CAR)) {
+        // 临时挪车不走参考路径
+        temp_error_type = MoveCar();
+    }
+    else {
+        temp_error_type = LuWangPlanning();
+    }
+    if (temp_error_type != ErrorType::SUCCESS) {
+        threadLogger_->info(" ... Planning Failed...");
+        error_type_     = static_cast<uint>(temp_error_type);
+        last_task_type_ = task_type_;
+    }
+}
+// 挪车
+ErrorType Planning::MoveCar() {}
+
+// 沿路网路径规划
+ErrorType Planning::LuWangPlanning() {
+    // 定义一个搜索
+
+    //  起点设定初始search_dis.at(0)的搜索半径
+    //     没有搜索到路径，提高搜索半径
+    //   搜索到，将搜索到的路径存入vector<int> a
+    //     对终点设置初始search_dis.at(0)的搜索半径
+    //       没有搜索到路径，提高搜索半径
+    //     搜索到，将搜索到的路径存入vector<int> b
+    //       从a和b中找到联通的一对
+    std::pair<int, int> success_pair;
+    bool                found = false;                             // 用于跟踪是否找到了成功的路径对
+    vector<double>      search_dis{0.5, 1, 5, 10, 20, 40, 60, 70}; // 离散搜索半径
+
+    vector<int> start_path_vec, end_path_vec;
+    for (auto end_search_radius : search_dis) {
+        if (FindReferencePath(end_point_, GlobalVariable::getInstance()->all_referencelines_, end_search_radius,
+                              end_path_vec)) {
+            for (auto start_search_radius : search_dis) {
+                if (FindReferencePath(start_point_, GlobalVariable::getInstance()->all_referencelines_,
+                                      start_search_radius, start_path_vec)) {
+                    // 在start_path_vec和end_path_vec中查找连通路径
+                    for (auto start : start_path_vec) {
+                        for (auto end : end_path_vec) {
+                            if (CheckIsOrNotConnect(start, end)) {
+                                success_pair = std::make_pair(start, end);
+                                found        = true; // 标记为已找到
+                                break;               // 退出内层循环
+                            }
+                        }
+                        if (found) break; // 如果已找到，退出中间层循环
+                    }
+                    if (found) break; // 如果已找到，退出外层循环
+                }
+            }
+        }
+    }
+    // 找到起点、终点对应的索引
+    int    start_index, end_index;
+    double start_lat_dis, start_lon_dis;
+    double end_lat_dis, end_lon_dis;
+    double temp_dis;
+    double min_distance = std::numeric_limits<double>::max();
+    for (int i = 0; i < GlobalVariable::getInstance()->all_referencelines_.at(success_pair.first).size(); i++) {
+        temp_dis =
+            sqrt(pow(start_point_.x - GlobalVariable::getInstance()->all_referencelines_.at(success_pair.first).x, 2) +
+                 pow(start_point_.y - GlobalVariable::getInstance()->all_referencelines_.at(success_pair.first).y, 2));
+        if (temp_dis < min_distance) {
+            min_distance = temp_dis;
+            start_index  = i;
+        }
+    }
+
+
+    // 路径裁剪拼接
+    PathClipAndSplice();
+}
+bool Planning::FindReferencePath(_SinglePoint point, vector<_SingleTraj>& trajs, double radius, vector<int> vec) {
+    vec.clear();
+    if (!trajs.size()) {
+        threadLogger_->info(" The trajectory.size() = 0  ");
+        return ErrorType::NO_REFERENCELINE;
+    }
+    bool temp_bool = false;
+
+    double nearest_dis = std::numeric_limits<double>::max();
+    double temp_dis;
+    for (unsigned int i = 0; i < trajs.size(); i++) {
+        nearest_dis = std::numeric_limits<double>::max();
+        for (unsigned int j = 0; j < trajs.at(i).size(); j++) {
+            temp_dis = sqrt(pow(point.x - trajs.at(i).at(j).x, 2) + pow(point.y - trajs.at(i).at(j).y, 2));
+            if (temp_dis < nearest_dis) {
+                nearest_dis = temp_dis;
+            }
+        }
+        if (nearest_dis < radius) {
+            vec.push_back(i);
+            temp_bool = true;
+        }
+    }
+
+
+    if (temp_bool)
+        return true;
+    else
+        return false;
+}
+
+bool Planning::CheckIsOrNotConnect(int start, int end) {
+    dijkstra_.InitialDijkstra(road_directed_graph_.graph);
+    if (dijkstra_.searchpath(start, end)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+void Planning::GetNearestPoint(_SinglePoint point, int index, double& dis, double& lat, double& lon) {
+    double minDistance   = std::numeric_limits<double>::max();
+    doubel min_dis       = -1;
+    int    nearest_index = -1;
+    for (const auto& traj : GlobalVariable::getInstance()->all_referencelines_.at(index)) {
+        for (int i = 0; i < traj.size(); i++) {
+            min_dis = sqrt(pow(point.x - p.x, 2) + pow(point.y - p.y, 2));
+            if (min_dis < minDistance) {
+                minDistance   = min_dis;
+                nearest_index = i;
+            }
+        }
+
+        lat = -(point.x - traj.at(nearest_index).x) * sin(traj.at(nearest_index).yaw) +
+              (point.y - traj.at(nearest_index).y) * cos(traj.at(nearest_index).yaw);
+        lat = fabs(point.);
+        lon = (traj.at(nearest_index).y - point.y) / sin(traj.at(nearest_index).yaw) +
+              lat / tan(traj.at(nearest_index).yaw);
+    }
+}

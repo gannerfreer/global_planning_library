@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "shared_mutex": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "limits": "cpp"
     }
 }

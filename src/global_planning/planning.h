@@ -3,9 +3,8 @@
 #include "interface/interface.h"
 
 using namespace GlobalPlanning;
-class Planning
-{
-public:
+class Planning {
+  public:
     Planning();
     ~Planning();
 
@@ -26,7 +25,8 @@ public:
     //  * @param [in] 点坐标，路径的容器，最近点id(引用)，路径id(引用)
     //  * @param [return] true：成功；false：失败
     //  */
-    // ErrorType FindReferencePath(Single_Point point, std ::vector<Single_Trajectory> &trajs, int32 &nearest_id, int &path_id, bool flag, map<int, double> &v_id, double search_distance);
+    // ErrorType FindReferencePath(Single_Point point, std ::vector<Single_Trajectory> &trajs, int32 &nearest_id, int
+    // &path_id, bool flag, map<int, double> &v_id, double search_distance);
     // /**
     //  * @brief 找到最近点id
     //  * @param [in] 点坐标，路径，最近距离(引用)，最近点id(引用)
@@ -115,14 +115,14 @@ public:
      *@param
      *return
      */
-    _TarStartEnd ParseInputInfo(char *str);
+    _TarStartEnd ParseInputInfo(char* str);
 
     /**
      *@brief: 传出规划完成的全局轨迹json格式信息
      *@param
      *return
      */
-    string VecWaypoint2json(vector<_TrajectoryPoint> &vec_wp);
+    string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp);
 
     // /**
     //  * @brief: 弧度转角度
@@ -137,12 +137,7 @@ public:
     //  */
     // void ReplanPointMaxSpeed(vector<Trajectory_Point> &temp_path);
 
-    // /**
-    //  *@brief: 将装卸载点附近边界属性转换(是否可跨越)
-    //  *@param [msg_obj_fuse] obj_fuse
-    //  *return
-    //  */
-    // void ChangeBorderType(Single_Point &point);
+
     // /**
     //  *@brief: 计算当前点距离区域边界点的最近距离
     //  *@param [Single_Point] point, [Single_Border] border_points
@@ -164,7 +159,9 @@ public:
     //  * @return true
     //  * @return false
     //  */
-    // bool ProgressiveHybirdAStar(Single_Point &input_point, int input_node, bool search_direction, vector<Trajectory_Point> &input_trajectory, int32 search_start, int32 &search_index, vector<Trajectory_Point> &result_trajectory, int rule_id);
+    // bool ProgressiveHybirdAStar(Single_Point &input_point, int input_node, bool search_direction,
+    // vector<Trajectory_Point> &input_trajectory, int32 search_start, int32 &search_index, vector<Trajectory_Point>
+    // &result_trajectory, int rule_id);
     // /**
     //  * @brief
     //  *
@@ -193,7 +190,8 @@ public:
     //  * @return true 需要进行拟合
     //  * @return false 不需要进行拟合
     //  */
-    // bool DetermineIfOrNoHybirdAStar(Single_Point &input_point, vector<Trajectory_Point> &traj, int32 nearest_point_index, float &lat_distance_);
+    // bool DetermineIfOrNoHybirdAStar(Single_Point &input_point, vector<Trajectory_Point> &traj, int32
+    // nearest_point_index, float &lat_distance_);
     // /**
     //  * @brief  去除轨迹中重复点
     //  *
@@ -248,7 +246,8 @@ public:
     //  * @param points 离散插值点
     //  * @param cubicspline_path 插值后的路径，默认10cm
     //  */
-    // void CalculateCubicSplineCurve(const vector<Trajectory_Point> points, vector<Trajectory_Point> &cubicspline_path);
+    // void CalculateCubicSplineCurve(const vector<Trajectory_Point> points, vector<Trajectory_Point>
+    // &cubicspline_path);
     // /**
     //  * @brief 均匀碾压子功能 对偏移后的路径曲率进行校验
     //  *
@@ -296,7 +295,8 @@ public:
     //  * @return true 位于
     //  * @return false 不位于
     //  */
-    // bool FindSuitableReferenceLine(Single_Point point, Single_Trajectory traj, double search_distance, double lat_dis);
+    // bool FindSuitableReferenceLine(Single_Point point, Single_Trajectory traj, double search_distance, double
+    // lat_dis);
     // /**
     //  * @brief 超速检测
     //  *
@@ -311,24 +311,23 @@ public:
      *
      * @param path 封装在全局函数中的规划库接口函数
      */
-    void GlobalPathPlanningIntface(vector<_TrajectoryPoint> &path);
+    void GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path);
 
-public:
+  public:
     _SinglePoint start_point_, end_point_; // 起、终点坐标
 
-    vector<vector<double>> road_directed_graph_; // 路段有向图
-    vector<_BorderPoint> map_border_;            // 地图外边界
-    vector<vector<_BorderPoint>> inner_borders_; // 内边界
-    vector<_SingleTraj> all_referencelines_;     // 所有路段
-    std ::vector<_TrajectoryPoint> global_path_; // 全局路径
+    vector<vector<double>>         road_directed_graph_; // 路段有向图
+    vector<_BorderPoint>           map_border_;          // 地图外边界
+    vector<vector<_BorderPoint>>   inner_borders_;       // 内边界
+    vector<_SingleTraj>            all_referencelines_;  // 所有路段
+    std ::vector<_TrajectoryPoint> global_path_;         // 全局路径
 
-    // Dijkstra dijkstra_;                          // dijkstra对象
+    Dijkstra dijkstra_; // dijkstra对象
     // HybridAStar::OptimalPath my_optimal_path_;   // hibrid A star类的实例对象
     // GlobalSpeedPlanning my_speed_planning_;
     // std ::vector<int> zone_sequence_;          // dijkstra 算法得到的全局路径依次经过的区域id
     _VehicleParam vehicle_param_; // 传入的车辆参数以及算法参数
-    // double vehicle_commander_;                  // 车长
-    int task_type_; // 任务类型 用于终点处规划，规划方案选型
+    int           task_type_;     // 任务类型 用于终点处规划，规划方案选型
     // bool end_point_out_border_;                  // 终点是否在边界外
     // int last_task_type_;                        // 上一次任务类型
     // bool start_point_out_border_;                // 终点是否在边界外
@@ -337,7 +336,7 @@ public:
     // spline sx_;
     // spline sy_;
     // double kDeltaS_ = 0.1;
-    int error_type_ = 0;
+    int                        error_type_ = 0;
     shared_ptr<spdlog::logger> threadLogger_;
     // vector<int> vec_path_;
     string vehicle_code_;
@@ -345,12 +344,12 @@ public:
     // bool reverse_flag_;
 #ifdef SKIP_HEADER
 #else
-private:
+  private:
     CConfigureIO configio_;
 
-public:
+  public:
     rviz_path ::CRvizPath c_rviz_; // for 显示
-    tarRviz m_tar_rviz_data_;
+    tarRviz               m_tar_rviz_data_;
 #endif
 };
 #endif // GLOBAL_PLANNING_PLANNING_H
