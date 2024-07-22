@@ -1,0 +1,180 @@
+#ifndef GLOBAL_PLANNING_PLANNING_H
+#define GLOBAL_PLANNING_PLANNING_H
+#include <random>
+
+#include "../collision_check/collision_check.h"
+#include "../common/common_struct.h"
+#include "../globalvariable.h"
+#include "../planner/pathplanner/dijkstra/dijkstra.h"
+#include "../planner/pathplanner/hybirdastar/optimal_path.h"
+#include "../planner/speedplanner/global_speed_planning.h"
+
+using namespace GlobalPlanning;
+// using namespace HybridAStar;
+using namespace rapidjson;
+class Planning {
+  public:
+    Planning();
+    ~Planning();
+
+    /**
+     * @brief 类初始化函数，进行地图文件读取，相关参数初始化
+     * @param [in] 无
+     * @param [return] true：初始化成功，false：初始化失败
+     */
+    bool InitialFunction();
+
+
+        /**
+     * @brief 调用hibrid A star算法进行路径规划的接口函数
+     * @param [in] s_point：起始点坐标，e_point：目标点坐标，区域id, 返回路径，规划规则
+     * @param [return] true：成功；false：失败
+     */
+    bool ApplyHibridAStar(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, int plan_rule_id);
+
+
+    bool ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_direction, int search_start, int& search_index,
+                                vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id);
+
+    /**
+     * @brief
+     *
+     * @param s_point 起点
+     * @param e_point 终点
+     * @param temp_zone_id 搜索区域
+     * @param traj 输出轨迹
+     * @param plan_rule_id 规划规则
+     * @param time_threshold 搜索允许最大时间
+     * @return true 规划成功
+     * @return false 失败
+     */
+    bool ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj,
+                                  unsigned char plan_rule_id, long long time_threshold);
+
+    /**
+     * @brief  去除轨迹中重复点
+     *
+     * @param input 输入轨迹
+     * @param result 删除重复点后的输出轨迹
+     * @return true
+     * @return false
+     */
+    bool removeDuplicates(vector<_TrajectoryPoint>& input, vector<_TrajectoryPoint>& result);
+    /**
+     * @brief 均匀碾压，每个路径点偏移权重
+     *
+     * @param k 待偏移路径点索引
+     * @param sum 待偏移路径点所在路径路径点总数
+     * @return float 该路径点权重偏移系数
+     */
+    float WeightFunction(int k, int sum);
+    /**
+     * @brief 均匀碾压，计算每个点的偏移量
+     *
+     * @param index 输入点在路径上的索引
+     * @param sum 输入点所在路径路径点总数
+     * @param weight 偏移权重
+     * @return float 偏移量
+     */
+    float CalculateOffSetWithoutCuravture(int index, int sum, float weight);
+    /**
+     * @brief 均匀碾压
+     *
+     * @param path 输入路径
+     * @return 偏移后的输出路径
+     */
+    bool RandomOffsetWithoutCuravture();
+    /**
+     * @brief 基于车辆几何尺寸，检查Path是否碰撞
+     *
+     * @param Path 待检测路径
+     * @return true 碰撞
+     * @return false 不碰撞
+     */
+    bool PathCollisionCheck(vector<_TrajectoryPoint> Path);
+
+
+    /**
+     * @brief 供本地rivz仿真使用，读取本地地图
+     *
+     * @return true
+     * @return false
+     */
+    bool ReadAllMapFile();
+
+
+    /**
+     * @brief
+     *
+     * @param path 封装在全局函数中的规划库接口函数
+     */
+    void GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path);
+    /**
+     * @brief
+     *
+     * @param start
+     * @param end
+     * @return true
+     * @return false
+     */
+    bool IsConnect(int start, int end);
+
+
+    /**
+     * @brief
+     *
+     */
+    bool PathPlanning();
+
+    /**
+     * @brief
+     *
+     */
+    bool HybirdAStarFitting();
+    void StartEndPointProcess();
+    bool PathOffset();
+    bool SpeedPlanning();
+    bool MoveCarPlanning();
+    bool DispatchPlanning();
+    void PathClipAndSplice();
+    bool JudgeFittingDirection(_SinglePoint point, int start_index, bool is_start);
+    bool IsShortDistance();
+
+  public:
+    _SinglePoint start_point_,
+        end_point_;                                     // 起、终点坐标
+    int start_key_, end_key_, start_index_, end_index_; // 起点、终点匹配上的参考路径id以及在在参考路径上的具体索引
+    double start_lat_dis_ = 0, start_lon_dis_ = 0, end_lat_dis_ = 0,
+           end_lon_dis_ = 0; // 起点、终点与匹配上的参考路径的横纵向距离
+
+    vector<vector<double>>       road_directed_graph_; // 路段有向图
+    vector<_BorderPoint>         map_border_;          // 地图外边界
+    vector<vector<_BorderPoint>> inner_borders_;       // 内边界
+    map<int, _SingleTraj>        all_referencelines_;  // 所有路段
+    vector<_TrajectoryPoint>     global_path_;         // 全局路径
+    vector<int>                  road_sequence_;       // 路段拓扑结果
+
+    Dijkstra            dijkstra_;        // dijkstra对象
+    OptimalPath         my_optimal_path_; // hibrid A star类的实例对象
+    GlobalSpeedPlanning my_speed_planning_;
+
+    _VehicleParam vehicle_param_; // 传入的车辆参数以及算法参数
+    TaskType      task_type_;     // 任务类型 用于终点处规划，规划方案选型
+    unsigned char light_or_heavy_;
+    CollisonCheck collison_check_;
+
+    ErrorType                  error_type_ = ErrorType::SUCCESS;
+    shared_ptr<spdlog::logger> threadLogger_;
+    string                     vehicle_code_;
+    string                     key_;
+#ifdef SKIP_HEADER
+#else
+  private:
+    CConfigureIO configio_;
+
+  public:
+    rviz_path ::CRvizPath c_rviz_; // for 显示
+    tarRviz               m_tar_rviz_data_;
+#endif
+};
+#endif // GLOBAL_PLANNING_PLANNING_H

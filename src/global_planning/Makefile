@@ -4,16 +4,16 @@
 #如果这个工程的头文件被改变了，那么我们需要编译引用了这几个头文件的c文件，并链接目标程序。
 CC = gcc # C 编译器
 CXX = g++ # C++ 编译器
-CXXFLAGS = -fPIC -shared -std=c++17   -D SKIP_HEADER   -lstdc++fs -I/usr/local/include/hiredis   # C++ 编译选项，g 选项表示要将调试信息编译到可执行文件中
+CXXFLAGS = -fPIC -shared -std=c++17   -D SKIP_HEADER   -lstdc++fs   # C++ 编译选项，g 选项表示要将调试信息编译到可执行文件中
 # LDFLAGS = -lhiredis 
 # STATICLIBS = -lhiredis
 # LDFLAGS += -leasylogging++
 # LDFLAGS = -shared -Wl,--whole-archive $(STATICLIBS) -Wl,--no-whole-archive  
 LDFLAGS = -L/usr/local/lib -ldl -pthread -Wl,-rpath,/usr/local/lib
-LIBS = /usr/local/lib/libhiredis.a
+
 
 # TARGET = ./lib/libGlobalPlanning-G_V1.0.0.20240702_RC.so
-TARGET = ./lib/libGlobalPlanning.so
+TARGET = lib/libGlobalPlanning.so
 # SRC = src/shenyan.cpp \
 #       src/collision_check.cpp \
 #       src/path_opti.cpp \
@@ -24,12 +24,22 @@ TARGET = ./lib/libGlobalPlanning.so
 # 	  src/node2d.cpp \
 # 	  src/spline.cpp\
 # 	  src/dijkstra.cpp
-SRC = interface/interface.cpp \
-      planning.cpp
+SRC = interface.cpp \
+      mine_global_planning/planning.cpp\
+	  globalvariable.cpp \
+      planner/pathplanner/dijkstra/dijkstra.cpp\
+	  planner/pathplanner/hybirdastar/node2d.cpp\
+	  planner/pathplanner/hybirdastar/optimal_path.cpp\
+	  planner/pathplanner/hybirdastar/r_s_curve.cpp\
+	  planner/speedplanner/global_speed_planning.cpp\
+      math/opti/path_opti.cpp\
+	  collision_check/collision_check.cpp\
+	  planner/pathplanner/spline/spline.cpp
+	  
 OBJS = $(SRC:.cpp = .o)
 
 $(TARGET): $(OBJS)  
-	$(CXX) $(CXXFLAGS)  $^ $(LDFLAGS) $(LIBS) -o $@
+	$(CXX) $(CXXFLAGS)  $^ $(LDFLAGS)  -o $@
 
 	
 
