@@ -80,12 +80,10 @@ class OptimalPath {
      * @return 返回说明：
      * 返回规划结果
      */
+
     PlanResult SearchGlobalPath(const Point start, const Point end, const Bound& road_bound,
                                 const Bound& obstacle_bound, const _VehicleParam m_vehicle_param, Path& final_path,
-                                const PlanRule plan_path_rule = PlanRule ::Normal_Planning);
-    PlanResult SearchGlobalPath1(const Point start, const Point end, const Bound& road_bound,
-                                 const Bound& obstacle_bound, const _VehicleParam m_vehicle_param, Path& final_path,
-                                 long long time_threshold, const PlanRule plan_path_rule = PlanRule ::Normal_Planning);
+                                long long time_threshold, const PlanRule plan_path_rule = PlanRule ::Normal_Planning);
 
   private:
     /**

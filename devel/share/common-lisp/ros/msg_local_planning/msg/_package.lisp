@@ -1,0 +1,15 @@
+(cl:defpackage msg_local_planning-msg
+  (:use )
+  (:export
+   "<TRAJECTORY>"
+   "TRAJECTORY"
+   "<MSG_DECISION_PATH>"
+   "MSG_DECISION_PATH"
+   "<MSG_DIAGN_LOCAL_PLANNING>"
+   "MSG_DIAGN_LOCAL_PLANNING"
+   "<MSG_FEEDBACK_DECISION>"
+   "MSG_FEEDBACK_DECISION"
+   "<MSG_LOCAL_PLANNING>"
+   "MSG_LOCAL_PLANNING"
+  ))
+

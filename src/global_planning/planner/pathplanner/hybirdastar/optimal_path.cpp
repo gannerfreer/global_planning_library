@@ -20,9 +20,9 @@ using namespace GlobalPlanning;
  *@param
  *return
  */
-PlanResult OptimalPath::SearchGlobalPath1(const Point start, const Point end, const Bound& road_bound,
-                                          const Bound& obstacle_bound, const _VehicleParam m_vehicle_param,
-                                          Path& final_path, long long time_threshold, const PlanRule plan_path_rule) {
+PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, const Bound& road_bound,
+                                         const Bound& obstacle_bound, const _VehicleParam m_vehicle_param,
+                                         Path& final_path, long long time_threshold, const PlanRule plan_path_rule) {
     m_vehicle_param_ = m_vehicle_param;
     dubins_.SetParam(m_vehicle_param_.radious, end, plan_path_rule);
     plan_path_rule_ = plan_path_rule;
@@ -99,70 +99,6 @@ PlanResult OptimalPath::SearchGlobalPath1(const Point start, const Point end, co
     return result;
 }
 
-PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, const Bound& road_bound,
-                                         const Bound& obstacle_bound, const _VehicleParam m_vehicle_param,
-                                         Path& final_path, const PlanRule plan_path_rule) {
-    m_vehicle_param_ = m_vehicle_param;
-    dubins_.SetParam(m_vehicle_param_.radious, end, plan_path_rule);
-    plan_path_rule_ = plan_path_rule;
-
-    utility::CTimeLog timelog("SearchGlobalPath");
-    InitData(start, end, road_bound, obstacle_bound);
-    timelog.AddLog("InitData");
-
-    collison_check_.InitParam(m_vehicle_param_);
-    collison_check_.InitBoundMap(road_bound_);
-    collison_check_.InitObstacleMap(obstacle_bound_);
-    timelog.AddLog("InitBoundMap");
-
-    GenerateBoundSet();
-    timelog.AddLog("GenerateBoundSet");
-
-
-    nodes2D_set_.clear();
-    h_cost_map_.clear();
-    nodes2D_map_.clear();
-
-    // 终点区域碰撞判断
-    if (true == collison_check_.IsVehicleCollision(end_)) {
-        threadLogger_->info("终点碰撞检测不通过");
-        return PlanResult::EndPoint_Infeasible;
-    }
-    // 起点区域碰撞检测
-    if (true == collison_check_.IsVehicleCollision(actual_start_)) {
-        threadLogger_->info("起点碰撞检测不通过");
-        return PlanResult::StartPoint_Infeasible;
-    }
-    timelog.AddLog("IsVehicleCollision");
-
-    if (collison_check_.IsVehicleCollision(end_r_) || plan_path_rule_ == PlanRule::Backward_To_End ||
-        plan_path_rule_ == PlanRule::Backward_All_Time) {
-        if (collison_check_.IsVehicleCollision(end_r_)) {
-            threadLogger_->info("终点碰撞检测不通过(end_r_)");
-        }
-        fitting_direction_ = FittingDirection::Backward_Fitting;
-        threadLogger_->info("  fitting_direction_ = FittingDirection::Backward_Fitting");
-    }
-    else if (collison_check_.IsVehicleCollision(end_f_) || plan_path_rule_ == PlanRule::Forward_To_End ||
-             plan_path_rule_ == PlanRule::Forward_All_Time) {
-        if (collison_check_.IsVehicleCollision(end_f_)) {
-            threadLogger_->info("终点碰撞检测不通过(end_f_)");
-        }
-        fitting_direction_ = FittingDirection::Forword_Fitting;
-        threadLogger_->info("  fitting_direction_ = FittingDirection::Forword_Fitting");
-    }
-    else {
-        fitting_direction_ = FittingDirection::Both_Fitting;
-        threadLogger_->info("fitting_direction_ = FittingDirection::Both_Fitting");
-    }
-
-    long long threshold_time = 9 * 1000 * 1000;
-    cout << "调用A*" << endl;
-    PlanResult result = AStarPath(final_path, threshold_time);
-    timelog.AddLog("AStarPath");
-    threadLogger_->info(timelog.GetLog());
-    return result;
-}
 
 /**
  *@brief: 数据初始化函数，将数据减小，放置精度丢失
@@ -191,8 +127,9 @@ void OptimalPath::InitData(Point start, Point end, const Bound& road_bound, cons
 
     // 计算终点后直线补偿点位置
     end_r_.angle = end_.angle;
-    end_r_.x     = end_.x - m_vehicle_param_.end_offset_distance * cos(end_.angle);
-    end_r_.y     = end_.y - m_vehicle_param_.end_offset_distance * sin(end_.angle);
+    threadLogger_->info("啦啦啦啦end_.angle:{}", end_.angle);
+    end_r_.x = end_.x - m_vehicle_param_.end_offset_distance * cos(end_.angle);
+    end_r_.y = end_.y - m_vehicle_param_.end_offset_distance * sin(end_.angle);
 
     // 计算平移后地图边界点
     road_bound_.clear();
@@ -247,30 +184,24 @@ void OptimalPath::InitData(Point start, Point end, const Bound& road_bound, cons
 PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     // 以下3行代码用于超时退出
     utility::CTimeClock start_time_;
-    threadLogger_->info("**********************InitOpenClose begin");
-    cout << "**********************AStarPath InitOpenClose begin" << endl;
+
     InitOpenClose(); // 初始化open集和close集
-    cout << "**********************AStarPath InitOpenClose end" << endl;
-    threadLogger_->info("**********************InitOpenClose end");
+
     utility::CTimeClock start_time;
     long long cal_time_ = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_); // 开始时间精确到微秒
-    threadLogger_->info("InitOpenClose spending time:{} us", cal_time_);
+
 
     Vertex3D           current_point;
     unsigned long long time_spend_collsion = 0, time_spend_dynamic = 0, total_time_spend_collsion = 0,
                        total_time_spend_dynamic = 0;
-    // static long long total_time_RS = 0;
-    //     static long long total_time_Expand = 0;
-    //     static long long total_time_Expand_dynamic = 0;
-    //     static int sum = 0;
+
     long long total_time_RS             = 0;
     long long total_time_Expand         = 0;
     long long total_time_Expand_dynamic = 0;
     int       sum                       = 0;
     RS_num                              = 0;
     All                                 = 0;
-    threadLogger_->info("timeThreshold:{}", timeThreshold);
-    threadLogger_->info("open_map_f_.size():{}", open_map_f_.size());
+
 
     while (!open_map_f_.empty()) {
         long long cal_time = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time); // 开始时间精确到微秒
@@ -293,8 +224,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         // 判断能否可以rs曲线拟合成功
 
         sum++;
-        // cout << "sum:" << sum << endl;
-        // threadLogger_->info("sum:{}", sum);
+
 
         utility::CTimeClock start_time_rs;
         if (true == IfExitAStar(current_point)) {
@@ -331,13 +261,17 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     PathIntegration(); // 将混合A*搜索路径、RS曲线拟合路径与终点补偿的直线路径整合
     threadLogger_->info("PathIntegration() Successfuly!");
 
-    cout << "打印path_a_star_信息" << endl;
-    for (int i = 0; i < path_a_star_.size(); i++) {
-        cout << path_a_star_.at(i).angle << endl;
+    // 保存路点，并打印出来
+    std::ofstream file_out;
+    file_out.open("yaw.txt", std::ios::app);
+    for (size_t index = 0; index < path_a_star_.size(); index++) {
+        file_out << path_a_star_.at(index).angle << endl;
     }
+    file_out.close();
+
 
     Path temp_path;
-    temp_path = path_a_star_;
+    temp_path = path_a_star_; // 弧度
     removeDuplicates(temp_path, path_a_star_); // 为了保障后续采样基于三次样条插值算法的正常运行，此处需要刪除重复点
     threadLogger_->info("removeDuplicates() Successfuly!");
 
@@ -361,8 +295,10 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
     // 路径优化，得到最终的path
     Path_Opti my_path_opti;
+
     my_path_opti.OptimizePath(path_a_star_, path, collison_check_, m_vehicle_param_);
     threadLogger_->info("OptimizePath() Successfuly!");
+
 
     long long cal_time2 = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_opti);
     threadLogger_->info("路径优化完成，用时: {} ms ", 0.001 * cal_time2);
@@ -771,6 +707,7 @@ void OptimalPath::PathIntegration() {
     {
         Point temp_point;
         temp_point.angle = end_r_.angle;
+        cout << "temp_point.angle:" << temp_point.angle << endl;
         for (double i = m_vehicle_param_.step_length; i <= m_vehicle_param_.end_offset_distance;
              i += m_vehicle_param_.step_length) {
             temp_point.x         = end_r_.x + i * cos(end_r_.angle);

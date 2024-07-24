@@ -224,11 +224,6 @@ bool GlobalSpeedPlanning::PlanCase0(const int departure_time) {
     AddTimeInformation(departure_time);
     final_trajectory_points.clear();
     for (unsigned char i = 0; i < key_points.size(); i++) {
-        // if (1 == key_points.at(i).at(0).direction) // 倒车工况速度为负数
-        // {
-        //     for (unsigned int j = 0; j < trajectory_fragments.at(i).size(); j++)
-        //         trajectory_fragments.at(i).at(j).speed = -trajectory_fragments.at(i).at(j).speed;
-        // }
         for (int j = 0; j < trajectory_fragments.at(i).size(); j++) {
             if (trajectory_fragments.at(i).at(j).direction == 1) {
                 trajectory_fragments.at(i).at(j).speed = -trajectory_fragments.at(i).at(j).speed;
@@ -237,8 +232,7 @@ bool GlobalSpeedPlanning::PlanCase0(const int departure_time) {
         final_trajectory_points.insert(final_trajectory_points.end(), trajectory_fragments.at(i).begin(),
                                        trajectory_fragments.at(i).end());
     }
-    // final_trajectory_points.back().speed = 0;
-    //   threadLogger_->info("final_trajectory_points.back().speed = " << final_trajectory_points.back().speed << "\n";
+
     return true;
 }
 
@@ -359,9 +353,7 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
 
         temp_sparsespeedpoints_all.emplace_back(temp_sparsepoint);
         global_speeds.emplace_back(temp_sparsespeedpoints_all);
-        //       threadLogger_->info("*****global_speeds.back().back().index = " << global_speeds.back().back().index <<
-        //       "\n"; threadLogger_->info("*****global_speeds.back().back().speed = " <<
-        //       global_speeds.back().back().speed << "\n";
+
         return true;
     }
     else {
@@ -1472,6 +1464,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
             temp_max_speed = 10;
             vec_temp_max_speed.push_back(temp_max_speed);
         }
+        threadLogger_->info("方向盘转速速度限制");
 
         for (int i = 0; i < vec_temp_max_speed.size(); i++) {
             if (vec_temp_max_speed.at(i) < trajectory_points.at(i).speed_limit) {
@@ -1488,6 +1481,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
                 }
             }
         }
+        threadLogger_->info("方向盘转速速度限制左右5m扩张");
     }
     // 曲率限速
     for (; iter != trajectory_points.end(); iter++) {
@@ -1501,6 +1495,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
  * @return 无
  */
 bool GlobalSpeedPlanning::SplitPath() {
+    threadLogger_->info("line1498");
     unsigned int start_id, end_id;
     start_id = 0;
     end_id   = 0;
@@ -1508,13 +1503,6 @@ bool GlobalSpeedPlanning::SplitPath() {
     for (unsigned int i = 0; i < trajectory_points.size() - 1; i++) {
         if (trajectory_points.at(i).direction != trajectory_points.at(i + 1).direction ||
             trajectory_points.at(i).attribute == 6 || trajectory_points.at(i).attribute == 7) {
-            // if (i - start_id < 2 * kDiscreteNumber) // 如果单段路径路点数量太少，认为路径不合理
-            // {
-            //     threadLogger_->info("...The trajectory for one direction is too short 1, the trajectory is not
-            //     feasible...");
-
-            //     return false;
-            // }
             temp_traj.clear();
             end_id = i;
             temp_traj.insert(temp_traj.begin(), trajectory_points.begin() + start_id,
@@ -1525,35 +1513,17 @@ bool GlobalSpeedPlanning::SplitPath() {
 
         if (i == trajectory_points.size() - 2) //  最后一段
         {
-            // if (i - start_id < 2 * kDiscreteNumber) //  如果单段路径路点数量太少，认为路径不合理
-            // {
-            //     threadLogger_->info("...The trajectory for one direction is too short 2, the trajectory is not
-            //     feasible...");
-
-            //     return false;
-            // }
             temp_traj.clear();
             temp_traj.insert(temp_traj.begin(), trajectory_points.begin() + start_id, trajectory_points.end());
             trajectory_fragments.emplace_back(temp_traj);
         }
     }
-    // for (int i = 0; i < trajectory_fragments.at(0).size(); i++)
-    // {
-    //     if (trajectory_fragments.at(0).at(i).attribute == 6)
-    //         threadLogger_->info("*************************************************************************");
-
-    // }
-    //   int point_nums = 0;
-    //   for (size_t var = 0; var < trajectory_fragments.size(); var++) {
-
-    //       point_nums = point_nums + trajectory_fragments.at(var).size();
-    //   }
-    //   threadLogger_->info("point_nums = " << point_nums << "\n";
-    threadLogger_->info("end_id = {}", end_id);
-
-    threadLogger_->info("start_id = {}", start_id);
-
-
+    threadLogger_->info("line1520");
+    threadLogger_->info("trajectory_fragments.size():{}", trajectory_fragments.size());
+    if (trajectory_fragments.at(0).size() <= 2) {
+        trajectory_fragments.erase(trajectory_fragments.begin());
+    }
+    threadLogger_->info("SplitPath 成功");
     return true;
 }
 
@@ -1568,11 +1538,8 @@ bool GlobalSpeedPlanning::GetKeypoint() {
         for (unsigned int i = 0; i < trajectory_fragments.size(); i++) {
             temp_traj.clear();
             temp_traj = trajectory_fragments.at(i);
-            if (1 ==
-                temp_traj.at(0)
-                    .direction) // 如果是倒车，暂时按照最简单的加速、匀速、加速的模式进行速度规划，全段最大速度提前设定为
-                                // reverse_speed
-            {
+            // 如果是倒车，暂时按照最简单的加速、匀速、加速的模式进行速度规划，全段最大速度提前设定为
+            if (1 == temp_traj.at(1).direction) {
                 temp_keypoints.clear();
                 temp_keypoint.Set(0, temp_traj.at(0).distance, 1, 0, reverse_speed); // 给关键点赋值
                 temp_keypoints.emplace_back(temp_keypoint); // 倒车模式下的关键点只有两个
@@ -1580,12 +1547,12 @@ bool GlobalSpeedPlanning::GetKeypoint() {
                 temp_keypoints.emplace_back(temp_keypoint); // 倒车模式下的关键点只有两个
                 key_points.emplace_back(temp_keypoints);
             }
-            else if (0 == temp_traj.at(0).direction) // 如果是前行，可能有多个不同的限速，关键点数量大于等于两个
+            else if (0 == temp_traj.at(1).direction) // 如果是前行，可能有多个不同的限速，关键点数量大于等于两个
             {
                 temp_keypoints.clear();
                 temp_keypoint.Set(0, temp_traj.at(0).distance, 0, 0, temp_traj.at(0).speed_limit); // 给关键点赋值
                 temp_keypoints.emplace_back(temp_keypoint);
-                for (unsigned int j = 0; j < temp_traj.size() - 1; j++) {
+                for (unsigned int j = 1; j < temp_traj.size() - 1; j++) {
                     if (temp_traj.at(j).speed_limit != temp_traj.at(j + 1).speed_limit) // 最大速度改变处设置一个关键点
                     {
                         temp_keypoint.Set(j, temp_traj.at(j).distance, 0, temp_traj.at(j).speed_limit,
@@ -1601,14 +1568,6 @@ bool GlobalSpeedPlanning::GetKeypoint() {
                     }
                 }
                 key_points.emplace_back(temp_keypoints);
-                //               threadLogger_->info("key_points.back().back().index =" <<
-                //               key_points.back().back().index << "\n";
-                //               threadLogger_->info("key_points.back().back().direction =" <<
-                //               static_cast<int>(key_points.back().back().direction) << "\n";
-                //               threadLogger_->info("key_points.back().back().speed_limit_left =" <<
-                //               key_points.back().back().speed_limit_left << "\n";
-                //               threadLogger_->info("key_points.back().back().speed_limit_right =" <<
-                //               key_points.back().back().speed_limit_right << "\n";
             }
         }
     }
@@ -1692,16 +1651,7 @@ float GlobalSpeedPlanning::GetCurrentTotalTime() {
 void GlobalSpeedPlanning::SpeedCurveInterpolation(unsigned char num) {
     vector<SparseSpeedPoint> temp_opti_global_speed = opti_global_speeds.at(num);
     vector<_TrajectoryPoint> temp_traj              = trajectory_fragments.at(num);
-    // for (int i = 0; i < temp_traj.size(); i++)
-    // {
-    //     if (temp_traj.at(i).attribute == 6)
-    //         threadLogger_->info("**********************find attribute==6**********************" );
-    //     threadLogger_->info("i:" << i << " attriburte:" << (int)temp_traj.at(i).attribute << "  distance:" <<
-    //     temp_traj.at(i).distance );
-    // }
-    //   threadLogger_->info("$$$$####temp_traj.back().speed = " << temp_traj.back().speed << "\n";
-    //   cout <<"temp_traj.size() = "<<temp_traj.size()<<"\n";
-    //   cout <<"temp_opti_global_speed.back().index = "<<temp_opti_global_speed.back().index<<"\n";
+
     // 遍历稀疏速度曲线
     for (unsigned int i = 1; i < temp_opti_global_speed.size(); i++) {
         // 计算出相邻两个插值点之间的距离。
@@ -1714,14 +1664,13 @@ void GlobalSpeedPlanning::SpeedCurveInterpolation(unsigned char num) {
         // 计算需要插值的路点数，采用匀加速模型进行速度插值，计算得到每个插值点的速度。
         for (int j = temp_opti_global_speed.at(i - 1).index; j < temp_opti_global_speed.at(i).index; j++) {
             float temp_speed = sqrt(pow(temp_opti_global_speed.at(i - 1).speed, 2) + 2 * a * delta_s);
+
+            cout << "j - temp_opti_global_speed.at(0).index:" << j - temp_opti_global_speed.at(0).index
+                 << "           temp_speed:" << temp_speed << endl;
             temp_traj.at(j - temp_opti_global_speed.at(0).index).speed = temp_speed;
-            //           threadLogger_->info("temp_traj.at(" << j-temp_opti_global_speed.at(0).index << ").speed = " <<
-            //           temp_traj.at(j-temp_opti_global_speed.at(0).index).speed << "\n";
+
             delta_s += temp_traj.at(j + 1).distance - temp_traj.at(j).distance;
-            //             cout <<"...a = ..."<<a<<"\n";
-            //             cout <<"...temp_speed = ..."<<temp_speed<<"\n";
-            //             cout <<"...(j-temp_opti_global_speed.at(i - 1).index) =
-            //           ..."<<(j-temp_opti_global_speed.at(0).index)<<"\n";
+
         } // 该循环内只将到该段路径终点前的所有点的速度进行了赋值，未对终点速度进行重新赋值
     }
     temp_traj.back().speed = 0.0;

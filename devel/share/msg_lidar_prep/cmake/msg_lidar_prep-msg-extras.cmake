@@ -1,0 +1,2 @@
+set(msg_lidar_prep_MESSAGE_FILES "/home/yyf/global_planning_library/src/msgs/msg_lidar_prep/msg/msg_diagn_lidar_prep.msg;/home/yyf/global_planning_library/src/msgs/msg_lidar_prep/msg/LidarPoints.msg;/home/yyf/global_planning_library/src/msgs/msg_lidar_prep/msg/msg_lidar_prepare.msg;/home/yyf/global_planning_library/src/msgs/msg_lidar_prep/msg/msg_lidar_prep.msg")
+set(msg_lidar_prep_SERVICE_FILES "")

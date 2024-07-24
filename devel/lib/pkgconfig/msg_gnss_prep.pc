@@ -1,0 +1,8 @@
+prefix=/home/yyf/global_planning_library/devel
+
+Name: msg_gnss_prep
+Description: Description of msg_gnss_prep
+Version: 0.0.0
+Cflags: -I/home/yyf/global_planning_library/devel/include
+Libs: -L${prefix}/lib 
+Requires: message_runtime

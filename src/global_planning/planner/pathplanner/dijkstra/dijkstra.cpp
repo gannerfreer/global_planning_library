@@ -23,11 +23,12 @@ vector<int> Dijkstra::GetPath() {
 
 bool Dijkstra::searchpath(int start_, int end_) {
     threadLogger_->info("dijkstra start");
+    if (start_ == end_) return true;
 
     path.clear();
 
-    int    start_index = start_ - 1;
-    int    end_index   = end_ - 1;
+    int    start_index = start_;
+    int    end_index   = end_;
     int    len         = (int)MGraph.size();
     double min;         // 最小距离临时变量
     int    curNode = 0; // 当前结点，记录当前结点的Index
@@ -103,7 +104,7 @@ bool Dijkstra::searchpath(int start_, int end_) {
         path.at(i)        = temp;
     }
     for (int i = 0; i < path.size(); i++) {
-        path.at(i) += 1;
+        // path.at(i) += 1;
         threadLogger_->info("path.at(i) = {}", path.at(i));
     }
 

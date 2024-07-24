@@ -8,6 +8,11 @@
 #include "../planner/pathplanner/dijkstra/dijkstra.h"
 #include "../planner/pathplanner/hybirdastar/optimal_path.h"
 #include "../planner/speedplanner/global_speed_planning.h"
+#ifdef SKIP_HEADER
+#else
+#include "../map/c_map_analysis.h"
+#include "../show/c_rviz_path.h"
+#endif
 
 using namespace GlobalPlanning;
 // using namespace HybridAStar;
@@ -25,7 +30,7 @@ class Planning {
     bool InitialFunction();
 
 
-        /**
+    /**
      * @brief 调用hibrid A star算法进行路径规划的接口函数
      * @param [in] s_point：起始点坐标，e_point：目标点坐标，区域id, 返回路径，规划规则
      * @param [return] true：成功；false：失败
@@ -153,6 +158,7 @@ class Planning {
     map<int, _SingleTraj>        all_referencelines_;  // 所有路段
     vector<_TrajectoryPoint>     global_path_;         // 全局路径
     vector<int>                  road_sequence_;       // 路段拓扑结果
+    vector<int>                  sequence_mapping_;    // 序列映射关系
 
     Dijkstra            dijkstra_;        // dijkstra对象
     OptimalPath         my_optimal_path_; // hibrid A star类的实例对象

@@ -9,16 +9,15 @@
   The class includes all the necessary vars and funcs for showing path and obstacle in rviz.
 */
 
-#include "../include/c_rviz_path.h"
+#include "c_rviz_path.h"
 
-#include "../include/color.h"
-#include "../include/general_class.h"
+#include "../common/color.h"
 #include "string.h"
 
 namespace rviz_path {
 
 
-void CRvizPath::SetGlobalPath1(vector<GlobalPlanning::Trajectory_Point> path_) {
+void CRvizPath::SetGlobalPath1(vector<_TrajectoryPoint> path_) {
     geometry_msgs::PoseStamped this_pose_stamped;
     this_pose_stamped.header.stamp    = ros::Time::now();
     this_pose_stamped.header.frame_id = "my_frame";
@@ -123,7 +122,7 @@ void CRvizPath ::SetGlobalPath_All(vector<geometry_msgs ::Point>& path_) {
     //   sleep(1);
     // }
 }
-void CRvizPath ::PubGlobalPath(std::vector<Trajectory_Point>& path) {
+void CRvizPath ::PubGlobalPath(std::vector<_TrajectoryPoint>& path) {
     // std::cout << "aapath.size = " << path.size() << std::endl;
     global_path_now.points.clear();
     global_path_now.header.stamp = ros ::Time ::now();
@@ -138,7 +137,7 @@ void CRvizPath ::PubGlobalPath(std::vector<Trajectory_Point>& path) {
     m_Publisher_global.publish(global_path_now);
 }
 
-void CRvizPath ::PubTurningPathParagraph(std::vector<Trajectory_Point>& path) {
+void CRvizPath ::PubTurningPathParagraph(std::vector<_TrajectoryPoint>& path) {
     // std::cout << "aapath.size = " << path.size() << std::endl;
     turn_path_paragraph_now.points.clear();
     turn_path_paragraph_now.header.stamp = ros ::Time ::now();
@@ -153,7 +152,7 @@ void CRvizPath ::PubTurningPathParagraph(std::vector<Trajectory_Point>& path) {
     m_Publisher_turn_path_paragraph.publish(turn_path_paragraph_now);
 }
 
-void CRvizPath ::PubTurningPathParagraphAnother(std::vector<Trajectory_Point>& path) {
+void CRvizPath ::PubTurningPathParagraphAnother(std::vector<_TrajectoryPoint>& path) {
     // std::cout << "aapath_an.size = " << path.size() << std::endl;
     turn_path_paragraph_another.points.clear();
     turn_path_paragraph_another.header.stamp = ros ::Time ::now();
@@ -251,8 +250,8 @@ void CRvizPath::Set2DCostMap(const unordered_map<unsigned int, double> cost_map,
         }
         else
             cost_cube.action = 0;
-        cost_cube.scale.x = Constants::grid_dist;
-        cost_cube.scale.y = Constants::grid_dist;
+        cost_cube.scale.x = 1;
+        cost_cube.scale.y = 1;
         cost_cube.scale.z = 0.1;
         cost_cube.color.a = 0.5;
 

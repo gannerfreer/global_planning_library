@@ -76,25 +76,34 @@ inline double ToRad(double t) {
 
 inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius,
                                         vector<int>& vec) {
+    cout << "Coming GetReferencelinesWithRadius" << endl;
     vec.clear();
+    cout << "Point.x" << point.x << "point.y:" << point.y << endl;
+    cout << "radius:" << radius << endl;
     if (!trajs.size()) {
+        cout << "轨迹个数为0" << endl;
         return false;
     }
     bool temp_bool = false;
 
     double nearest_dis = numeric_limits<double>::max();
     double temp_dis;
+    int    index = -1;
     for (const auto pair : trajs) {
         nearest_dis = numeric_limits<double>::max();
+        cout << "轨迹id：" << pair.first << "轨迹点数量：" << pair.second.trajectory.size() << endl;
         for (unsigned int i = 0; i < pair.second.trajectory.size(); i++) {
             temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) +
                             pow(point.y - pair.second.trajectory.at(i).y, 2));
             if (temp_dis < nearest_dis) {
                 nearest_dis = temp_dis;
+                index       = i;
             }
         }
+        cout << "nearest_dis:" << nearest_dis << "            id:" << pair.first << endl;
         if (nearest_dis < radius) {
             vec.push_back(pair.first);
+            cout << "index:" << index << endl;
             temp_bool = true;
         }
     }
@@ -122,8 +131,14 @@ inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest
 
     lat_dis = fabs((point.y - nearest_point.y) * cos(nearest_point.yaw) -
                    (point.x - nearest_point.x) * sin(nearest_point.yaw)); // 横向距离先不区分左正右负
+
+
     lon_dis =
         (point.x - nearest_point.x) * cos(nearest_point.yaw) + (point.y - nearest_point.y) * sin(nearest_point.yaw);
+    // cout << "计算纵向距离" << endl;
+    // cout << "x偏差： " << point.x - nearest_point.x << "   y偏差： " << point.y - nearest_point.y << "最近点角度："
+    //      << nearest_point.yaw << endl;
+    // cout << "lon_dis:" << lon_dis << endl;
 }
 
 inline bool OverSpeedCheck(vector<_TrajectoryPoint>& traj) {
@@ -151,6 +166,7 @@ inline bool CheckPathFracture(vector<_TrajectoryPoint>& traj) {
 inline bool doesTrajectorySelfIntersect(Path& path) {
     // 通过判断yaw的变化了分析是否画圈
     // 判断方法，设置36个if else，36个标志位，如果超过24个标志为被置为true，即被判定为绕圈
+    cout << "进入检测绕圈函数" << endl;
 
     vector<int> vec(36, 0);
     for (int i = 0; i < path.size(); i++) {
@@ -325,11 +341,9 @@ inline void Calrad2deg(vector<_TrajectoryPoint>& traj) {
 inline void RemoveSamePoint(vector<_TrajectoryPoint>& traj) {
     int slow = 0, fast = 0;
     while (fast < traj.size()) {
-        if (slow == 0 || (traj.at(fast).x != traj.at(slow - 1).x && traj.at(fast).y != traj.at(slow - 1).y)) {
-            if (slow != fast) {
-                traj.at(slow) = traj.at(fast);
-                slow++;
-            }
+        if (slow == 0 || hypot(traj.at(fast).x - traj.at(slow - 1).x, traj.at(fast).y - traj.at(slow - 1).y) > 0.3) {
+            traj.at(slow) = traj.at(fast);
+            slow++;
         }
         fast++;
     }

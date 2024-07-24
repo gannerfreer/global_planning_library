@@ -1,0 +1,8 @@
+prefix=/home/yyf/global_planning_library/devel
+
+Name: msg_local_planning
+Description: Description of msg_local_planning
+Version: 0.0.0
+Cflags: -I/home/yyf/global_planning_library/devel/include
+Libs: -L${prefix}/lib 
+Requires: message_runtime

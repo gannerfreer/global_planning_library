@@ -1,0 +1,8 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/_msg_map_collect_generate_messages_check_deps_msg_map_collect"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang )
+  include(CMakeFiles/_msg_map_collect_generate_messages_check_deps_msg_map_collect.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

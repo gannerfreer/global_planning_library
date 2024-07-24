@@ -103,7 +103,8 @@ class GlobalVariable // 单例类
     // 全局锁
     std::shared_mutex parse_func_write_lock, record_file_write_lock, return_write_lock, assignment_operation_lock;
 
-    bool CreateDirectedGraph(const map<int, vector<int>>& referenceline_relation_);
+    void CreateDirectedGraph(const map<int, vector<int>>& referenceline_relation_);
+    void CreateSequenceMapping(const map<int, _SingleTraj> all_referencelines_);
 
   private:
     vector<_BorderPoint>   map_border_;

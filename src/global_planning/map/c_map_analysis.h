@@ -32,8 +32,9 @@
 // #include "config_io.h"
 #include <geometry_msgs/Point.h>
 
-using std ::cout;
-using std ::endl;
+#include "../globalvariable.h"
+
+
 using namespace GlobalPlanning;
 using rapidjson::Value;
 #define DEBUG true // 0:潍柴地图 1：园区规划
@@ -43,9 +44,9 @@ class CConfigureIO {
     ~CConfigureIO() {}
 
   public:
-    static bool GetMap(std::vector<Single_Zone>& all_zones, Directed_Graph& road_directed_graph,
-                       GlobalPlanning::tarRviz& tar_rviz);
-    static bool GetVehicleParam(vehicle_param& vehicle_param);
+    static bool GetMap(vector<vector<double>>& road_directed_graph_, vector<_BorderPoint>& map_border_,
+                       map<int, _SingleTraj>& all_referencelines_, vector<int>& sequence_mapping_, tarRviz& tar_rviz);
+    static bool GetVehicleParam(_VehicleParam& vehicle_param);
 
 
   public:
@@ -53,13 +54,13 @@ class CConfigureIO {
 
   private:
     // 用于存放地图名字
-    static const std ::string map_file_name;
+    static const string map_file_name;
 
     static const int INF2;
 
   public:
     // test for rviz
-    static std ::vector<std ::vector<geometry_msgs::Point>> global_path_;
+    static vector<vector<geometry_msgs::Point>> global_path_;
 };
 
 #endif // C_CONF_IO_H

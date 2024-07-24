@@ -135,19 +135,18 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}
-                 src/main.cpp 
-                 src/shenyan.cpp
-                 src/c_global_speed_planning_test.cpp
-                 src/c_map_analysis.cpp
-                 src/collision_check.cpp
-                 src/dijkstra.cpp
-                 src/dubins.cpp
-                 src/node2d.cpp
-                 src/optimal_path.cpp
-                 src/path_opti.cpp
-                 src/r_s_curve.cpp
-                 src/c_rviz_path.cpp
-                 src/spline.cpp
+  collision_check/collision_check.cpp
+  map/c_map_analysis.cpp
+  math/opti/path_opti.cpp
+  mine_global_planning/planning.cpp
+  planner/pathplanner/dijkstra/dijkstra.cpp
+  planner/pathplanner/hybirdastar/node2d.cpp
+  planner/pathplanner/hybirdastar/optimal_path.cpp
+  planner/pathplanner/hybirdastar/r_s_curve.cpp
+  planner/speedplanner/global_speed_planning.cpp
+  globalvariable.cpp
+  show/c_rviz_path.cpp
+  main.cpp 
                  )
 include_directories(
 	"/usr/include/n_global_planning/eigen3"

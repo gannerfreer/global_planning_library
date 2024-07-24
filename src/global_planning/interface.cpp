@@ -107,6 +107,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
         planning.road_directed_graph_ = GlobalVariable::getInstance()->GetReferencelineGraph();
         planning.map_border_          = GlobalVariable::getInstance()->GetMapBorder();
         planning.all_referencelines_  = GlobalVariable::getInstance()->GetAllReferencelines();
+        planning.sequence_mapping_    = GlobalVariable::getInstance()->GetSequenceMapping();
     } // 获取传入的内边界并将其存入对应的r区域内
 
     if (!veh_start_end.inner_borders.empty()) {
