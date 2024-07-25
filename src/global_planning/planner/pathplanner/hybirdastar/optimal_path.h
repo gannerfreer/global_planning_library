@@ -346,6 +346,7 @@ class OptimalPath {
     std::shared_ptr<spdlog::logger> threadLogger_;
 
   private:
+    RSCurve          my_r_s_curve;
     Dubins           dubins_;
     CollisonCheck    collison_check_;
     PlanRule         plan_path_rule_;

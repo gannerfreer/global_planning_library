@@ -23,13 +23,14 @@ RSCurve::RSCurve() {
 }
 // 析构函数
 RSCurve::~RSCurve() {}
+void RSCurve::Init(_VehicleParam& vehicleparam) {
+    m_vehicle_prarm_ = vehicleparam;
+}
 
 /**
  * @brief RS曲线规划类接口函数
  */
-bool RSCurve::PlanRSPath(const Point start, const Point end, Path& rs_path, PlanRule plan_rule,
-                         _VehicleParam m_vehicle_prarm) {
-    m_vehicle_prarm_ = m_vehicle_prarm;
+bool RSCurve::PlanRSPath(const Point start, const Point end, Path& rs_path, PlanRule plan_rule) {
     //     cout << "6666m_vehicle_prarm_.radious = " << m_vehicle_prarm_.radious << "\n";
     rs_plan_rule = plan_rule;
     if (rs_plan_rule == PlanRule::Forward_All_Time) {

@@ -1,0 +1,1022 @@
+[2024-07-25 10:29:26.871] [example] [info] 本地仿真环境日志
+[2024-07-25 10:29:35.973] [example] [info] start_point.x =-296.45386123657227
+[2024-07-25 10:29:35.973] [example] [info] start_point.y =1065.1815795898438
+[2024-07-25 10:29:35.973] [example] [info] start_point.yaw =76.0385084447035
+[2024-07-25 10:29:35.973] [example] [info] end_point.x =-369.7554931640625
+[2024-07-25 10:29:35.973] [example] [info] end_point.y =1172.555435180664
+[2024-07-25 10:29:35.973] [example] [info] end_point.yaw =109.65937014347173
+[2024-07-25 10:29:35.973] [example] [info] Enter GlobalPathPlanningIntface
+[2024-07-25 10:29:35.973] [example] [info] Enter PathPlanning
+[2024-07-25 10:29:35.973] [example] [info]  task_type_: 2
+[2024-07-25 10:29:35.976] [example] [info] 终点搜索半径：6,搜索到路径数量:1
+[2024-07-25 10:29:35.976] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 10:29:35.976] [example] [info] 129
+[2024-07-25 10:29:35.978] [example] [info] 起点搜索半径：5,搜索到路径数量:1
+[2024-07-25 10:29:35.978] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 10:29:35.978] [example] [info] 129
+[2024-07-25 10:29:35.978] [example] [info] dijkstra start
+[2024-07-25 10:29:35.978] [example] [info] 路径129与路径129联通
+[2024-07-25 10:29:35.978] [example] [info] 找到路径对129-129
+[2024-07-25 10:29:35.978] [example] [info] 起点匹配上的路径索引53，横向距离4.892188152420861，纵向距离0.21381399045038862
+[2024-07-25 10:29:35.978] [example] [info] 终点匹配上的路径索引188，横向距离5.973653799013878，纵向距离-0.2726409085681478
+[2024-07-25 10:29:35.978] [example] [info] 起点、终点位于同一条参考路径
+[2024-07-25 10:29:35.978] [example] [info] PathClipAndSplice---global_path_.size():135
+[2024-07-25 10:29:35.978] [example] [info] PathPlanning 成功
+[2024-07-25 10:29:35.978] [example] [info] 不是超短距离规划
+[2024-07-25 10:29:35.978] [example] [info] IsShortDistance 成功
+[2024-07-25 10:29:35.978] [example] [info] Enter HybirdAStarFitting
+[2024-07-25 10:29:35.978] [example] [info] 起点需要HybirdA*拟合
+[2024-07-25 10:29:35.978] [example] [info] 正向拟合
+[2024-07-25 10:29:35.978] [example] [info] 搜索起点索引：0  搜索方向  -- 1(顺着参考线)  --0(逆着参考线)：true
+[2024-07-25 10:29:35.978] [example] [info] 第 1个候选点，其索引：12 rule_id:5
+[2024-07-25 10:29:35.978] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:35.978] [example] [info] 啦啦啦啦end_.angle:2.02824712374261
+[2024-07-25 10:29:35.979] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:35.980] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:35.980] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:35.980] [example] [info] CalHValue begin 
+[2024-07-25 10:29:35.980] [example] [info] CalHValue end 
+[2024-07-25 10:29:35.980] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:35.980] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.053] [example] [info] RS曲线oneshot成功，一共oneshot了1 /1431次 
+[2024-07-25 10:29:36.053] [example] [info] RS oneshot总计用时: 5.4190000000000005 ms
+[2024-07-25 10:29:36.053] [example] [info] AStarPath while循环被调用: 1431 次
+[2024-07-25 10:29:36.053] [example] [info] 节点拓展总用时: 61.483000000000004 ms
+[2024-07-25 10:29:36.053] [example] [info] 节点拓展-运动学搜索用时: 0.162 ms
+[2024-07-25 10:29:36.053] [example] [info] 节点拓展-碰撞检测用时: 48.798 ms
+[2024-07-25 10:29:36.053] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.053] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.053] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.053] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.054] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.054] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.054] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.054] [example] [info] path_a_star_.size():123
+[2024-07-25 10:29:36.068] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.068] [example] [info] 路径优化完成，用时: 14.003 ms 
+[2024-07-25 10:29:36.068] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.068] [example] [info] 获取左右边界用时: 0.007 ms
+[2024-07-25 10:29:36.068] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.068] [example] [info] SearchGlobalPath:
+InitData;耗时:0.063 ms;总耗时:0.063 ms.
+InitBoundMap;耗时:0.984 ms;总耗时:1.048 ms.
+GenerateBoundSet;耗时:0.419 ms;总耗时:1.467 ms.
+IsVehicleCollision;耗时:0.043 ms;总耗时:1.510 ms.
+AStarPath;耗时:88.440 ms;总耗时:89.951 ms.
+
+[2024-07-25 10:29:36.069] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.069] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.070] [example] [info] 检测到路径绕圈
+[2024-07-25 10:29:36.070] [example] [info] 第 2个候选点，其索引：17 rule_id:5
+[2024-07-25 10:29:36.070] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.070] [example] [info] 啦啦啦啦end_.angle:2.0954422999443922
+[2024-07-25 10:29:36.070] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.073] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.073] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.073] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.073] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.073] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.073] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.135] [example] [info] RS曲线oneshot成功，一共oneshot了1 /1282次 
+[2024-07-25 10:29:36.135] [example] [info] RS oneshot总计用时: 5.276 ms
+[2024-07-25 10:29:36.135] [example] [info] AStarPath while循环被调用: 1282 次
+[2024-07-25 10:29:36.135] [example] [info] 节点拓展总用时: 52.063 ms
+[2024-07-25 10:29:36.135] [example] [info] 节点拓展-运动学搜索用时: 0.167 ms
+[2024-07-25 10:29:36.135] [example] [info] 节点拓展-碰撞检测用时: 40.927 ms
+[2024-07-25 10:29:36.135] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.135] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.135] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.135] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.137] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.137] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.138] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.138] [example] [info] path_a_star_.size():124
+[2024-07-25 10:29:36.151] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.151] [example] [info] 路径优化完成，用时: 13.333 ms 
+[2024-07-25 10:29:36.151] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.151] [example] [info] 获取左右边界用时: 0.007 ms
+[2024-07-25 10:29:36.151] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.151] [example] [info] SearchGlobalPath:
+InitData;耗时:0.302 ms;总耗时:0.302 ms.
+InitBoundMap;耗时:1.740 ms;总耗时:2.043 ms.
+GenerateBoundSet;耗时:0.555 ms;总耗时:2.598 ms.
+IsVehicleCollision;耗时:0.048 ms;总耗时:2.647 ms.
+AStarPath;耗时:78.510 ms;总耗时:81.157 ms.
+
+[2024-07-25 10:29:36.151] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.151] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.152] [example] [info] 检测到路径绕圈
+[2024-07-25 10:29:36.152] [example] [info] 第 3个候选点，其索引：22 rule_id:5
+[2024-07-25 10:29:36.152] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.152] [example] [info] 啦啦啦啦end_.angle:2.1544344286618005
+[2024-07-25 10:29:36.152] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.154] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.154] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.155] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.155] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.155] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.155] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.223] [example] [info] RS曲线oneshot成功，一共oneshot了1 /1273次 
+[2024-07-25 10:29:36.223] [example] [info] RS oneshot总计用时: 6.026 ms
+[2024-07-25 10:29:36.223] [example] [info] AStarPath while循环被调用: 1273 次
+[2024-07-25 10:29:36.223] [example] [info] 节点拓展总用时: 57.098 ms
+[2024-07-25 10:29:36.223] [example] [info] 节点拓展-运动学搜索用时: 0.264 ms
+[2024-07-25 10:29:36.223] [example] [info] 节点拓展-碰撞检测用时: 44.338 ms
+[2024-07-25 10:29:36.223] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.223] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.223] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.223] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.224] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.224] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.224] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.224] [example] [info] path_a_star_.size():113
+[2024-07-25 10:29:36.235] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.235] [example] [info] 路径优化完成，用时: 11.188 ms 
+[2024-07-25 10:29:36.235] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.235] [example] [info] 获取左右边界用时: 0.007 ms
+[2024-07-25 10:29:36.235] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.236] [example] [info] SearchGlobalPath:
+InitData;耗时:0.228 ms;总耗时:0.228 ms.
+InitBoundMap;耗时:1.620 ms;总耗时:1.848 ms.
+GenerateBoundSet;耗时:0.433 ms;总耗时:2.282 ms.
+IsVehicleCollision;耗时:0.038 ms;总耗时:2.321 ms.
+AStarPath;耗时:81.439 ms;总耗时:83.760 ms.
+
+[2024-07-25 10:29:36.236] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.236] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.237] [example] [info] 检测到路径绕圈
+[2024-07-25 10:29:36.237] [example] [info] 第 4个候选点，其索引：27 rule_id:5
+[2024-07-25 10:29:36.237] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.237] [example] [info] 啦啦啦啦end_.angle:2.2055725757452342
+[2024-07-25 10:29:36.237] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.239] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.239] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.240] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.240] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.240] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.240] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.261] [example] [info] RS曲线oneshot成功，一共oneshot了1 /368次 
+[2024-07-25 10:29:36.261] [example] [info] RS oneshot总计用时: 2.829 ms
+[2024-07-25 10:29:36.261] [example] [info] AStarPath while循环被调用: 368 次
+[2024-07-25 10:29:36.261] [example] [info] 节点拓展总用时: 16.835 ms
+[2024-07-25 10:29:36.261] [example] [info] 节点拓展-运动学搜索用时: 0.233 ms
+[2024-07-25 10:29:36.261] [example] [info] 节点拓展-碰撞检测用时: 13.455 ms
+[2024-07-25 10:29:36.261] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.261] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.261] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.261] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.263] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.263] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.263] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.263] [example] [info] path_a_star_.size():118
+[2024-07-25 10:29:36.275] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.275] [example] [info] 路径优化完成，用时: 11.667 ms 
+[2024-07-25 10:29:36.275] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.275] [example] [info] 获取左右边界用时: 0.009000000000000001 ms
+[2024-07-25 10:29:36.275] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.275] [example] [info] SearchGlobalPath:
+InitData;耗时:0.157 ms;总耗时:0.157 ms.
+InitBoundMap;耗时:1.536 ms;总耗时:1.694 ms.
+GenerateBoundSet;耗时:0.481 ms;总耗时:2.176 ms.
+IsVehicleCollision;耗时:0.053 ms;总耗时:2.229 ms.
+AStarPath;耗时:36.080 ms;总耗时:38.310 ms.
+
+[2024-07-25 10:29:36.275] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.275] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.276] [example] [info] 检测到路径绕圈
+[2024-07-25 10:29:36.276] [example] [info] 第 5个候选点，其索引：32 rule_id:5
+[2024-07-25 10:29:36.276] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.276] [example] [info] 啦啦啦啦end_.angle:2.2490312741198935
+[2024-07-25 10:29:36.277] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.279] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.279] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.279] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.279] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.279] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.279] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.349] [example] [info] RS曲线oneshot成功，一共oneshot了1 /1320次 
+[2024-07-25 10:29:36.349] [example] [info] RS oneshot总计用时: 5.421 ms
+[2024-07-25 10:29:36.349] [example] [info] AStarPath while循环被调用: 1320 次
+[2024-07-25 10:29:36.349] [example] [info] 节点拓展总用时: 60.308 ms
+[2024-07-25 10:29:36.349] [example] [info] 节点拓展-运动学搜索用时: 0.154 ms
+[2024-07-25 10:29:36.349] [example] [info] 节点拓展-碰撞检测用时: 48.756 ms
+[2024-07-25 10:29:36.349] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.349] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.349] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.349] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.351] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.352] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.352] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.352] [example] [info] path_a_star_.size():123
+[2024-07-25 10:29:36.364] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.364] [example] [info] 路径优化完成，用时: 12.617 ms 
+[2024-07-25 10:29:36.364] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.364] [example] [info] 获取左右边界用时: 0.007 ms
+[2024-07-25 10:29:36.364] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.364] [example] [info] SearchGlobalPath:
+InitData;耗时:0.205 ms;总耗时:0.206 ms.
+InitBoundMap;耗时:1.616 ms;总耗时:1.822 ms.
+GenerateBoundSet;耗时:0.428 ms;总耗时:2.251 ms.
+IsVehicleCollision;耗时:0.037 ms;总耗时:2.288 ms.
+AStarPath;耗时:85.656 ms;总耗时:87.945 ms.
+
+[2024-07-25 10:29:36.364] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.364] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.365] [example] [info] 检测到路径绕圈
+[2024-07-25 10:29:36.365] [example] [info] 第 6个候选点，其索引：37 rule_id:5
+[2024-07-25 10:29:36.366] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.366] [example] [info] 啦啦啦啦end_.angle:2.2848105237857768
+[2024-07-25 10:29:36.366] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.368] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.368] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.368] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.369] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.369] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.369] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.371] [example] [info] RS曲线oneshot成功，一共oneshot了1 /35次 
+[2024-07-25 10:29:36.371] [example] [info] RS oneshot总计用时: 0.722 ms
+[2024-07-25 10:29:36.371] [example] [info] AStarPath while循环被调用: 35 次
+[2024-07-25 10:29:36.371] [example] [info] 节点拓展总用时: 1.45 ms
+[2024-07-25 10:29:36.371] [example] [info] 节点拓展-运动学搜索用时: 0.002 ms
+[2024-07-25 10:29:36.371] [example] [info] 节点拓展-碰撞检测用时: 1.1280000000000001 ms
+[2024-07-25 10:29:36.371] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.371] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.371] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.371] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.372] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.372] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.372] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.372] [example] [info] path_a_star_.size():40
+[2024-07-25 10:29:36.378] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.378] [example] [info] 路径优化完成，用时: 5.607 ms 
+[2024-07-25 10:29:36.378] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.378] [example] [info] 获取左右边界用时: 0.001 ms
+[2024-07-25 10:29:36.378] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.378] [example] [info] SearchGlobalPath:
+InitData;耗时:0.283 ms;总耗时:0.283 ms.
+InitBoundMap;耗时:1.515 ms;总耗时:1.799 ms.
+GenerateBoundSet;耗时:0.497 ms;总耗时:2.297 ms.
+IsVehicleCollision;耗时:0.047 ms;总耗时:2.344 ms.
+AStarPath;耗时:9.743 ms;总耗时:12.088 ms.
+
+[2024-07-25 10:29:36.378] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.378] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.378] [example] [info] 绕圈检测达标
+[2024-07-25 10:29:36.378] [example] [info] ProgressiveHybirdAStar success
+[2024-07-25 10:29:36.378] [example] [info] 终点需要HybirdA*拟合
+[2024-07-25 10:29:36.378] [example] [info] 正向拟合
+[2024-07-25 10:29:36.378] [example] [info] 搜索起点索引：141  搜索方向  -- 1(顺着参考线)  --0(逆着参考线)：false
+[2024-07-25 10:29:36.378] [example] [info] 第1个候选点，其索引：129 rule_id:5
+[2024-07-25 10:29:36.378] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.378] [example] [info] 啦啦啦啦end_.angle:1.9139170646667483
+[2024-07-25 10:29:36.378] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.380] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.380] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.380] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.380] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.380] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.380] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.404] [example] [info] RS曲线oneshot成功，一共oneshot了1 /386次 
+[2024-07-25 10:29:36.404] [example] [info] RS oneshot总计用时: 2.736 ms
+[2024-07-25 10:29:36.404] [example] [info] AStarPath while循环被调用: 386 次
+[2024-07-25 10:29:36.404] [example] [info] 节点拓展总用时: 20.007 ms
+[2024-07-25 10:29:36.404] [example] [info] 节点拓展-运动学搜索用时: 0.019 ms
+[2024-07-25 10:29:36.404] [example] [info] 节点拓展-碰撞检测用时: 16.862000000000002 ms
+[2024-07-25 10:29:36.404] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.404] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.404] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.404] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.406] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.407] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.407] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.407] [example] [info] path_a_star_.size():114
+[2024-07-25 10:29:36.419] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.419] [example] [info] 路径优化完成，用时: 12.028 ms 
+[2024-07-25 10:29:36.419] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.419] [example] [info] 获取左右边界用时: 0.005 ms
+[2024-07-25 10:29:36.419] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.419] [example] [info] SearchGlobalPath:
+InitData;耗时:0.056 ms;总耗时:0.056 ms.
+InitBoundMap;耗时:0.935 ms;总耗时:0.992 ms.
+GenerateBoundSet;耗时:0.531 ms;总耗时:1.523 ms.
+IsVehicleCollision;耗时:0.054 ms;总耗时:1.578 ms.
+AStarPath;耗时:39.130 ms;总耗时:40.709 ms.
+
+[2024-07-25 10:29:36.419] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.419] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.419] [example] [info] 检测到路径绕圈
+[2024-07-25 10:29:36.420] [example] [info] 第2个候选点，其索引：124 rule_id:5
+[2024-07-25 10:29:36.420] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.420] [example] [info] 啦啦啦啦end_.angle:1.9139170646667483
+[2024-07-25 10:29:36.420] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.422] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.422] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.422] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.422] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.422] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.422] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.440] [example] [info] RS曲线oneshot成功，一共oneshot了1 /376次 
+[2024-07-25 10:29:36.440] [example] [info] RS oneshot总计用时: 2.605 ms
+[2024-07-25 10:29:36.440] [example] [info] AStarPath while循环被调用: 376 次
+[2024-07-25 10:29:36.440] [example] [info] 节点拓展总用时: 13.992 ms
+[2024-07-25 10:29:36.440] [example] [info] 节点拓展-运动学搜索用时: 0.16 ms
+[2024-07-25 10:29:36.440] [example] [info] 节点拓展-碰撞检测用时: 10.996 ms
+[2024-07-25 10:29:36.440] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.440] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.440] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.440] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.441] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.442] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.442] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.442] [example] [info] path_a_star_.size():110
+[2024-07-25 10:29:36.451] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.451] [example] [info] 路径优化完成，用时: 9.259 ms 
+[2024-07-25 10:29:36.451] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.451] [example] [info] 获取左右边界用时: 0.003 ms
+[2024-07-25 10:29:36.451] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.451] [example] [info] SearchGlobalPath:
+InitData;耗时:0.070 ms;总耗时:0.070 ms.
+InitBoundMap;耗时:1.670 ms;总耗时:1.741 ms.
+GenerateBoundSet;耗时:0.498 ms;总耗时:2.240 ms.
+IsVehicleCollision;耗时:0.070 ms;总耗时:2.311 ms.
+AStarPath;耗时:29.174 ms;总耗时:31.485 ms.
+
+[2024-07-25 10:29:36.451] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.451] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.452] [example] [info] 检测到路径绕圈
+[2024-07-25 10:29:36.452] [example] [info] 第3个候选点，其索引：119 rule_id:5
+[2024-07-25 10:29:36.452] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.452] [example] [info] 啦啦啦啦end_.angle:1.9139170646667483
+[2024-07-25 10:29:36.452] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.454] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.454] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.454] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.454] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.454] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.454] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.468] [example] [info] RS曲线oneshot成功，一共oneshot了1 /271次 
+[2024-07-25 10:29:36.468] [example] [info] RS oneshot总计用时: 1.796 ms
+[2024-07-25 10:29:36.468] [example] [info] AStarPath while循环被调用: 271 次
+[2024-07-25 10:29:36.468] [example] [info] 节点拓展总用时: 11.113 ms
+[2024-07-25 10:29:36.468] [example] [info] 节点拓展-运动学搜索用时: 0.011 ms
+[2024-07-25 10:29:36.468] [example] [info] 节点拓展-碰撞检测用时: 8.936 ms
+[2024-07-25 10:29:36.468] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.468] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.469] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.469] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.469] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.470] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.470] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.470] [example] [info] path_a_star_.size():118
+[2024-07-25 10:29:36.481] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.481] [example] [info] 路径优化完成，用时: 11.469 ms 
+[2024-07-25 10:29:36.481] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.481] [example] [info] 获取左右边界用时: 0.006 ms
+[2024-07-25 10:29:36.481] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.481] [example] [info] SearchGlobalPath:
+InitData;耗时:0.179 ms;总耗时:0.179 ms.
+InitBoundMap;耗时:1.477 ms;总耗时:1.657 ms.
+GenerateBoundSet;耗时:0.433 ms;总耗时:2.090 ms.
+IsVehicleCollision;耗时:0.045 ms;总耗时:2.135 ms.
+AStarPath;耗时:27.372 ms;总耗时:29.507 ms.
+
+[2024-07-25 10:29:36.481] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.481] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.482] [example] [info] 检测到路径绕圈
+[2024-07-25 10:29:36.482] [example] [info] 第4个候选点，其索引：114 rule_id:5
+[2024-07-25 10:29:36.482] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.483] [example] [info] 啦啦啦啦end_.angle:1.9139170646667483
+[2024-07-25 10:29:36.483] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.485] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.485] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.485] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.485] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.485] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.485] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.512] [example] [info] RS曲线oneshot成功，一共oneshot了2 /585次 
+[2024-07-25 10:29:36.512] [example] [info] RS oneshot总计用时: 2.8000000000000003 ms
+[2024-07-25 10:29:36.512] [example] [info] AStarPath while循环被调用: 585 次
+[2024-07-25 10:29:36.512] [example] [info] 节点拓展总用时: 21.717 ms
+[2024-07-25 10:29:36.512] [example] [info] 节点拓展-运动学搜索用时: 0.049 ms
+[2024-07-25 10:29:36.512] [example] [info] 节点拓展-碰撞检测用时: 17.3 ms
+[2024-07-25 10:29:36.512] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.512] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.512] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.512] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.513] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.514] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.514] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.514] [example] [info] path_a_star_.size():120
+[2024-07-25 10:29:36.522] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.523] [example] [info] 路径优化完成，用时: 8.837 ms 
+[2024-07-25 10:29:36.523] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.523] [example] [info] 获取左右边界用时: 0.002 ms
+[2024-07-25 10:29:36.523] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.523] [example] [info] SearchGlobalPath:
+InitData;耗时:0.325 ms;总耗时:0.325 ms.
+InitBoundMap;耗时:1.683 ms;总耗时:2.009 ms.
+GenerateBoundSet;耗时:0.506 ms;总耗时:2.515 ms.
+IsVehicleCollision;耗时:0.065 ms;总耗时:2.580 ms.
+AStarPath;耗时:37.530 ms;总耗时:40.110 ms.
+
+[2024-07-25 10:29:36.523] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.523] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.523] [example] [info] 检测到路径绕圈
+[2024-07-25 10:29:36.523] [example] [info] 第5个候选点，其索引：109 rule_id:5
+[2024-07-25 10:29:36.523] [example] [info] 终点进行5米的延伸
+[2024-07-25 10:29:36.523] [example] [info] 啦啦啦啦end_.angle:1.9139170646667483
+[2024-07-25 10:29:36.523] [example] [info] 起点进行5米的延伸
+[2024-07-25 10:29:36.525] [example] [info] plan_path_rule_ == PlanRule::Forward_To_End
+[2024-07-25 10:29:36.525] [example] [info]  fitting_direction_ = FittingDirection::Forword_Fitting
+[2024-07-25 10:29:36.525] [example] [info] CalHValue begin 
+[2024-07-25 10:29:36.525] [example] [info] CalHValue end 
+[2024-07-25 10:29:36.525] [example] [info] CalHValue begin again 
+[2024-07-25 10:29:36.525] [example] [info] CalHValue end again
+[2024-07-25 10:29:36.526] [example] [info] RS曲线oneshot成功，一共oneshot了1 /1次 
+[2024-07-25 10:29:36.526] [example] [info] RS oneshot总计用时: 0.29 ms
+[2024-07-25 10:29:36.526] [example] [info] AStarPath while循环被调用: 1 次
+[2024-07-25 10:29:36.526] [example] [info] 节点拓展总用时: 0 ms
+[2024-07-25 10:29:36.526] [example] [info] 节点拓展-运动学搜索用时: 0 ms
+[2024-07-25 10:29:36.526] [example] [info] 节点拓展-碰撞检测用时: 0 ms
+[2024-07-25 10:29:36.526] [example] [info] Find feasible path Successfuly!
+[2024-07-25 10:29:36.526] [example] [info] TracePath() Successfuly!
+[2024-07-25 10:29:36.526] [example] [info] PathIntegration--start_offset_distance:5
+[2024-07-25 10:29:36.526] [example] [info] 向前路径拼接
+[2024-07-25 10:29:36.526] [example] [info] PathIntegration() Successfuly!
+[2024-07-25 10:29:36.527] [example] [info] removeDuplicates() Successfuly!
+[2024-07-25 10:29:36.527] [example] [info] Hybird A*运行完成，并将其与RS曲线连接
+[2024-07-25 10:29:36.527] [example] [info] path_a_star_.size():32
+[2024-07-25 10:29:36.531] [example] [info] OptimizePath() Successfuly!
+[2024-07-25 10:29:36.531] [example] [info] 路径优化完成，用时: 3.876 ms 
+[2024-07-25 10:29:36.531] [example] [info] GetLeftAndRightDistance() Successfuly!
+[2024-07-25 10:29:36.531] [example] [info] 获取左右边界用时: 0.002 ms
+[2024-07-25 10:29:36.531] [example] [info] RestoreData() Successfuly!
+[2024-07-25 10:29:36.531] [example] [info] SearchGlobalPath:
+InitData;耗时:0.057 ms;总耗时:0.057 ms.
+InitBoundMap;耗时:1.075 ms;总耗时:1.133 ms.
+GenerateBoundSet;耗时:0.517 ms;总耗时:1.650 ms.
+IsVehicleCollision;耗时:0.050 ms;总耗时:1.701 ms.
+AStarPath;耗时:6.217 ms;总耗时:7.918 ms.
+
+[2024-07-25 10:29:36.531] [example] [info] SearchGlobalPath success
+[2024-07-25 10:29:36.531] [example] [info] 开始绕圈检测
+[2024-07-25 10:29:36.531] [example] [info] 绕圈检测达标
+[2024-07-25 10:29:36.531] [example] [info] ProgressiveHybirdAStar success
+[2024-07-25 10:29:36.531] [example] [info] HybirdAStarFitting结束
+[2024-07-25 10:29:36.531] [example] [info] StartEndPointProcess 开始
+[2024-07-25 10:29:36.531] [example] [info] 全局路径第一个位于实际起点前面，或者太近，现予以去除
+[2024-07-25 10:29:36.531] [example] [info] 全局路径最后一个位于实际终点后面，或者最后一个点就是终点，现予以去除
+[2024-07-25 10:29:36.531] [example] [info] 将规划终点作为最后一个点添加进global_path的末尾
+[2024-07-25 10:29:36.531] [example] [info] StartEndPointProcess 结束
+[2024-07-25 10:29:36.531] [example] [info] kMaxAcceleration =0.3 
+[2024-07-25 10:29:36.531] [example] [info] kMinAcceleration =-0.4 
+[2024-07-25 10:29:36.531] [example] [info] kDeltaSpeed =5 
+[2024-07-25 10:29:36.531] [example] [info] kErrorTerm =0.1 
+[2024-07-25 10:29:36.531] [example] [info] kSmoothnessTerm =0.001 
+[2024-07-25 10:29:36.531] [example] [info] kDiscreteNumber =1 
+[2024-07-25 10:29:36.531] [example] [info] reverse_speed =1 
+[2024-07-25 10:29:36.531] [example] [info] 基于路况的分段速度规划开启
+[2024-07-25 10:29:36.531] [example] [info] 打印temp_max_speed信息
+[2024-07-25 10:29:36.531] [example] [info] 方向盘转速速度限制
+[2024-07-25 10:29:36.531] [example] [info] 方向盘转速速度限制左右5m扩张
+[2024-07-25 10:29:36.531] [example] [info] line1498
+[2024-07-25 10:29:36.531] [example] [info] line1520
+[2024-07-25 10:29:36.531] [example] [info] trajectory_fragments.size():1
+[2024-07-25 10:29:36.531] [example] [info] SplitPath 成功
+[2024-07-25 10:29:36.531] [example] [info] 本次任务的全局路径一共1段
+[2024-07-25 10:29:36.531] [example] [info] 第1段有20关键点
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第1个关键点的索引0,左限速0,右限速1.5
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第2个关键点的索引2,左限速1.5,右限速1
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第3个关键点的索引24,左限速1,右限速1.5
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第4个关键点的索引26,左限速1.5,右限速2.55
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第5个关键点的索引28,左限速2.55,右限速1.5
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第6个关键点的索引31,左限速1.5,右限速1
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第7个关键点的索引38,左限速1,右限速1.5
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第8个关键点的索引41,左限速1.5,右限速2.55
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第9个关键点的索引103,左限速2.55,右限速1.5
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第10个关键点的索引106,左限速1.5,右限速2.55
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第11个关键点的索引112,左限速2.55,右限速1.5
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第12个关键点的索引116,左限速1.5,右限速1
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第13个关键点的索引123,左限速1,右限速1.5
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第14个关键点的索引125,左限速1.5,右限速2.55
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第15个关键点的索引127,左限速2.55,右限速1.5
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第16个关键点的索引129,左限速1.5,右限速1
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第17个关键点的索引135,左限速1,右限速1.5
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第18个关键点的索引138,左限速1.5,右限速2.55
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第19个关键点的索引140,左限速2.55,右限速6.05
+[2024-07-25 10:29:36.531] [example] [info] 第1段的第20个关键点的索引141,左限速6.05,右限速0
+[2024-07-25 10:29:36.531] [example] [info] 开始AdpKeyPoints[new] ,路径段落个数:1
+[2024-07-25 10:29:36.531] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 10:29:36.531] [example] [info] 第1段全局路径有142个点
+[2024-07-25 10:29:36.531] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 10:29:36.531] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.531] [example] [info] v1_index = 0
+[2024-07-25 10:29:36.531] [example] [info] v1_left = 0
+[2024-07-25 10:29:36.531] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v2_index = 2
+[2024-07-25 10:29:36.531] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v2_right  = 1
+[2024-07-25 10:29:36.531] [example] [info] s_total = 2.0001843
+[2024-07-25 10:29:36.531] [example] [info] s_min =15.3125 
+[2024-07-25 10:29:36.531] [example] [info] 不合理加速，现予以调整
+[2024-07-25 10:29:36.531] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.531] [example] [info] v1_index = 2
+[2024-07-25 10:29:36.531] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.531] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.531] [example] [info] v2_index = 24
+[2024-07-25 10:29:36.531] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.531] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).index = 2
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.531] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.531] [example] [info] v1_index = 24
+[2024-07-25 10:29:36.531] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.531] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v2_index = 26
+[2024-07-25 10:29:36.531] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v2_right  = 2.55
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).index = 24
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.531] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.531] [example] [info] v1_index = 26
+[2024-07-25 10:29:36.531] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v1_right = 2.55
+[2024-07-25 10:29:36.531] [example] [info] v2_index = 28
+[2024-07-25 10:29:36.531] [example] [info] v2_left = 2.55
+[2024-07-25 10:29:36.531] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.531] [example] [info] s_total = 1.8538837
+[2024-07-25 10:29:36.531] [example] [info] s_min =22.403124 
+[2024-07-25 10:29:36.531] [example] [info] 不合理加速，现予以调整
+[2024-07-25 10:29:36.531] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.531] [example] [info] v1_index = 28
+[2024-07-25 10:29:36.531] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v2_index = 31
+[2024-07-25 10:29:36.531] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v2_right  = 1
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).index = 28
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.531] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.531] [example] [info] v1_index = 31
+[2024-07-25 10:29:36.531] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.531] [example] [info] v2_index = 38
+[2024-07-25 10:29:36.531] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.531] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).index = 31
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.531] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.531] [example] [info] v1_index = 38
+[2024-07-25 10:29:36.531] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.531] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v2_index = 41
+[2024-07-25 10:29:36.531] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v2_right  = 2.55
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).index = 38
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.531] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.531] [example] [info] v1_index = 41
+[2024-07-25 10:29:36.531] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] v1_right = 2.55
+[2024-07-25 10:29:36.531] [example] [info] v2_index = 103
+[2024-07-25 10:29:36.531] [example] [info] v2_left = 2.55
+[2024-07-25 10:29:36.531] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.531] [example] [info] s_total = 62.53173
+[2024-07-25 10:29:36.531] [example] [info] s_min =22.403124 
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).index = 41
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.531] [example] [info] key_points.at(i).at(j).right = 2.55
+[2024-07-25 10:29:36.531] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 103
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 106
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 103
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 106
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 112
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] s_total = 5.7953143
+[2024-07-25 10:29:36.532] [example] [info] s_min =22.403124 
+[2024-07-25 10:29:36.532] [example] [info] 不合理加速，现予以调整
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 112
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 116
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 112
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 116
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 123
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 116
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 123
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 125
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 123
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 125
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 127
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] s_total = 1.8772353
+[2024-07-25 10:29:36.532] [example] [info] s_min =22.403124 
+[2024-07-25 10:29:36.532] [example] [info] 不合理加速，现予以调整
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 127
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 129
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 127
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 129
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 135
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 129
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 135
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 138
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 135
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 138
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 140
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 6.05
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 138
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 140
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 6.05
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 141
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 6.05
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 0
+[2024-07-25 10:29:36.532] [example] [info] s_total = 1
+[2024-07-25 10:29:36.532] [example] [info] s_min =105.9198 
+[2024-07-25 10:29:36.532] [example] [info] 不合理加速，现予以调整
+[2024-07-25 10:29:36.532] [example] [info] index = 1
+[2024-07-25 10:29:36.532] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 10:29:36.532] [example] [info] 第1段全局路径有142个点
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 0
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 0
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 24
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 0
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 0
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 24
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 31
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1
+[2024-07-25 10:29:36.532] [example] [info] s_total = 6.459761
+[2024-07-25 10:29:36.532] [example] [info] s_min =13.645833 
+[2024-07-25 10:29:36.532] [example] [info] 不合理加速，现予以调整
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 31
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 38
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 31
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 38
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 41
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 38
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 41
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 103
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] s_total = 62.53173
+[2024-07-25 10:29:36.532] [example] [info] s_min =22.403124 
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 41
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 103
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 116
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 103
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 116
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 123
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 116
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 123
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 129
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1
+[2024-07-25 10:29:36.532] [example] [info] s_total = 5.6538587
+[2024-07-25 10:29:36.532] [example] [info] s_min =13.645833 
+[2024-07-25 10:29:36.532] [example] [info] 不合理加速，现予以调整
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 129
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 135
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 129
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 135
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 138
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 135
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 138
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 141
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 0
+[2024-07-25 10:29:36.532] [example] [info] s_total = 2.997348
+[2024-07-25 10:29:36.532] [example] [info] s_min =25.215624 
+[2024-07-25 10:29:36.532] [example] [info] 不合理加速，现予以调整
+[2024-07-25 10:29:36.532] [example] [info] index = 2
+[2024-07-25 10:29:36.532] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 10:29:36.532] [example] [info] 第1段全局路径有142个点
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  repate 
+[2024-07-25 10:29:36.532] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 0
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 0
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 38
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 0
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 0
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 38
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 41
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 38
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 41
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 103
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] s_total = 62.53173
+[2024-07-25 10:29:36.532] [example] [info] s_min =22.403124 
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 41
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 103
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 116
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 103
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 116
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 135
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 116
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 135
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 141
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 0
+[2024-07-25 10:29:36.532] [example] [info] s_total = 5.830569
+[2024-07-25 10:29:36.532] [example] [info] s_min =14.895833 
+[2024-07-25 10:29:36.532] [example] [info] 不合理加速，现予以调整
+[2024-07-25 10:29:36.532] [example] [info] index = 3
+[2024-07-25 10:29:36.532] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 10:29:36.532] [example] [info] 第1段全局路径有142个点
+[2024-07-25 10:29:36.532] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 0
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 0
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 38
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 0
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 0
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 38
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 41
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 2.55
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 38
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 41
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_index = 103
+[2024-07-25 10:29:36.532] [example] [info] v2_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v2_right  = 1.5
+[2024-07-25 10:29:36.532] [example] [info] s_total = 62.53173
+[2024-07-25 10:29:36.532] [example] [info] s_min =22.403124 
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).index = 41
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.532] [example] [info] key_points.at(i).at(j).right = 2.55
+[2024-07-25 10:29:36.532] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.532] [example] [info] v1_index = 103
+[2024-07-25 10:29:36.532] [example] [info] v1_left = 2.55
+[2024-07-25 10:29:36.532] [example] [info] v1_right = 1.5
+[2024-07-25 10:29:36.533] [example] [info] v2_index = 116
+[2024-07-25 10:29:36.533] [example] [info] v2_left = 1.5
+[2024-07-25 10:29:36.533] [example] [info] v2_right  = 1
+[2024-07-25 10:29:36.533] [example] [info] key_points.at(i).at(j).index = 103
+[2024-07-25 10:29:36.533] [example] [info] key_points.at(i).at(j).left = 2.55
+[2024-07-25 10:29:36.533] [example] [info] key_points.at(i).at(j).right = 1.5
+[2024-07-25 10:29:36.533] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 10:29:36.533] [example] [info] v1_index = 116
+[2024-07-25 10:29:36.533] [example] [info] v1_left = 1.5
+[2024-07-25 10:29:36.533] [example] [info] v1_right = 1
+[2024-07-25 10:29:36.533] [example] [info] v2_index = 141
+[2024-07-25 10:29:36.533] [example] [info] v2_left = 1
+[2024-07-25 10:29:36.533] [example] [info] v2_right  = 0
+[2024-07-25 10:29:36.533] [example] [info] key_points.at(i).at(j).index = 116
+[2024-07-25 10:29:36.533] [example] [info] key_points.at(i).at(j).left = 1.5
+[2024-07-25 10:29:36.533] [example] [info] key_points.at(i).at(j).right = 1
+[2024-07-25 10:29:36.533] [example] [info] index = 4
+[2024-07-25 10:29:36.533] [example] [info] Function() AdpKeyPoints[new] End 
+[2024-07-25 10:29:36.533] [example] [info] 开始KeyPointsDecelerationCheck() ,路径段落个数:1
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第1个关键点的索引 0,左限速 0,右限速 1
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第2个关键点的索引 38,左限速 1,右限速 1.5
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第2个关键点的索引 38,左限速 1,右限速 1.5
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第3个关键点的索引 41,左限速 1.5,右限速 2.55
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第3个关键点的索引 41,左限速 1.5,右限速 2.55
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第4个关键点的索引 103,左限速 2.55,右限速 1.5
+[2024-07-25 10:29:36.533] [example] [info] 减速检查
+[2024-07-25 10:29:36.533] [example] [info] s_total = 62.53173
+[2024-07-25 10:29:36.533] [example] [info] s_min =5.3156247 
+[2024-07-25 10:29:36.533] [example] [info] PASS ,减速距离达标
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第4个关键点的索引 103,左限速 2.55,右限速 1.5
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第5个关键点的索引 116,左限速 1.5,右限速 1
+[2024-07-25 10:29:36.533] [example] [info] 减速检查
+[2024-07-25 10:29:36.533] [example] [info] s_total = 12.620569
+[2024-07-25 10:29:36.533] [example] [info] s_min =1.5625 
+[2024-07-25 10:29:36.533] [example] [info] PASS ,减速距离达标
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第5个关键点的索引 116,左限速 1.5,右限速 1
+[2024-07-25 10:29:36.533] [example] [info] 第1段的第6个关键点的索引 141,左限速 1,右限速 0
+[2024-07-25 10:29:36.533] [example] [info] 减速检查
+[2024-07-25 10:29:36.533] [example] [info] s_total = 24.016214
+[2024-07-25 10:29:36.533] [example] [info] s_min =1.25 
+[2024-07-25 10:29:36.533] [example] [info] PASS ,减速距离达标
+[2024-07-25 10:29:36.533] [example] [info] 结束KeyPointsDecelerationCheck() ,路径段落个数:1
+[2024-07-25 10:29:36.533] [example] [info]  ...Start the Shortest_Time mode speed planning...
+[2024-07-25 10:29:36.533] [example] [info] key_points.size() = 1
+[2024-07-25 10:29:36.533] [example] [info]  ...plan for the 1 the segment...
+[2024-07-25 10:29:36.533] [example] [info] temp_keypoint.size():6
+[2024-07-25 10:29:36.533] [example] [info] index:0, speed_limit_left :0, speed_limit_right:1
+[2024-07-25 10:29:36.533] [example] [info] index:38, speed_limit_left :1, speed_limit_right:1.5
+[2024-07-25 10:29:36.533] [example] [info] index:41, speed_limit_left :1.5, speed_limit_right:2.55
+[2024-07-25 10:29:36.533] [example] [info] index:103, speed_limit_left :2.55, speed_limit_right:1.5
+[2024-07-25 10:29:36.533] [example] [info] index:116, speed_limit_left :1.5, speed_limit_right:1
+[2024-07-25 10:29:36.533] [example] [info] index:141, speed_limit_left :1, speed_limit_right:0
+[2024-07-25 10:29:36.533] [example] [info] v0= 0
+[2024-07-25 10:29:36.533] [example] [info] v1= 1
+[2024-07-25 10:29:36.533] [example] [info] v2= 1.5
+[2024-07-25 10:29:36.533] [example] [info] ...Case 3...
+[2024-07-25 10:29:36.533] [example] [info] ...last_speed is 1 
+[2024-07-25 10:29:36.533] [example] [info] v0= 1
+[2024-07-25 10:29:36.533] [example] [info] v1= 1.5
+[2024-07-25 10:29:36.533] [example] [info] v2= 2.55
+[2024-07-25 10:29:36.533] [example] [info] ...Case 3...
+[2024-07-25 10:29:36.533] [example] [info] ...last_speed is 1.5 
+[2024-07-25 10:29:36.533] [example] [info] v0= 1.5
+[2024-07-25 10:29:36.533] [example] [info] v1= 2.55
+[2024-07-25 10:29:36.533] [example] [info] v2= 1.5
+[2024-07-25 10:29:36.533] [example] [info] ...Case 4...
+[2024-07-25 10:29:36.533] [example] [info] keypoint1.index =41 
+[2024-07-25 10:29:36.533] [example] [info] keypoint2.index =103 
+[2024-07-25 10:29:36.533] [example] [info] ...last_speed is 1.5 
+[2024-07-25 10:29:36.533] [example] [info] v0= 1.5
+[2024-07-25 10:29:36.533] [example] [info] v1= 1.5
+[2024-07-25 10:29:36.533] [example] [info] v2= 1
+[2024-07-25 10:29:36.533] [example] [info] ...Case 2...
+[2024-07-25 10:29:36.533] [example] [info] ...last_speed is 1 
+[2024-07-25 10:29:36.533] [example] [info] v0= 1
+[2024-07-25 10:29:36.533] [example] [info] v1= 1
+[2024-07-25 10:29:36.533] [example] [info] v2= 0
+[2024-07-25 10:29:36.533] [example] [info] ...Case 2...
+[2024-07-25 10:29:36.533] [example] [info] ...last_speed is 0 
+[2024-07-25 10:29:36.533] [example] [info] 99999 last_speed =0 
+[2024-07-25 10:29:36.533] [example] [info] last point temp_sparsepoint.speed = 0
+[2024-07-25 10:29:36.533] [example] [info] begin SpeedCurveSmooth
+[2024-07-25 10:29:36.534] [example] [info] ...SpeedCurveSmooth() finish...
+[2024-07-25 10:29:36.534] [example] [info] begin SpeedCurveInterpolation
+[2024-07-25 10:29:36.536] [example] [info] ...The SpeedCurveInterpolation() finish...
+[2024-07-25 10:29:36.536] [example] [info] SpeedPlanning() end

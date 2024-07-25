@@ -39,9 +39,9 @@ void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::Const
     start_point.x   = msg->pose.pose.position.x;
     start_point.y   = msg->pose.pose.position.y;
     start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    // start_point.x   = -280.7589569091797 - x_o_;
-    // start_point.y   = 944.9508361816406 - y_o_;
-    // start_point.yaw = 76.0385084447035 / 180.0 * M_PI;
+    // start_point.x   = -284.0468215942383 - x_o_;
+    // start_point.y   = 953.7113952636719 - y_o_;
+    // start_point.yaw = 96.71596359081163 / 180.0 * M_PI;
 
     is_receive_start = true;
 }
@@ -50,9 +50,9 @@ void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     end_point.x   = msg->pose.position.x;
     end_point.y   = msg->pose.position.y;
     end_point.yaw = tf::getYaw(msg->pose.orientation);
-    // end_point.x   = -310.7411632537842 - x_o_;
-    // end_point.y   = 1113.5439758300781 - y_o_;
-    // end_point.yaw = 123.04421865237892 / 180.0 * M_PI;
+    // end_point.x   = -341.4098434448242 - x_o_;
+    // end_point.y   = 1185.8309020996094 - y_o_;
+    // end_point.yaw = 109.93707197474613 / 180.0 * M_PI;
 
     is_receive_end = true;
 }
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
     string timeStr  = ss.str();
     string filePath = dirPath + "/log_" + timeStr + ".txt";
     // spdlog::flush_on(spdlog::level::info);
-    planning.threadLogger_ = spdlog::rotating_logger_mt(logger_id, filePath, 3 * 1024 * 1024, 1, true);
+    planning.threadLogger_ = spdlog::rotating_logger_mt(logger_id, filePath, 10 * 1024 * 1024, 1, true);
     planning.threadLogger_->flush_on(spdlog::level::info);
     planning.threadLogger_->info("本地仿真环境日志");
     cout << "task_type:" << (int)planning.task_type_ << endl;

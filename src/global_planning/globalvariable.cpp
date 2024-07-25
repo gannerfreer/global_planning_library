@@ -33,7 +33,7 @@ void GlobalVariable::CreateDirectedGraph(const map<int, vector<int>>& referencel
     // 预设二维权重矩阵referenceline_graph_空间，并先统统设置为0
     referenceline_graph_.resize(sequence_mapping_.size());
     for (auto& row : referenceline_graph_) {
-        row.resize(sequence_mapping_.size(), 0);
+        row.resize(sequence_mapping_.size(), 100000000);
     }
     // 遍历referenceline_relation_，结合映射序列来给referenceline_graph_赋值
 

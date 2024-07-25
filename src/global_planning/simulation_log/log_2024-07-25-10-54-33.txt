@@ -1,0 +1,19 @@
+[2024-07-25 10:54:33.929] [example] [info] 本地仿真环境日志
+[2024-07-25 10:54:48.130] [example] [info] start_point.x =-354.3559684753418
+[2024-07-25 10:54:48.130] [example] [info] start_point.y =1256.4048156738281
+[2024-07-25 10:54:48.130] [example] [info] start_point.yaw =101.88287192433204
+[2024-07-25 10:54:48.130] [example] [info] end_point.x =-399.87454986572266
+[2024-07-25 10:54:48.130] [example] [info] end_point.y =1303.8559875488281
+[2024-07-25 10:54:48.130] [example] [info] end_point.yaw =274.3044032010314
+[2024-07-25 10:54:48.130] [example] [info] Enter GlobalPathPlanningIntface
+[2024-07-25 10:54:48.130] [example] [info] Enter PathPlanning
+[2024-07-25 10:54:48.130] [example] [info]  task_type_: 3
+[2024-07-25 10:54:48.149] [example] [info] 终点搜索半径：47.5,搜索到路径数量:1
+[2024-07-25 10:54:48.149] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 10:54:48.149] [example] [info] 129
+[2024-07-25 10:54:48.150] [example] [info] 起点搜索半径：0.5,搜索到路径数量:1
+[2024-07-25 10:54:48.150] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 10:54:48.150] [example] [info] 131
+[2024-07-25 10:54:48.150] [example] [info] dijkstra start
+[2024-07-25 10:54:48.150] [example] [info] 初始化结点信息完成
+[2024-07-25 10:54:48.150] [example] [info] 开始进入主循环

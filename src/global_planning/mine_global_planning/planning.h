@@ -39,7 +39,7 @@ class Planning {
 
 
     bool ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_direction, int search_start, int& search_index,
-                                vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id);
+                                vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id, int off_set);
 
     /**
      * @brief
@@ -139,8 +139,8 @@ class Planning {
     void StartEndPointProcess();
     bool PathOffset();
     bool SpeedPlanning();
-    bool MoveCarPlanning();
-    bool DispatchPlanning();
+    bool NotFollowReferencelinePlanning();
+    bool FollowReferencelinePlanning();
     void PathClipAndSplice();
     bool JudgeFittingDirection(_SinglePoint point, int start_index, bool is_start);
     bool IsShortDistance();
@@ -149,8 +149,8 @@ class Planning {
     _SinglePoint start_point_,
         end_point_;                                     // 起、终点坐标
     int start_key_, end_key_, start_index_, end_index_; // 起点、终点匹配上的参考路径id以及在在参考路径上的具体索引
-    double start_lat_dis_ = 0, start_lon_dis_ = 0, end_lat_dis_ = 0,
-           end_lon_dis_ = 0; // 起点、终点与匹配上的参考路径的横纵向距离
+    double start_lat_dis_ = 0, start_lon_dis_ = 0, start_distance_ = 0, end_lat_dis_ = 0, end_lon_dis_ = 0,
+           end_distance_ = 0; // 起点、终点与匹配上的参考路径的横纵向距离
 
     vector<vector<double>>       road_directed_graph_; // 路段有向图
     vector<_BorderPoint>         map_border_;          // 地图外边界

@@ -22,10 +22,13 @@ vector<int> Dijkstra::GetPath() {
 }
 
 bool Dijkstra::searchpath(int start_, int end_) {
-    threadLogger_->info("dijkstra start");
-    if (start_ == end_) return true;
-
+    // threadLogger_->info("dijkstra start");
     path.clear();
+    if (start_ == end_) {
+        path.push_back(start_);
+        return true;
+    }
+
 
     int    start_index = start_;
     int    end_index   = end_;
@@ -40,19 +43,19 @@ bool Dijkstra::searchpath(int start_, int end_) {
     // 初始化结点信息
     for (int v = 0; v < len; v++) {
         close.at(v)  = false;
-        dist.at(v)   = 1000000000;
-        father.at(v) = 999;
+        dist.at(v)   = 100000;
+        father.at(v) = -1;
     }
-    threadLogger_->info("初始化结点信息完成");
+    // threadLogger_->info("初始化结点信息完成");
 
 
     dist.at(start_index) = 0; // 将起始节点到起始点的最短距离设为0
     int max_loop_num     = 2999;
     // 主循环
-    threadLogger_->info("开始进入主循环");
+    // threadLogger_->info("开始进入主循环");
 
     for (int i = 1; i <= max_loop_num; i++) {
-        min = 1000000000;
+        min = 100000;
         // 找出dist最小的点作为curNode，并根据close属性，剔除已经搜索过的区域
         for (int w = 0; w < len; w++) {
             if (!close.at(w) && dist.at(w) < min) {
@@ -60,10 +63,19 @@ bool Dijkstra::searchpath(int start_, int end_) {
                 min     = dist.at(w);
             }
         }
+        threadLogger_->info("当前节点：{},min:{}", curNode, min);
         // cout<<"当前节点 "<<curNode<<endl;
         // 将curNode加入close中
+        if (close.at(curNode) == true) {
+            return false;
+        }
         close.at(curNode) = true;
+        if (curNode == end_index) {
+            threadLogger_->error("搜索到终点");
+            break;
+        }
         // 以curNode为基准进行拓展搜索，并更新其他节点的相关值
+        bool found = false;
         for (int j = 0; j < len; j++) {
             double step = MGraph.at(curNode).at(j);
             // 如果这一步是INF，则表示curNode与j之间没有连接
@@ -72,18 +84,29 @@ bool Dijkstra::searchpath(int start_, int end_) {
             if (!close.at(j) && (new_dist < pre_dist)) {
                 dist.at(j)   = new_dist;
                 father.at(j) = curNode;
+                found        = true;
             }
         }
-        // cout<<"更新一轮完毕"<<endl;
+
+        // if (found == false) {
+        //     threadLogger_->error("本轮没有找到相邻的节点");
+        //     return false;
+        // }
+        cout << "更新一轮完毕" << endl;
         // 全部点都已经close时，则退出
         bool flag = false;
         for (int jj = 0; jj < len; jj++) {
             if (!close.at(jj)) flag = true;
         }
-        if (flag)
+        if (flag) {
             continue;
-        else
+        }
+        else {
+            cout << "进入break了" << endl;
+            // threadLogger_->error("进入break了");
             break;
+        }
+
         if (i == max_loop_num) {
             threadLogger_->error("...The dijkstra search is failed...");
 
@@ -95,6 +118,9 @@ bool Dijkstra::searchpath(int start_, int end_) {
     path.push_back(e);
     while (e != start_index) {
         step++;
+        if (e == -1) {
+            return false;
+        }
         path.push_back(father.at(e));
         e = father.at(e);
     }

@@ -509,7 +509,7 @@ bool GetMap(char* parea) {
     _TrajectoryPoint      tp;
     for (SizeType i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
-        traj.id                      = trajsArray[i]["id"].GetInt();
+        s            traj.id         = trajsArray[i]["id"].GetInt();
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
         for (SizeType j = 0; j < trajPointsArray.Size(); j++) {
             tp.x         = trajPointsArray[j]["x"].GetDouble();

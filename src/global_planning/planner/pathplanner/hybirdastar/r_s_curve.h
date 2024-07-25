@@ -91,8 +91,7 @@ class RSCurve {
   public:
     RSCurve();  // 默认构造函数
     ~RSCurve(); // 析构函数
-
-    _VehicleParam m_vehicle_prarm_;
+    void Init(_VehicleParam& vehicleparam);
 
     /**
      * @brief RS曲线规划类接口函数
@@ -102,8 +101,7 @@ class RSCurve {
      * @param[out] rs_path　规划的得到的RS曲线
      * @return 返回说明：无
      */
-    bool PlanRSPath(const Point start, const Point end, Path& rs_path, PlanRule plan_rule,
-                    _VehicleParam m_vehicle_prarm);
+    bool PlanRSPath(const Point start, const Point end, Path& rs_path, PlanRule plan_rule);
 
     /**
      * @brief 坐标系转换和归一化函数
@@ -158,18 +156,19 @@ class RSCurve {
     /**
      * @brief RS曲线各类型计算公式
      */
-    inline bool LpSpLp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpSpRp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRnLp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRnLn(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRpLn(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRupLumRm(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRumLumRp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRmSmLm(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRmSmLmBack(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRmSmRmBack(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRmSmRm(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool LpRmSLmRp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpSpLp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpSpRp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRnLp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRnLn(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRpLn(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRupLumRm(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRumLumRp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRmSmLm(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRmSmLmBack(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRmSmRmBack(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRmSmRm(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool   LpRmSLmRp(double x, double y, double phi, double& t, double& u, double& v);
+    _VehicleParam m_vehicle_prarm_;
 
   private:
     /**

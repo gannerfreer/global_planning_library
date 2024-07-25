@@ -46,7 +46,7 @@
     "kSmoothnessTerm": 0.001,
     "kDeltaSpeed": 5,
     "linear_preferred_distance_square": 9,
-    "offset_enable": 0,
+    "offset_enable": 1,
     "multi_section_speed_limit_enable": 1,
     "light_regular_road_speed_limit": 6.08,
     "light_bumpy_road_speed_limit": 2.55,

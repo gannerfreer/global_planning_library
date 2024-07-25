@@ -113,8 +113,46 @@ inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _Sing
         return false;
 }
 
+inline bool GetReferencelinesWithRadiusAndAngle(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius,
+                                                vector<int>& vec) {
+    cout << "Coming GetReferencelinesWithRadiusAndAngle" << endl;
+    vec.clear();
+
+    if (!trajs.size()) {
+        cout << "轨迹个数为0" << endl;
+        return false;
+    }
+    bool temp_bool = false;
+
+    double nearest_dis = numeric_limits<double>::max();
+    double temp_dis;
+    int    index = -1;
+    for (const auto pair : trajs) {
+        nearest_dis = numeric_limits<double>::max();
+        for (unsigned int i = 0; i < pair.second.trajectory.size(); i++) {
+            temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) +
+                            pow(point.y - pair.second.trajectory.at(i).y, 2));
+            if (temp_dis < nearest_dis) {
+                nearest_dis = temp_dis;
+                index       = i;
+            }
+        }
+        if (nearest_dis < radius && (fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 < 90 ||
+                                     fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 > 270)) {
+            cout << "tell me the angle:" << point.yaw << "  " << pair.second.trajectory.at(index).yaw << endl;
+            vec.push_back(pair.first);
+            cout << "index:" << index << endl;
+            temp_bool = true;
+        }
+    }
+    if (temp_bool)
+        return true;
+    else
+        return false;
+}
+
 inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest_index, double& lat_dis,
-                            double& lon_dis) {
+                            double& lon_dis, double& distance) {
     double           temp_dis;
     double           min_distance = numeric_limits<double>::max();
     _TrajectoryPoint nearest_point;
@@ -135,6 +173,7 @@ inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest
 
     lon_dis =
         (point.x - nearest_point.x) * cos(nearest_point.yaw) + (point.y - nearest_point.y) * sin(nearest_point.yaw);
+    distance = hypot(point.x - nearest_point.x, point.y - nearest_point.y);
     // cout << "计算纵向距离" << endl;
     // cout << "x偏差： " << point.x - nearest_point.x << "   y偏差： " << point.y - nearest_point.y << "最近点角度："
     //      << nearest_point.yaw << endl;

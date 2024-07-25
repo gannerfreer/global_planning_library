@@ -24,6 +24,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
                                          const Bound& obstacle_bound, const _VehicleParam m_vehicle_param,
                                          Path& final_path, long long time_threshold, const PlanRule plan_path_rule) {
     m_vehicle_param_ = m_vehicle_param;
+    my_r_s_curve.Init(m_vehicle_param_);
     dubins_.SetParam(m_vehicle_param_.radious, end, plan_path_rule);
     plan_path_rule_ = plan_path_rule;
 
@@ -420,7 +421,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
         temp_start_point.direction = min_point.direction;
 
         // 根据fitting_direction_值选择合适的RS拟合方式
-        RSCurve my_r_s_curve;
+
         switch (fitting_direction_) {
             case FittingDirection::Backward_Fitting:
                 // threadLogger_->info("rs曲线:Backward_Fitting");
@@ -429,8 +430,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 // m_vehicle_param_)) &&
                 //     (MotionDirection::Backward == path_r_s_.back().direction) &&
                 //     (false == collison_check_.IsRSPathCollision(path_r_s_)))
-                if ((true ==
-                     my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_, m_vehicle_param_)) &&
+                if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) &&
                     (MotionDirection::Backward == path_r_s_.back().direction)) {
                     RS_num++;
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
@@ -453,8 +453,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 //     return true;
                 // }
                 // break;
-                if ((true ==
-                     my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_, m_vehicle_param_)) &&
+                if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) &&
                     (MotionDirection::Forward == path_r_s_.back().direction)) {
                     RS_num++;
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
@@ -485,8 +484,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 //     fitting_direction_ = FittingDirection::Backward_Fitting;
                 //     return true;
                 // }
-                if ((true ==
-                     my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_, m_vehicle_param_)) &&
+                if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) &&
                     (MotionDirection::Forward == path_r_s_.back().direction)) {
                     RS_num++;
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
@@ -496,8 +494,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         return true;
                     }
                 }
-                else if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_,
-                                                          m_vehicle_param_)) &&
+                else if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) &&
                          (MotionDirection::Backward == path_r_s_.back().direction)) {
                     RS_num++;
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
