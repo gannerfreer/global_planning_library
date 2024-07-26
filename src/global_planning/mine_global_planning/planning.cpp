@@ -75,6 +75,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         }
     }
 
+    threadLogger_->info("StartEndPointProcess global_path_.size():{}", global_path_.size());
     // 将起点、终点放入全局路径
     StartEndPointProcess();
 
@@ -133,6 +134,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     // threadLogger_->info("CalAcc");
 
     path = global_path_;
+    threadLogger_->info("final_out global_Path.size():", global_path_.size());
     return;
 }
 
@@ -221,7 +223,6 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
     vector<Coordinate> v_road_inner_bound;
     Coordinate         temp_Coordinate;
 
-
     // 获取道路外边界 (以传入参数的外边界点作为道路外边界)
     for (int index = 0; index < map_border_.size(); index++) {
         if (map_border_.at(index).type == 0) // 只传不可穿越的边界点
@@ -248,10 +249,9 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
     traj.clear();
     Path     final_path;
     PlanRule planrule = static_cast<PlanRule>(plan_rule_id);
-#ifdef SKIP_HEADER
-#else
+
     my_optimal_path_.threadLogger_ = threadLogger_;
-#endif
+
     if (my_optimal_path_.SearchGlobalPath(temp_start_point, temp_end_point, road_outer_bound, road_inner_bound,
                                           vehicle_param_, final_path, time_threshold,
                                           planrule) == PlanResult::Plan_OK) {
@@ -508,17 +508,17 @@ bool Planning::PathPlanning() {
 
     if (task_type_ != TaskType::DISPATCH) {
         // 临时挪车不走参考路径
+        threadLogger_->error("挪车、装载、卸载");
         if (!NotFollowReferencelinePlanning()) {
             return false;
         }
     }
     else {
+        threadLogger_->error("调度");
         if (!FollowReferencelinePlanning()) {
             return false;
         }
     }
-
-
     return true;
 }
 // 非调度规划任务
@@ -528,6 +528,7 @@ bool Planning::NotFollowReferencelinePlanning() {
     unsigned char            rule_id_1 = 4, rule_id_2 = 5, rule_id_3 = 2;
     if (task_type_ == TaskType::TEMP_MOVE_CAR) { // 临时挪车任务，先采用纯倒车的规划，再采用纯往前开的策略
         // 先倒车规划，不行正向规划
+        threadLogger_->error("挪车");
         if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_1, time_threshold)) {
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_2, time_threshold)) {
                 threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
@@ -536,8 +537,10 @@ bool Planning::NotFollowReferencelinePlanning() {
             }
         }
         global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
+        threadLogger_->info("临时挪车,路长:{}", global_path_.size());
     }
-    if (task_type_ == TaskType::LOAD) { // 装载任务，先纯倒车，纯倒车不行再往前开，再倒车
+    else if (task_type_ == TaskType::LOAD) { // 装载任务，先纯倒车，纯倒车不行再往前开，再倒车
+        threadLogger_->error("装载");
         if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_1, time_threshold)) {
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_3, time_threshold)) {
                 threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
@@ -546,15 +549,23 @@ bool Planning::NotFollowReferencelinePlanning() {
             }
         }
         global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
+        threadLogger_->info("装载,路长:{}", global_path_.size());
     }
-    if (task_type_ == TaskType::UNLOAD) { // 卸载任务，先前进，后倒退进入卸载点
+    else if (task_type_ == TaskType::UNLOAD) { // 卸载任务，先前进，后倒退进入卸载点
+        threadLogger_->error("卸载");
         if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_3, time_threshold)) {
             threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
             error_type_ = ErrorType::POINT_UNREASONABLE;
             return false;
         }
         global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
+        threadLogger_->info("卸载,路长:{}", global_path_.size());
     }
+    else {
+        threadLogger_->info("未定义的任务");
+        return false;
+    }
+
     return true;
 }
 
@@ -933,11 +944,43 @@ bool Planning::SpeedPlanning() {
 bool Planning::IsShortDistance() {
     if (global_path_.size() == 2) {
         threadLogger_->info("超短距离规划");
+        global_path_.clear();
+        _TrajectoryPoint temp_point;
+        temp_point.x           = start_point_.x;
+        temp_point.y           = start_point_.y;
+        temp_point.z           = start_point_.z;
+        temp_point.yaw         = start_point_.yaw / M_PI * 180.0;
+        temp_point.curvature   = 0;
+        temp_point.speed       = 0;
+        temp_point.distance    = 0;
+        temp_point.attribute   = 0;
+        temp_point.speed_limit = 0;
+        temp_point.direction   = 1;
+        global_path_.push_back(temp_point);
+        temp_point.x           = end_point_.x;
+        temp_point.y           = end_point_.y;
+        temp_point.z           = end_point_.z;
+        temp_point.yaw         = end_point_.yaw / M_PI * 180.0;
+        temp_point.curvature   = 0;
+        temp_point.speed       = 0;
+        temp_point.distance    = 0;
+        temp_point.attribute   = 0;
+        temp_point.speed_limit = 0;
+        temp_point.direction   = 1;
+        global_path_.push_back(temp_point);
+        if ((end_point_.x - start_point_.x) * cos(start_point_.yaw) +
+                (end_point_.y - start_point_.y) * sin(start_point_.yaw) >
+            0) {
+            global_path_.at(0).direction = 0;
+            global_path_.at(1).direction = 0;
+        }
+        else {
+            global_path_.at(0).direction = 1;
+            global_path_.at(1).direction = 1;
+        }
+
         Helper::CalDistance(global_path_); // 计算路径的位移信息
-        global_path_.at(0).speed       = 0;
-        global_path_.at(0).speed_limit = 100;
-        global_path_.at(1).speed       = 0;
-        global_path_.at(1).speed_limit = 100;
+
 
         return true;
     }

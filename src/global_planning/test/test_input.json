@@ -1,15 +1,15 @@
 {
     "m_Start_Point": {
-        "x": -289.0349994238,
-        "y": 920.0900049154,
+        "x": -288.8617820739746,
+        "y": 936.9776229858398,
         "z": 0,
-        "yaw": 89.46
+        "yaw": 87.7802866468724
     },
     "m_End_Point": {
-        "x": -336.4267883291,
-        "y": 1280.4165039081,
+        "x": -352.7881088256836,
+        "y": 1272.6980895996094,
         "z": 0,
-        "yaw": 1.19,
+        "yaw": 60.50432917758751,
         "endPointId": 384596
     },
     "m_Veh_Param": {
@@ -34,7 +34,7 @@
         "curvature_term": 0.01,
         "switch_penalty": 10,
         "forward_penalty": 1,
-        "kDiscreteNumber": 5,
+        "kDiscreteNumber": 1,
         "kSmoothnessTerm": 0.1,
         "max_speed_limit": 7,
         "mid_speed_limit": 5,
@@ -49,7 +49,7 @@
         "safe_margin_bound": 0.5,
         "safe_margin_error": 0,
         "veh_center_2_side": 1.825,
-        "angle_discrete_num": 5,
+        "angle_discrete_num": 3,
         "max_fitting_radius": 50,
         "veh_center_2_front": 7.3,
         "end_offset_distance": 2,
@@ -76,6 +76,6 @@
         "light_intersection_road_speed_limit": 2.06,
         "vehicle_code": 1021
     },
-    "task_type": 0,
+    "task_type": 2,
     "key": "ids:mine:dispatch:planPath:result:1808057346165837824"
 }

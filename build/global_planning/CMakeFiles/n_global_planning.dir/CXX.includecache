@@ -156,6 +156,18 @@ vector
 cmath
 -
 
+/home/yyf/global_planning_library/src/global_planning/planner/pathplanner/hybirdastar/optimal_path.cpp
+optimal_path.h
+/home/yyf/global_planning_library/src/global_planning/planner/pathplanner/hybirdastar/optimal_path.h
+../../../math/helper.h
+/home/yyf/global_planning_library/src/global_planning/math/helper.h
+../../../math/opti/path_opti.h
+/home/yyf/global_planning_library/src/global_planning/math/opti/path_opti.h
+../../../time/StringHelper.h
+/home/yyf/global_planning_library/src/global_planning/time/StringHelper.h
+../../../time/TimeHelper.h
+/home/yyf/global_planning_library/src/global_planning/time/TimeHelper.h
+
 /home/yyf/global_planning_library/src/global_planning/planner/pathplanner/hybirdastar/optimal_path.h
 ../../../collision_check/collision_check.h
 /home/yyf/global_planning_library/src/global_planning/collision_check/collision_check.h
