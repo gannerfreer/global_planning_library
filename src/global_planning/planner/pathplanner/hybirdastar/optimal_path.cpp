@@ -92,9 +92,9 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     // threadLogger_->info( "FittingDirection:" << static_cast<int>(fitting_direction_) );
     // 混合A*搜索 确定调整后的起点、终点、前向终点、后向终点、区域i边界后、拟合方式后开始干活
     // threadLogger_->info( "规划终点符合碰撞要求,前延点/后延点也符合碰撞要求,开始hybird A*拟合" );
-    cout << "调用A*" << endl;
+    // cout << "调用A*" << endl;
     PlanResult result = AStarPath(final_path, time_threshold);
-    cout << "line121" << endl;
+    // cout << "line121" << endl;
     timelog.AddLog("AStarPath");
     threadLogger_->info(timelog.GetLog());
     return result;
@@ -290,9 +290,8 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
     // 平滑前打印路径曲率
     threadLogger_->info("path_a_star_.size():{}", path_a_star_.size());
-    cout << "path_a_star_.size():" << path_a_star_.size() << endl;
+    // cout << "path_a_star_.size():" << path_a_star_.size() << endl;
     CalCurv(path_a_star_);
-    cout << "CalCurv success" << endl;
 
     // 路径优化，得到最终的path
     Path_Opti my_path_opti;
@@ -669,10 +668,10 @@ void OptimalPath::PathIntegration() {
         cout << "temp_path.size();" << temp_path.size() << endl;
         path_a_star_.insert(path_a_star_.begin(), temp_path.begin(), temp_path.end());
         path_a_star_.pop_back();
-        cout << "拼接起点" << endl;
-        for (int i = 0; i < path_a_star_.size(); i++) {
-            cout << path_a_star_.at(i).angle << endl;
-        }
+        // cout << "拼接起点" << endl;
+        // for (int i = 0; i < path_a_star_.size(); i++) {
+        //     cout << path_a_star_.at(i).angle << endl;
+        // }
     }
 
     if (plan_path_rule_ == PlanRule::Backward_All_Time) {
@@ -694,17 +693,17 @@ void OptimalPath::PathIntegration() {
     path_a_star_.insert(path_a_star_.end(), path_r_s_.begin(), path_r_s_.end());
     Path().swap(path_r_s_);
 
-    cout << "拼接RS" << endl;
-    for (int i = 0; i < path_a_star_.size(); i++) {
-        cout << path_a_star_.at(i).angle << endl;
-    }
+    // cout << "拼接RS" << endl;
+    // for (int i = 0; i < path_a_star_.size(); i++) {
+    //     cout << path_a_star_.at(i).angle << endl;
+    // }
 
     // 拼接终点直线路径
     if (fitting_direction_ == FittingDirection::Forword_Fitting) // 前进直线拼接
     {
         Point temp_point;
         temp_point.angle = end_r_.angle;
-        cout << "temp_point.angle:" << temp_point.angle << endl;
+        // cout << "temp_point.angle:" << temp_point.angle << endl;
         for (double i = m_vehicle_param_.step_length; i <= m_vehicle_param_.end_offset_distance;
              i += m_vehicle_param_.step_length) {
             temp_point.x         = end_r_.x + i * cos(end_r_.angle);
@@ -713,10 +712,10 @@ void OptimalPath::PathIntegration() {
             temp_point.direction = MotionDirection::Forward;
             path_a_star_.push_back(temp_point);
         }
-        cout << "拼接完终点" << endl;
-        for (int i = 0; i < path_a_star_.size(); i++) {
-            cout << path_a_star_.at(i).angle << endl;
-        }
+        // cout << "拼接完终点" << endl;
+        // for (int i = 0; i < path_a_star_.size(); i++) {
+        //     cout << path_a_star_.at(i).angle << endl;
+        // }
     }
     else // 倒退直线拼接
     {

@@ -21,8 +21,6 @@ _SinglePoint end_point;
 bool         is_receive_start = false;
 bool         is_receive_end   = false;
 
-// const double x_o_ = -1171.654151; // 玖智偏移参数
-// const double y_o_ = 6205.765819;  // 玖智偏移参数
 
 // const double x_o_ = -321737.4857;     // 舒兰偏移参数
 // const double y_o_ = 534463.584699999; // 舒兰偏移参数
@@ -30,10 +28,9 @@ bool         is_receive_end   = false;
 const double x_o_ = -299; // 鲁南偏移参数
 const double y_o_ = 920;  // 鲁南偏移参数
 
-// const double x_o_ = -205293.9231; // 致富偏移参数
-// const double y_o_ = 7973.5012;    // 致富偏移参数
 
-vector<_TrajectoryPoint> global_path;
+vector<_TrajectoryPoint> global_path, road_nodes;
+
 
 void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
     start_point.x   = msg->pose.pose.position.x;
@@ -77,9 +74,8 @@ int main(int argc, char** argv) {
     time_t       timestamp   = chrono::system_clock::to_time_t(currentTime);
     stringstream ss;
     ss << put_time(localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
-    string timeStr  = ss.str();
-    string filePath = dirPath + "/log_" + timeStr + ".txt";
-    // spdlog::flush_on(spdlog::level::info);
+    string timeStr         = ss.str();
+    string filePath        = dirPath + "/log_" + timeStr + ".txt";
     planning.threadLogger_ = spdlog::rotating_logger_mt(logger_id, filePath, 10 * 1024 * 1024, 1, true);
     planning.threadLogger_->flush_on(spdlog::level::info);
     planning.threadLogger_->info("本地仿真环境日志");
@@ -88,14 +84,12 @@ int main(int argc, char** argv) {
 
     while (ros::ok()) {
         ros::spinOnce();
-        //  planning.c_rviz_.PeripheryPark(1, planning.m_tar_rviz_data.vec_point);
-        planning.c_rviz_.SetAreaPath(planning.m_tar_rviz_data_.vec_point);
-        //  cout<< "1111111111111" <<  endl;
-
-        if (is_receive_start == false || is_receive_end == false) {
-            // rate.sleep();
-            // continue;
-        }
+        // 将地图边界和参考路径发给rviz显示
+        planning.c_rviz_.PubMapborderAndReferenceline(planning.m_tar_rviz_data_.vec_point);
+        cout << "line89" << endl;
+        planning.c_rviz_.PubRoadNode(planning.m_tar_rviz_data_.road_node);
+        cout << "line91" << endl;
+        if (is_receive_start == false || is_receive_end == false) {}
         else {
             is_receive_start = false;
             is_receive_end   = false;
@@ -116,10 +110,9 @@ int main(int argc, char** argv) {
 
             //  cout << " planning.start_point.x = " <<  planning.start_point.x << "\n";
 
-            planning.c_rviz_.SetStartPosition(start_point.x, start_point.y, start_point.yaw);
-            planning.c_rviz_.SetEndPosition(end_point.x, end_point.y, end_point.yaw);
-            planning.c_rviz_.PublishStart();
-            planning.c_rviz_.PublishEnd();
+            planning.c_rviz_.PubStartPosition(start_point.x, start_point.y, start_point.yaw);
+
+            planning.c_rviz_.PubEndPosition(end_point.x, end_point.y, end_point.yaw);
 
             cout << setprecision(11) << "m_start_point.x = " << planning.start_point_.x << endl;
             cout << setprecision(11) << "m_start_point.y = " << planning.start_point_.y << endl;
@@ -183,19 +176,17 @@ int main(int argc, char** argv) {
                 speed_curve.data.emplace_back(global_path.at(index).speed);
             }
             pub_speed_curve.publish(speed_curve);
-            // rate.sleep();
         }
+
 
         //  cout << "aaglobal_path.size = " << global_path.size() <<  endl;
         planning.c_rviz_.PubGlobalPath(global_path);
-        //  planning.c_rviz_.PubTurningPathParagraph(turning_path_paragraph);
-        //  planning.c_rviz_.PubTurningPathParagraphAnother(turning_path_paragraph_another);
 
+        // spdlog::drop("example");
         auto cost_map = planning.my_optimal_path_.GetHCostMap();
-        planning.c_rviz_.Set2DCostMap(cost_map, planning.my_optimal_path_.midpoint_);
+        planning.c_rviz_.Pub2DCostMap(cost_map, planning.my_optimal_path_.midpoint_);
         rate.sleep();
     }
-    // spdlog::drop("example");
 
     return 0;
 }

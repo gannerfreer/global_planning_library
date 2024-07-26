@@ -63,7 +63,7 @@ bool Dijkstra::searchpath(int start_, int end_) {
                 min     = dist.at(w);
             }
         }
-        threadLogger_->info("当前节点：{},min:{}", curNode, min);
+        // threadLogger_->info("当前节点：{},min:{}", curNode, min);
         // cout<<"当前节点 "<<curNode<<endl;
         // 将curNode加入close中
         if (close.at(curNode) == true) {
@@ -71,7 +71,7 @@ bool Dijkstra::searchpath(int start_, int end_) {
         }
         close.at(curNode) = true;
         if (curNode == end_index) {
-            threadLogger_->error("搜索到终点");
+            // threadLogger_->error("搜索到终点");
             break;
         }
         // 以curNode为基准进行拓展搜索，并更新其他节点的相关值

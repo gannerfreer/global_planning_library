@@ -205,12 +205,12 @@ inline bool CheckPathFracture(vector<_TrajectoryPoint>& traj) {
 inline bool doesTrajectorySelfIntersect(Path& path) {
     // 通过判断yaw的变化了分析是否画圈
     // 判断方法，设置36个if else，36个标志位，如果超过24个标志为被置为true，即被判定为绕圈
-    cout << "进入检测绕圈函数" << endl;
+    // cout << "进入检测绕圈函数" << endl;
 
     vector<int> vec(36, 0);
-    for (int i = 0; i < path.size(); i++) {
-        cout << path.at(i).angle << endl;
-    }
+    // for (int i = 0; i < path.size(); i++) {
+    //     cout << path.at(i).angle << endl;
+    // }
     for (int i = 0; i < path.size(); i++) {
         vec.at(floor(path.at(i).angle * 18.0 / M_PI)) = 1;
     }
@@ -357,18 +357,18 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
         traj.at(i).curvature = delta_anglew / delta_length;
     }
 }
-inline void CalAcc(vector<_TrajectoryPoint>& traj) {
-    float last_acc;
-    float delta_length = 1.0;
-    for (int i = 0; i < traj.size() - 10; i++) {
-        double delta_speed_square = pow(traj.at(i + 10).speed, 2) - pow(traj.at(i).speed, 2);
-        traj.at(i).acc            = delta_speed_square / (2 * delta_length);
-        last_acc                  = delta_speed_square / (2 * delta_length);
-    }
-    for (int i = traj.size() - 10; i < traj.size(); i++) {
-        traj.at(i).acc = last_acc;
-    }
-}
+// inline void CalAcc(vector<_TrajectoryPoint>& traj) {
+//     float last_acc;
+//     float delta_length = 1.0;
+//     for (int i = 0; i < traj.size() - 10; i++) {
+//         double delta_speed_square = pow(traj.at(i + 10).speed, 2) - pow(traj.at(i).speed, 2);
+//         traj.at(i).acc            = delta_speed_square / (2 * delta_length);
+//         last_acc                  = delta_speed_square / (2 * delta_length);
+//     }
+//     for (int i = traj.size() - 10; i < traj.size(); i++) {
+//         traj.at(i).acc = last_acc;
+//     }
+// }
 
 inline void Calrad2deg(vector<_TrajectoryPoint>& traj) {
     for (size_t index = 0; index < traj.size(); index++) {

@@ -144,6 +144,7 @@ class Planning {
     void PathClipAndSplice();
     bool JudgeFittingDirection(_SinglePoint point, int start_index, bool is_start);
     bool IsShortDistance();
+    bool HasSearched(int start, int end);
 
   public:
     _SinglePoint start_point_,
@@ -164,10 +165,11 @@ class Planning {
     OptimalPath         my_optimal_path_; // hibrid A star类的实例对象
     GlobalSpeedPlanning my_speed_planning_;
 
-    _VehicleParam vehicle_param_; // 传入的车辆参数以及算法参数
-    TaskType      task_type_;     // 任务类型 用于终点处规划，规划方案选型
-    unsigned char light_or_heavy_;
-    CollisonCheck collison_check_;
+    _VehicleParam          vehicle_param_; // 传入的车辆参数以及算法参数
+    TaskType               task_type_;     // 任务类型 用于终点处规划，规划方案选型
+    unsigned char          light_or_heavy_;
+    CollisonCheck          collison_check_;
+    vector<pair<int, int>> v_fail_pair_;
 
     ErrorType                  error_type_ = ErrorType::SUCCESS;
     shared_ptr<spdlog::logger> threadLogger_;

@@ -617,7 +617,7 @@ void Path_Opti::CubicInterpolate2Point(const Point start_point, const Point end_
             tem_point.y     = y_i_r_t;
             tem_point.z     = 0;
             tem_point.angle = theta_i_r;
-            cout << tem_point.angle << endl;
+            // cout << tem_point.angle << endl;
             tem_point.direction = start_point.direction;
 
             interpolate_path.push_back(tem_point);

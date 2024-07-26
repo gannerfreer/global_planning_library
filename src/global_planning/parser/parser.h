@@ -509,7 +509,7 @@ bool GetMap(char* parea) {
     _TrajectoryPoint      tp;
     for (SizeType i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
-        s            traj.id         = trajsArray[i]["id"].GetInt();
+        traj.id                      = trajsArray[i]["id"].GetInt();
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
         for (SizeType j = 0; j < trajPointsArray.Size(); j++) {
             tp.x         = trajPointsArray[j]["x"].GetDouble();
@@ -541,7 +541,7 @@ bool GetMap(char* parea) {
         m_relation[key] = relVec;
     }
     GlobalVariable::getInstance()->SetReferencelineRelation(m_relation);
-    GlobalVariable::getInstance()->CreateSequenceMapping(GlobalVariable::getInstance()->GetReferencelineGraph());
+    GlobalVariable::getInstance()->CreateSequenceMapping(GlobalVariable::getInstance()->GetAllReferencelines());
 
     // 调用GlobalVariable类内部的CreateDirectedGraph来生成referenceline_graph_
     GlobalVariable::getInstance()->CreateDirectedGraph(GlobalVariable::getInstance()->GetReferencelineRelation());

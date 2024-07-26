@@ -15,6 +15,7 @@ bool Planning::InitialFunction() {
     inner_borders_.clear(); // 全局路径
     all_referencelines_.clear();
     global_path_.clear();
+    v_fail_pair_.clear();
     task_type_ = TaskType::RESERVED;
 
 
@@ -114,16 +115,22 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     if (!Helper::CheckPathFracture(global_path_)) {
         return;
     }
+    threadLogger_->info("CheckPathFracture");
+
 
     if (Helper::OverSpeedCheck(global_path_)) {
         return;
     }
+    threadLogger_->info("OverSpeedCheck");
+
 
     // 路径去重
     Helper::RemoveSamePoint(global_path_);
+    threadLogger_->info("RemoveSamePoint");
 
-    // 计算加速度
-    Helper::CalAcc(global_path_);
+    // // 计算加速度
+    // Helper::CalAcc(global_path_);
+    // threadLogger_->info("CalAcc");
 
     path = global_path_;
     return;
@@ -559,7 +566,7 @@ bool Planning::FollowReferencelinePlanning() {
     bool           is_found          = false; // 用于跟踪是否找到了成功的路径对
     double         end_search_radius = 0.5, start_search_radius = 0.5;
     vector<int>    start_path_vec, end_path_vec;
-    while (end_search_radius <= 70) {
+    while (end_search_radius <= 2) {
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius,
                                                         end_path_vec)) {
             threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
@@ -591,6 +598,9 @@ bool Planning::FollowReferencelinePlanning() {
                     // 在start_path_vec_switch和end_path_vec_switch中查找连通路径
                     for (auto start : start_path_vec_switch) {
                         for (auto end : end_path_vec_switch) {
+                            if (HasSearched(start, end)) {
+                                continue;
+                            }
                             if (IsConnect(start, end)) {
                                 threadLogger_->info("start:{},end:{}", start, end);
                                 threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start),
@@ -601,6 +611,7 @@ bool Planning::FollowReferencelinePlanning() {
                                 break;               // 退出内层循环
                             }
                             else {
+                                v_fail_pair_.push_back(pair(start, end));
                                 threadLogger_->info("start:{},end:{}", start, end);
                                 threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start),
                                                     sequence_mapping_.at(end));
@@ -635,15 +646,16 @@ bool Planning::FollowReferencelinePlanning() {
     Helper::CalNearestIndex(end_point_, end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_);
     threadLogger_->info("起点匹配上的路径索引{}，横向距离{}，纵向距离{}", start_index_, start_lat_dis_, start_lon_dis_);
     threadLogger_->info("终点匹配上的路径索引{}，横向距离{}，纵向距离{}", end_index_, end_lat_dis_, end_lon_dis_);
-    if (start_key_ == end_key_) {
-        if (start_index_ > end_index_) {
-            error_type_ = ErrorType::POINT_UNREASONABLE;
-            return false;
-        }
-    }
+
     // 路径裁剪拼接
     PathClipAndSplice();
     return true;
+}
+bool Planning::HasSearched(int start, int end) {
+    for (auto pair : v_fail_pair_) {
+        if (pair.first == start && pair.second == end) return true;
+    }
+    return false;
 }
 
 
@@ -761,8 +773,21 @@ void Planning::PathClipAndSplice() {
     if (road_sequence_.size() == 1) {
         threadLogger_->info("起点、终点位于同一条参考路径");
         int temp_key = sequence_mapping_.at(road_sequence_.at(0));
-        global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + start_index_,
-                            all_referencelines_.at(temp_key).trajectory.begin() + end_index_ + 1);
+        if (start_index_ < end_index_) {
+            global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + start_index_,
+                                all_referencelines_.at(temp_key).trajectory.begin() + end_index_ + 1);
+        }
+        else // 同一路段，支持短距离倒车
+        {
+            global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + end_index_,
+                                all_referencelines_.at(temp_key).trajectory.begin() + start_index_ + 1);
+            reverse(global_path_.begin(), global_path_.end());
+            for (auto point : global_path_) {
+                if (point.direction == 0) {
+                    point.direction = 1; // 修改轨迹的direction
+                }
+            }
+        }
     }
     else {
         threadLogger_->info("打印road_sequence_信息");
@@ -913,6 +938,7 @@ bool Planning::IsShortDistance() {
         global_path_.at(0).speed_limit = 100;
         global_path_.at(1).speed       = 0;
         global_path_.at(1).speed_limit = 100;
+
         return true;
     }
     threadLogger_->info("不是超短距离规划");

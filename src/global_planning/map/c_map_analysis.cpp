@@ -123,6 +123,7 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
     road_directed_graph_ = GlobalVariable::getInstance()->GetReferencelineGraph();
 
     cout << "生成sequence_mapping_和referenceline_graph_完毕" << endl;
+    // 将地图边界和参考路径放进tar_rviz.vec_point中
 
     for (int i = 0; i < map_border_.size(); i++) {
         geometry_msgs::Point temp_border_points;
@@ -132,14 +133,18 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
         tar_rviz.vec_point.push_back(temp_border_points);
     }
     for (const auto& pair : all_referencelines_) {
-        for (const auto& point : pair.second.trajectory) {
+        for (int i = 0; i < pair.second.trajectory.size(); i++) {
             geometry_msgs::Point temp_referenceline_points;
-            temp_referenceline_points.x = point.x;
-            temp_referenceline_points.y = point.y;
-            temp_referenceline_points.z = point.z;
+            temp_referenceline_points.x = pair.second.trajectory.at(i).x;
+            temp_referenceline_points.y = pair.second.trajectory.at(i).y;
+            temp_referenceline_points.z = pair.second.trajectory.at(i).z;
             tar_rviz.vec_point.push_back(temp_referenceline_points);
+            if (i == 0 || i == pair.second.trajectory.size() - 1) {
+                tar_rviz.road_node.push_back(temp_referenceline_points);
+            }
         }
     }
+
 
     cout << "生成tar_rviz.vec_point完毕" << endl;
 

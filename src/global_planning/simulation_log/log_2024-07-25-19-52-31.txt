@@ -1,0 +1,395 @@
+[2024-07-25 19:52:31.110] [example] [info] 本地仿真环境日志
+[2024-07-25 19:52:44.611] [example] [info] start_point.x =-289.02090549468994
+[2024-07-25 19:52:44.611] [example] [info] start_point.y =932.3203277587891
+[2024-07-25 19:52:44.611] [example] [info] start_point.yaw =86.4283394931276
+[2024-07-25 19:52:44.611] [example] [info] end_point.x =-288.8589696884155
+[2024-07-25 19:52:44.611] [example] [info] end_point.y =922.0376949310303
+[2024-07-25 19:52:44.611] [example] [info] end_point.yaw =91.52779970859416
+[2024-07-25 19:52:44.611] [example] [info] Enter GlobalPathPlanningIntface
+[2024-07-25 19:52:44.611] [example] [info] Enter PathPlanning
+[2024-07-25 19:52:44.611] [example] [info]  task_type_: 2
+[2024-07-25 19:52:44.611] [example] [info] 终点搜索半径：0.5,搜索到路径数量:1
+[2024-07-25 19:52:44.611] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 19:52:44.611] [example] [info] 68
+[2024-07-25 19:52:44.612] [example] [info] 起点搜索半径：0.5,搜索到路径数量:1
+[2024-07-25 19:52:44.612] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 19:52:44.612] [example] [info] 68
+[2024-07-25 19:52:44.612] [example] [info] start:0,end:0
+[2024-07-25 19:52:44.612] [example] [info] 路径68与路径68联通
+[2024-07-25 19:52:44.612] [example] [info] 找到路径对68-68
+[2024-07-25 19:52:44.612] [example] [info] 起点匹配上的路径索引12，横向距离0.17068283394984016，纵向距离0.32636440616971846
+[2024-07-25 19:52:44.612] [example] [info] 终点匹配上的路径索引2，横向距离0.155466590373615，纵向距离0.04756787395572112
+[2024-07-25 19:52:44.612] [example] [info] 起点、终点位于同一条参考路径
+[2024-07-25 19:52:44.612] [example] [info] PathClipAndSplice---global_path_.size():11
+[2024-07-25 19:52:44.612] [example] [info] PathPlanning 成功
+[2024-07-25 19:52:44.612] [example] [info] 不是超短距离规划
+[2024-07-25 19:52:44.612] [example] [info] IsShortDistance 成功
+[2024-07-25 19:52:44.612] [example] [info] Enter HybirdAStarFitting
+[2024-07-25 19:52:44.612] [example] [info] HybirdAStarFitting结束
+[2024-07-25 19:52:44.612] [example] [info] StartEndPointProcess 开始
+[2024-07-25 19:52:44.612] [example] [info] 全局路径第一个点位于实际起点后面，且与起点几何距离符合要求，不予以去除
+[2024-07-25 19:52:44.612] [example] [info] 全局路径最后一个位于实际终点后面，或者最后一个点就是终点，现予以去除
+[2024-07-25 19:52:44.612] [example] [info] 将规划终点作为最后一个点添加进global_path的末尾
+[2024-07-25 19:52:44.612] [example] [info] StartEndPointProcess 结束
+[2024-07-25 19:52:44.612] [example] [info] global_path_.size():12
+[2024-07-25 19:52:44.612] [example] [info] 均匀碾压功能开启
+[2024-07-25 19:52:44.612] [example] [info] num:1
+[2024-07-25 19:52:44.612] [example] [info] 起步就是需要偏移的路段
+[2024-07-25 19:52:44.612] [example] [info] 规划出的路径包含1个偏移路段，0个不偏移路段
+[2024-07-25 19:52:44.612] [example] [info] 偏移路段索引：(0,11)
+[2024-07-25 19:52:44.612] [example] [info] 找到合适的权重：0.25
+[2024-07-25 19:52:44.612] [example] [info] 均匀碾压功能完毕
+[2024-07-25 19:52:44.612] [example] [info] kMaxAcceleration =0.3 
+[2024-07-25 19:52:44.612] [example] [info] kMinAcceleration =-0.4 
+[2024-07-25 19:52:44.612] [example] [info] kDeltaSpeed =5 
+[2024-07-25 19:52:44.612] [example] [info] kErrorTerm =0.1 
+[2024-07-25 19:52:44.612] [example] [info] kSmoothnessTerm =0.001 
+[2024-07-25 19:52:44.612] [example] [info] kDiscreteNumber =1 
+[2024-07-25 19:52:44.612] [example] [info] reverse_speed =1 
+[2024-07-25 19:52:44.612] [example] [info] 基于路况的分段速度规划开启
+[2024-07-25 19:52:44.612] [example] [info] 打印temp_max_speed信息
+[2024-07-25 19:52:44.612] [example] [info] 方向盘转速速度限制
+[2024-07-25 19:52:44.612] [example] [info] 方向盘转速速度限制左右5m扩张
+[2024-07-25 19:52:44.612] [example] [info] line1498
+[2024-07-25 19:52:44.612] [example] [info] line1520
+[2024-07-25 19:52:44.612] [example] [info] trajectory_fragments.size():1
+[2024-07-25 19:52:44.612] [example] [info] SplitPath 成功
+[2024-07-25 19:52:44.612] [example] [info] 本次任务的全局路径一共1段
+[2024-07-25 19:52:44.612] [example] [info] 第1段有3关键点
+[2024-07-25 19:52:44.612] [example] [info] 第1段的第1个关键点的索引0,左限速0,右限速6.05
+[2024-07-25 19:52:44.612] [example] [info] 第1段的第2个关键点的索引10,左限速2.55,右限速6.05
+[2024-07-25 19:52:44.612] [example] [info] 第1段的第3个关键点的索引11,左限速6.05,右限速0
+[2024-07-25 19:52:44.612] [example] [info] 开始AdpKeyPoints[new] ,路径段落个数:1
+[2024-07-25 19:52:44.612] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 19:52:44.613] [example] [info] 第1段全局路径有12个点
+[2024-07-25 19:52:44.613] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 19:52:44.613] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 19:52:44.613] [example] [info] v1_index = 0
+[2024-07-25 19:52:44.613] [example] [info] v1_left = 0
+[2024-07-25 19:52:44.613] [example] [info] v1_right = 6.05
+[2024-07-25 19:52:44.613] [example] [info] v2_index = 10
+[2024-07-25 19:52:44.613] [example] [info] v2_left = 2.55
+[2024-07-25 19:52:44.613] [example] [info] v2_right  = 6.05
+[2024-07-25 19:52:44.613] [example] [info] 左右速度不等
+[2024-07-25 19:52:44.613] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 19:52:44.613] [example] [info] v1_index = 10
+[2024-07-25 19:52:44.613] [example] [info] v1_left = 2.55
+[2024-07-25 19:52:44.613] [example] [info] v1_right = 6.05
+[2024-07-25 19:52:44.613] [example] [info] v2_index = 11
+[2024-07-25 19:52:44.613] [example] [info] v2_left = 6.05
+[2024-07-25 19:52:44.613] [example] [info] v2_right  = 0
+[2024-07-25 19:52:44.613] [example] [info] s_total = 0.96595496
+[2024-07-25 19:52:44.613] [example] [info] s_min =105.9198 
+[2024-07-25 19:52:44.613] [example] [info] 不合理加速，现予以调整
+[2024-07-25 19:52:44.613] [example] [info] index = 1
+[2024-07-25 19:52:44.613] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 19:52:44.613] [example] [info] 第1段全局路径有12个点
+[2024-07-25 19:52:44.613] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 19:52:44.613] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 19:52:44.613] [example] [info] v1_index = 0
+[2024-07-25 19:52:44.613] [example] [info] v1_left = 0
+[2024-07-25 19:52:44.613] [example] [info] v1_right = 2.55
+[2024-07-25 19:52:44.613] [example] [info] v2_index = 11
+[2024-07-25 19:52:44.613] [example] [info] v2_left = 2.55
+[2024-07-25 19:52:44.613] [example] [info] v2_right  = 0
+[2024-07-25 19:52:44.613] [example] [info] s_total = 10.333453
+[2024-07-25 19:52:44.613] [example] [info] s_min =28.965624 
+[2024-07-25 19:52:44.613] [example] [info] key_points.at(i).at(j).index = 0
+[2024-07-25 19:52:44.613] [example] [info] key_points.at(i).at(j).left = 0
+[2024-07-25 19:52:44.613] [example] [info] key_points.at(i).at(j).right = 2.55
+[2024-07-25 19:52:44.613] [example] [info] index = 2
+[2024-07-25 19:52:44.613] [example] [info] Function() AdpKeyPoints[new] End 
+[2024-07-25 19:52:44.613] [example] [info] 开始KeyPointsDecelerationCheck() ,路径段落个数:1
+[2024-07-25 19:52:44.613] [example] [info] 第1段的第1个关键点的索引 0,左限速 0,右限速 2.55
+[2024-07-25 19:52:44.613] [example] [info] 第1段的第2个关键点的索引 11,左限速 2.55,右限速 0
+[2024-07-25 19:52:44.613] [example] [info] 减速检查
+[2024-07-25 19:52:44.613] [example] [info] s_total = 10.333453
+[2024-07-25 19:52:44.613] [example] [info] s_min =8.128124 
+[2024-07-25 19:52:44.613] [example] [info] PASS ,减速距离达标
+[2024-07-25 19:52:44.613] [example] [info] 结束KeyPointsDecelerationCheck() ,路径段落个数:1
+[2024-07-25 19:52:44.613] [example] [info]  ...Start the Shortest_Time mode speed planning...
+[2024-07-25 19:52:44.613] [example] [info] key_points.size() = 1
+[2024-07-25 19:52:44.613] [example] [info]  ...plan for the 1 the segment...
+[2024-07-25 19:52:44.613] [example] [info] temp_keypoint.size():2
+[2024-07-25 19:52:44.613] [example] [info] index:0, speed_limit_left :0, speed_limit_right:2.55
+[2024-07-25 19:52:44.613] [example] [info] index:11, speed_limit_left :2.55, speed_limit_right:0
+[2024-07-25 19:52:44.613] [example] [info] v0= 0
+[2024-07-25 19:52:44.613] [example] [info] v1= 2.55
+[2024-07-25 19:52:44.613] [example] [info] v2= 0
+[2024-07-25 19:52:44.613] [example] [info] ...Case 4...
+[2024-07-25 19:52:44.613] [example] [info] keypoint1.index =0 
+[2024-07-25 19:52:44.613] [example] [info] keypoint2.index =11 
+[2024-07-25 19:52:44.613] [example] [info] begin SpeedCurveSmooth
+[2024-07-25 19:52:44.613] [example] [info] ...SpeedCurveSmooth() finish...
+[2024-07-25 19:52:44.613] [example] [info] begin SpeedCurveInterpolation
+[2024-07-25 19:52:44.613] [example] [info] ...The SpeedCurveInterpolation() finish...
+[2024-07-25 19:52:44.613] [example] [info] SpeedPlanning() end
+[2024-07-25 19:52:44.613] [example] [info] CheckPathFracture
+[2024-07-25 19:52:44.613] [example] [info] OverSpeedCheck
+[2024-07-25 19:52:44.613] [example] [info] RemoveSamePoint
+[2024-07-25 19:52:44.613] [example] [info] CalAcc
+[2024-07-25 19:53:22.411] [example] [info] start_point.x =-288.95648765563965
+[2024-07-25 19:53:22.411] [example] [info] start_point.y =931.7890281677246
+[2024-07-25 19:53:22.411] [example] [info] start_point.yaw =90.57296658338302
+[2024-07-25 19:53:22.411] [example] [info] end_point.x =-289.1054105758667
+[2024-07-25 19:53:22.411] [example] [info] end_point.y =923.0400133132935
+[2024-07-25 19:53:22.411] [example] [info] end_point.yaw =87.71058456639244
+[2024-07-25 19:53:22.411] [example] [info] Enter GlobalPathPlanningIntface
+[2024-07-25 19:53:22.411] [example] [info] Enter PathPlanning
+[2024-07-25 19:53:22.411] [example] [info]  task_type_: 2
+[2024-07-25 19:53:22.411] [example] [info] 终点搜索半径：0.5,搜索到路径数量:1
+[2024-07-25 19:53:22.411] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 19:53:22.411] [example] [info] 68
+[2024-07-25 19:53:22.412] [example] [info] 起点搜索半径：0.5,搜索到路径数量:1
+[2024-07-25 19:53:22.412] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 19:53:22.412] [example] [info] 68
+[2024-07-25 19:53:22.412] [example] [info] start:0,end:0
+[2024-07-25 19:53:22.412] [example] [info] 路径68与路径68联通
+[2024-07-25 19:53:22.412] [example] [info] 找到路径对68-68
+[2024-07-25 19:53:22.412] [example] [info] 起点匹配上的路径索引12，横向距离0.09690983183724607，纵向距离-0.2037171513405007
+[2024-07-25 19:53:22.412] [example] [info] 终点匹配上的路径索引3，横向距离0.10402257701774185，纵向距离0.045636066147711346
+[2024-07-25 19:53:22.412] [example] [info] 起点、终点位于同一条参考路径
+[2024-07-25 19:53:22.412] [example] [info] PathClipAndSplice---global_path_.size():10
+[2024-07-25 19:53:22.412] [example] [info] PathPlanning 成功
+[2024-07-25 19:53:22.412] [example] [info] 不是超短距离规划
+[2024-07-25 19:53:22.412] [example] [info] IsShortDistance 成功
+[2024-07-25 19:53:22.412] [example] [info] Enter HybirdAStarFitting
+[2024-07-25 19:53:22.412] [example] [info] HybirdAStarFitting结束
+[2024-07-25 19:53:22.412] [example] [info] StartEndPointProcess 开始
+[2024-07-25 19:53:22.412] [example] [info] 全局路径第一个位于实际起点前面，或者太近，现予以去除
+[2024-07-25 19:53:22.412] [example] [info] 全局路径最后一个位于实际终点后面，或者最后一个点就是终点，现予以去除
+[2024-07-25 19:53:22.412] [example] [info] 将规划终点作为最后一个点添加进global_path的末尾
+[2024-07-25 19:53:22.412] [example] [info] StartEndPointProcess 结束
+[2024-07-25 19:53:22.412] [example] [info] global_path_.size():10
+[2024-07-25 19:53:22.412] [example] [info] 均匀碾压功能开启
+[2024-07-25 19:53:22.412] [example] [info] num:1
+[2024-07-25 19:53:22.412] [example] [info] 起步就是需要偏移的路段
+[2024-07-25 19:53:22.412] [example] [info] 规划出的路径包含1个偏移路段，0个不偏移路段
+[2024-07-25 19:53:22.412] [example] [info] 偏移路段索引：(0,9)
+[2024-07-25 19:53:22.412] [example] [info] 找到合适的权重：-1
+[2024-07-25 19:53:22.412] [example] [info] 均匀碾压功能完毕
+[2024-07-25 19:53:22.412] [example] [info] kMaxAcceleration =0.3 
+[2024-07-25 19:53:22.412] [example] [info] kMinAcceleration =-0.4 
+[2024-07-25 19:53:22.412] [example] [info] kDeltaSpeed =5 
+[2024-07-25 19:53:22.412] [example] [info] kErrorTerm =0.1 
+[2024-07-25 19:53:22.412] [example] [info] kSmoothnessTerm =0.001 
+[2024-07-25 19:53:22.412] [example] [info] kDiscreteNumber =1 
+[2024-07-25 19:53:22.412] [example] [info] reverse_speed =1 
+[2024-07-25 19:53:22.412] [example] [info] 基于路况的分段速度规划开启
+[2024-07-25 19:53:22.412] [example] [info] 打印temp_max_speed信息
+[2024-07-25 19:53:22.412] [example] [info] 方向盘转速速度限制
+[2024-07-25 19:53:22.412] [example] [info] 方向盘转速速度限制左右5m扩张
+[2024-07-25 19:53:22.412] [example] [info] line1498
+[2024-07-25 19:53:22.412] [example] [info] line1520
+[2024-07-25 19:53:22.412] [example] [info] trajectory_fragments.size():1
+[2024-07-25 19:53:22.412] [example] [info] SplitPath 成功
+[2024-07-25 19:53:22.412] [example] [info] 本次任务的全局路径一共1段
+[2024-07-25 19:53:22.412] [example] [info] 第1段有3关键点
+[2024-07-25 19:53:22.412] [example] [info] 第1段的第1个关键点的索引0,左限速0,右限速6.05
+[2024-07-25 19:53:22.412] [example] [info] 第1段的第2个关键点的索引8,左限速2.55,右限速6.05
+[2024-07-25 19:53:22.412] [example] [info] 第1段的第3个关键点的索引9,左限速6.05,右限速0
+[2024-07-25 19:53:22.412] [example] [info] 开始AdpKeyPoints[new] ,路径段落个数:1
+[2024-07-25 19:53:22.412] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 19:53:22.412] [example] [info] 第1段全局路径有10个点
+[2024-07-25 19:53:22.412] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 19:53:22.412] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 19:53:22.412] [example] [info] v1_index = 0
+[2024-07-25 19:53:22.412] [example] [info] v1_left = 0
+[2024-07-25 19:53:22.412] [example] [info] v1_right = 6.05
+[2024-07-25 19:53:22.412] [example] [info] v2_index = 8
+[2024-07-25 19:53:22.412] [example] [info] v2_left = 2.55
+[2024-07-25 19:53:22.412] [example] [info] v2_right  = 6.05
+[2024-07-25 19:53:22.412] [example] [info] 左右速度不等
+[2024-07-25 19:53:22.412] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 19:53:22.412] [example] [info] v1_index = 8
+[2024-07-25 19:53:22.412] [example] [info] v1_left = 2.55
+[2024-07-25 19:53:22.412] [example] [info] v1_right = 6.05
+[2024-07-25 19:53:22.412] [example] [info] v2_index = 9
+[2024-07-25 19:53:22.412] [example] [info] v2_left = 6.05
+[2024-07-25 19:53:22.412] [example] [info] v2_right  = 0
+[2024-07-25 19:53:22.412] [example] [info] s_total = 0.96118546
+[2024-07-25 19:53:22.412] [example] [info] s_min =105.9198 
+[2024-07-25 19:53:22.412] [example] [info] 不合理加速，现予以调整
+[2024-07-25 19:53:22.412] [example] [info] index = 1
+[2024-07-25 19:53:22.412] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 19:53:22.412] [example] [info] 第1段全局路径有10个点
+[2024-07-25 19:53:22.412] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 19:53:22.412] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 19:53:22.412] [example] [info] v1_index = 0
+[2024-07-25 19:53:22.412] [example] [info] v1_left = 0
+[2024-07-25 19:53:22.412] [example] [info] v1_right = 2.55
+[2024-07-25 19:53:22.412] [example] [info] v2_index = 9
+[2024-07-25 19:53:22.412] [example] [info] v2_left = 2.55
+[2024-07-25 19:53:22.412] [example] [info] v2_right  = 0
+[2024-07-25 19:53:22.412] [example] [info] s_total = 8.761523
+[2024-07-25 19:53:22.412] [example] [info] s_min =28.965624 
+[2024-07-25 19:53:22.412] [example] [info] key_points.at(i).at(j).index = 0
+[2024-07-25 19:53:22.412] [example] [info] key_points.at(i).at(j).left = 0
+[2024-07-25 19:53:22.412] [example] [info] key_points.at(i).at(j).right = 2.55
+[2024-07-25 19:53:22.412] [example] [info] index = 2
+[2024-07-25 19:53:22.412] [example] [info] Function() AdpKeyPoints[new] End 
+[2024-07-25 19:53:22.413] [example] [info] 开始KeyPointsDecelerationCheck() ,路径段落个数:1
+[2024-07-25 19:53:22.413] [example] [info] 第1段的第1个关键点的索引 0,左限速 0,右限速 2.55
+[2024-07-25 19:53:22.413] [example] [info] 第1段的第2个关键点的索引 9,左限速 2.55,右限速 0
+[2024-07-25 19:53:22.413] [example] [info] 减速检查
+[2024-07-25 19:53:22.413] [example] [info] s_total = 8.761523
+[2024-07-25 19:53:22.413] [example] [info] s_min =8.128124 
+[2024-07-25 19:53:22.413] [example] [info] PASS ,减速距离达标
+[2024-07-25 19:53:22.413] [example] [info] 结束KeyPointsDecelerationCheck() ,路径段落个数:1
+[2024-07-25 19:53:22.413] [example] [info]  ...Start the Shortest_Time mode speed planning...
+[2024-07-25 19:53:22.413] [example] [info] key_points.size() = 1
+[2024-07-25 19:53:22.413] [example] [info]  ...plan for the 1 the segment...
+[2024-07-25 19:53:22.413] [example] [info] temp_keypoint.size():2
+[2024-07-25 19:53:22.413] [example] [info] index:0, speed_limit_left :0, speed_limit_right:2.55
+[2024-07-25 19:53:22.413] [example] [info] index:9, speed_limit_left :2.55, speed_limit_right:0
+[2024-07-25 19:53:22.413] [example] [info] v0= 0
+[2024-07-25 19:53:22.413] [example] [info] v1= 2.55
+[2024-07-25 19:53:22.413] [example] [info] v2= 0
+[2024-07-25 19:53:22.413] [example] [info] ...Case 4...
+[2024-07-25 19:53:22.413] [example] [info] keypoint1.index =0 
+[2024-07-25 19:53:22.413] [example] [info] keypoint2.index =9 
+[2024-07-25 19:53:22.413] [example] [info] begin SpeedCurveSmooth
+[2024-07-25 19:53:22.413] [example] [info] ...SpeedCurveSmooth() finish...
+[2024-07-25 19:53:22.413] [example] [info] begin SpeedCurveInterpolation
+[2024-07-25 19:53:22.413] [example] [info] ...The SpeedCurveInterpolation() finish...
+[2024-07-25 19:53:22.413] [example] [info] SpeedPlanning() end
+[2024-07-25 19:53:22.413] [example] [info] CheckPathFracture
+[2024-07-25 19:53:22.413] [example] [info] OverSpeedCheck
+[2024-07-25 19:53:22.413] [example] [info] RemoveSamePoint
+[2024-07-25 19:53:22.413] [example] [info] CalAcc
+[2024-07-25 19:53:29.411] [example] [info] start_point.x =-288.7336883544922
+[2024-07-25 19:53:29.411] [example] [info] start_point.y =939.0611572265625
+[2024-07-25 19:53:29.411] [example] [info] start_point.yaw =90.57294609281553
+[2024-07-25 19:53:29.411] [example] [info] end_point.x =-288.67281341552734
+[2024-07-25 19:53:29.411] [example] [info] end_point.y =932.9739637374878
+[2024-07-25 19:53:29.411] [example] [info] end_point.yaw =90.57295975319384
+[2024-07-25 19:53:29.411] [example] [info] Enter GlobalPathPlanningIntface
+[2024-07-25 19:53:29.411] [example] [info] Enter PathPlanning
+[2024-07-25 19:53:29.411] [example] [info]  task_type_: 2
+[2024-07-25 19:53:29.411] [example] [info] 终点搜索半径：0.5,搜索到路径数量:1
+[2024-07-25 19:53:29.411] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 19:53:29.411] [example] [info] 68
+[2024-07-25 19:53:29.412] [example] [info] 起点搜索半径：0.5,搜索到路径数量:1
+[2024-07-25 19:53:29.412] [example] [info] 搜索到的路径ID信息如下
+[2024-07-25 19:53:29.412] [example] [info] 68
+[2024-07-25 19:53:29.412] [example] [info] start:0,end:0
+[2024-07-25 19:53:29.412] [example] [info] 路径68与路径68联通
+[2024-07-25 19:53:29.412] [example] [info] 找到路径对68-68
+[2024-07-25 19:53:29.412] [example] [info] 起点匹配上的路径索引19，横向距离0.00720375428819865，纵向距离0.08126085672341457
+[2024-07-25 19:53:29.412] [example] [info] 终点匹配上的路径索引13，横向距离0.16544215386000993，纵向距离-0.013148722315322155
+[2024-07-25 19:53:29.412] [example] [info] 起点、终点位于同一条参考路径
+[2024-07-25 19:53:29.412] [example] [info] PathClipAndSplice---global_path_.size():7
+[2024-07-25 19:53:29.412] [example] [info] PathPlanning 成功
+[2024-07-25 19:53:29.412] [example] [info] 不是超短距离规划
+[2024-07-25 19:53:29.412] [example] [info] IsShortDistance 成功
+[2024-07-25 19:53:29.412] [example] [info] Enter HybirdAStarFitting
+[2024-07-25 19:53:29.412] [example] [info] HybirdAStarFitting结束
+[2024-07-25 19:53:29.412] [example] [info] StartEndPointProcess 开始
+[2024-07-25 19:53:29.412] [example] [info] 全局路径第一个位于实际起点前面，或者太近，现予以去除
+[2024-07-25 19:53:29.412] [example] [info] 全局路径最后一个位于实际终点后面，或者最后一个点就是终点，现予以去除
+[2024-07-25 19:53:29.412] [example] [info] 将规划终点作为最后一个点添加进global_path的末尾
+[2024-07-25 19:53:29.412] [example] [info] StartEndPointProcess 结束
+[2024-07-25 19:53:29.412] [example] [info] global_path_.size():7
+[2024-07-25 19:53:29.412] [example] [info] 均匀碾压功能开启
+[2024-07-25 19:53:29.412] [example] [info] num:1
+[2024-07-25 19:53:29.412] [example] [info] 起步就是需要偏移的路段
+[2024-07-25 19:53:29.412] [example] [info] 规划出的路径包含1个偏移路段，0个不偏移路段
+[2024-07-25 19:53:29.412] [example] [info] 偏移路段索引：(0,6)
+[2024-07-25 19:53:29.412] [example] [info] 找到合适的权重：-1
+[2024-07-25 19:53:29.412] [example] [info] 均匀碾压功能完毕
+[2024-07-25 19:53:29.412] [example] [info] kMaxAcceleration =0.3 
+[2024-07-25 19:53:29.412] [example] [info] kMinAcceleration =-0.4 
+[2024-07-25 19:53:29.412] [example] [info] kDeltaSpeed =5 
+[2024-07-25 19:53:29.412] [example] [info] kErrorTerm =0.1 
+[2024-07-25 19:53:29.412] [example] [info] kSmoothnessTerm =0.001 
+[2024-07-25 19:53:29.412] [example] [info] kDiscreteNumber =1 
+[2024-07-25 19:53:29.412] [example] [info] reverse_speed =1 
+[2024-07-25 19:53:29.412] [example] [info] 基于路况的分段速度规划开启
+[2024-07-25 19:53:29.412] [example] [info] 打印temp_max_speed信息
+[2024-07-25 19:53:29.412] [example] [info] 方向盘转速速度限制
+[2024-07-25 19:53:29.412] [example] [info] 方向盘转速速度限制左右5m扩张
+[2024-07-25 19:53:29.412] [example] [info] line1498
+[2024-07-25 19:53:29.412] [example] [info] line1520
+[2024-07-25 19:53:29.412] [example] [info] trajectory_fragments.size():1
+[2024-07-25 19:53:29.412] [example] [info] SplitPath 成功
+[2024-07-25 19:53:29.412] [example] [info] 本次任务的全局路径一共1段
+[2024-07-25 19:53:29.412] [example] [info] 第1段有3关键点
+[2024-07-25 19:53:29.412] [example] [info] 第1段的第1个关键点的索引0,左限速0,右限速6.05
+[2024-07-25 19:53:29.412] [example] [info] 第1段的第2个关键点的索引5,左限速2.55,右限速6.05
+[2024-07-25 19:53:29.412] [example] [info] 第1段的第3个关键点的索引6,左限速6.05,右限速0
+[2024-07-25 19:53:29.412] [example] [info] 开始AdpKeyPoints[new] ,路径段落个数:1
+[2024-07-25 19:53:29.412] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 19:53:29.412] [example] [info] 第1段全局路径有7个点
+[2024-07-25 19:53:29.412] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 19:53:29.412] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 19:53:29.412] [example] [info] v1_index = 0
+[2024-07-25 19:53:29.412] [example] [info] v1_left = 0
+[2024-07-25 19:53:29.412] [example] [info] v1_right = 6.05
+[2024-07-25 19:53:29.412] [example] [info] v2_index = 5
+[2024-07-25 19:53:29.412] [example] [info] v2_left = 2.55
+[2024-07-25 19:53:29.412] [example] [info] v2_right  = 6.05
+[2024-07-25 19:53:29.412] [example] [info] 左右速度不等
+[2024-07-25 19:53:29.412] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 19:53:29.412] [example] [info] v1_index = 5
+[2024-07-25 19:53:29.412] [example] [info] v1_left = 2.55
+[2024-07-25 19:53:29.412] [example] [info] v1_right = 6.05
+[2024-07-25 19:53:29.412] [example] [info] v2_index = 6
+[2024-07-25 19:53:29.412] [example] [info] v2_left = 6.05
+[2024-07-25 19:53:29.412] [example] [info] v2_right  = 0
+[2024-07-25 19:53:29.412] [example] [info] s_total = 1.0248098
+[2024-07-25 19:53:29.412] [example] [info] s_min =105.9198 
+[2024-07-25 19:53:29.412] [example] [info] 不合理加速，现予以调整
+[2024-07-25 19:53:29.412] [example] [info] index = 1
+[2024-07-25 19:53:29.412] [example] [info] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2024-07-25 19:53:29.412] [example] [info] 第1段全局路径有7个点
+[2024-07-25 19:53:29.412] [example] [info]  Functions Delete keypoints !!
+[2024-07-25 19:53:29.412] [example] [info] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2024-07-25 19:53:29.412] [example] [info] v1_index = 0
+[2024-07-25 19:53:29.412] [example] [info] v1_left = 0
+[2024-07-25 19:53:29.412] [example] [info] v1_right = 2.55
+[2024-07-25 19:53:29.412] [example] [info] v2_index = 6
+[2024-07-25 19:53:29.412] [example] [info] v2_left = 2.55
+[2024-07-25 19:53:29.412] [example] [info] v2_right  = 0
+[2024-07-25 19:53:29.412] [example] [info] s_total = 6.098725
+[2024-07-25 19:53:29.412] [example] [info] s_min =28.965624 
+[2024-07-25 19:53:29.412] [example] [info] key_points.at(i).at(j).index = 0
+[2024-07-25 19:53:29.412] [example] [info] key_points.at(i).at(j).left = 0
+[2024-07-25 19:53:29.412] [example] [info] key_points.at(i).at(j).right = 2.55
+[2024-07-25 19:53:29.412] [example] [info] index = 2
+[2024-07-25 19:53:29.412] [example] [info] Function() AdpKeyPoints[new] End 
+[2024-07-25 19:53:29.412] [example] [info] 开始KeyPointsDecelerationCheck() ,路径段落个数:1
+[2024-07-25 19:53:29.412] [example] [info] 第1段的第1个关键点的索引 0,左限速 0,右限速 2.55
+[2024-07-25 19:53:29.412] [example] [info] 第1段的第2个关键点的索引 6,左限速 2.55,右限速 0
+[2024-07-25 19:53:29.412] [example] [info] 减速检查
+[2024-07-25 19:53:29.413] [example] [warning] warnning ,减速距离不够
+[2024-07-25 19:53:29.413] [example] [info] s_total = 6.098725
+[2024-07-25 19:53:29.413] [example] [info] s_min =8.128124 
+[2024-07-25 19:53:29.413] [example] [info] 右限速调整为：1.5618867
+[2024-07-25 19:53:29.413] [example] [info] 重新开始一轮
+[2024-07-25 19:53:29.413] [example] [info] 第1段的第1个关键点的索引 0,左限速 0,右限速 1.5618867
+[2024-07-25 19:53:29.413] [example] [info] 第1段的第2个关键点的索引 6,左限速 1.5618867,右限速 0
+[2024-07-25 19:53:29.413] [example] [info] 减速检查
+[2024-07-25 19:53:29.413] [example] [info] s_total = 6.098725
+[2024-07-25 19:53:29.413] [example] [info] s_min =3.0493624 
+[2024-07-25 19:53:29.413] [example] [info] PASS ,减速距离达标
+[2024-07-25 19:53:29.413] [example] [info] 结束KeyPointsDecelerationCheck() ,路径段落个数:1
+[2024-07-25 19:53:29.413] [example] [info]  ...Start the Shortest_Time mode speed planning...
+[2024-07-25 19:53:29.413] [example] [info] key_points.size() = 1
+[2024-07-25 19:53:29.413] [example] [info]  ...plan for the 1 the segment...
+[2024-07-25 19:53:29.413] [example] [info] temp_keypoint.size():2
+[2024-07-25 19:53:29.413] [example] [info] index:0, speed_limit_left :0, speed_limit_right:1.5618867
+[2024-07-25 19:53:29.413] [example] [info] index:6, speed_limit_left :1.5618867, speed_limit_right:0
+[2024-07-25 19:53:29.413] [example] [info] v0= 0
+[2024-07-25 19:53:29.413] [example] [info] v1= 1.5618867
+[2024-07-25 19:53:29.413] [example] [info] v2= 0
+[2024-07-25 19:53:29.413] [example] [info] ...Case 4...
+[2024-07-25 19:53:29.413] [example] [info] keypoint1.index =0 
+[2024-07-25 19:53:29.413] [example] [info] keypoint2.index =6 
+[2024-07-25 19:53:29.413] [example] [info] begin SpeedCurveSmooth
+[2024-07-25 19:53:29.413] [example] [info] ...SpeedCurveSmooth() finish...
+[2024-07-25 19:53:29.413] [example] [info] begin SpeedCurveInterpolation
+[2024-07-25 19:53:29.413] [example] [info] ...The SpeedCurveInterpolation() finish...
+[2024-07-25 19:53:29.413] [example] [info] SpeedPlanning() end
+[2024-07-25 19:53:29.413] [example] [info] CheckPathFracture
+[2024-07-25 19:53:29.413] [example] [info] OverSpeedCheck
+[2024-07-25 19:53:29.413] [example] [info] RemoveSamePoint
