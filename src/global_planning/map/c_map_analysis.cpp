@@ -56,7 +56,9 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
         bp.y    = borderPointsArray[i]["y"].GetDouble();
         bp.z    = borderPointsArray[i]["z"].GetDouble();
         bp.type = static_cast<unsigned char>(borderPointsArray[i]["type"].GetInt());
-        v_bp.emplace_back(bp);
+        if (bp.type == 0) {
+            v_bp.emplace_back(bp);
+        }
     }
     map_border_ = v_bp;
     cout << "解析border_points完毕" << endl;

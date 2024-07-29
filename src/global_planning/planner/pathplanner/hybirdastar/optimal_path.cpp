@@ -38,6 +38,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     timelog.AddLog("InitBoundMap");
 
     GenerateBoundSet();
+    threadLogger_->info("GenerateBoundSet");
     timelog.AddLog("GenerateBoundSet");
 
 

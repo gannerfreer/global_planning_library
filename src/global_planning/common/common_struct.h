@@ -42,21 +42,12 @@ enum struct TaskType : unsigned int {
 };
 enum struct ErrorType : unsigned int {
     SUCCESS,
-    POINT_UNREASONABLE,         // 作业点不合理
-    ROAD_GRAPH_ERROR,           // 路网权重图存在问题
-    PLANNING_FAIL,              // 规划算法无法规划出路径，拿出日志，并联系开发人员
-    DIRECTION_MAP_ERROR,        // mapjson中传入的有向图异常
-    SPEED_PLANNING_FAIL,        // 速度规划失败
-    END_POINT_ERROR,            // 当前任务的终点不严格意义上位于参考路径上
-    NO_REFERENCELINE,           // 地图中缺少行车参考路径
-    TOO_CLOSE_TO_LOADING_POINT, // 电铲位置相对驶离装载点位置不合理
-    ALGORITHM_ERROR,            // 规划算法崩溃，拿出日志，并联系开发人员
-    NO_LONG_DISTANCE_BACK,      // 需要长距离倒车，超过20m，不予以处理
-    OFFSET_FAIL,                // 均匀碾压失败
-    NO_MAP,                     // 规划库无地图，可能是容器被重启了，需要重新加载地图
-    ERROR_LOADING_WAITTING_POINT, // 装载等待点与装载点不属于同一区域，诊断为错误的装载等待点，请核验
-    PATH_FRACTURE,                // 路径出现断裂，请检查map.json中的参考路径
-    REFERENCELINE_LOSS // 卸载区参考路径存在丢失
+    POINT_UNREASONABLE,  // 作业点不合理
+    ROAD_GRAPH_ERROR,    // 路网权重图存在问题
+    SPEED_PLANNING_FAIL, // 速度规划失败
+    ALGORITHM_ERROR,     // 规划算法崩溃，拿出日志，并联系开发人员
+    OFFSET_FAIL,         // 均匀碾压失败
+    NO_MAP,              // 规划库无地图，可能是容器被重启了，需要重新加载地图
 };
 
 struct _TrajectoryPoint {

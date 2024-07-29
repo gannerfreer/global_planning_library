@@ -853,14 +853,14 @@ bool Planning::HybirdAStarFitting() {
         if (JudgeFittingDirection(start_point_, 0, true)) {
             if (!ProgressiveHybirdAStar(start_point_, true, 0, search_index, temp_traj, rule_id_3, off_set)) {
                 threadLogger_->error("调度，起点需要hybirdA*拟合，off_set:{},规划失败", off_set);
-                error_type_ = ErrorType::PLANNING_FAIL;
+                error_type_ = ErrorType::POINT_UNREASONABLE;
                 return false;
             }
         }
         else {
             if (!ProgressiveHybirdAStar(start_point_, true, 0, search_index, temp_traj, rule_id_1, off_set)) {
                 threadLogger_->error("调度，起点需要hybirdA*拟合，规划失败");
-                error_type_ = ErrorType::PLANNING_FAIL;
+                error_type_ = ErrorType::POINT_UNREASONABLE;
                 return false;
             }
         }
@@ -878,7 +878,7 @@ bool Planning::HybirdAStarFitting() {
             if (!ProgressiveHybirdAStar(end_point_, false, global_path_.size() - 1, search_index, temp_traj, rule_id_3,
                                         off_set)) {
                 threadLogger_->error("调度，终点需要hybirdA*正向拟合，规划失败");
-                error_type_ = ErrorType::PLANNING_FAIL;
+                error_type_ = ErrorType::POINT_UNREASONABLE;
                 return false;
             }
         }
@@ -886,7 +886,7 @@ bool Planning::HybirdAStarFitting() {
             if (!ProgressiveHybirdAStar(end_point_, false, global_path_.size() - 1, search_index, temp_traj, rule_id_1,
                                         off_set)) {
                 threadLogger_->error("调度，终点需要hybirdA*倒车拟合，规划失败");
-                error_type_ = ErrorType::PLANNING_FAIL;
+                error_type_ = ErrorType::POINT_UNREASONABLE;
                 return false;
             }
         }

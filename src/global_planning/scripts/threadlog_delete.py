@@ -3,48 +3,59 @@ import os
 import tempfile  
   
 # 使用with语句打开原始文件并创建一个临时文件  
-with open('src/shenyan.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+with open('../interface.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
-        if 'threadLogger' not in line:  
+        if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, 'src/shenyan.cpp')  
-with open('include/shenyan.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+os.rename(tmpfile.name, '../interface.cpp')  
+with open('../main.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
-        if 'threadLogger' not in line:  
+        if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, 'include/shenyan.h')  
+os.rename(tmpfile.name, '../main.cpp')  
   
-with open('src/c_global_speed_planning_test.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+with open('../mine_global_planning/planning.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
-        if 'threadLogger' not in line:  
+        if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, 'src/c_global_speed_planning_test.cpp')  
-with open('include/global_speed_planning_test.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+os.rename(tmpfile.name, '../mine_global_planning/planning.cpp')  
+with open('../mine_global_planning/planning.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
-        if 'threadLogger' not in line:  
+        if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, 'include/global_speed_planning_test.h')  
+os.rename(tmpfile.name, '../mine_global_planning/planning.h')  
 
+with open('../planner/pathplanner/dijkstra/dijkstra.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../planner/pathplanner/dijkstra/dijkstra.cpp')  
+with open('../planner/pathplanner/dijkstra/dijkstra.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../planner/pathplanner/dijkstra/dijkstra.h')  
 
-with open('src/dijkstra.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+with open('../planner/pathplanner/hybirdastar/optimal_path.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
-        if 'threadLogger' not in line:  
+        if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, 'src/dijkstra.cpp')  
-with open('include/dijkstra.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
-    for line in file:  
-        if 'threadLogger' not in line:  
-            tmpfile.write(line)  
-os.rename(tmpfile.name, 'include/dijkstra.h')  
+os.rename(tmpfile.name, '../planner/pathplanner/hybirdastar/optimal_path.cpp') 
 
-with open('src/optimal_path.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+with open('../planner/pathplanner/hybirdastar/optimal_path.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
-        if 'threadLogger' not in line:  
+        if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, 'src/optimal_path.cpp')  
-with open('include/optimal_path.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
-    for line in file:  
-        if 'threadLogger' not in line:  
-            tmpfile.write(line)  
-os.rename(tmpfile.name, 'include/optimal_path.h')  
+os.rename(tmpfile.name, '../planner/pathplanner/hybirdastar/optimal_path.h') 
 
+with open('../planner/speedplanner/global_speed_planning.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../planner/speedplanner/global_speed_planning.cpp') 
+
+with open('../planner/speedplanner/global_speed_planning.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../planner/speedplanner/global_speed_planning.h') 
