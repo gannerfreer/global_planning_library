@@ -34,8 +34,9 @@ using std::vector;
 class CRvizPath {
   public:
     CRvizPath() {
-        m_Publisher_global     = n.advertise<visualization_msgs::Marker>("path_global", 1);
-        m_Publisher_road_node_ = n.advertise<sensor_msgs ::PointCloud>("road_node", 1);
+        publisher_global_path_  = n.advertise<visualization_msgs::Marker>("path_global", 1);
+        publisher_expand_point_ = n.advertise<visualization_msgs::Marker>("point_expand", 1);
+        m_Publisher_road_node_  = n.advertise<sensor_msgs ::PointCloud>("road_node", 1);
 
         pub_area_path   = n.advertise<sensor_msgs ::PointCloud>("area_points", 1);
         pub_start       = n.advertise<visualization_msgs::Marker>("start", 1);
@@ -43,18 +44,31 @@ class CRvizPath {
         pub_h_value_map = n.advertise<visualization_msgs::MarkerArray>("/h_value_map", 1);
 
 
-        global_path_now.header.frame_id = "map";
-        global_path_now.ns              = "my_namespace";
-        global_path_now.type            = visualization_msgs::Marker ::POINTS;
-        global_path_now.action          = visualization_msgs::Marker ::ADD;
-        global_path_now.scale.x         = 0.5;
-        global_path_now.scale.y         = 0.5;
-        global_path_now.scale.z         = 0.5;
-        global_path_now.id              = 20;
-        global_path_now.color.a         = 1.0;
-        global_path_now.color.r         = 1.0;
-        global_path_now.color.g         = 0.0;
-        global_path_now.color.b         = 1.0;
+        global_path_now_.header.frame_id = "map";
+        global_path_now_.ns              = "my_namespace";
+        global_path_now_.type            = visualization_msgs::Marker ::POINTS;
+        global_path_now_.action          = visualization_msgs::Marker ::ADD;
+        global_path_now_.scale.x         = 0.5;
+        global_path_now_.scale.y         = 0.5;
+        global_path_now_.scale.z         = 0.5;
+        global_path_now_.id              = 20;
+        global_path_now_.color.a         = 1.0;
+        global_path_now_.color.r         = 1.0;
+        global_path_now_.color.g         = 0.0;
+        global_path_now_.color.b         = 1.0;
+
+        expand_point_now_.header.frame_id = "map";
+        expand_point_now_.ns              = "my_namespace";
+        expand_point_now_.type            = visualization_msgs::Marker ::POINTS;
+        expand_point_now_.action          = visualization_msgs::Marker ::ADD;
+        expand_point_now_.scale.x         = 0.5;
+        expand_point_now_.scale.y         = 0.5;
+        expand_point_now_.scale.z         = 0.5;
+        expand_point_now_.id              = 21;
+        expand_point_now_.color.a         = 1.0;
+        expand_point_now_.color.r         = 1.0;
+        expand_point_now_.color.g         = 1.0;
+        expand_point_now_.color.b         = 0.0;
 
 
         road_nodes_.header.frame_id = "map";
@@ -82,6 +96,9 @@ class CRvizPath {
     void PubStartPosition(double x, double y, double yaw_angle);
     void PubEndPosition(double x, double y, double yaw_angle);
 
+    void PubExpandPoint(std::vector<Point>& path, Point mid_point);
+
+
   public:
     // const double x_o_ = -321737.4857;     // 舒兰
     // const double y_o_ = 534463.584699999; // 舒兰
@@ -90,10 +107,10 @@ class CRvizPath {
     const double y_o_ = 920;  // 鲁南
 
   private:
-    ros::NodeHandle n;
-    ros::Publisher  pub_area_path, m_Publisher_global, m_Publisher_road_node_, pub_end, pub_h_value_map, pub_start;
+    ros::NodeHandle                 n;
+    ros::Publisher                  pub_area_path, publisher_global_path_, publisher_expand_point_, m_Publisher_road_node_, pub_end, pub_h_value_map, pub_start;
     sensor_msgs::PointCloud         area_points, road_nodes_;
-    visualization_msgs::Marker      global_path_now, start, end;
+    visualization_msgs::Marker      global_path_now_, start, end, expand_point_now_;
     visualization_msgs::MarkerArray h_value_map;
 };
 } // namespace rviz_path

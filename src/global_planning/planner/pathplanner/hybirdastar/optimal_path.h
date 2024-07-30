@@ -81,9 +81,7 @@ class OptimalPath {
      * 返回规划结果
      */
 
-    PlanResult SearchGlobalPath(const Point start, const Point end, const Bound& road_bound,
-                                const Bound& obstacle_bound, const _VehicleParam m_vehicle_param, Path& final_path,
-                                long long time_threshold, const PlanRule plan_path_rule = PlanRule ::Normal_Planning);
+    PlanResult SearchGlobalPath(const Point start, const Point end, const Bound& road_bound, const Bound& obstacle_bound, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule plan_path_rule = PlanRule ::Normal_Planning);
 
   private:
     /**
@@ -123,8 +121,7 @@ class OptimalPath {
      * @param [in] current_point 混合A星搜索的当前点
      * @return 返回说明：无
      */
-    void FindExpandVertex(const Vertex3D& current_point, unsigned long long& time_expand,
-                          unsigned long long& time_expand_another);
+    void FindExpandVertex(const Vertex3D& current_point, unsigned long long& time_expand, unsigned long long& time_expand_another);
 
     /**
      * @brief 路径回溯函数
@@ -319,6 +316,7 @@ class OptimalPath {
             temp_point.direction = (iter->second.direction == Backward) ? Forward : Backward;
             expandpoint.push_back(temp_point);
         }
+
         return expandpoint;
     }
     /**
@@ -375,7 +373,6 @@ class OptimalPath {
 
     unordered_set<unsigned int> bound_set_; // 边界的整数坐标形式
     vector<int>                 box_index_;
-    int                         RS_num;
     int                         All;
 
 }; // end class optimal_path

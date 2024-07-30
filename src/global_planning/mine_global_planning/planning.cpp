@@ -39,9 +39,7 @@ bool Planning::ReadAllMapFile() {
     m_tar_rviz_data_.minx = INF;
     m_tar_rviz_data_.miny = INF;
     // 读取地图信息
-    if (!configio_.GetMap(road_directed_graph_, map_border_, all_referencelines_, sequence_mapping_,
-                          m_tar_rviz_data_) ||
-        !configio_.GetVehicleParam(vehicle_param_)) {
+    if (!configio_.GetMap(road_directed_graph_, map_border_, all_referencelines_, sequence_mapping_, m_tar_rviz_data_) || !configio_.GetVehicleParam(vehicle_param_)) {
         return false;
     }
     else {
@@ -139,16 +137,13 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 }
 
 
-bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_direction, int search_start,
-                                      int& search_index, vector<_TrajectoryPoint>& result_trajectory,
-                                      unsigned char rule_id, int off_set) {
+bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_direction, int search_start, int& search_index, vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id, int off_set) {
     long long    time_threshold = 0.8 * 1000 * 1000;
     int          counter        = 0;
     bool         success_flag   = false;
     _SinglePoint temp_start, temp_end;
     int          cal = 0;
-    threadLogger_->info("搜索起点索引：{}  搜索方向  -- 1(顺着参考线)  --0(逆着参考线)：{}", search_start,
-                        search_direction);
+    threadLogger_->info("搜索起点索引：{}  搜索方向  -- 1(顺着参考线)  --0(逆着参考线)：{}", search_start, search_direction);
     int offset = off_set;
     if (search_direction == true) // 顺着参考线进行搜索，这种case为找拼接终点
     {
@@ -210,8 +205,7 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_dir
     }
 }
 
-bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj,
-                                        unsigned char plan_rule_id, long long time_threshold) {
+bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, unsigned char plan_rule_id, long long time_threshold) {
     // 起始点、目标点结构转换
     Point temp_start_point(s_point.x, s_point.y, s_point.z, s_point.yaw, MotionDirection ::Forward);
     Point temp_end_point(e_point.x, e_point.y, e_point.z, e_point.yaw, MotionDirection ::Forward);
@@ -252,9 +246,7 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
 
     my_optimal_path_.threadLogger_ = threadLogger_;
 
-    if (my_optimal_path_.SearchGlobalPath(temp_start_point, temp_end_point, road_outer_bound, road_inner_bound,
-                                          vehicle_param_, final_path, time_threshold,
-                                          planrule) == PlanResult::Plan_OK) {
+    if (my_optimal_path_.SearchGlobalPath(temp_start_point, temp_end_point, road_outer_bound, road_inner_bound, vehicle_param_, final_path, time_threshold, planrule) == PlanResult::Plan_OK) {
         threadLogger_->info("SearchGlobalPath success");
         _TrajectoryPoint temp_point;
         for (int i = 0; i < final_path.size(); i++) {
@@ -371,8 +363,7 @@ bool Planning::RandomOffsetWithoutCuravture() {
             reverse_section.push_back(make_pair(start, temp_path.size() - 1));
         }
 
-        threadLogger_->info("规划出的路径包含{}个偏移路段，{}个不偏移路段", forward_section.size(),
-                            reverse_section.size());
+        threadLogger_->info("规划出的路径包含{}个偏移路段，{}个不偏移路段", forward_section.size(), reverse_section.size());
 
         for (int i = 0; i < forward_section.size(); i++) {
             threadLogger_->info("偏移路段索引：({},{})", forward_section.at(i).first, forward_section.at(i).second);
@@ -421,8 +412,7 @@ bool Planning::RandomOffsetWithoutCuravture() {
 
 
                 if (j < reverse_section.size()) {
-                    global_path_.insert(global_path_.end(), temp_path.begin() + reverse_section.at(j).first,
-                                        temp_path.begin() + reverse_section.at(j).second + 1);
+                    global_path_.insert(global_path_.end(), temp_path.begin() + reverse_section.at(j).first, temp_path.begin() + reverse_section.at(j).second + 1);
                     j++;
                 }
             }
@@ -430,8 +420,7 @@ bool Planning::RandomOffsetWithoutCuravture() {
         else {
             int i = 0;
             for (int j = 0; j < reverse_section.size(); j++) {
-                global_path_.insert(global_path_.end(), temp_path.begin() + reverse_section.at(j).first,
-                                    temp_path.begin() + reverse_section.at(j).second + 1);
+                global_path_.insert(global_path_.end(), temp_path.begin() + reverse_section.at(j).first, temp_path.begin() + reverse_section.at(j).second + 1);
                 if (i < forward_section.size()) {
                     start = forward_section.at(i).first;
                     end   = forward_section.at(i).second;
@@ -578,8 +567,7 @@ bool Planning::FollowReferencelinePlanning() {
     double         end_search_radius = 0.5, start_search_radius = 0.5;
     vector<int>    start_path_vec, end_path_vec;
     while (end_search_radius <= 2) {
-        if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius,
-                                                        end_path_vec)) {
+        if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
             threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
             threadLogger_->info("搜索到的路径ID信息如下");
             for (auto i : end_path_vec) {
@@ -587,23 +575,19 @@ bool Planning::FollowReferencelinePlanning() {
             }
             start_search_radius = 0.5;
             while (start_search_radius <= 70) {
-                if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius,
-                                                        start_path_vec)) {
-                    threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius,
-                                        start_path_vec.size());
+                if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
+                    threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius, start_path_vec.size());
                     threadLogger_->info("搜索到的路径ID信息如下");
                     for (auto i : start_path_vec) {
                         threadLogger_->info(i);
                     }
                     vector<int> start_path_vec_switch, end_path_vec_switch;
                     for (auto i : start_path_vec) {
-                        start_path_vec_switch.push_back(
-                            GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
+                        start_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
                     }
 
                     for (auto i : end_path_vec) {
-                        end_path_vec_switch.push_back(
-                            GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
+                        end_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
                     }
 
                     // 在start_path_vec_switch和end_path_vec_switch中查找连通路径
@@ -614,8 +598,7 @@ bool Planning::FollowReferencelinePlanning() {
                             }
                             if (IsConnect(start, end)) {
                                 threadLogger_->info("start:{},end:{}", start, end);
-                                threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start),
-                                                    sequence_mapping_.at(end));
+                                threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
 
                                 success_pair = make_pair(start, end);
                                 is_found     = true; // 标记为已找到
@@ -624,8 +607,7 @@ bool Planning::FollowReferencelinePlanning() {
                             else {
                                 v_fail_pair_.push_back(pair(start, end));
                                 threadLogger_->info("start:{},end:{}", start, end);
-                                threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start),
-                                                    sequence_mapping_.at(end));
+                                threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
                             }
                         }
                         if (is_found) break; // 如果已找到，退出中间层循环
@@ -644,8 +626,7 @@ bool Planning::FollowReferencelinePlanning() {
         error_type_ = ErrorType::ROAD_GRAPH_ERROR;
         return false;
     }
-    threadLogger_->info("找到路径对{}-{}", sequence_mapping_.at(success_pair.first),
-                        sequence_mapping_.at(success_pair.second));
+    threadLogger_->info("找到路径对{}-{}", sequence_mapping_.at(success_pair.first), sequence_mapping_.at(success_pair.second));
     // 找到起点、终点对应的索引及其横纵向距离
     _SingleTraj start_traj, end_traj;
 
@@ -692,10 +673,7 @@ void Planning::StartEndPointProcess() {
     }
 
 
-    if ((fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI < 90 &&
-         fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI > 270) ||
-        (fabs(start_point_.x - global_path_.front().x) <= 0.3 &&
-         fabs(start_point_.y - global_path_.front().y) <= 0.3)) {
+    if ((fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI < 90 && fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI > 270) || (fabs(start_point_.x - global_path_.front().x) <= 0.3 && fabs(start_point_.y - global_path_.front().y) <= 0.3)) {
         global_path_.erase(global_path_.begin());
         threadLogger_->info("全局路径第一个位于实际起点前面，或者太近，现予以去除");
     }
@@ -726,11 +704,8 @@ void Planning::StartEndPointProcess() {
     // 如果最后一个点位于终点后面，需要进行删除
     // 如果最后一个点没有位于终点后，但是基本与终点重合，也需要进行删除
     double end_point_last_point_distance;
-    end_point_last_point_distance =
-        sqrt(pow(end_point_.x - global_path_.back().x, 2) + pow(end_point_.y - global_path_.back().y, 2));
-    if ((fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI > 90 &&
-         fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI < 270) ||
-        (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3)) {
+    end_point_last_point_distance = sqrt(pow(end_point_.x - global_path_.back().x, 2) + pow(end_point_.y - global_path_.back().y, 2));
+    if ((fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI > 90 && fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI < 270) || (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3)) {
         global_path_.pop_back();
         threadLogger_->info("全局路径最后一个位于实际终点后面，或者最后一个点就是终点，现予以去除");
     }
@@ -785,13 +760,11 @@ void Planning::PathClipAndSplice() {
         threadLogger_->info("起点、终点位于同一条参考路径");
         int temp_key = sequence_mapping_.at(road_sequence_.at(0));
         if (start_index_ < end_index_) {
-            global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + start_index_,
-                                all_referencelines_.at(temp_key).trajectory.begin() + end_index_ + 1);
+            global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + start_index_, all_referencelines_.at(temp_key).trajectory.begin() + end_index_ + 1);
         }
         else // 同一路段，支持短距离倒车
         {
-            global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + end_index_,
-                                all_referencelines_.at(temp_key).trajectory.begin() + start_index_ + 1);
+            global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + end_index_, all_referencelines_.at(temp_key).trajectory.begin() + start_index_ + 1);
             reverse(global_path_.begin(), global_path_.end());
             for (auto point : global_path_) {
                 if (point.direction == 0) {
@@ -808,17 +781,13 @@ void Planning::PathClipAndSplice() {
         for (int i = 0; i < road_sequence_.size(); i++) {
             int temp_key = sequence_mapping_.at(road_sequence_.at(i));
             if (i == 0) {
-                global_path_.insert(global_path_.end(),
-                                    all_referencelines_.at(temp_key).trajectory.begin() + start_index_,
-                                    all_referencelines_.at(temp_key).trajectory.end());
+                global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + start_index_, all_referencelines_.at(temp_key).trajectory.end());
             }
             else if (i == road_sequence_.size() - 1) {
-                global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin(),
-                                    all_referencelines_.at(temp_key).trajectory.begin() + end_index_);
+                global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin(), all_referencelines_.at(temp_key).trajectory.begin() + end_index_);
             }
             else {
-                global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin(),
-                                    all_referencelines_.at(temp_key).trajectory.end());
+                global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin(), all_referencelines_.at(temp_key).trajectory.end());
             }
         }
     }
@@ -875,16 +844,14 @@ bool Planning::HybirdAStarFitting() {
 
         int search_index = 0;
         if (JudgeFittingDirection(end_point_, global_path_.size() - 1, false)) {
-            if (!ProgressiveHybirdAStar(end_point_, false, global_path_.size() - 1, search_index, temp_traj, rule_id_3,
-                                        off_set)) {
+            if (!ProgressiveHybirdAStar(end_point_, false, global_path_.size() - 1, search_index, temp_traj, rule_id_3, off_set)) {
                 threadLogger_->error("调度，终点需要hybirdA*正向拟合，规划失败");
                 error_type_ = ErrorType::POINT_UNREASONABLE;
                 return false;
             }
         }
         else {
-            if (!ProgressiveHybirdAStar(end_point_, false, global_path_.size() - 1, search_index, temp_traj, rule_id_1,
-                                        off_set)) {
+            if (!ProgressiveHybirdAStar(end_point_, false, global_path_.size() - 1, search_index, temp_traj, rule_id_1, off_set)) {
                 threadLogger_->error("调度，终点需要hybirdA*倒车拟合，规划失败");
                 error_type_ = ErrorType::POINT_UNREASONABLE;
                 return false;
@@ -900,8 +867,7 @@ bool Planning::JudgeFittingDirection(_SinglePoint point, int search_index, bool 
     // 判断tra
     if (is_start) {
         if ((search_index + 10) < global_path_.size()) {
-            double lon_dis = (global_path_.at(search_index + 10).x - point.x) * cos(point.yaw) +
-                             (global_path_.at(search_index + 10).y - point.y) * sin(point.yaw);
+            double lon_dis = (global_path_.at(search_index + 10).x - point.x) * cos(point.yaw) + (global_path_.at(search_index + 10).y - point.y) * sin(point.yaw);
             if (lon_dis >= 0) {
                 threadLogger_->info("正向拟合");
                 return true; // 正向拟合
@@ -915,8 +881,7 @@ bool Planning::JudgeFittingDirection(_SinglePoint point, int search_index, bool 
     }
     else {
         if ((search_index - 10) >= 0) {
-            double lon_dis = (global_path_.at(search_index - 10).x - point.x) * cos(point.yaw) +
-                             (global_path_.at(search_index - 10).y - point.y) * sin(point.yaw);
+            double lon_dis = (global_path_.at(search_index - 10).x - point.x) * cos(point.yaw) + (global_path_.at(search_index - 10).y - point.y) * sin(point.yaw);
             if (lon_dis >= 0) {
                 threadLogger_->info("倒向拟合");
                 return false; // 倒车拟合
@@ -968,9 +933,7 @@ bool Planning::IsShortDistance() {
         temp_point.speed_limit = 0;
         temp_point.direction   = 1;
         global_path_.push_back(temp_point);
-        if ((end_point_.x - start_point_.x) * cos(start_point_.yaw) +
-                (end_point_.y - start_point_.y) * sin(start_point_.yaw) >
-            0) {
+        if ((end_point_.x - start_point_.x) * cos(start_point_.yaw) + (end_point_.y - start_point_.y) * sin(start_point_.yaw) > 0) {
             global_path_.at(0).direction = 0;
             global_path_.at(1).direction = 0;
         }

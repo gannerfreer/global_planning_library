@@ -51,8 +51,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
         std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->record_file_write_lock);
         std::ofstream                       record;
         record.open("record.txt", std::ios_base::app);
-        record << timeStr << " ，收到规划请求，请求号：" << veh_start_end.my_key << "，车辆编号：" << vehicle_code
-               << endl;
+        record << timeStr << " ，收到规划请求，请求号：" << veh_start_end.my_key << "，车辆编号：" << vehicle_code << endl;
         record.close();
     }
 
@@ -88,16 +87,14 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
                 string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, planning);
                 int    temp_string_size = temp_string.size();
 
-                GlobalVariable::getInstance()->SetReceivePtr(
-                    (char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+                GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
                 if (temp_string_size < 10) {
                     cout << "temp_string还没接就被释放了" << endl;
                     planning.threadLogger_->info("出锁成功");
                 }
                 planning.threadLogger_->info("VecWaypoint2json successfully");
 
-                planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}",
-                                             strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+                planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 planning.threadLogger_->info("出锁成功");
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
@@ -130,16 +127,14 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
                 string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, planning);
                 int    temp_string_size = temp_string.size();
 
-                GlobalVariable::getInstance()->SetReceivePtr(
-                    (char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+                GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
                 if (temp_string_size < 10) {
                     cout << "temp_string还没接就被释放了" << endl;
                     planning.threadLogger_->info("出锁成功");
                 }
                 planning.threadLogger_->info("VecWaypoint2json successfully");
 
-                planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}",
-                                             strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+                planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 planning.threadLogger_->info("出锁成功");
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
@@ -182,8 +177,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             }
             planning.threadLogger_->info("VecWaypoint2json successfully");
 
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}",
-                                         strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
@@ -205,8 +199,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             }
             planning.threadLogger_->info("VecWaypoint2json successfully");
 
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}",
-                                         strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
@@ -229,8 +222,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             }
             planning.threadLogger_->info("VecWaypoint2json successfully");
 
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}",
-                                         strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
@@ -251,8 +243,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             }
             planning.threadLogger_->info("VecWaypoint2json successfully");
 
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}",
-                                         strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
@@ -274,8 +265,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             }
             planning.threadLogger_->info("VecWaypoint2json successfully");
 
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}",
-                                         strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }

@@ -71,7 +71,7 @@ void CollisonCheck::InitObstacleMap(const Bound obstacle_bound) {
  *@param
  *return
  */
-bool CollisonCheck::IsRSPathCollision(const Path my_rspath) {
+bool CollisonCheck::IsRSPathCollision(const Path& my_rspath) {
     for (int i = 0; i < my_rspath.size(); ++i) {
         if (true == IsVehicleCollision(my_rspath.at(i)))
             return true;
@@ -86,14 +86,11 @@ bool CollisonCheck::IsRSPathCollision(const Path my_rspath) {
  *@param
  *return
  */
-vector<unsigned int> CollisonCheck::OptiPathCollisionCheck(const Path my_optipath) {
+vector<unsigned int> CollisonCheck::OptiPathCollisionCheck(const Path& my_optipath) {
     vector<unsigned int> collision_point;
     for (int i = 0; i < my_optipath.size(); ++i) {
-        if (!IsVehicleCollisionRoadBound(my_optipath.at(i),
-                                         m__VehicleParam_.safe_margin_bound - m__VehicleParam_.safe_margin_error)) {
-            if (obstacle_bound_map_.empty() ||
-                !IsVehicleCollisionObstacleBound(
-                    my_optipath.at(i), m__VehicleParam_.safe_margin_obstacle - m__VehicleParam_.safe_margin_error)) {
+        if (!IsVehicleCollisionRoadBound(my_optipath.at(i), m__VehicleParam_.safe_margin_bound - m__VehicleParam_.safe_margin_error)) {
+            if (obstacle_bound_map_.empty() || !IsVehicleCollisionObstacleBound(my_optipath.at(i), m__VehicleParam_.safe_margin_obstacle - m__VehicleParam_.safe_margin_error)) {
                 continue;
             }
         }
@@ -107,7 +104,7 @@ vector<unsigned int> CollisonCheck::OptiPathCollisionCheck(const Path my_optipat
  *@param
  *return
  */
-bool CollisonCheck::IsVehicleCollision(const Point my_point) {
+bool CollisonCheck::IsVehicleCollision(const Point& my_point) {
     utility::CTimeCounterTool time_tool(&time_couter_);
     if (!IsVehicleCollisionRoadBound(my_point, m__VehicleParam_.safe_margin_bound)) {
         if (obstacle_bound_map_.empty()) {
@@ -123,7 +120,7 @@ bool CollisonCheck::IsVehicleCollision(const Point my_point) {
  *@param
  *return
  */
-double CollisonCheck::GetCross(Coordinate p1, Coordinate p2, Coordinate p) {
+double CollisonCheck::GetCross(Coordinate& p1, Coordinate& p2, Coordinate& p) {
     // 计算|p1 p2| x |p1 p|
     return (p2.x - p1.x) * (p.y - p1.y) - (p.x - p1.x) * (p2.y - p1.y);
 }
@@ -133,7 +130,7 @@ double CollisonCheck::GetCross(Coordinate p1, Coordinate p2, Coordinate p) {
  *@param
  *return
  */
-bool CollisonCheck::IsPointInMatrix(Coordinate p, Coordinate p1, Coordinate p2, Coordinate p3, Coordinate p4) {
+bool CollisonCheck::IsPointInMatrix(Coordinate& p, Coordinate& p1, Coordinate& p2, Coordinate& p3, Coordinate& p4) {
     return GetCross(p1, p2, p) * GetCross(p3, p4, p) >= 0 && GetCross(p2, p3, p) * GetCross(p4, p1, p) >= 0;
 }
 
@@ -142,36 +139,28 @@ bool CollisonCheck::IsPointInMatrix(Coordinate p, Coordinate p1, Coordinate p2, 
  *@param
  *return
  */
-bool CollisonCheck::IsVehicleCollisionRoadBound(const Point my_point, const double safe_distance) {
+bool CollisonCheck::IsVehicleCollisionRoadBound(const Point& my_point, const double& safe_distance) {
     double cosa = cos(my_point.angle);
     double sina = sin(my_point.angle);
 
     // 计算车辆安全包络左前角坐标
-    double x_lf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa -
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double y_lf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina +
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+    double     x_lf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+    double     y_lf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
     Coordinate point_lf(x_lf, y_lf, my_point.z);
 
     // 计算车辆安全包络右前角坐标
-    double x_rf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa +
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double y_rf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina -
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+    double     x_rf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+    double     y_rf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
     Coordinate point_rf(x_rf, y_rf, my_point.z);
 
     // 计算车辆安全包络左后角坐标
-    double x_lr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * cosa -
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double y_lr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * sina +
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+    double     x_lr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+    double     y_lr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
     Coordinate point_lr(x_lr, y_lr, my_point.z);
 
     // 计算车辆安全包络右后角坐标
-    double x_rr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * cosa +
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double y_rr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * sina -
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+    double     x_rr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+    double     y_rr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
     Coordinate point_rr(x_rr, y_rr, my_point.z);
 
     // 使用轴对齐包围盒AABB包络车辆安全包络
@@ -223,36 +212,28 @@ bool CollisonCheck::IsVehicleCollisionRoadBound(const Point my_point, const doub
  *@param
  *return
  */
-bool CollisonCheck::IsVehicleCollisionObstacleBound(const Point my_point, const double safe_distance) {
+bool CollisonCheck::IsVehicleCollisionObstacleBound(const Point& my_point, const double& safe_distance) {
     double cosa = cos(my_point.angle);
     double sina = sin(my_point.angle);
 
     // 计算车辆安全包络左前角坐标
-    double x_lf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa -
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double y_lf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina +
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+    double     x_lf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+    double     y_lf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
     Coordinate point_lf(x_lf, y_lf, my_point.z);
 
     // 计算车辆安全包络右前角坐标
-    double x_rf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa +
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double y_rf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina -
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+    double     x_rf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+    double     y_rf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
     Coordinate point_rf(x_rf, y_rf, my_point.z);
 
     // 计算车辆安全包络左后角坐标
-    double x_lr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_obstacle + safe_distance) * cosa -
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double y_lr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_obstacle + safe_distance) * sina +
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+    double     x_lr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_obstacle + safe_distance) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+    double     y_lr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_obstacle + safe_distance) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
     Coordinate point_lr(x_lr, y_lr, my_point.z);
 
     // 计算车辆安全包络右后角坐标
-    double x_rr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_obstacle + safe_distance) * cosa +
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double y_rr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_obstacle + safe_distance) * sina -
-                  (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+    double     x_rr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_obstacle + safe_distance) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+    double     y_rr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_obstacle + safe_distance) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
     Coordinate point_rr(x_rr, y_rr, my_point.z);
 
     // 使用轴对齐包围盒AABB包络车辆安全包络
@@ -304,7 +285,7 @@ bool CollisonCheck::IsVehicleCollisionObstacleBound(const Point my_point, const 
  *@param
  *return
  */
-unsigned int CollisonCheck::Coordinate2Hash(const IntCoordinate point) {
+unsigned int CollisonCheck::Coordinate2Hash(const IntCoordinate& point) {
     unsigned int hash = 0;
     short        x    = static_cast<short>(point.x);
     short        y    = static_cast<short>(point.y);

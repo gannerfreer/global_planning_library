@@ -45,19 +45,33 @@ void CRvizPath::PubRoadNode(vector<geometry_msgs::Point>& path) {
 
 void CRvizPath::PubGlobalPath(std::vector<_TrajectoryPoint>& path) {
     // std::cout << "aapath.size = " << path.size() << std::endl;
-    global_path_now.points.clear();
-    global_path_now.header.stamp = ros ::Time ::now();
+    global_path_now_.points.clear();
+    global_path_now_.header.stamp = ros ::Time ::now();
     geometry_msgs::Point temp_point;
     for (int i = 0; i < path.size(); i++) {
         temp_point.x = path.at(i).x - x_o_;
         temp_point.y = path.at(i).y - y_o_;
         temp_point.z = 0; // info_router.path_point.at(i).z;
-        global_path_now.points.push_back(temp_point);
+        global_path_now_.points.push_back(temp_point);
     }
-    // std::cout << "global_path_now.points.size = " << global_path_now.points.size() << std::endl;
-    m_Publisher_global.publish(global_path_now);
+    // std::cout << "global_path_now_.points.size = " << global_path_now_.points.size() << std::endl;
+    publisher_global_path_.publish(global_path_now_);
 }
 
+void CRvizPath::PubExpandPoint(std::vector<Point>& path, Point midpoint_) {
+    // std::cout << "aapath.size = " << path.size() << std::endl;
+    expand_point_now_.points.clear();
+    expand_point_now_.header.stamp = ros ::Time ::now();
+    geometry_msgs::Point temp_point;
+    for (int i = 0; i < path.size(); i++) {
+        temp_point.x = path.at(i).x - x_o_ + midpoint_.x;
+        temp_point.y = path.at(i).y - y_o_ + midpoint_.y;
+        temp_point.z = 0; // info_router.path_point.at(i).z;
+        expand_point_now_.points.push_back(temp_point);
+    }
+    cout << "expand_point_now_.points.sie():" << expand_point_now_.points.size() << endl;
+    publisher_expand_point_.publish(expand_point_now_);
+}
 
 void CRvizPath::PubStartPosition(double x, double y, double yaw_angle) {
     start.header.stamp       = ros::Time();
@@ -153,34 +167,8 @@ void CRvizPath::Pub2DCostMap(const unordered_map<unsigned int, double> cost_map,
         cost_cube.pose.position.x = point.x + midpoint_.x;
         cost_cube.pose.position.y = point.y + midpoint_.y;
         h_value_map.markers.push_back(cost_cube);
-        //          //显示文字
-        //          visualization_msgs::Marker text_marker;
-        //          text_marker.header.frame_id = "map";
-        //          text_marker.header.stamp = ros::Time::now();
-        //          text_marker.id = num++;
-        //          text_marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
-        //          if(once)
-        //          {
-        //              text_marker.action = 3;
-        //              once = false;
-        //          }
-        //          else
-        //              text_marker.action = 0;
-        //          text_marker.scale.x = Constants::grid_dist;
-        //          text_marker.scale.y = Constants::grid_dist;
-        //          text_marker.scale.z = 0.1;
-        //          text_marker.color.a = 0.5;
-        //          text_marker.text = std::to_string(it->second);
-
-        //          text_marker.color.r = 255;
-        //          text_marker.color.g = 0;
-        //          text_marker.color.b = 0;
-
-        //            // center in cell +0.5
-        //          text_marker.pose.position.x = point.x;
-        //          text_marker.pose.position.y = point.y;
-        //          h_value_map.markers.push_back(text_marker);
     }
+    cout << "H_value_map.markers.size():" << h_value_map.markers.size() << endl;
     pub_h_value_map.publish(h_value_map);
 }
 } // namespace rviz_path

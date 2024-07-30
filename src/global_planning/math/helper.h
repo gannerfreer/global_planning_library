@@ -74,8 +74,7 @@ inline double ToRad(double t) {
 }
 
 
-inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius,
-                                        vector<int>& vec) {
+inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius, vector<int>& vec) {
     cout << "Coming GetReferencelinesWithRadius" << endl;
     vec.clear();
     cout << "Point.x" << point.x << "point.y:" << point.y << endl;
@@ -93,8 +92,7 @@ inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _Sing
         nearest_dis = numeric_limits<double>::max();
         cout << "轨迹id：" << pair.first << "轨迹点数量：" << pair.second.trajectory.size() << endl;
         for (unsigned int i = 0; i < pair.second.trajectory.size(); i++) {
-            temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) +
-                            pow(point.y - pair.second.trajectory.at(i).y, 2));
+            temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) + pow(point.y - pair.second.trajectory.at(i).y, 2));
             if (temp_dis < nearest_dis) {
                 nearest_dis = temp_dis;
                 index       = i;
@@ -113,8 +111,7 @@ inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _Sing
         return false;
 }
 
-inline bool GetReferencelinesWithRadiusAndAngle(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius,
-                                                vector<int>& vec) {
+inline bool GetReferencelinesWithRadiusAndAngle(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius, vector<int>& vec) {
     cout << "Coming GetReferencelinesWithRadiusAndAngle" << endl;
     vec.clear();
 
@@ -130,15 +127,13 @@ inline bool GetReferencelinesWithRadiusAndAngle(_SinglePoint point, const map<in
     for (const auto pair : trajs) {
         nearest_dis = numeric_limits<double>::max();
         for (unsigned int i = 0; i < pair.second.trajectory.size(); i++) {
-            temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) +
-                            pow(point.y - pair.second.trajectory.at(i).y, 2));
+            temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) + pow(point.y - pair.second.trajectory.at(i).y, 2));
             if (temp_dis < nearest_dis) {
                 nearest_dis = temp_dis;
                 index       = i;
             }
         }
-        if (nearest_dis < radius && (fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 < 90 ||
-                                     fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 > 270)) {
+        if (nearest_dis < radius && (fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 < 90 || fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 > 270)) {
             cout << "tell me the angle:" << point.yaw << "  " << pair.second.trajectory.at(index).yaw << endl;
             vec.push_back(pair.first);
             cout << "index:" << index << endl;
@@ -151,8 +146,7 @@ inline bool GetReferencelinesWithRadiusAndAngle(_SinglePoint point, const map<in
         return false;
 }
 
-inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest_index, double& lat_dis,
-                            double& lon_dis, double& distance) {
+inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest_index, double& lat_dis, double& lon_dis, double& distance) {
     double           temp_dis;
     double           min_distance = numeric_limits<double>::max();
     _TrajectoryPoint nearest_point;
@@ -167,12 +161,10 @@ inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest
     }
     nearest_point = traj.trajectory.at(nearest_index);
 
-    lat_dis = fabs((point.y - nearest_point.y) * cos(nearest_point.yaw) -
-                   (point.x - nearest_point.x) * sin(nearest_point.yaw)); // 横向距离先不区分左正右负
+    lat_dis = fabs((point.y - nearest_point.y) * cos(nearest_point.yaw) - (point.x - nearest_point.x) * sin(nearest_point.yaw)); // 横向距离先不区分左正右负
 
 
-    lon_dis =
-        (point.x - nearest_point.x) * cos(nearest_point.yaw) + (point.y - nearest_point.y) * sin(nearest_point.yaw);
+    lon_dis  = (point.x - nearest_point.x) * cos(nearest_point.yaw) + (point.y - nearest_point.y) * sin(nearest_point.yaw);
     distance = hypot(point.x - nearest_point.x, point.y - nearest_point.y);
     // cout << "计算纵向距离" << endl;
     // cout << "x偏差： " << point.x - nearest_point.x << "   y偏差： " << point.y - nearest_point.y << "最近点角度："
@@ -221,7 +213,7 @@ inline bool doesTrajectorySelfIntersect(Path& path) {
         }
     }
     double percent = sum / 36.0;
-    if (percent < 0.75) {
+    if (percent < 0.9) {
         return false;
     }
     else {
@@ -252,8 +244,7 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
     // 计算前0.5m的点的位置halflengthmark
     int j = 0;
     while (j < s - 1) {
-        distance_halflength =
-            distance_halflength + sqrt(pow(vec_x.at(j + 1) - vec_x.at(j), 2) + pow(vec_y.at(j + 1) - vec_y.at(j), 2));
+        distance_halflength = distance_halflength + sqrt(pow(vec_x.at(j + 1) - vec_x.at(j), 2) + pow(vec_y.at(j + 1) - vec_y.at(j), 2));
         if (distance_halflength >= delta_length / 2) {
             halflengthmark = j + 1;
             break;
@@ -267,19 +258,16 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
         int    k = i;
         // 计算当前点距离第一个点的距离
         while (k > 0) {
-            distance_back =
-                distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
+            distance_back = distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
             k--;
         }
         k = i;
         while (k < s - 1) {
-            distance_front =
-                distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
+            distance_front = distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
             if (distance_front >= (delta_length - distance_back)) {
-                double anglew_front = vec_angle.at(k + 1); // 当前点0.5后的点角度
-                double delta_anglew = anglew_front - vec_angle.at(0);
-                delta_anglew =
-                    fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI; // 角度插值转化，避免 - 180和180处出问题
+                double anglew_front  = vec_angle.at(k + 1); // 当前点0.5后的点角度
+                double delta_anglew  = anglew_front - vec_angle.at(0);
+                delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI; // 角度插值转化，避免 - 180和180处出问题
                 traj.at(i).curvature = delta_anglew / delta_length;
                 break;
             }
@@ -292,8 +280,7 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
     int    lasthalflengthmark       = 0;
     j                               = s - 1;
     while (j > 0) {
-        distance_last_halflength = distance_last_halflength +
-                                   sqrt(pow(vec_x.at(j) - vec_x.at(j - 1), 2) + pow(vec_y.at(j) - vec_y.at(j - 1), 2));
+        distance_last_halflength = distance_last_halflength + sqrt(pow(vec_x.at(j) - vec_x.at(j - 1), 2) + pow(vec_y.at(j) - vec_y.at(j - 1), 2));
         if (distance_last_halflength >= (delta_length / 2)) {
             lasthalflengthmark = j - 1;
             break;
@@ -307,14 +294,12 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
         double distance_front = 0;
         int    k              = i;
         while (k < s - 1) {
-            distance_back =
-                distance_back + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
+            distance_back = distance_back + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
             k++;
         }
         k = i;
         while (k > 0) {
-            distance_front =
-                distance_front + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
+            distance_front = distance_front + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
             if (distance_front >= (delta_length - distance_back)) {
                 double anglew_back   = vec_angle.at(k - 1);
                 double delta_anglew  = vec_angle.at(traj.size() - 1) - anglew_back;
@@ -334,8 +319,7 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
         double anglew_back    = 0;
         int    k              = i;
         while (k < s - 1) {
-            distance_front =
-                distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
+            distance_front = distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
             if (distance_front >= delta_length / 2) {
                 anglew_front = vec_angle.at(k + 1); // 当前点0.5后的点角度
                 break;
@@ -344,8 +328,7 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
         }
         k = i;
         while (k > 0) {
-            distance_back =
-                distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
+            distance_back = distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
             if (distance_back >= delta_length / 2) {
                 anglew_back = vec_angle.at(k - 1);
                 break;

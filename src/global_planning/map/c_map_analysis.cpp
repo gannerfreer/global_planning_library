@@ -11,15 +11,14 @@
 #include "c_map_analysis.h"
 
 
-bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_BorderPoint>& map_border_,
-                          map<int, _SingleTraj>& all_referencelines_, vector<int>& sequence_mapping_,
-                          tarRviz& tar_rviz) {
+bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_BorderPoint>& map_border_, map<int, _SingleTraj>& all_referencelines_, vector<int>& sequence_mapping_, tarRviz& tar_rviz) {
     char* buffer;
     int   length = 0;
 
     // char *file_name = (char *)"src/global_planning/map/map_shulan.json"; // 舒南
     char* file_name = (char*)"src/global_planning/map/map.json"; // 鲁南
-    FILE* file      = fopen(file_name, "rb+");
+
+    FILE* file = fopen(file_name, "rb+");
     if (!file) {
         cout << "GetMap->open failed " << endl;
 
@@ -188,117 +187,67 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
             // 车辆参数
             if (val.HasMember("radious")) veh_start_end.veh_param.radious = val["radious"].GetDouble();
             if (val.HasMember("wheel_base")) veh_start_end.veh_param.wheel_base = val["wheel_base"].GetDouble();
-            if (val.HasMember("max_steering"))
-                veh_start_end.veh_param.max_steering = val["max_steering"].GetDouble() * M_PI / 180.0;
-            if (val.HasMember("min_steering"))
-                veh_start_end.veh_param.min_steering = val["min_steering"].GetDouble() * M_PI / 180.0;
+            if (val.HasMember("max_steering")) veh_start_end.veh_param.max_steering = val["max_steering"].GetDouble() * M_PI / 180.0;
+            if (val.HasMember("min_steering")) veh_start_end.veh_param.min_steering = val["min_steering"].GetDouble() * M_PI / 180.0;
             if (val.HasMember("safe_margin_bound")) {
                 veh_start_end.veh_param.safe_margin_bound = val["safe_margin_bound"].GetDouble();
-                cout << "veh_start_end. veh_param.safe_margin_bound :" << veh_start_end.veh_param.safe_margin_bound
-                     << endl;
+                cout << "veh_start_end. veh_param.safe_margin_bound :" << veh_start_end.veh_param.safe_margin_bound << endl;
             }
 
-            if (val.HasMember("veh_center_2_side"))
-                veh_start_end.veh_param.veh_center_2_side = val["veh_center_2_side"].GetDouble();
-            if (val.HasMember("veh_center_2_front"))
-                veh_start_end.veh_param.veh_center_2_front = val["veh_center_2_front"].GetDouble();
-            if (val.HasMember("safe_margin_obstacle"))
-                veh_start_end.veh_param.safe_margin_obstacle = val["safe_margin_obstacle"].GetDouble();
-            if (val.HasMember("veh_center_2_rear_bound"))
-                veh_start_end.veh_param.veh_center_2_rear_bound = val["veh_center_2_rear_bound"].GetDouble();
-            if (val.HasMember("veh_center_2_rear_obstacle"))
-                veh_start_end.veh_param.veh_center_2_rear_obstacle = val["veh_center_2_rear_obstacle"].GetDouble();
+            if (val.HasMember("veh_center_2_side")) veh_start_end.veh_param.veh_center_2_side = val["veh_center_2_side"].GetDouble();
+            if (val.HasMember("veh_center_2_front")) veh_start_end.veh_param.veh_center_2_front = val["veh_center_2_front"].GetDouble();
+            if (val.HasMember("safe_margin_obstacle")) veh_start_end.veh_param.safe_margin_obstacle = val["safe_margin_obstacle"].GetDouble();
+            if (val.HasMember("veh_center_2_rear_bound")) veh_start_end.veh_param.veh_center_2_rear_bound = val["veh_center_2_rear_bound"].GetDouble();
+            if (val.HasMember("veh_center_2_rear_obstacle")) veh_start_end.veh_param.veh_center_2_rear_obstacle = val["veh_center_2_rear_obstacle"].GetDouble();
             // 算法参数
             if (val.HasMember("delta_s")) veh_start_end.veh_param.delta_s = val["delta_s"].GetDouble();
             if (val.HasMember("delta_dist")) veh_start_end.veh_param.delta_dist = val["delta_dist"].GetDouble();
             if (val.HasMember("grid_dist")) veh_start_end.veh_param.grid_dist = val["grid_dist"].GetDouble();
             if (val.HasMember("max_kappa")) veh_start_end.veh_param.max_kappa = val["max_kappa"].GetDouble();
             if (val.HasMember("error_term")) veh_start_end.veh_param.error_term = val["error_term"].GetDouble();
-            if (val.HasMember("grid_angle"))
-                veh_start_end.veh_param.grid_angle = val["grid_angle"].GetDouble() * M_PI / 180.0;
+            if (val.HasMember("grid_angle")) veh_start_end.veh_param.grid_angle = val["grid_angle"].GetDouble() * M_PI / 180.0;
             if (val.HasMember("step_length")) veh_start_end.veh_param.step_length = val["step_length"].GetDouble();
-            if (val.HasMember("curvature_term"))
-                veh_start_end.veh_param.curvature_term = val["curvature_term"].GetDouble();
-            if (val.HasMember("switch_penalty"))
-                veh_start_end.veh_param.switch_penalty = val["switch_penalty"].GetDouble();
-            if (val.HasMember("forward_penalty"))
-                veh_start_end.veh_param.forward_penalty = val["forward_penalty"].GetDouble();
-            if (val.HasMember("min_path_Length"))
-                veh_start_end.veh_param.min_path_Length = val["min_path_Length"].GetDouble();
-            if (val.HasMember("start_offset_distance"))
-                veh_start_end.veh_param.start_offset_distance = val["start_offset_distance"].GetDouble();
-            if (val.HasMember("end_offset_distance"))
-                veh_start_end.veh_param.end_offset_distance = val["end_offset_distance"].GetDouble();
-            if (val.HasMember("smoothness_term"))
-                veh_start_end.veh_param.smoothness_term = val["smoothness_term"].GetDouble();
-            if (val.HasMember("backward_penalty"))
-                veh_start_end.veh_param.backward_penalty = val["backward_penalty"].GetDouble();
-            if (val.HasMember("turnning_penalty"))
-                veh_start_end.veh_param.turnning_penalty = val["turnning_penalty"].GetDouble();
-            if (val.HasMember("angle_discrete_num"))
-                veh_start_end.veh_param.angle_discrete_num = val["angle_discrete_num"].GetUint();
-            if (val.HasMember("max_fitting_radius"))
-                veh_start_end.veh_param.max_fitting_radius = val["max_fitting_radius"].GetDouble();
-            if (val.HasMember("max_iterations_opti"))
-                veh_start_end.veh_param.max_iterations_opti = val["max_iterations_opti"].GetDouble();
+            if (val.HasMember("curvature_term")) veh_start_end.veh_param.curvature_term = val["curvature_term"].GetDouble();
+            if (val.HasMember("switch_penalty")) veh_start_end.veh_param.switch_penalty = val["switch_penalty"].GetDouble();
+            if (val.HasMember("forward_penalty")) veh_start_end.veh_param.forward_penalty = val["forward_penalty"].GetDouble();
+            if (val.HasMember("min_path_Length")) veh_start_end.veh_param.min_path_Length = val["min_path_Length"].GetDouble();
+            if (val.HasMember("start_offset_distance")) veh_start_end.veh_param.start_offset_distance = val["start_offset_distance"].GetDouble();
+            if (val.HasMember("end_offset_distance")) veh_start_end.veh_param.end_offset_distance = val["end_offset_distance"].GetDouble();
+            if (val.HasMember("smoothness_term")) veh_start_end.veh_param.smoothness_term = val["smoothness_term"].GetDouble();
+            if (val.HasMember("backward_penalty")) veh_start_end.veh_param.backward_penalty = val["backward_penalty"].GetDouble();
+            if (val.HasMember("turnning_penalty")) veh_start_end.veh_param.turnning_penalty = val["turnning_penalty"].GetDouble();
+            if (val.HasMember("angle_discrete_num")) veh_start_end.veh_param.angle_discrete_num = val["angle_discrete_num"].GetUint();
+            if (val.HasMember("max_fitting_radius")) veh_start_end.veh_param.max_fitting_radius = val["max_fitting_radius"].GetDouble();
+            if (val.HasMember("max_iterations_opti")) veh_start_end.veh_param.max_iterations_opti = val["max_iterations_opti"].GetDouble();
 
-            if (val.HasMember("backward_search_range"))
-                veh_start_end.veh_param.backward_search_range = val["backward_search_range"].GetDouble();
-            if (val.HasMember("cusp_extension_distance"))
-                veh_start_end.veh_param.cusp_extension_distance = val["cusp_extension_distance"].GetUint();
-            if (val.HasMember("linear_preferred_distance_square"))
-                veh_start_end.veh_param.linear_preferred_distance_square =
-                    val["linear_preferred_distance_square"].GetDouble();
-            if (val.HasMember("min_speed_limit"))
-                veh_start_end.veh_param.min_speed_limit = val["min_speed_limit"].GetFloat();
-            if (val.HasMember("mid_speed_limit"))
-                veh_start_end.veh_param.mid_speed_limit = val["mid_speed_limit"].GetFloat();
-            if (val.HasMember("max_speed_limit"))
-                veh_start_end.veh_param.max_speed_limit = val["max_speed_limit"].GetFloat();
+            if (val.HasMember("backward_search_range")) veh_start_end.veh_param.backward_search_range = val["backward_search_range"].GetDouble();
+            if (val.HasMember("cusp_extension_distance")) veh_start_end.veh_param.cusp_extension_distance = val["cusp_extension_distance"].GetUint();
+            if (val.HasMember("linear_preferred_distance_square")) veh_start_end.veh_param.linear_preferred_distance_square = val["linear_preferred_distance_square"].GetDouble();
+            if (val.HasMember("min_speed_limit")) veh_start_end.veh_param.min_speed_limit = val["min_speed_limit"].GetFloat();
+            if (val.HasMember("mid_speed_limit")) veh_start_end.veh_param.mid_speed_limit = val["mid_speed_limit"].GetFloat();
+            if (val.HasMember("max_speed_limit")) veh_start_end.veh_param.max_speed_limit = val["max_speed_limit"].GetFloat();
             if (val.HasMember("min_curvature")) veh_start_end.veh_param.min_curvature = val["min_curvature"].GetFloat();
             if (val.HasMember("max_curvature")) veh_start_end.veh_param.max_curvature = val["max_curvature"].GetFloat();
 
 
-            if (val.HasMember("lat_min_distance_struct"))
-                veh_start_end.veh_param.lat_min_distance_struct = val["lat_min_distance_struct"].GetDouble();
+            if (val.HasMember("lat_min_distance_struct")) veh_start_end.veh_param.lat_min_distance_struct = val["lat_min_distance_struct"].GetDouble();
 
-            if (val.HasMember("safe_margin_error"))
-                veh_start_end.veh_param.safe_margin_error = val["safe_margin_error"].GetDouble();
+            if (val.HasMember("safe_margin_error")) veh_start_end.veh_param.safe_margin_error = val["safe_margin_error"].GetDouble();
 
-            if (val.HasMember("offset_enable"))
-                veh_start_end.veh_param.offset_enable = val["offset_enable"].GetDouble();
-            if (val.HasMember("multi_section_speed_limit_enable"))
-                veh_start_end.veh_param.multi_section_speed_limit_enable =
-                    val["multi_section_speed_limit_enable"].GetDouble();
-            if (val.HasMember("light_regular_road_speed_limit"))
-                veh_start_end.veh_param.light_regular_road_speed_limit =
-                    val["light_regular_road_speed_limit"].GetDouble();
-            if (val.HasMember("light_bumpy_road_speed_limit"))
-                veh_start_end.veh_param.light_bumpy_road_speed_limit = val["light_bumpy_road_speed_limit"].GetDouble();
-            if (val.HasMember("light_slope_road_speed_limit"))
-                veh_start_end.veh_param.light_slope_road_speed_limit = val["light_slope_road_speed_limit"].GetDouble();
-            if (val.HasMember("light_narrow_road_speed_limit"))
-                veh_start_end.veh_param.light_narrow_road_speed_limit =
-                    val["light_narrow_road_speed_limit"].GetDouble();
-            if (val.HasMember("light_intersection_road_speed_limit"))
-                veh_start_end.veh_param.light_intersection_road_speed_limit =
-                    val["light_intersection_road_speed_limit"].GetDouble();
-            if (val.HasMember("heavy_regular_road_speed_limit"))
-                veh_start_end.veh_param.heavy_regular_road_speed_limit =
-                    val["heavy_regular_road_speed_limit"].GetDouble();
-            if (val.HasMember("heavy_bumpy_road_speed_limit"))
-                veh_start_end.veh_param.heavy_bumpy_road_speed_limit = val["heavy_bumpy_road_speed_limit"].GetDouble();
-            if (val.HasMember("heavy_narrow_road_speed_limit"))
-                veh_start_end.veh_param.heavy_narrow_road_speed_limit =
-                    val["heavy_narrow_road_speed_limit"].GetDouble();
-            if (val.HasMember("heavy_intersection_road_speed_limit"))
-                veh_start_end.veh_param.heavy_intersection_road_speed_limit =
-                    val["heavy_intersection_road_speed_limit"].GetDouble();
-            if (val.HasMember("heavy_slope_road_speed_limit"))
-                veh_start_end.veh_param.heavy_slope_road_speed_limit = val["heavy_slope_road_speed_limit"].GetDouble();
+            if (val.HasMember("offset_enable")) veh_start_end.veh_param.offset_enable = val["offset_enable"].GetDouble();
+            if (val.HasMember("multi_section_speed_limit_enable")) veh_start_end.veh_param.multi_section_speed_limit_enable = val["multi_section_speed_limit_enable"].GetDouble();
+            if (val.HasMember("light_regular_road_speed_limit")) veh_start_end.veh_param.light_regular_road_speed_limit = val["light_regular_road_speed_limit"].GetDouble();
+            if (val.HasMember("light_bumpy_road_speed_limit")) veh_start_end.veh_param.light_bumpy_road_speed_limit = val["light_bumpy_road_speed_limit"].GetDouble();
+            if (val.HasMember("light_slope_road_speed_limit")) veh_start_end.veh_param.light_slope_road_speed_limit = val["light_slope_road_speed_limit"].GetDouble();
+            if (val.HasMember("light_narrow_road_speed_limit")) veh_start_end.veh_param.light_narrow_road_speed_limit = val["light_narrow_road_speed_limit"].GetDouble();
+            if (val.HasMember("light_intersection_road_speed_limit")) veh_start_end.veh_param.light_intersection_road_speed_limit = val["light_intersection_road_speed_limit"].GetDouble();
+            if (val.HasMember("heavy_regular_road_speed_limit")) veh_start_end.veh_param.heavy_regular_road_speed_limit = val["heavy_regular_road_speed_limit"].GetDouble();
+            if (val.HasMember("heavy_bumpy_road_speed_limit")) veh_start_end.veh_param.heavy_bumpy_road_speed_limit = val["heavy_bumpy_road_speed_limit"].GetDouble();
+            if (val.HasMember("heavy_narrow_road_speed_limit")) veh_start_end.veh_param.heavy_narrow_road_speed_limit = val["heavy_narrow_road_speed_limit"].GetDouble();
+            if (val.HasMember("heavy_intersection_road_speed_limit")) veh_start_end.veh_param.heavy_intersection_road_speed_limit = val["heavy_intersection_road_speed_limit"].GetDouble();
+            if (val.HasMember("heavy_slope_road_speed_limit")) veh_start_end.veh_param.heavy_slope_road_speed_limit = val["heavy_slope_road_speed_limit"].GetDouble();
             if (val.HasMember("weather")) veh_start_end.veh_param.weather = val["weather"].GetDouble();
-            if (val.HasMember("s_curve_speed_limit"))
-                veh_start_end.veh_param.s_curve_speed_limit = val["s_curve_speed_limit"].GetUint();
+            if (val.HasMember("s_curve_speed_limit")) veh_start_end.veh_param.s_curve_speed_limit = val["s_curve_speed_limit"].GetUint();
             if (val.HasMember("task_type")) {
                 cout << "task_type:" << val["task_type"].GetUint() << endl;
                 veh_start_end.veh_param.task_type = val["task_type"].GetUint();
@@ -311,16 +260,12 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
             else {
                 cout << "NO reverse_speed 参数" << endl;
             }
-            if (val.HasMember("kMaxAcceleration"))
-                veh_start_end.veh_param.kMaxAcceleration = val["kMaxAcceleration"].GetFloat();
-            if (val.HasMember("kMinAcceleration"))
-                veh_start_end.veh_param.kMinAcceleration = val["kMinAcceleration"].GetFloat();
+            if (val.HasMember("kMaxAcceleration")) veh_start_end.veh_param.kMaxAcceleration = val["kMaxAcceleration"].GetFloat();
+            if (val.HasMember("kMinAcceleration")) veh_start_end.veh_param.kMinAcceleration = val["kMinAcceleration"].GetFloat();
             if (val.HasMember("kDeltaSpeed")) veh_start_end.veh_param.kDeltaSpeed = val["kDeltaSpeed"].GetFloat();
             if (val.HasMember("kErrorTerm")) veh_start_end.veh_param.kErrorTerm = val["kErrorTerm"].GetFloat();
-            if (val.HasMember("kSmoothnessTerm"))
-                veh_start_end.veh_param.kSmoothnessTerm = val["kSmoothnessTerm"].GetFloat();
-            if (val.HasMember("kDiscreteNumber"))
-                veh_start_end.veh_param.kDiscreteNumber = val["kDiscreteNumber"].GetFloat();
+            if (val.HasMember("kSmoothnessTerm")) veh_start_end.veh_param.kSmoothnessTerm = val["kSmoothnessTerm"].GetFloat();
+            if (val.HasMember("kDiscreteNumber")) veh_start_end.veh_param.kDiscreteNumber = val["kDiscreteNumber"].GetFloat();
             if (val.HasMember("max_l")) veh_start_end.veh_param.max_l = val["max_l"].GetFloat();
             if (val.HasMember("sita")) veh_start_end.veh_param.sita = val["sita"].GetFloat();
             if (val.HasMember("base")) veh_start_end.veh_param.base = val["base"].GetFloat();

@@ -44,8 +44,7 @@ class CConfigureIO {
     ~CConfigureIO() {}
 
   public:
-    static bool GetMap(vector<vector<double>>& road_directed_graph_, vector<_BorderPoint>& map_border_,
-                       map<int, _SingleTraj>& all_referencelines_, vector<int>& sequence_mapping_, tarRviz& tar_rviz);
+    static bool GetMap(vector<vector<double>>& road_directed_graph_, vector<_BorderPoint>& map_border_, map<int, _SingleTraj>& all_referencelines_, vector<int>& sequence_mapping_, tarRviz& tar_rviz);
     static bool GetVehicleParam(_VehicleParam& vehicle_param);
 
 

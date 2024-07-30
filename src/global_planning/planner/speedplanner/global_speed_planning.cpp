@@ -59,8 +59,7 @@ void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
  * 0：最短时间策略；1：准点策略
  * @return true：规划成功；false：规划失败
  */
-bool GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param,
-                                        const int total_time, const int departure_time, unsigned char mode) {
+bool GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param, const int total_time, const int departure_time, unsigned char mode) {
     InitSpeedParam(m_veh_param);
     trajectory_fragments.clear();
     key_points.clear();
@@ -159,11 +158,9 @@ bool GlobalSpeedPlanning::PlanCase1(const int total_time, const int departure_ti
     for (unsigned char i = 0; i < key_points.size(); i++) {
         if (1 == key_points.at(i).at(0).direction) // 倒车工况速度为负数
         {
-            for (unsigned int j = 0; j < trajectory_fragments.at(i).size(); j++)
-                trajectory_fragments.at(i).at(j).speed = -trajectory_fragments.at(i).at(j).speed;
+            for (unsigned int j = 0; j < trajectory_fragments.at(i).size(); j++) trajectory_fragments.at(i).at(j).speed = -trajectory_fragments.at(i).at(j).speed;
         }
-        final_trajectory_points.insert(final_trajectory_points.end(), trajectory_fragments.at(i).begin(),
-                                       trajectory_fragments.at(i).end());
+        final_trajectory_points.insert(final_trajectory_points.end(), trajectory_fragments.at(i).begin(), trajectory_fragments.at(i).end());
     }
     return true;
 }
@@ -229,8 +226,7 @@ bool GlobalSpeedPlanning::PlanCase0(const int departure_time) {
                 trajectory_fragments.at(i).at(j).speed = -trajectory_fragments.at(i).at(j).speed;
             }
         }
-        final_trajectory_points.insert(final_trajectory_points.end(), trajectory_fragments.at(i).begin(),
-                                       trajectory_fragments.at(i).end());
+        final_trajectory_points.insert(final_trajectory_points.end(), trajectory_fragments.at(i).begin(), trajectory_fragments.at(i).end());
     }
 
     return true;
@@ -245,19 +241,15 @@ void GlobalSpeedPlanning::ReducedMaximumSpeedAve(float delta_speed) {
     float max_speed = 0;
     for (unsigned int i = 0; i < key_points.size(); i++) {
         for (unsigned int j = 0; j < key_points.at(i).size(); j++) {
-            if (key_points.at(i).at(j).speed_limit_left > max_speed)
-                max_speed = key_points.at(i).at(j).speed_limit_left;
-            if (key_points.at(i).at(j).speed_limit_right > max_speed)
-                max_speed = key_points.at(i).at(j).speed_limit_right;
+            if (key_points.at(i).at(j).speed_limit_left > max_speed) max_speed = key_points.at(i).at(j).speed_limit_left;
+            if (key_points.at(i).at(j).speed_limit_right > max_speed) max_speed = key_points.at(i).at(j).speed_limit_right;
         }
     }
     for (unsigned int i = 0; i < key_points.size(); i++) {
         if (0 == key_points.at(i).at(0).direction) {
             for (unsigned int j = 0; j < key_points.at(i).size(); j++) {
-                float temp_speed1 = key_points.at(i).at(j).speed_limit_left -
-                                    key_points.at(i).at(j).speed_limit_left * delta_speed / max_speed;
-                float temp_speed2 = key_points.at(i).at(j).speed_limit_right -
-                                    key_points.at(i).at(j).speed_limit_right * delta_speed / max_speed;
+                float temp_speed1                        = key_points.at(i).at(j).speed_limit_left - key_points.at(i).at(j).speed_limit_left * delta_speed / max_speed;
+                float temp_speed2                        = key_points.at(i).at(j).speed_limit_right - key_points.at(i).at(j).speed_limit_right * delta_speed / max_speed;
                 key_points.at(i).at(j).speed_limit_left  = temp_speed1 > 0 ? temp_speed1 : 0;
                 key_points.at(i).at(j).speed_limit_right = temp_speed2 > 0 ? temp_speed2 : 0;
             }
@@ -300,12 +292,11 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
     threadLogger_->info("temp_keypoint.size():{}", temp_keypoint.size());
 
     for (int i = 0; i < temp_keypoint.size(); i++) {
-        threadLogger_->info("index:{}, speed_limit_left :{}, speed_limit_right:{}", temp_keypoint.at(i).index,
-                            temp_keypoint.at(i).speed_limit_left, temp_keypoint.at(i).speed_limit_right);
+        threadLogger_->info("index:{}, speed_limit_left :{}, speed_limit_right:{}", temp_keypoint.at(i).index, temp_keypoint.at(i).speed_limit_left, temp_keypoint.at(i).speed_limit_right);
     }
     KeyPoint         keypoint1, keypoint2;
     SparseSpeedPoint temp_sparsepoint;
-    float last_speed; // PlanForSingleSegment()函数规划后，车辆能够达到的速度，最后一个点的速度
+    float            last_speed;   // PlanForSingleSegment()函数规划后，车辆能够达到的速度，最后一个点的速度
     if (2 == temp_keypoint.size()) // 若只有两个关键点，后面合成一条路径的时候再来根据方向，改变速度符号
     {
         keypoint1 = temp_keypoint.at(0);
@@ -341,8 +332,7 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
             }
             threadLogger_->info("...last_speed is {} ", last_speed);
 
-            temp_sparsespeedpoints_all.insert(temp_sparsespeedpoints_all.end(), temp_sparsespeedpoints.begin(),
-                                              temp_sparsespeedpoints.end());
+            temp_sparsespeedpoints_all.insert(temp_sparsespeedpoints_all.end(), temp_sparsespeedpoints.begin(), temp_sparsespeedpoints.end());
         }
         /*加入最后一个点*/
         temp_sparsepoint.index = keypoint2.index;
@@ -377,22 +367,16 @@ bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
             keypoint2 = key_points.at(i).at(j + 1);
             v1        = keypoint1.speed_limit_right;
             v2        = keypoint2.speed_limit_right;
-            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j + 1,
-                                key_points.at(i).at(j).index, key_points.at(i).at(j).speed_limit_left,
-                                key_points.at(i).at(j).speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j + 1, key_points.at(i).at(j).index, key_points.at(i).at(j).speed_limit_left, key_points.at(i).at(j).speed_limit_right);
 
-            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j + 2,
-                                key_points.at(i).at(j + 1).index, key_points.at(i).at(j + 1).speed_limit_left,
-                                key_points.at(i).at(j + 1).speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j + 2, key_points.at(i).at(j + 1).index, key_points.at(i).at(j + 1).speed_limit_left, key_points.at(i).at(j + 1).speed_limit_right);
 
             // 遍历的过程中，发现 v1>v2的情况就需要进行降速合理性检查，不符合要求就要调整，并重新执行for循环
             if (v1 > v2) {
                 threadLogger_->info("减速检查");
 
-                float s_total = temp_traj.at(keypoint2.index).distance -
-                                temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线)
-                float s_min =
-                    (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration); // v1_left加速到v1_right所需的最小欧式距离
+                float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线)
+                float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration);                              // v1_left加速到v1_right所需的最小欧式距离
 
                 if ((s_total + eps) < s_min) // 若减速距离不够，得将v1结合车辆最大减速度进行合理调整
                 {
@@ -402,8 +386,7 @@ bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
 
                     threadLogger_->info("s_min ={} ", s_min);
 
-                    key_points.at(i).at(j).speed_limit_right =
-                        sqrt(pow(v2, 2) + 2 * (kMaxAcceleration - 0.1) * s_total);
+                    key_points.at(i).at(j).speed_limit_right    = sqrt(pow(v2, 2) + 2 * (kMaxAcceleration - 0.1) * s_total);
                     key_points.at(i).at(j + 1).speed_limit_left = key_points.at(i).at(j).speed_limit_right;
                     threadLogger_->info("右限速调整为：{}", key_points.at(i).at(j).speed_limit_right);
 
@@ -847,9 +830,7 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                     if ((v1_left + eps) < v1_right && (v2_right + eps) < v1_right && v1_left <= (v2_right + eps)) {
                         // 判断距离 若距离符合 将中速降低为最小速度
                         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance;
-                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration) +
-                                      (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * kMinAcceleration) +
-                                      10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
+                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * kMinAcceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
                         threadLogger_->info("s_total = {}", s_total);
 
                         threadLogger_->info("s_min ={} ", s_min);
@@ -860,8 +841,7 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                             {
                                 threadLogger_->info("不合理加速，现予以调整");
 
-                                key_points.at(i).at(j).speed_limit_right =
-                                    v2_right; // 每一次的赋值,都是为了在下一个循环中使用当前的修改
+                                key_points.at(i).at(j).speed_limit_right    = v2_right; // 每一次的赋值,都是为了在下一个循环中使用当前的修改
                                 key_points.at(i).at(j + 1).speed_limit_left = v2_right;
                                 flag                                        = true;
                                 temp_point.emplace_back(key_points.at(i).at(j));
@@ -873,9 +853,7 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                     if ((v1_left + eps) < v1_right && (v2_right + eps) < v1_right && v1_left > (v2_right + eps)) {
                         // 判断距离 若距离符合 将中速降低为最小速度
                         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance;
-                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration) +
-                                      (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * kMinAcceleration) +
-                                      10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
+                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * kMinAcceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
                         threadLogger_->info("s_total = {}", s_total);
 
                         threadLogger_->info("s_min ={} ", s_min);
@@ -952,8 +930,7 @@ void GlobalSpeedPlanning::Deletekeypoints(std::vector<KeyPoint>& m_keypoints) {
  * num：trajectory_fragments中的第num条；keypoint1、keypoint2：该路段的两个关键点；temp_sparsespeedpoints：规划后的速度点；last_speed：规划后的末速度
  * @param [return]
  */
-bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypoint1, KeyPoint keypoint2,
-                                               vector<SparseSpeedPoint>& temp_sparsespeedpoints, float& last_speed) {
+bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypoint1, KeyPoint keypoint2, vector<SparseSpeedPoint>& temp_sparsespeedpoints, float& last_speed) {
     temp_sparsespeedpoints.clear();
     vector<_TrajectoryPoint> temp_traj = trajectory_fragments.at(num);
     SparseSpeedPoint         temp_sparsepoint;
@@ -969,11 +946,9 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
 
     if (fabs(v1 - keypoint2.speed_limit_left) > 0.01) // 关键点设置错误，导致两关键点之间出现两个不同最大速度
     {
-        threadLogger_->info("keypoint1.index ={}  {}  {} ", keypoint1.index, keypoint1.speed_limit_left,
-                            keypoint1.speed_limit_right);
+        threadLogger_->info("keypoint1.index ={}  {}  {} ", keypoint1.index, keypoint1.speed_limit_left, keypoint1.speed_limit_right);
 
-        threadLogger_->info("keypoint2.index ={}  {}  {} ", keypoint2.index, keypoint2.speed_limit_left,
-                            keypoint2.speed_limit_right);
+        threadLogger_->info("keypoint2.index ={}  {}  {} ", keypoint2.index, keypoint2.speed_limit_left, keypoint2.speed_limit_right);
 
         threadLogger_->info("...key_point1.speed_limit_right != key_point2.speed_limit_left...");
 
@@ -1007,9 +982,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
     if (fabs(v0 - v1) < 0.01 && v2 < v1) {
         threadLogger_->info("...Case 2...");
 
-        float s_total =
-            temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration); // 减速到v2所需的最小距离
+        float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
+        float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration);                              // 减速到v2所需的最小距离
         if (s_min - s_total > 0.001) {
             threadLogger_->error("keypoint1.index:{},keypoint2.index:{}", keypoint1.index, keypoint2.index);
 
@@ -1046,9 +1020,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
     if (v0 < v1 && v2 >= v1) {
         threadLogger_->info("...Case 3...");
 
-        float s_total =
-            temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min = (pow(v1, 2) - pow(v0, 2)) / (2 * kMaxAcceleration); // 加速到v2所需的最小距离
+        float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
+        float s_min   = (pow(v1, 2) - pow(v0, 2)) / (2 * kMaxAcceleration);                              // 加速到v2所需的最小距离
         float s_temp;
         float s_0 = temp_traj.at(keypoint1.index).distance;
         for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
@@ -1080,9 +1053,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
 
         threadLogger_->info("keypoint2.index ={} ", keypoint2.index);
 
-        float s_total =
-            temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min = (pow(v2, 2) - pow(v0, 2)) / (2 * kMinAcceleration); // 减速到v2所需的最小距离
+        float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
+        float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * kMinAcceleration);                              // 减速到v2所需的最小距离
         if (s_total < s_min) {
             threadLogger_->error("...Case 4: s_total ={}  s_min ={}  s_total < s_min...", s_total, s_min);
 
@@ -1121,11 +1093,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         }
         else if (s_acc + s_dec >= s_total) // 先加速，再减速，无匀速阶段
         {
-            float s_as = (2 * kMinAcceleration * s_total - pow(v2, 2) + pow(v0, 2)) /
-                         (2 * (kMinAcceleration - kMaxAcceleration)); // 加速的距离
-            float v_max = sqrt((2 * kMinAcceleration * kMaxAcceleration * s_total + kMinAcceleration * pow(v0, 2) -
-                                kMaxAcceleration * pow(v2, 2)) /
-                               (kMinAcceleration - kMaxAcceleration));
+            float s_as  = (2 * kMinAcceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (kMinAcceleration - kMaxAcceleration)); // 加速的距离
+            float v_max = sqrt((2 * kMinAcceleration * kMaxAcceleration * s_total + kMinAcceleration * pow(v0, 2) - kMaxAcceleration * pow(v2, 2)) / (kMinAcceleration - kMaxAcceleration));
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
@@ -1154,11 +1123,10 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
     if (v0 < v1 && v2 < v1 && v2 > v0) {
         threadLogger_->info("...Case 5...");
 
-        float s_total =
-            temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min = (pow(v2, 2) - pow(v0, 2)) / (2 * kMaxAcceleration); // 加速到v2所需的最小距离
-        float s_acc = (pow(v1, 2) - pow(v0, 2)) / (2 * kMaxAcceleration);
-        float s_dec = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration);
+        float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
+        float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * kMaxAcceleration);                              // 加速到v2所需的最小距离
+        float s_acc   = (pow(v1, 2) - pow(v0, 2)) / (2 * kMaxAcceleration);
+        float s_dec   = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration);
         if (s_acc + s_dec < s_total) // 先加速到最大速度，再减速到v2
         {
             float s_temp;
@@ -1190,11 +1158,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         }
         else if (s_acc + s_dec >= s_total && s_total > s_min) // 先加速，再减速，无匀速阶段
         {
-            float s_as = (2 * kMinAcceleration * s_total - pow(v2, 2) + pow(v0, 2)) /
-                         (2 * (kMinAcceleration - kMaxAcceleration)); // 加速的距离
-            float v_max = sqrt((2 * kMinAcceleration * kMaxAcceleration * s_total + kMinAcceleration * pow(v0, 2) -
-                                kMaxAcceleration * pow(v2, 2)) /
-                               (kMinAcceleration - kMaxAcceleration));
+            float s_as  = (2 * kMinAcceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (kMinAcceleration - kMaxAcceleration)); // 加速的距离
+            float v_max = sqrt((2 * kMinAcceleration * kMaxAcceleration * s_total + kMinAcceleration * pow(v0, 2) - kMaxAcceleration * pow(v2, 2)) / (kMinAcceleration - kMaxAcceleration));
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
@@ -1244,8 +1209,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
                 // 其绝对值<0.001(近似直线段) 限速5m/s-8.5m/s
                 iter->speed_limit = vehicle_param.max_speed_limit;
             }
-            else if (vehicle_param.min_curvature <= fabs(iter->curvature) &&
-                     fabs(iter->curvature) < vehicle_param.max_curvature) {
+            else if (vehicle_param.min_curvature <= fabs(iter->curvature) && fabs(iter->curvature) < vehicle_param.max_curvature) {
                 // 其绝对值>0.01 <0.1 限速4m/s
                 iter->speed_limit = vehicle_param.mid_speed_limit;
             }
@@ -1273,33 +1237,27 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
                     if (iter->direction == 0) {
                         if (iter->attribute == 0) // 正常路
                         {
-                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit) iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
                         }
                         else if (iter->attribute == 1) // 窄路
                         {
-                            if (iter->speed_limit > vehicle_param.light_narrow_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_narrow_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_narrow_road_speed_limit) iter->speed_limit = vehicle_param.light_narrow_road_speed_limit;
                         }
                         else if (iter->attribute == 2) // 路口
                         {
-                            if (iter->speed_limit > vehicle_param.light_intersection_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_intersection_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_intersection_road_speed_limit) iter->speed_limit = vehicle_param.light_intersection_road_speed_limit;
                         }
                         else if (iter->attribute == 3) // 坡路
                         {
-                            if (iter->speed_limit > vehicle_param.light_slope_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_slope_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_slope_road_speed_limit) iter->speed_limit = vehicle_param.light_slope_road_speed_limit;
                         }
                         else if (iter->attribute == 4) // 颠簸路
                         {
-                            if (iter->speed_limit > vehicle_param.light_bumpy_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_bumpy_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_bumpy_road_speed_limit) iter->speed_limit = vehicle_param.light_bumpy_road_speed_limit;
                         }
                         else if (iter->attribute == 5) // 水泥路
                         {
-                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit) iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
                         }
                         else {}
                     }
@@ -1315,33 +1273,27 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
                     if (iter->direction == 0) {
                         if (iter->attribute == 0) // 正常路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit) iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
                         }
                         else if (iter->attribute == 1) // 窄路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_narrow_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_narrow_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_narrow_road_speed_limit) iter->speed_limit = vehicle_param.heavy_narrow_road_speed_limit;
                         }
                         else if (iter->attribute == 2) // 路口
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_intersection_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_intersection_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_intersection_road_speed_limit) iter->speed_limit = vehicle_param.heavy_intersection_road_speed_limit;
                         }
                         else if (iter->attribute == 3) // 坡路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_slope_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_slope_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_slope_road_speed_limit) iter->speed_limit = vehicle_param.heavy_slope_road_speed_limit;
                         }
                         else if (iter->attribute == 4) // 颠簸路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_bumpy_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_bumpy_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_bumpy_road_speed_limit) iter->speed_limit = vehicle_param.heavy_bumpy_road_speed_limit;
                         }
                         else if (iter->attribute == 5) // 水泥路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit) iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
                         }
                         else {}
                     }
@@ -1362,33 +1314,27 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
                     if (iter->direction == 0) {
                         if (iter->attribute == 0) // 正常路
                         {
-                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit) iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
                         }
                         else if (iter->attribute == 1) // 窄路
                         {
-                            if (iter->speed_limit > vehicle_param.light_narrow_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_narrow_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_narrow_road_speed_limit) iter->speed_limit = vehicle_param.light_narrow_road_speed_limit;
                         }
                         else if (iter->attribute == 2) // 路口
                         {
-                            if (iter->speed_limit > vehicle_param.light_intersection_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_intersection_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_intersection_road_speed_limit) iter->speed_limit = vehicle_param.light_intersection_road_speed_limit;
                         }
                         else if (iter->attribute == 3) // 坡路
                         {
-                            if (iter->speed_limit > vehicle_param.light_slope_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_slope_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_slope_road_speed_limit) iter->speed_limit = vehicle_param.light_slope_road_speed_limit;
                         }
                         else if (iter->attribute == 4) // 颠簸路
                         {
-                            if (iter->speed_limit > vehicle_param.light_bumpy_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_bumpy_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_bumpy_road_speed_limit) iter->speed_limit = vehicle_param.light_bumpy_road_speed_limit;
                         }
                         else if (iter->attribute == 5) // 水泥路
                         {
-                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit)
-                                iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit) iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
                         }
                         else {}
                     }
@@ -1404,33 +1350,27 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
                     if (iter->direction == 0) {
                         if (iter->attribute == 0) // 正常路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit) iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
                         }
                         else if (iter->attribute == 1) // 窄路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_narrow_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_narrow_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_narrow_road_speed_limit) iter->speed_limit = vehicle_param.heavy_narrow_road_speed_limit;
                         }
                         else if (iter->attribute == 2) // 路口
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_intersection_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_intersection_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_intersection_road_speed_limit) iter->speed_limit = vehicle_param.heavy_intersection_road_speed_limit;
                         }
                         else if (iter->attribute == 3) // 坡路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_slope_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_slope_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_slope_road_speed_limit) iter->speed_limit = vehicle_param.heavy_slope_road_speed_limit;
                         }
                         else if (iter->attribute == 4) // 颠簸路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_bumpy_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_bumpy_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_bumpy_road_speed_limit) iter->speed_limit = vehicle_param.heavy_bumpy_road_speed_limit;
                         }
                         else if (iter->attribute == 5) // 水泥路
                         {
-                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit)
-                                iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
+                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit) iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
                         }
                         else {}
                     }
@@ -1455,12 +1395,9 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
 
         for (int i = 0; i < trajectory_points.size() - 1; i++) //
         {
-            wheel_angle1 = atan(L_vehicle * trajectory_points.at(i).curvature);
-            wheel_angle2 = atan(L_vehicle * trajectory_points.at(i + 1).curvature);
-            temp_max_speed =
-                sampling_distance * max_Steering_wheel_speed /
-                (fabs(wheel_angle1 - wheel_angle2) +
-                 eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速 if (temp_max_speed >= 10)
+            wheel_angle1   = atan(L_vehicle * trajectory_points.at(i).curvature);
+            wheel_angle2   = atan(L_vehicle * trajectory_points.at(i + 1).curvature);
+            temp_max_speed = sampling_distance * max_Steering_wheel_speed / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速 if (temp_max_speed >= 10)
             temp_max_speed = 10;
             vec_temp_max_speed.push_back(temp_max_speed);
         }
@@ -1501,12 +1438,10 @@ bool GlobalSpeedPlanning::SplitPath() {
     end_id   = 0;
     vector<_TrajectoryPoint> temp_traj;
     for (unsigned int i = 0; i < trajectory_points.size() - 1; i++) {
-        if (trajectory_points.at(i).direction != trajectory_points.at(i + 1).direction ||
-            trajectory_points.at(i).attribute == 6 || trajectory_points.at(i).attribute == 7) {
+        if (trajectory_points.at(i).direction != trajectory_points.at(i + 1).direction || trajectory_points.at(i).attribute == 6 || trajectory_points.at(i).attribute == 7) {
             temp_traj.clear();
             end_id = i;
-            temp_traj.insert(temp_traj.begin(), trajectory_points.begin() + start_id,
-                             trajectory_points.begin() + end_id + 1);
+            temp_traj.insert(temp_traj.begin(), trajectory_points.begin() + start_id, trajectory_points.begin() + end_id + 1);
             start_id = end_id; // 每个点不重复出现在不同的路径端中
             trajectory_fragments.emplace_back(temp_traj);
         }
@@ -1542,7 +1477,7 @@ bool GlobalSpeedPlanning::GetKeypoint() {
             if (1 == temp_traj.at(1).direction) {
                 temp_keypoints.clear();
                 temp_keypoint.Set(0, temp_traj.at(0).distance, 1, 0, reverse_speed); // 给关键点赋值
-                temp_keypoints.emplace_back(temp_keypoint); // 倒车模式下的关键点只有两个
+                temp_keypoints.emplace_back(temp_keypoint);                          // 倒车模式下的关键点只有两个
                 temp_keypoint.Set(temp_traj.size() - 1, temp_traj.back().distance, 1, reverse_speed, 0.0);
                 temp_keypoints.emplace_back(temp_keypoint); // 倒车模式下的关键点只有两个
                 key_points.emplace_back(temp_keypoints);
@@ -1582,9 +1517,7 @@ bool GlobalSpeedPlanning::GetKeypoint() {
         threadLogger_->info("第{}段有{}关键点", (float)(i + 1), key_points.at(i).size());
 
         for (int j = 0; j < key_points.at(i).size(); j++) {
-            threadLogger_->info("第{}段的第{}个关键点的索引{},左限速{},右限速{}", (float)(i + 1), j + 1,
-                                key_points.at(i).at(j).index, key_points.at(i).at(j).speed_limit_left,
-                                key_points.at(i).at(j).speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引{},左限速{},右限速{}", (float)(i + 1), j + 1, key_points.at(i).at(j).index, key_points.at(i).at(j).speed_limit_left, key_points.at(i).at(j).speed_limit_right);
         }
     }
 
@@ -1633,8 +1566,7 @@ float GlobalSpeedPlanning::GetCurrentTotalTime() {
         vector<_TrajectoryPoint>      temp_traj       = trajectory_fragments.at(i);
         for (unsigned int j = 1; j < temp_opt_speeds.size(); j++) {
             // 计算出相邻两个插值点之间的距离。
-            float delta_s = temp_traj.at(temp_opt_speeds.at(j).index).distance -
-                            temp_traj.at(temp_opt_speeds.at(j - 1).index).distance;
+            float delta_s = temp_traj.at(temp_opt_speeds.at(j).index).distance - temp_traj.at(temp_opt_speeds.at(j - 1).index).distance;
             // 累加相邻两个插值点之间的时间，得到总用时间
             float ave_speed = (temp_opt_speeds.at(j).speed + temp_opt_speeds.at(j - 1).speed) / 2;
             ave_speed       = ave_speed > 0 ? ave_speed : 0.01;
@@ -1655,18 +1587,15 @@ void GlobalSpeedPlanning::SpeedCurveInterpolation(unsigned char num) {
     // 遍历稀疏速度曲线
     for (unsigned int i = 1; i < temp_opti_global_speed.size(); i++) {
         // 计算出相邻两个插值点之间的距离。
-        float total_s = temp_traj.at(temp_opti_global_speed.at(i).index).distance -
-                        temp_traj.at(temp_opti_global_speed.at(i - 1).index).distance;
+        float total_s = temp_traj.at(temp_opti_global_speed.at(i).index).distance - temp_traj.at(temp_opti_global_speed.at(i - 1).index).distance;
         // 计算当前两稀疏速度值之间的加速度
-        float a = (pow(temp_opti_global_speed.at(i).speed, 2) - pow(temp_opti_global_speed.at(i - 1).speed, 2)) /
-                  (2 * total_s);
+        float a       = (pow(temp_opti_global_speed.at(i).speed, 2) - pow(temp_opti_global_speed.at(i - 1).speed, 2)) / (2 * total_s);
         float delta_s = 0;
         // 计算需要插值的路点数，采用匀加速模型进行速度插值，计算得到每个插值点的速度。
         for (int j = temp_opti_global_speed.at(i - 1).index; j < temp_opti_global_speed.at(i).index; j++) {
             float temp_speed = sqrt(pow(temp_opti_global_speed.at(i - 1).speed, 2) + 2 * a * delta_s);
 
-            cout << "j - temp_opti_global_speed.at(0).index:" << j - temp_opti_global_speed.at(0).index
-                 << "           temp_speed:" << temp_speed << endl;
+            cout << "j - temp_opti_global_speed.at(0).index:" << j - temp_opti_global_speed.at(0).index << "           temp_speed:" << temp_speed << endl;
             temp_traj.at(j - temp_opti_global_speed.at(0).index).speed = temp_speed;
 
             delta_s += temp_traj.at(j + 1).distance - temp_traj.at(j).distance;

@@ -30,6 +30,7 @@ const double y_o_ = 920;  // 鲁南偏移参数
 
 
 vector<_TrajectoryPoint> global_path, road_nodes;
+vector<Point>            expand_point;
 
 
 void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
@@ -86,9 +87,7 @@ int main(int argc, char** argv) {
         ros::spinOnce();
         // 将地图边界和参考路径发给rviz显示
         planning.c_rviz_.PubMapborderAndReferenceline(planning.m_tar_rviz_data_.vec_point);
-        cout << "line89" << endl;
         planning.c_rviz_.PubRoadNode(planning.m_tar_rviz_data_.road_node);
-        cout << "line91" << endl;
         if (is_receive_start == false || is_receive_end == false) {}
         else {
             is_receive_start = false;
@@ -163,11 +162,7 @@ int main(int argc, char** argv) {
                 //          << global_path.at(i).distance << " "
                 //          << static_cast<int>(global_path.at(i).attribute) << " "
                 //          << static_cast<int>(global_path.at(i).direction) <<  endl;
-                file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " "
-                         << global_path.at(i).z << " " << global_path.at(i).yaw << " " << global_path.at(i).speed << " "
-                         << global_path.at(i).speed_limit << " " << global_path.at(i).curvature << " "
-                         << static_cast<int>(global_path.at(i).direction) << " "
-                         << static_cast<int>(global_path.at(i).attribute) << " " << global_path.at(i).distance << endl;
+                file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << global_path.at(i).speed << " " << global_path.at(i).speed_limit << " " << global_path.at(i).curvature << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << " " << global_path.at(i).distance << endl;
             }
             file_out.close();
             std_msgs::Float64MultiArray speed_curve;
@@ -184,7 +179,12 @@ int main(int argc, char** argv) {
 
         // spdlog::drop("example");
         auto cost_map = planning.my_optimal_path_.GetHCostMap();
+        cout << "cost_map.size():" << cost_map.size() << endl;
         planning.c_rviz_.Pub2DCostMap(cost_map, planning.my_optimal_path_.midpoint_);
+        expand_point = planning.my_optimal_path_.GetExpandPoint();
+        cout << "expand_point.size():" << expand_point.size() << endl;
+        planning.c_rviz_.PubExpandPoint(expand_point, planning.my_optimal_path_.midpoint_);
+
         rate.sleep();
     }
 

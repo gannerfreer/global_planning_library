@@ -38,8 +38,7 @@ class Planning {
     bool ApplyHibridAStar(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, int plan_rule_id);
 
 
-    bool ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_direction, int search_start, int& search_index,
-                                vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id, int off_set);
+    bool ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_direction, int search_start, int& search_index, vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id, int off_set);
 
     /**
      * @brief
@@ -53,8 +52,7 @@ class Planning {
      * @return true 规划成功
      * @return false 失败
      */
-    bool ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj,
-                                  unsigned char plan_rule_id, long long time_threshold);
+    bool ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, unsigned char plan_rule_id, long long time_threshold);
 
     /**
      * @brief  去除轨迹中重复点
@@ -148,8 +146,8 @@ class Planning {
 
   public:
     _SinglePoint start_point_,
-        end_point_;                                     // 起、终点坐标
-    int start_key_, end_key_, start_index_, end_index_; // 起点、终点匹配上的参考路径id以及在在参考路径上的具体索引
+        end_point_;                                        // 起、终点坐标
+    int    start_key_, end_key_, start_index_, end_index_; // 起点、终点匹配上的参考路径id以及在在参考路径上的具体索引
     double start_lat_dis_ = 0, start_lon_dis_ = 0, start_distance_ = 0, end_lat_dis_ = 0, end_lon_dis_ = 0,
            end_distance_ = 0; // 起点、终点与匹配上的参考路径的横纵向距离
 

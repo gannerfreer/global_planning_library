@@ -40,8 +40,7 @@ struct KeyPoint {
         this->speed_limit_left  = 0;
         this->speed_limit_right = 0;
     }
-    inline void Set(unsigned int index_, float distance_, unsigned char direction_, float speed_limit_left_,
-                    float speed_limit_right_) {
+    inline void Set(unsigned int index_, float distance_, unsigned char direction_, float speed_limit_left_, float speed_limit_right_) {
         index             = index_;
         distance          = distance_;
         direction         = direction_;
@@ -76,7 +75,7 @@ class GlobalSpeedPlanning {
      * @return 无
      */
 
-    GlobalSpeedPlanning(){};
+    GlobalSpeedPlanning() {};
     /**
      * @brief: 析构函数
      * @return 无
@@ -172,8 +171,7 @@ class GlobalSpeedPlanning {
      * num：trajectory_fragments中的第num条；keypoint1、keypoint2：该路段的两个关键点；temp_sparsespeedpoints：规划后的速度点；last_speed：规划后的末速度
      * @param [return]
      */
-    bool PlanForSingleSegment(unsigned char num, KeyPoint keypoint1, KeyPoint keypoint2,
-                              vector<SparseSpeedPoint>& temp_sparsespeedpoints, float& last_speed);
+    bool PlanForSingleSegment(unsigned char num, KeyPoint keypoint1, KeyPoint keypoint2, vector<SparseSpeedPoint>& temp_sparsespeedpoints, float& last_speed);
 
     /**
      *@brief: 初始化速度规划参数
@@ -241,8 +239,7 @@ class GlobalSpeedPlanning {
      * 0：最短时间策略；1：准点策略
      * @return true：规划成功；false：规划失败
      */
-    bool SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param, const int total_time = 0,
-                       const int departure_time = 0, unsigned char mode = 0);
+    bool SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param, const int total_time = 0, const int departure_time = 0, unsigned char mode = 0);
 
 
     void ReplanPointMaxSpeed();

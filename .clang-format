@@ -17,7 +17,7 @@ BreakBeforeBraces: Custom
 BraceWrapping:
     BeforeElse: true
 BreakConstructorInitializers: BeforeComma
-ColumnLimit: 120
+ColumnLimit: 999
 ConstructorInitializerIndentWidth: 8
 ContinuationIndentWidth: 4
 DerivePointerAlignment: false

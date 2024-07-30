@@ -20,9 +20,7 @@ using namespace GlobalPlanning;
  *@param
  *return
  */
-PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, const Bound& road_bound,
-                                         const Bound& obstacle_bound, const _VehicleParam m_vehicle_param,
-                                         Path& final_path, long long time_threshold, const PlanRule plan_path_rule) {
+PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, const Bound& road_bound, const Bound& obstacle_bound, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule plan_path_rule) {
     m_vehicle_param_ = m_vehicle_param;
     my_r_s_curve.Init(m_vehicle_param_);
     dubins_.SetParam(m_vehicle_param_.radious, end, plan_path_rule);
@@ -60,8 +58,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     timelog.AddLog("IsVehicleCollision");
     // threadLogger_->info( "plan_path_rule_:" << static_cast<float>(plan_path_rule) );
 
-    if (collison_check_.IsVehicleCollision(end_r_) || plan_path_rule_ == PlanRule::Backward_To_End ||
-        plan_path_rule_ == PlanRule::Backward_All_Time) {
+    if (collison_check_.IsVehicleCollision(end_r_) || plan_path_rule_ == PlanRule::Backward_To_End || plan_path_rule_ == PlanRule::Backward_All_Time) {
         if (collison_check_.IsVehicleCollision(end_r_)) {
             threadLogger_->info("终点碰撞检测不通过(end_r_)");
         }
@@ -73,8 +70,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
 
         fitting_direction_ = FittingDirection::Backward_Fitting;
     }
-    else if (collison_check_.IsVehicleCollision(end_f_) || plan_path_rule_ == PlanRule::Forward_To_End ||
-             plan_path_rule_ == PlanRule::Forward_All_Time) {
+    else if (collison_check_.IsVehicleCollision(end_f_) || plan_path_rule_ == PlanRule::Forward_To_End || plan_path_rule_ == PlanRule::Forward_All_Time) {
         if (collison_check_.IsVehicleCollision(end_f_)) {
             threadLogger_->info("终点碰撞检测不通过(end_f_)");
         }
@@ -129,9 +125,8 @@ void OptimalPath::InitData(Point start, Point end, const Bound& road_bound, cons
 
     // 计算终点后直线补偿点位置
     end_r_.angle = end_.angle;
-    threadLogger_->info("啦啦啦啦end_.angle:{}", end_.angle);
-    end_r_.x = end_.x - m_vehicle_param_.end_offset_distance * cos(end_.angle);
-    end_r_.y = end_.y - m_vehicle_param_.end_offset_distance * sin(end_.angle);
+    end_r_.x     = end_.x - m_vehicle_param_.end_offset_distance * cos(end_.angle);
+    end_r_.y     = end_.y - m_vehicle_param_.end_offset_distance * sin(end_.angle);
 
     // 计算平移后地图边界点
     road_bound_.clear();
@@ -185,33 +180,25 @@ void OptimalPath::InitData(Point start, Point end, const Bound& road_bound, cons
  */
 PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     // 以下3行代码用于超时退出
-    utility::CTimeClock start_time_;
-
-    InitOpenClose(); // 初始化open集和close集
-
-    utility::CTimeClock start_time;
-    long long cal_time_ = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_); // 开始时间精确到微秒
+    utility::CTimeClock init_time;
+    InitOpenClose();                                                                        // 初始化open集和close集
+    long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time); // 开始时间精确到微秒
+    threadLogger_->info("InitOpenClose 耗时:{} ms", init_time_end * 0.001);
 
 
     Vertex3D           current_point;
-    unsigned long long time_spend_collsion = 0, time_spend_dynamic = 0, total_time_spend_collsion = 0,
-                       total_time_spend_dynamic = 0;
-
-    long long total_time_RS             = 0;
-    long long total_time_Expand         = 0;
-    long long total_time_Expand_dynamic = 0;
-    int       sum                       = 0;
-    RS_num                              = 0;
-    All                                 = 0;
-
-
+    unsigned long long time_spend_collsion = 0, time_spend_dynamic = 0, expand_time_collision = 0, expand_time_dynamic = 0;
+    long long          total_time                = 0;
+    long long          expand_time               = 0;
+    long long          total_time_Expand_dynamic = 0;
+    int                sum                       = 0;
+    All                                          = 0;
+    utility::CTimeClock start_time;
     while (!open_map_f_.empty()) {
         long long cal_time = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time); // 开始时间精确到微秒
-        if (cal_time > timeThreshold) // 若超过最大迭代次数则直接返回
+        if (cal_time > timeThreshold)                                                       // 若超过最大迭代次数则直接返回
         {
-            threadLogger_->info("A star overtime!!! ");
-
-            threadLogger_->info("AStarPath while循环已经被调用: {} 次", sum);
+            threadLogger_->info("A star overtime!, timeThreshold:{} ms,AStarPath while循环已经被调用: {} 次", timeThreshold * 0.001, sum);
 
             return PlanResult::Plan_Overtime;
         }
@@ -228,27 +215,24 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         sum++;
 
 
-        utility::CTimeClock start_time_rs;
         if (true == IfExitAStar(current_point)) {
-            total_time_RS += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs);
-            threadLogger_->info("RS oneshot总计用时: {} ms", 0.001 * total_time_RS);
-            threadLogger_->info("AStarPath while循环被调用: {} 次", sum);
-            threadLogger_->info("节点拓展总用时: {} ms", 0.001 * total_time_Expand);
-            threadLogger_->info("节点拓展-运动学搜索用时: {} ms", 0.001 * total_time_spend_dynamic);
-            threadLogger_->info("节点拓展-碰撞检测用时: {} ms", 0.001 * total_time_spend_collsion);
-            total_time_RS     = 0;
-            total_time_Expand = 0;
-            sum               = 0;
+            total_time = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time);
+            threadLogger_->info("搜索总计用时: {} ms, (multimap)open_map_f 一共弹出{}次,close_map_.size():{},open_map_.size():{}", 0.001 * total_time, sum, close_map_.size(), open_map_.size());
+            threadLogger_->info("拓展总用时: {} ms", 0.001 * expand_time);
+            threadLogger_->info("拓展-运动学搜索用时: {} ms", 0.001 * expand_time_dynamic);
+            threadLogger_->info("拓展-碰撞检测用时: {} ms", 0.001 * expand_time_collision);
+            total_time  = 0;
+            expand_time = 0;
+            sum         = 0;
             break;
         }
-        total_time_RS += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs);
 
         // 基于当前点进行节点拓展
         utility::CTimeClock start_time_expand;
         FindExpandVertex(current_point, time_spend_dynamic, time_spend_collsion);
-        total_time_spend_collsion += time_spend_collsion;
-        total_time_spend_dynamic += time_spend_dynamic;
-        total_time_Expand += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_expand);
+        expand_time_collision += time_spend_collsion;
+        expand_time_dynamic += time_spend_dynamic;
+        expand_time += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_expand);
     }
 
     if (open_map_f_.empty()) // 如果open_set为空表示无法搜索到可行路径
@@ -264,16 +248,16 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     threadLogger_->info("PathIntegration() Successfuly!");
 
     // 保存路点，并打印出来
-    std::ofstream file_out;
-    file_out.open("yaw.txt", std::ios::app);
-    for (size_t index = 0; index < path_a_star_.size(); index++) {
-        file_out << path_a_star_.at(index).angle << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("yaw.txt", std::ios::app);
+    // for (size_t index = 0; index < path_a_star_.size(); index++) {
+    //     file_out << path_a_star_.at(index).angle << endl;
+    // }
+    // file_out.close();
 
 
     Path temp_path;
-    temp_path = path_a_star_; // 弧度
+    temp_path = path_a_star_;                  // 弧度
     removeDuplicates(temp_path, path_a_star_); // 为了保障后续采样基于三次样条插值算法的正常运行，此处需要刪除重复点
     threadLogger_->info("removeDuplicates() Successfuly!");
 
@@ -376,12 +360,10 @@ void OptimalPath::InitOpenClose() {
     temp_vertex.angle     = start_.angle;
     temp_vertex.parent_id = 0;
     temp_vertex.g         = 0;
-    threadLogger_->info("CalHValue begin ");
-    cout << "CalHValue begin" << endl;
+
     CalHValue(temp_vertex); // 查询起点H值
 
-    threadLogger_->info("CalHValue end ");
-    cout << "CalHValue successfully" << endl;
+
     temp_vertex.f             = temp_vertex.h + temp_vertex.g;
     temp_vertex.direction     = Forward;
     temp_vertex.id            = Vertex2Hash(temp_vertex);
@@ -389,11 +371,9 @@ void OptimalPath::InitOpenClose() {
     open_map_f_.insert(make_pair(temp_vertex.f, temp_vertex));
     temp_vertex.parent_id = 0;
     temp_vertex.g         = 0;
-    threadLogger_->info("CalHValue begin again ");
-    cout << "CalHValue begin again" << endl;
+
     CalHValue(temp_vertex);
-    threadLogger_->info("CalHValue end again");
-    cout << "CalHValue successfully again" << endl;
+
     temp_vertex.f             = temp_vertex.h + temp_vertex.g;
     temp_vertex.direction     = Backward; // 倒退
     temp_vertex.id            = Vertex2Hash(temp_vertex);
@@ -408,9 +388,9 @@ void OptimalPath::InitOpenClose() {
  */
 bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
     // 判断是否可以进行RS曲线拟合
-    double dis2end_square =
-        (min_point.x - end_.x) * (min_point.x - end_.x) + (min_point.y - end_.y) * (min_point.y - end_.y);
-    if (dis2end_square < (m_vehicle_param_.max_fitting_radius * m_vehicle_param_.max_fitting_radius)) {
+    double dis = hypot(min_point.x - end_.x, min_point.y - end_.y);
+
+    if (dis < m_vehicle_param_.max_fitting_radius) {
         All++;
         flag_dubins_ = true;
         Point temp_start_point;
@@ -424,81 +404,38 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
 
         switch (fitting_direction_) {
             case FittingDirection::Backward_Fitting:
-                // threadLogger_->info("rs曲线:Backward_Fitting");
-                // 如果RS路径拟合成功、RS最后一段是退、且碰撞检测通过，则返回true
-                // if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_,
-                // m_vehicle_param_)) &&
-                //     (MotionDirection::Backward == path_r_s_.back().direction) &&
-                //     (false == collison_check_.IsRSPathCollision(path_r_s_)))
-                if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) &&
-                    (MotionDirection::Backward == path_r_s_.back().direction)) {
-                    RS_num++;
+
+                if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) && (MotionDirection::Backward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
-                        threadLogger_->info("RS曲线Backward_Fitting oneshot成功，一共oneshot了 {} /{} 次 ", RS_num,
-                                            All);
+                        threadLogger_->info("RS曲线Backward_Fitting oneshot成功，一共oneshot了 {}  次 ", All);
 
                         return true;
                     }
                 }
                 break;
             case FittingDirection::Forword_Fitting:
-                // threadLogger_->info("rs曲线:Forword_Fitting");
-                // 如果RS路径拟合成功、RS最后一段是进、且碰撞检测通过，则返回true
-                // if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_,
-                // m_vehicle_param_)) &&
-                //     (MotionDirection::Forward == path_r_s_.back().direction) &&
-                //     (false == collison_check_.IsRSPathCollision(path_r_s_)))
-                // {
-                //     threadLogger_->info( "RS曲线oneshot成功，一共oneshot了 " << RS_num << " 次" );
-                //     return true;
-                // }
-                // break;
-                if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) &&
-                    (MotionDirection::Forward == path_r_s_.back().direction)) {
-                    RS_num++;
+
+                if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) && (MotionDirection::Forward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
-                        threadLogger_->info("RS曲线oneshot成功，一共oneshot了{} /{}次 ", RS_num, All);
+                        threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
 
                         return true;
                     }
                 }
                 break;
             case FittingDirection::Both_Fitting:
-                // threadLogger_->info("rs曲线:both_Fitting");
-                // 上面两种情况都试一次（先试前进拟合）
-                // if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_,
-                // m_vehicle_param_)) &&
-                //     (MotionDirection::Forward == path_r_s_.back().direction) &&
-                //     (false == collison_check_.IsRSPathCollision(path_r_s_)))
-                // {
-                //     threadLogger_->info( "RS曲线oneshot成功，一共oneshot了 " << RS_num << " 次" );
-                //     fitting_direction_ = FittingDirection::Forword_Fitting;
-                //     return true;
-                // }
-                // else if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_,
-                // m_vehicle_param_)) &&
-                //          (MotionDirection::Backward == path_r_s_.back().direction) &&
-                //          (false == collison_check_.IsRSPathCollision(path_r_s_)))
-                // {
-                //     threadLogger_->info( "RS曲线oneshot成功，一共oneshot了 " << RS_num << " 次" );
-                //     fitting_direction_ = FittingDirection::Backward_Fitting;
-                //     return true;
-                // }
-                if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) &&
-                    (MotionDirection::Forward == path_r_s_.back().direction)) {
-                    RS_num++;
+
+                if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) && (MotionDirection::Forward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
-                        threadLogger_->info("RS曲线oneshot成功，一共oneshot了{}/{}次 ", RS_num, All);
+                        threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
 
                         fitting_direction_ = FittingDirection::Forword_Fitting;
                         return true;
                     }
                 }
-                else if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) &&
-                         (MotionDirection::Backward == path_r_s_.back().direction)) {
-                    RS_num++;
+                else if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) && (MotionDirection::Backward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
-                        threadLogger_->info("RS曲线oneshot成功，一共oneshot了{}/{}次 ", RS_num, All);
+                        threadLogger_->info("RS曲线Backward_Fitting oneshot成功，一共oneshot了 {}  次 ", All);
 
                         fitting_direction_ = FittingDirection::Backward_Fitting;
                         return true;
@@ -517,23 +454,17 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
  *@param
  *return
  */
-void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long long& time_dy,
-                                   unsigned long long& time_collsion) {
+void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long long& time_dy, unsigned long long& time_collsion) {
     // auto start_time = ros::Time::now();
     bool               flag  = false;
     unsigned long long time1 = 0, time2 = 0;
 
     // 根据规划规则判定拓展规则
     start_d_ = (plan_path_rule_ == PlanRule::Backward_All_Time) ? Backward : Forward;
-    end_d_   = (plan_path_rule_ == PlanRule::NO_Backward_In_Start || plan_path_rule_ == PlanRule::Forward_All_Time ||
-              ((pow(current_point.x - start_.x, 2) + pow(current_point.y - start_.y, 2)) >
-               (pow(m_vehicle_param_.backward_search_range, 2))))
-                   ? Forward
-                   : Backward;
+    end_d_   = (plan_path_rule_ == PlanRule::NO_Backward_In_Start || plan_path_rule_ == PlanRule::Forward_All_Time || ((pow(current_point.x - start_.x, 2) + pow(current_point.y - start_.y, 2)) > (pow(m_vehicle_param_.backward_search_range, 2)))) ? Forward : Backward;
 
     // 计算转向角离散增量
-    const double delta_angle =
-        (m_vehicle_param_.max_steering - m_vehicle_param_.min_steering) / (m_vehicle_param_.angle_discrete_num - 1);
+    const double delta_angle = (m_vehicle_param_.max_steering - m_vehicle_param_.min_steering) / (m_vehicle_param_.angle_discrete_num - 1);
     for (unsigned int i = 0; i < m_vehicle_param_.angle_discrete_num; ++i) {
         double   temp_steering = m_vehicle_param_.min_steering + i * delta_angle;
         Vertex3D end_point;
@@ -705,8 +636,7 @@ void OptimalPath::PathIntegration() {
         Point temp_point;
         temp_point.angle = end_r_.angle;
         // cout << "temp_point.angle:" << temp_point.angle << endl;
-        for (double i = m_vehicle_param_.step_length; i <= m_vehicle_param_.end_offset_distance;
-             i += m_vehicle_param_.step_length) {
+        for (double i = m_vehicle_param_.step_length; i <= m_vehicle_param_.end_offset_distance; i += m_vehicle_param_.step_length) {
             temp_point.x         = end_r_.x + i * cos(end_r_.angle);
             temp_point.y         = end_r_.y + i * sin(end_r_.angle);
             temp_point.z         = 0;
@@ -722,8 +652,7 @@ void OptimalPath::PathIntegration() {
     {
         Point temp_point;
         temp_point.angle = end_f_.angle;
-        for (double i = m_vehicle_param_.step_length; i <= m_vehicle_param_.end_offset_distance;
-             i += m_vehicle_param_.step_length) {
+        for (double i = m_vehicle_param_.step_length; i <= m_vehicle_param_.end_offset_distance; i += m_vehicle_param_.step_length) {
             temp_point.x         = end_f_.x - i * cos(end_f_.angle);
             temp_point.y         = end_f_.y - i * sin(end_f_.angle);
             temp_point.z         = 0;
@@ -753,8 +682,7 @@ void OptimalPath::RestoreData(Path& path) {
  *@param
  *return
  */
-void OptimalPath::VehDynam(const Vertex3D& start, const MotionDirection direction, const double steering,
-                           Vertex3D& end) {
+void OptimalPath::VehDynam(const Vertex3D& start, const MotionDirection direction, const double steering, Vertex3D& end) {
     // std::threadLogger_->info( "m_vehicle_param_.delta_dist = " << m_vehicle_param_.delta_dist << "\n";
     // std::threadLogger_->info( "m_vehicle_param_.wheel_base = " << m_vehicle_param_.wheel_base << "\n";
 
@@ -799,15 +727,8 @@ void OptimalPath::VehDynam(const Vertex3D& start, const MotionDirection directio
  */
 void OptimalPath::CalGValue(const Vertex3D& start_point, Vertex3D& end_point) {
     // 保证开始时优先直线搜索
-    double coeff = (pow(end_point.x - start_.x, 2) + pow(end_point.y - start_.y, 2) >
-                    m_vehicle_param_.linear_preferred_distance_square)
-                       ? 1
-                       : 5;
-    end_point.g  = start_point.g +
-                  m_vehicle_param_.delta_dist * ((m_vehicle_param_.backward_penalty - 1) * end_point.direction + 1.0) +
-                  coeff * m_vehicle_param_.turnning_penalty *
-                      fabs(fmod(end_point.angle - start_point.angle + 3 * M_PI, 2 * M_PI) - M_PI) +
-                  m_vehicle_param_.switch_penalty * fabs(start_point.direction - end_point.direction);
+    double coeff = (pow(end_point.x - start_.x, 2) + pow(end_point.y - start_.y, 2) > m_vehicle_param_.linear_preferred_distance_square) ? 1 : 5;
+    end_point.g  = start_point.g + m_vehicle_param_.delta_dist * ((m_vehicle_param_.backward_penalty - 1) * end_point.direction + 1.0) + coeff * m_vehicle_param_.turnning_penalty * fabs(fmod(end_point.angle - start_point.angle + 3 * M_PI, 2 * M_PI) - M_PI) + m_vehicle_param_.switch_penalty * fabs(start_point.direction - end_point.direction);
 }
 
 /**
@@ -819,12 +740,9 @@ void OptimalPath::CalGValue(const Vertex3D& start_point, Vertex3D& end_point) {
  *return
  */
 void OptimalPath::CalHValue(Vertex3D& point) {
-    Node2D current2D(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)),
-                     static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
-    Node2D goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)),
-                  static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
-    point.h = sqrt((goal2D.getX() - current2D.getX()) * (goal2D.getX() - current2D.getX()) +
-                   (goal2D.getY() - current2D.getY()) * (goal2D.getY() - current2D.getY()));
+    Node2D current2D(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
+    Node2D goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
+    point.h = hypot(goal2D.getX() - current2D.getX(), goal2D.getY() - current2D.getY());
 }
 
 /**
@@ -858,8 +776,8 @@ bool OptimalPath::BFSSearch2D() {
         endTime = clock();
         if ((double)(endTime - startTime) / CLOCKS_PER_SEC > 5) // 超时退出
             return false;
-        vector<IntCoordinate>().swap(temp_layer); // 清空临时变量，存储新拓展层的坐标
-        vector<bool>().swap(temp_bound);          // 清空临时变量，存储新拓展层的边界信息
+        vector<IntCoordinate>().swap(temp_layer);                     // 清空临时变量，存储新拓展层的坐标
+        vector<bool>().swap(temp_bound);                              // 清空临时变量，存储新拓展层的边界信息
         vector<IntCoordinate> last_layer       = point_set.back();    // 上一层的坐标
         vector<bool>          last_layer_bound = is_bound_set.back(); // 上一层的边界信息
 
@@ -1077,8 +995,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal) {
         for (auto iter = nodes2D_map_.begin(); iter != nodes2D_map_.end(); ++iter) {
             if (iter->second.isOpen()) {
                 iter->second.updateH(goal);
-                unsigned long long hash =
-                    iter->second.getIdx() | (static_cast<unsigned long long>(iter->second.getF() * 1000) << 32);
+                unsigned long long hash = iter->second.getIdx() | (static_cast<unsigned long long>(iter->second.getF() * 1000) << 32);
                 nodes2D_set_.insert(hash);
             }
         }
@@ -1092,8 +1009,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal) {
     threadLogger_->info("line1338");
     start.open();
     threadLogger_->info("line1340");
-    unsigned long long hash =
-        start.getIdx() | (static_cast<unsigned long long>(start.getF() * 1000) << 32); // 包含点的F值和索引
+    unsigned long long hash = start.getIdx() | (static_cast<unsigned long long>(start.getF() * 1000) << 32); // 包含点的F值和索引
     threadLogger_->info("line1342 ");
     nodes2D_set_.insert(hash); // 存入起点
     threadLogger_->info("line1344 ");
@@ -1145,8 +1061,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal) {
                         threadLogger_->info("iSucc is Open");
                         if (newG < nodes2D_map_[iSucc].getG()) {
                             threadLogger_->info("更小的G值");
-                            hash = nodes2D_map_[iSucc].getIdx() |
-                                   (static_cast<unsigned long long>(nodes2D_map_[iSucc].getF() * 1000) << 32);
+                            hash      = nodes2D_map_[iSucc].getIdx() | (static_cast<unsigned long long>(nodes2D_map_[iSucc].getF() * 1000) << 32);
                             auto iter = nodes2D_set_.find(hash);
                             if (iter != nodes2D_set_.end()) {
                                 nodes2D_set_.erase(iter);
@@ -1223,19 +1138,19 @@ bool OptimalPath::IsBoundGrid(IntCoordinate point) {
     // 以下5种情况都表明当前点是边界点
     if (bound_set_.count(hash) == 1) // 当前点在边界上
         return true;
-    else if ((bound_set_.count(Coordinate2Hash(point_west)) == 1) && // 当前点西和北方向是边界，西北方向
+    else if ((bound_set_.count(Coordinate2Hash(point_west)) == 1) &&     // 当前点西和北方向是边界，西北方向
              (bound_set_.count(Coordinate2Hash(point_north)) == 1) &&    // 不是边界，则当前点是
              (bound_set_.count(Coordinate2Hash(point_west_north)) == 0)) // 边界点，下同理
         return true;
-    else if ((bound_set_.count(Coordinate2Hash(point_west)) == 1) && // 当前点西和北方向是边界，西北方向
+    else if ((bound_set_.count(Coordinate2Hash(point_west)) == 1) &&     // 当前点西和北方向是边界，西北方向
              (bound_set_.count(Coordinate2Hash(point_south)) == 1) &&    // 不是边界，则当前点是
              (bound_set_.count(Coordinate2Hash(point_west_south)) == 0)) // 边界点，下同理
         return true;
-    else if ((bound_set_.count(Coordinate2Hash(point_east)) == 1) && // 当前点西和北方向是边界，西北方向
+    else if ((bound_set_.count(Coordinate2Hash(point_east)) == 1) &&     // 当前点西和北方向是边界，西北方向
              (bound_set_.count(Coordinate2Hash(point_south)) == 1) &&    // 不是边界，则当前点是
              (bound_set_.count(Coordinate2Hash(point_east_south)) == 0)) // 边界点，下同理
         return true;
-    else if ((bound_set_.count(Coordinate2Hash(point_east)) == 1) && // 当前点西和北方向是边界，西北方向
+    else if ((bound_set_.count(Coordinate2Hash(point_east)) == 1) &&     // 当前点西和北方向是边界，西北方向
              (bound_set_.count(Coordinate2Hash(point_north)) == 1) &&    // 不是边界，则当前点是
              (bound_set_.count(Coordinate2Hash(point_east_north)) == 0)) // 边界点，下同理
         return true;
@@ -1292,9 +1207,6 @@ double OptimalPath::computeCurvature(const Point& p1, const Point& p2, const Poi
     double y2 = p2.y;
     double y3 = p3.y;
 
-    double curvature = (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) /
-                       pow((pow(x1 - x2, 2) + pow(y1 - y2, 2)) * (pow(x2 - x3, 2) + pow(y2 - y3, 2)) *
-                               (pow(x3 - x1, 2) + pow(y3 - y1, 2)),
-                           0.5);
+    double curvature = (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / pow((pow(x1 - x2, 2) + pow(y1 - y2, 2)) * (pow(x2 - x3, 2) + pow(y2 - y3, 2)) * (pow(x3 - x1, 2) + pow(y3 - y1, 2)), 0.5);
     return curvature;
 }

@@ -6,10 +6,10 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /Grid1
         - /PointCloud1
-        - /PointCloud1/Status1
         - /PointCloud2
-        - /PointCloud2/Status1
+        - /Marker2
       Splitter Ratio: 0.5
     Tree Height: 728
   - Class: rviz/Selection
@@ -39,7 +39,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.15000000596046448
-      Cell Size: 5
+      Cell Size: 50
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -173,6 +173,14 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /point_expand
+      Name: Marker
+      Namespaces:
+        my_namespace: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
@@ -213,8 +221,8 @@ Visualization Manager:
       Scale: 4.953279972076416
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: 72.68250274658203
-      Y: 81.90711212158203
+      X: 26.662731170654297
+      Y: 161.39793395996094
     Saved: ~
 Window Geometry:
   Displays:
