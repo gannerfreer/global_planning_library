@@ -23,7 +23,6 @@ using namespace GlobalPlanning;
 PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, const Bound& road_bound, const Bound& obstacle_bound, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule plan_path_rule) {
     m_vehicle_param_ = m_vehicle_param;
     my_r_s_curve.Init(m_vehicle_param_);
-    dubins_.SetParam(m_vehicle_param_.radious, end, plan_path_rule);
     plan_path_rule_ = plan_path_rule;
 
     utility::CTimeLog timelog("SearchGlobalPath");

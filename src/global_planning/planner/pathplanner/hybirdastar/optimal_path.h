@@ -345,7 +345,6 @@ class OptimalPath {
 
   private:
     RSCurve          my_r_s_curve;
-    Dubins           dubins_;
     CollisonCheck    collison_check_;
     PlanRule         plan_path_rule_;
     FittingDirection fitting_direction_;

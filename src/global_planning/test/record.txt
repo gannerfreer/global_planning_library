@@ -13,3 +13,5 @@
 2024-07-26-15-08-26 ，处理完规划请求，请求号：ids:mine:dispatch:planPath:result:1808057346165837824，车辆编号：1021
 2024-07-29oc-16-24-10 ，收到规划请求，请求号：ids:mine:dispatch:planPath:result:1808057346165837824，车辆编号：1021
 2024-07-29-16-24-10 ，处理完规划请求，请求号：ids:mine:dispatch:planPath:result:1808057346165837824，车辆编号：1021
+2024-08-02oc-15-18-06 ，收到规划请求，请求号：ids:mine:dispatch:planPath:result:1808057346165837824，车辆编号：1021
+2024-08-02-15-18-06 ，处理完规划请求，请求号：ids:mine:dispatch:planPath:result:1808057346165837824，车辆编号：1021

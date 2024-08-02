@@ -155,6 +155,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/yyf/global_planning_library/build/msgs/msg_v_state/cmake_install.cmake")
   include("/home/yyf/global_planning_library/build/msgs/msg_lidar_shape/cmake_install.cmake")
   include("/home/yyf/global_planning_library/build/global_planning/cmake_install.cmake")
+  include("/home/yyf/global_planning_library/build/n_obstacle/cmake_install.cmake")
 
 endif()
 

@@ -50,6 +50,10 @@ collision_check.h
 ../time/TimeHelper.h
 /home/yyf/global_planning_library/src/global_planning/time/TimeHelper.h
 
+/home/yyf/global_planning_library/src/global_planning/common/color.h
+vector
+-
+
 /home/yyf/global_planning_library/src/global_planning/common/common_struct.h
 geometry_msgs/Point.h
 -
@@ -86,6 +90,10 @@ vector
 ../third_lib/rapidjson/writer.h
 /home/yyf/global_planning_library/src/global_planning/third_lib/rapidjson/writer.h
 
+/home/yyf/global_planning_library/src/global_planning/globalvariable.cpp
+globalvariable.h
+/home/yyf/global_planning_library/src/global_planning/globalvariable.h
+
 /home/yyf/global_planning_library/src/global_planning/globalvariable.h
 iostream
 -
@@ -121,6 +129,10 @@ mine_global_planning/planning.h
 /home/yyf/global_planning_library/src/global_planning/mine_global_planning/planning.h
 msg_global_planning/msg_global_planning.h
 /home/yyf/global_planning_library/src/global_planning/msg_global_planning/msg_global_planning.h
+
+/home/yyf/global_planning_library/src/global_planning/map/c_map_analysis.cpp
+c_map_analysis.h
+/home/yyf/global_planning_library/src/global_planning/map/c_map_analysis.h
 
 /home/yyf/global_planning_library/src/global_planning/map/c_map_analysis.h
 stdio.h
@@ -198,6 +210,10 @@ random
 ../show/c_rviz_path.h
 /home/yyf/global_planning_library/src/global_planning/show/c_rviz_path.h
 
+/home/yyf/global_planning_library/src/global_planning/planner/pathplanner/dijkstra/dijkstra.cpp
+dijkstra.h
+/home/yyf/global_planning_library/src/global_planning/planner/pathplanner/dijkstra/dijkstra.h
+
 /home/yyf/global_planning_library/src/global_planning/planner/pathplanner/dijkstra/dijkstra.h
 float.h
 -
@@ -260,11 +276,19 @@ node2d.h
 r_s_curve.h
 /home/yyf/global_planning_library/src/global_planning/planner/pathplanner/hybirdastar/r_s_curve.h
 
+/home/yyf/global_planning_library/src/global_planning/planner/pathplanner/hybirdastar/r_s_curve.cpp
+r_s_curve.h
+/home/yyf/global_planning_library/src/global_planning/planner/pathplanner/hybirdastar/r_s_curve.h
+
 /home/yyf/global_planning_library/src/global_planning/planner/pathplanner/hybirdastar/r_s_curve.h
 cfloat
 -
 ../../../common/common_struct.h
 /home/yyf/global_planning_library/src/global_planning/common/common_struct.h
+
+/home/yyf/global_planning_library/src/global_planning/planner/speedplanner/global_speed_planning.cpp
+global_speed_planning.h
+/home/yyf/global_planning_library/src/global_planning/planner/speedplanner/global_speed_planning.h
 
 /home/yyf/global_planning_library/src/global_planning/planner/speedplanner/global_speed_planning.h
 cmath
@@ -275,6 +299,14 @@ vector
 -
 ../../common/common_struct.h
 /home/yyf/global_planning_library/src/global_planning/common/common_struct.h
+
+/home/yyf/global_planning_library/src/global_planning/show/c_rviz_path.cpp
+c_rviz_path.h
+/home/yyf/global_planning_library/src/global_planning/show/c_rviz_path.h
+../common/color.h
+/home/yyf/global_planning_library/src/global_planning/common/color.h
+string.h
+/home/yyf/global_planning_library/src/global_planning/show/string.h
 
 /home/yyf/global_planning_library/src/global_planning/show/c_rviz_path.h
 sensor_msgs/PointCloud.h

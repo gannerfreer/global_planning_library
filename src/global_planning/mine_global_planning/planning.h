@@ -54,15 +54,7 @@ class Planning {
      */
     bool ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, unsigned char plan_rule_id, long long time_threshold);
 
-    /**
-     * @brief  去除轨迹中重复点
-     *
-     * @param input 输入轨迹
-     * @param result 删除重复点后的输出轨迹
-     * @return true
-     * @return false
-     */
-    bool removeDuplicates(vector<_TrajectoryPoint>& input, vector<_TrajectoryPoint>& result);
+
     /**
      * @brief 均匀碾压，每个路径点偏移权重
      *
