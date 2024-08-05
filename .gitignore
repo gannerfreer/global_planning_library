@@ -1,4 +1,4 @@
-/devel/
-/build/
+devel/
+build/
 src/global_planning/simulation_log/
 src/global_planning/log/

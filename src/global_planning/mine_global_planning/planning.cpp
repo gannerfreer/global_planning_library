@@ -132,7 +132,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     // threadLogger_->info("CalAcc");
 
     path = global_path_;
-    threadLogger_->info("final_out global_Path_.size():", global_path_.size());
+    threadLogger_->info("final_out global_Path.size():", global_path_.size());
     return;
 }
 
@@ -671,9 +671,9 @@ void Planning::StartEndPointProcess() {
     if (start_angle_diff < 0) {
         start_angle_diff += 2 * M_PI; // 将终点与全局路径最后一个点的角度偏差规范[0,2π）
     }
-    float first_angle_diff = fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI : fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI;
 
-    if ((first_angle_diff < 90 && global_path_.front().direction == 0) || (first_angle_diff > 90 && global_path_.front().direction == 1) || fabs(start_point_.x - global_path_.front().x) <= 0.3 && fabs(start_point_.y - global_path_.front().y) <= 0.3) {
+
+    if ((fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI < 90 && fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI > 270) || (fabs(start_point_.x - global_path_.front().x) <= 0.3 && fabs(start_point_.y - global_path_.front().y) <= 0.3)) {
         global_path_.erase(global_path_.begin());
         threadLogger_->info("全局路径第一个位于实际起点前面，或者太近，现予以去除");
     }
@@ -703,10 +703,9 @@ void Planning::StartEndPointProcess() {
     }
     // 如果最后一个点位于终点后面，需要进行删除
     // 如果最后一个点没有位于终点后，但是基本与终点重合，也需要进行删除
-
-    float last_angle_diff = fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI : fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI;
-
-    if ((last_angle_diff > 90 && global_path_.back().direction == 0) || (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3) || (last_angle_diff < 90 && global_path_.back().direction == 1)) {
+    double end_point_last_point_distance;
+    end_point_last_point_distance = sqrt(pow(end_point_.x - global_path_.back().x, 2) + pow(end_point_.y - global_path_.back().y, 2));
+    if ((fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI > 90 && fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI < 270) || (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3)) {
         global_path_.pop_back();
         threadLogger_->info("全局路径最后一个位于实际终点后面，或者最后一个点就是终点，现予以去除");
     }

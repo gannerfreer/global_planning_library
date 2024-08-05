@@ -12,6 +12,7 @@ CXXFLAGS = -fPIC -shared -std=c++17   -D SKIP_HEADER   -lstdc++fs   # C++ 编译
 LDFLAGS = -L/usr/local/lib -ldl -pthread -Wl,-rpath,/usr/local/lib
 
 
+# TARGET = ./lib/libGlobalPlanning-G_V1.0.0.20240702_RC.so
 TARGET = lib/libGlobalPlanning.so
 # SRC = src/shenyan.cpp \
 #       src/collision_check.cpp \

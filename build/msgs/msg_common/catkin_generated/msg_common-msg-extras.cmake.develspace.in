@@ -1,2 +1,0 @@
-set(msg_common_MESSAGE_FILES "/home/yyf/global_planning_library/src/msgs/msg_common/msg/Time.msg;/home/yyf/global_planning_library/src/msgs/msg_common/msg/obstacle_pt.msg;/home/yyf/global_planning_library/src/msgs/msg_common/msg/WayPoint.msg;/home/yyf/global_planning_library/src/msgs/msg_common/msg/Covariance.msg;/home/yyf/global_planning_library/src/msgs/msg_common/msg/GridPoint.msg")
-set(msg_common_SERVICE_FILES "")

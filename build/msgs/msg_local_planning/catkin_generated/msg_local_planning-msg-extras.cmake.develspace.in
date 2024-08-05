@@ -1,2 +1,0 @@
-set(msg_local_planning_MESSAGE_FILES "/home/yyf/global_planning_library/src/msgs/msg_local_planning/msg/msg_diagn_local_planning.msg;/home/yyf/global_planning_library/src/msgs/msg_local_planning/msg/msg_decision_path.msg;/home/yyf/global_planning_library/src/msgs/msg_local_planning/msg/Trajectory.msg;/home/yyf/global_planning_library/src/msgs/msg_local_planning/msg/msg_local_planning.msg;/home/yyf/global_planning_library/src/msgs/msg_local_planning/msg/msg_feedback_decision.msg")
-set(msg_local_planning_SERVICE_FILES "")

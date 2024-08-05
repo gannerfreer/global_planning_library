@@ -1421,7 +1421,6 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
         threadLogger_->info("方向盘转速速度限制左右5m扩张");
     }
     // 曲率限速
-    iter = trajectory_points.begin();
     for (; iter != trajectory_points.end(); iter++) {
         if (iter->speed_limit > sqrt(0.2 / fabs(iter->curvature))) {
             iter->speed_limit = sqrt(0.2 / fabs(iter->curvature));
