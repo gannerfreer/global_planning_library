@@ -1,4 +1,6 @@
 devel/
 build/
 src/global_planning/simulation_log/
-src/global_planning/log/
+src/global_planning/test/log/
+src/global_planning/test/*_output.json
+src/global_planning/test/*.txt

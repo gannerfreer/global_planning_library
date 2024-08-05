@@ -44,7 +44,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     auto              currentTime = std::chrono::system_clock::now();
     std::time_t       timestamp   = std::chrono::system_clock::to_time_t(currentTime);
     std::stringstream ss;
-    ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%doc-%H-%M-%S");
+    ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
     std::string timeStr = ss.str();
 
     {
