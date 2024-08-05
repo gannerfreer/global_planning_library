@@ -256,3 +256,97 @@ msg_obj_fuse::msg_obj_fuse ObstatcleManager::obs_transfer() {
     }
     return obs_set;
 }
+
+
+ros::Publisher pub_grid_point; // for obstalce grid position
+ros::Publisher pub_obs;        // for obstacle position
+pub_obs          = nh.advertise<visualization_msgs::MarkerArray>("obstacle_position", 1);
+pub_grids_points = nh.advertise<sensor_msgs::PointCloud>("grids_position", 1);
+
+sensor_msgs::PointCloud         pc;
+visualization_msgs::MarkerArray obstacle_markerarray_;
+
+void datavisualizaton::Visualizaton::SetObstaclePosition() {
+    visualization_msgs::Marker obstacle_marker;
+    obstacle_marker.header.frame_id = "map";
+    obstacle_marker.ns              = "my_namespace";
+    obstacle_marker.type            = visualization_msgs::Marker::CUBE;
+    obstacle_marker.action          = visualization_msgs::Marker::ADD;
+    // obstacle_marker.lifetime        = ros::Duration(0.02);
+    obstacle_marker.header.stamp = ros::Time();
+    obstacle_marker.color.a      = 0.2;
+    obstacle_marker.color.r      = 0.0;
+    obstacle_marker.color.g      = 1.0;
+    obstacle_marker.color.b      = 1.0;
+    obstacle_markerarray_.markers.clear();
+    int                        id = 0;
+    visualization_msgs::Marker text_marker;
+    text_marker.header.frame_id = "map";
+    text_marker.ns              = "my_namespace";
+    text_marker.type            = visualization_msgs::Marker::TEXT_VIEW_FACING;
+    text_marker.ns              = "basic_shapes";
+    text_marker.action          = visualization_msgs::Marker::ADD;
+    // text_marker.lifetime        = ros::Duration(0.1);
+    text_marker.header.stamp = ros::Time();
+    text_marker.color.a      = 1.0;
+    text_marker.color.r      = 0.0;
+    text_marker.color.g      = 0.0;
+    text_marker.color.b      = 0.0;
+    for (auto& pt : obstacle_set_) {
+        if (pt.contour_point.empty()) continue;
+        obstacle_marker.id               = id++;
+        obstacle_marker.pose.position.x  = pt.x;
+        obstacle_marker.pose.position.y  = pt.y;
+        obstacle_marker.pose.position.z  = pt.z;
+        obstacle_marker.pose.orientation = tf::createQuaternionMsgFromYaw(pt.bbox_yaw * M_PI / 180);
+        obstacle_marker.scale.x          = pt.length;
+        obstacle_marker.scale.y          = pt.width;
+        obstacle_marker.scale.z          = pt.height;
+        text_marker.id                   = id++;
+        text_marker.pose.position.x      = pt.x;
+        text_marker.pose.position.y      = pt.y;
+        text_marker.pose.position.z      = 3.5;
+        text_marker.scale.x              = 0.0;
+        text_marker.scale.y              = 0.0;
+        text_marker.scale.z              = 0.2;
+        text_marker.pose.orientation     = tf::createQuaternionMsgFromYaw(pt.bbox_yaw * M_PI / 180);
+        ostringstream str;
+        string        id = to_string(pt.id);
+        str << id;
+        text_marker.text = str.str(); // 文字内容
+        obstacle_markerarray_.markers.push_back(text_marker);
+        obstacle_markerarray_.markers.push_back(obstacle_marker);
+    }
+}
+
+void datavisualizaton::Visualizaton::SetCountourPointsPosition() {
+    pc.header.stamp    = ros::Time::now();
+    pc.header.frame_id = "map";
+    pc.points.clear();
+    // pc.lifetime = ros::Duration(0.02);
+    for (int i = 0; i < obstacle_set_.size(); i++) {
+        // if (obstacle_set_.at(i).type != 6) continue;
+        double farest_dis = std::sqrt(obstacle_set_.at(i).length * obstacle_set_.at(i).length + obstacle_set_.at(i).width * obstacle_set_.at(i).width + obstacle_set_.at(i).height * obstacle_set_.at(i).height) / 2.0;
+        double count      = 0;
+        for (int j = 0; j < obstacle_set_.at(i).contour_point.size(); j++) {
+            double dis = std::sqrt(pow(obstacle_set_.at(i).contour_point.at(j).x - obstacle_set_.at(i).x, 2) + pow(obstacle_set_.at(i).contour_point.at(j).y - obstacle_set_.at(i).y, 2) + pow(obstacle_set_.at(i).contour_point.at(j).z - obstacle_set_.at(i).z, 2));
+            if (dis > farest_dis) {
+                count += 1.0;
+                std::cout << "dis - farest_dis = " << dis - farest_dis << std::endl;
+            }
+            geometry_msgs::Point32 ros_pt;
+            ros_pt.x = obstacle_set_.at(i).contour_point.at(j).x;
+            ros_pt.y = obstacle_set_.at(i).contour_point.at(j).y;
+            ros_pt.z = obstacle_set_.at(i).contour_point.at(j).z;
+            pc.points.push_back(ros_pt);
+        }
+        if (!obstacle_set_.at(i).contour_point.empty()) {
+            double ratio = count / obstacle_set_.at(i).contour_point.size();
+            std::cout << "ratio = " << ratio << std::endl;
+        }
+    }
+}
+
+
+pub_obs.publish(obstacle_markerarray_);
+pub_grids_points.publish(pc);
