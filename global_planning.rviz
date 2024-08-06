@@ -10,6 +10,7 @@ Panels:
         - /PointCloud1
         - /PointCloud2
         - /Marker2
+        - /PointCloud3
       Splitter Ratio: 0.5
     Tree Height: 728
   - Class: rviz/Selection
@@ -39,7 +40,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.15000000596046448
-      Cell Size: 50
+      Cell Size: 1
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -181,6 +182,34 @@ Visualization Manager:
         my_namespace: true
       Queue Size: 100
       Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 0
+        Min Value: 0
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Name: PointCloud
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 1
+      Style: Flat Squares
+      Topic: /obstacle_points
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
@@ -218,11 +247,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 4.953279972076416
+      Scale: 8.0967378616333
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: 26.662731170654297
-      Y: 161.39793395996094
+      X: -42.75864028930664
+      Y: 332.20556640625
     Saved: ~
 Window Geometry:
   Displays:

@@ -1595,7 +1595,7 @@ void GlobalSpeedPlanning::SpeedCurveInterpolation(unsigned char num) {
         for (int j = temp_opti_global_speed.at(i - 1).index; j < temp_opti_global_speed.at(i).index; j++) {
             float temp_speed = sqrt(pow(temp_opti_global_speed.at(i - 1).speed, 2) + 2 * a * delta_s);
 
-            cout << "j - temp_opti_global_speed.at(0).index:" << j - temp_opti_global_speed.at(0).index << "           temp_speed:" << temp_speed << endl;
+            // cout << "j - temp_opti_global_speed.at(0).index:" << j - temp_opti_global_speed.at(0).index << "           temp_speed:" << temp_speed << endl;
             temp_traj.at(j - temp_opti_global_speed.at(0).index).speed = temp_speed;
 
             delta_s += temp_traj.at(j + 1).distance - temp_traj.at(j).distance;

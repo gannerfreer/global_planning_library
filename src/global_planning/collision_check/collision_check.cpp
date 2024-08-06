@@ -38,6 +38,8 @@ void CollisonCheck::InitBoundMap(const Bound road_bound) {
             iter_vec->second.push_back(*iter);
         }
     }
+
+    cout << "road_bound_map_.size():" << road_bound_map_.size() << endl;
 }
 
 /**
@@ -64,6 +66,7 @@ void CollisonCheck::InitObstacleMap(const Bound obstacle_bound) {
             iter_vec->second.push_back(*iter);
         }
     }
+    cout << "obstacle_bound_map_.size():" << obstacle_bound_map_.size() << endl;
 }
 
 /**

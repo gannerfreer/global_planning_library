@@ -20,7 +20,7 @@
 	gnome-terminal -t "speed_plot" -x bash -c "source devel/setup.bash;rosrun n_global_planning plot_now.py;exec bash" 
 #	gnome-terminal -t "n_info_router" -x bash -c "source devel/setup.bash;rosrun n_info_router n_info_router;exec bash" 
 #	gnome-terminal -t "n_v_state" -x bash -c "source devel/setup.bash; rosrun n_v_state n_v_state | tee state_log.txt;exec bash" 
-#	gnome-terminal -t "n_obstacle" -x bash -c "source devel/setup.bash; rosrun n_obstacle n_obstacle;exec bash" 
+	# gnome-terminal -t "n_obstacle" -x bash -c "source devel/setup.bash; rosrun n_obstacle n_obstacle;exec bash" 
 #	gnome-terminal -t "n_show" -x bash -c "source devel/setup.bash; rosrun n_show n_show;exec bash" 
 #	gnome-terminal -t "n_v_decision" -x bash -c "source devel/setup.bash; rosrun n_v_decision n_v_decision | tee decision_log.txt;exec bash"
 #	gnome-terminal -t "n_local_planning" -x bash -c "source devel/setup.bash; rosrun n_local_planning n_local_planning | tee pannning_log.txt;exec bash"

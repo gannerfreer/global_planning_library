@@ -200,6 +200,11 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         {
             threadLogger_->info("A star overtime!, timeThreshold:{} ms,AStarPath while循环已经被调用: {} 次", timeThreshold * 0.001, sum);
 
+            threadLogger_->info("拓展总用时: {} ms", 0.001 * expand_time);
+            threadLogger_->info("拓展-运动学搜索用时: {} ms", 0.001 * expand_time_dynamic);
+            threadLogger_->info("拓展-碰撞检测用时: {} ms", 0.001 * expand_time_collision);
+
+
             return PlanResult::Plan_Overtime;
         }
 

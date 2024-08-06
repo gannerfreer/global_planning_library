@@ -16,10 +16,11 @@
 
 using namespace GlobalPlanning;
 namespace fs = filesystem;
-_SinglePoint start_point;
-_SinglePoint end_point;
-bool         is_receive_start = false;
-bool         is_receive_end   = false;
+_SinglePoint                 start_point;
+_SinglePoint                 end_point;
+vector<geometry_msgs::Point> obstacle_v;
+bool                         is_receive_start = false;
+bool                         is_receive_end   = false;
 
 
 // const double x_o_ = -321737.4857;     // 舒兰偏移参数
@@ -54,6 +55,18 @@ void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
 
     is_receive_end = true;
 }
+void clickedPointCallback(const geometry_msgs::PointStamped::ConstPtr& msg) {
+    cout << "clickedPointCallback" << endl;
+    float                radius = 5.0; // 实际上，我们使用半径的两倍作为正方形的边长
+    geometry_msgs::Point bp;
+    for (int i = 0; i < 360; i++) {
+        bp.x = msg->point.x + radius * cos(i / 180.0 * M_PI) + x_o_;
+        bp.y = msg->point.y + radius * sin(i / 180.0 * M_PI) + y_o_;
+        bp.z = 0;
+        obstacle_v.push_back(bp);
+    }
+    cout << "obstacle_v.size():" << obstacle_v.size() << endl;
+}
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "n_global_planning");
@@ -61,6 +74,7 @@ int main(int argc, char** argv) {
 
     ros::Subscriber sub_start_point = nh.subscribe("/initialpose", 1000, StartPositionCallback);
     ros::Subscriber sub_end_point   = nh.subscribe("/move_base_simple/goal", 1000, EndPositionCallback);
+    ros::Subscriber sub             = nh.subscribe("/clicked_point", 10, clickedPointCallback);
     ros::Publisher  pub_speed_curve = nh.advertise<std_msgs::Float64MultiArray>("speed_curve", 1);
     ros::Publisher  pub_global_path = nh.advertise<msg_global_planning::msg_global_planning>("global_path", 1);
 
@@ -81,10 +95,14 @@ int main(int argc, char** argv) {
     planning.threadLogger_->flush_on(spdlog::level::info);
     planning.threadLogger_->info("本地仿真环境日志");
     cout << "task_type:" << (int)planning.task_type_ << endl;
-    ros::Rate rate(10);
-
+    ros::Rate            rate(10);
+    vector<_BorderPoint> v_bp;
+    _BorderPoint         bp;
     while (ros::ok()) {
         ros::spinOnce();
+        // 将rviz输入的障碍物进行可视化
+        planning.m_tar_rviz_data_.obstacle_v = obstacle_v;
+        planning.c_rviz_.PubObstacles(planning.m_tar_rviz_data_.obstacle_v);
         // 将地图边界和参考路径发给rviz显示
         planning.c_rviz_.PubMapborderAndReferenceline(planning.m_tar_rviz_data_.vec_point);
         planning.c_rviz_.PubRoadNode(planning.m_tar_rviz_data_.road_node);
@@ -108,6 +126,21 @@ int main(int argc, char** argv) {
             planning.end_point_.yaw = end_point.yaw / M_PI * 180;
 
             //  cout << " planning.start_point.x = " <<  planning.start_point.x << "\n";
+
+
+            // 将obstacle_v存入planning的inner_borders中
+            if (!obstacle_v.empty()) {
+                v_bp.clear();
+                planning.inner_borders_.clear();
+                for (int i = 0; i < obstacle_v.size(); i++) {
+                    bp.x    = obstacle_v.at(i).x;
+                    bp.y    = obstacle_v.at(i).y;
+                    bp.z    = 0;
+                    bp.type = 0;
+                    v_bp.push_back(bp);
+                }
+                planning.inner_borders_.push_back(v_bp);
+            }
 
             planning.c_rviz_.PubStartPosition(start_point.x, start_point.y, start_point.yaw);
 
@@ -179,10 +212,10 @@ int main(int argc, char** argv) {
 
         // spdlog::drop("example");
         auto cost_map = planning.my_optimal_path_.GetHCostMap();
-        cout << "cost_map.size():" << cost_map.size() << endl;
+        // cout << "cost_map.size():" << cost_map.size() << endl;
         planning.c_rviz_.Pub2DCostMap(cost_map, planning.my_optimal_path_.midpoint_);
         expand_point = planning.my_optimal_path_.GetExpandPoint();
-        cout << "expand_point.size():" << expand_point.size() << endl;
+        // cout << "expand_point.size():" << expand_point.size() << endl;
         planning.c_rviz_.PubExpandPoint(expand_point, planning.my_optimal_path_.midpoint_);
 
         rate.sleep();

@@ -39,14 +39,14 @@ void GlobalVariable::CreateDirectedGraph(const map<int, vector<int>>& referencel
 
     int row_index = 0, col_index = 0;
     for (const auto& pair : referenceline_relation_) {
-        cout << "pair.first:" << pair.first << endl;
+        // cout << "pair.first:" << pair.first << endl;
         row_index = BinarySearch(sequence_mapping_, pair.first);
-        cout << "row_index:" << row_index << endl;
+        // cout << "row_index:" << row_index << endl;
         for (int num : pair.second) {
             // 给referenceline_graph_中的每个位置赋值，col_index要根据piar.second()中的内容，结合sequence_mapping_进行反映射
-            cout << "num:" << num << endl;
+            // cout << "num:" << num << endl;
             col_index = BinarySearch(sequence_mapping_, num);
-            cout << "col_index:" << col_index << endl;
+            // cout << "col_index:" << col_index << endl;
             if (col_index != -1) {
                 referenceline_graph_.at(row_index).at(col_index) = 1;
             }

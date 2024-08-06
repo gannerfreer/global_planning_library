@@ -249,7 +249,7 @@ struct GridPoint {
 #else
 struct tarRviz {
     // vector<Point_3d> vec_point;
-    vector<geometry_msgs::Point> vec_point, road_node;
+    vector<geometry_msgs::Point> vec_point, road_node, obstacle_v;
     double                       minx;
     double                       miny;
 };

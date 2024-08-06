@@ -17,6 +17,20 @@
 namespace rviz_path {
 
 
+void CRvizPath::PubObstacles(vector<geometry_msgs::Point>& vec_msga) {
+    obstacle_points_.header.stamp = ros::Time::now();
+    obstacle_points_.points.clear();
+    // std::cout << "vec_msga = " << vec_msga.size() << std::endl;
+    for (unsigned int i = 0; i < vec_msga.size(); i += 1) {
+        geometry_msgs::Point32 ros_pt;
+        ros_pt.x = vec_msga.at(i).x - x_o_;
+        ros_pt.y = vec_msga.at(i).y - y_o_;
+        obstacle_points_.points.push_back(ros_pt);
+    }
+    // cout << "obstalce_points_.points.size():" << obstacle_points_.points.size() << endl;
+    pub_obstacle_.publish(obstacle_points_);
+}
+
 void CRvizPath::PubMapborderAndReferenceline(vector<geometry_msgs::Point>& vec_msga) {
     area_points.header.stamp = ros::Time::now();
     area_points.points.clear();
@@ -69,7 +83,7 @@ void CRvizPath::PubExpandPoint(std::vector<Point>& path, Point midpoint_) {
         temp_point.z = 0; // info_router.path_point.at(i).z;
         expand_point_now_.points.push_back(temp_point);
     }
-    cout << "expand_point_now_.points.sie():" << expand_point_now_.points.size() << endl;
+    // cout << "expand_point_now_.points.sie():" << expand_point_now_.points.size() << endl;
     publisher_expand_point_.publish(expand_point_now_);
 }
 
@@ -168,7 +182,7 @@ void CRvizPath::Pub2DCostMap(const unordered_map<unsigned int, double> cost_map,
         cost_cube.pose.position.y = point.y + midpoint_.y;
         h_value_map.markers.push_back(cost_cube);
     }
-    cout << "H_value_map.markers.size():" << h_value_map.markers.size() << endl;
+    // cout << "H_value_map.markers.size():" << h_value_map.markers.size() << endl;
     pub_h_value_map.publish(h_value_map);
 }
 } // namespace rviz_path

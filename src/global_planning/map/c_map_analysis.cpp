@@ -16,7 +16,8 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
     int   length = 0;
 
     // char *file_name = (char *)"src/global_planning/map/map_shulan.json"; // 舒南
-    char* file_name = (char*)"src/global_planning/map/map.json"; // 鲁南
+    // char* file_name = (char*)"src/global_planning/map/map.json"; // 鲁南
+    char* file_name = (char*)"src/global_planning/map/map_shiyan.json"; // 鲁南
 
     FILE* file = fopen(file_name, "rb+");
     if (!file) {
@@ -47,7 +48,8 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
 
 
     // 解析border_points
-    const Value&         borderPointsArray = doc["external_border"]["border_points"];
+    // const Value&         borderPointsArray = doc["external_border"]["border_points"];
+    const Value&         borderPointsArray = doc["external_border"];
     _BorderPoint         bp;
     vector<_BorderPoint> v_bp;
     for (int i = 0; i < borderPointsArray.Size(); i++) {

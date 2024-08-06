@@ -132,7 +132,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     // threadLogger_->info("CalAcc");
 
     path = global_path_;
-    threadLogger_->info("final_out global_Path.size():", global_path_.size());
+    threadLogger_->info("final_out global_Path.size():{}", global_path_.size());
     return;
 }
 
@@ -217,6 +217,7 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
     vector<Coordinate> v_road_inner_bound;
     Coordinate         temp_Coordinate;
 
+    // threadLogger_->info("外邊界大小 map_border_.size():{}", map_border_.size());
     // 获取道路外边界 (以传入参数的外边界点作为道路外边界)
     for (int index = 0; index < map_border_.size(); index++) {
         if (map_border_.at(index).type == 0) // 只传不可穿越的边界点
@@ -227,12 +228,14 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
             v_road_outer_bound.emplace_back(temp_Coordinate);
         }
     }
+    // threadLogger_->info("內边界大小  inner_borders_.size():{} ,inner_borders_.at(0).size():{}", inner_borders_.size(), inner_borders_.at(0).size());
     // 获取道路内边界 (暂时以传入参数的障碍物边界作为道路内边界)
     for (int index = 0; index < inner_borders_.size(); index++) {
         for (int j = 0; j < inner_borders_.at(index).size(); j++) {
             temp_Coordinate.x = inner_borders_.at(index).at(j).x;
             temp_Coordinate.y = inner_borders_.at(index).at(j).y;
             temp_Coordinate.z = inner_borders_.at(index).at(j).z;
+            // cout << "x:" << temp_Coordinate.x << "  y:" << temp_Coordinate.y << "  z:" << temp_Coordinate.z << endl;
             v_road_inner_bound.emplace_back(temp_Coordinate);
         }
     }
@@ -562,12 +565,16 @@ bool Planning::NotFollowReferencelinePlanning() {
 // 沿路网路径规划
 bool Planning::FollowReferencelinePlanning() {
     // 起点、终点渐进式扩大搜索
-    pair<int, int> success_pair      = {-1, -1};
-    bool           is_found          = false; // 用于跟踪是否找到了成功的路径对
+    pair<int, int> success_pair  = {-1, -1};
+    bool           searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
     double         end_search_radius = 0.5, start_search_radius = 0.5;
     vector<int>    start_path_vec, end_path_vec;
     while (end_search_radius <= 2) {
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
+            if (searched_flag == true) {
+                return false;
+            }
+            searched_flag = true;
             threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
             threadLogger_->info("搜索到的路径ID信息如下");
             for (auto i : end_path_vec) {
@@ -596,10 +603,9 @@ bool Planning::FollowReferencelinePlanning() {
                             if (HasSearched(start, end)) {
                                 continue;
                             }
+                            threadLogger_->info("索引  start:{},end:{}", start, end);
                             if (IsConnect(start, end)) {
-                                threadLogger_->info("start:{},end:{}", start, end);
                                 threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
-
                                 success_pair = make_pair(start, end);
                                 is_found     = true; // 标记为已找到
                                 break;               // 退出内层循环
@@ -618,6 +624,9 @@ bool Planning::FollowReferencelinePlanning() {
             }
 
             if (is_found) break;
+        }
+        else {
+            threadLogger_->info("终点搜索,半径{}内无参考路径", end_search_radius);
         }
         end_search_radius += 0.5;
     }

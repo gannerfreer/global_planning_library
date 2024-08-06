@@ -42,6 +42,7 @@ class CRvizPath {
         pub_start       = n.advertise<visualization_msgs::Marker>("start", 1);
         pub_end         = n.advertise<visualization_msgs::Marker>("end", 1);
         pub_h_value_map = n.advertise<visualization_msgs::MarkerArray>("/h_value_map", 1);
+        pub_obstacle_   = n.advertise<sensor_msgs ::PointCloud>("obstacle_points", 1);
 
 
         global_path_now_.header.frame_id = "map";
@@ -71,8 +72,9 @@ class CRvizPath {
         expand_point_now_.color.b         = 0.0;
 
 
-        road_nodes_.header.frame_id = "map";
-        area_points.header.frame_id = "map";
+        road_nodes_.header.frame_id      = "map";
+        area_points.header.frame_id      = "map";
+        obstacle_points_.header.frame_id = "map";
 
         start.header.frame_id = "map";
         start.ns              = "my_namespace";
@@ -97,7 +99,7 @@ class CRvizPath {
     void PubEndPosition(double x, double y, double yaw_angle);
 
     void PubExpandPoint(std::vector<Point>& path, Point mid_point);
-
+    void PubObstacles(vector<geometry_msgs::Point>& vec_msga);
 
   public:
     // const double x_o_ = -321737.4857;     // 舒兰
@@ -108,8 +110,8 @@ class CRvizPath {
 
   private:
     ros::NodeHandle                 n;
-    ros::Publisher                  pub_area_path, publisher_global_path_, publisher_expand_point_, m_Publisher_road_node_, pub_end, pub_h_value_map, pub_start;
-    sensor_msgs::PointCloud         area_points, road_nodes_;
+    ros::Publisher                  pub_obstacle_, pub_area_path, publisher_global_path_, publisher_expand_point_, m_Publisher_road_node_, pub_end, pub_h_value_map, pub_start;
+    sensor_msgs::PointCloud         area_points, road_nodes_, obstacle_points_;
     visualization_msgs::Marker      global_path_now_, start, end, expand_point_now_;
     visualization_msgs::MarkerArray h_value_map;
 };
