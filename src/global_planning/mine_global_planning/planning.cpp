@@ -675,21 +675,19 @@ void Planning::StartEndPointProcess() {
     // 将起点添加到全局路径中
     // 计算全局路径第一个点与起点的角度偏差
     threadLogger_->info("StartEndPointProcess 开始");
+
+
     float start_angle_diff;
     start_angle_diff = atan2(start_point_.y - global_path_.front().y, start_point_.x - global_path_.front().x);
     if (start_angle_diff < 0) {
         start_angle_diff += 2 * M_PI; // 将终点与全局路径最后一个点的角度偏差规范[0,2π）
     }
-
-
-    if ((fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI < 90 && fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI > 270) || (fabs(start_point_.x - global_path_.front().x) <= 0.3 && fabs(start_point_.y - global_path_.front().y) <= 0.3)) {
+    float first_angle_diff = fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI : fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI;
+    if ((first_angle_diff < 90 && global_path_.front().direction == 0) || (first_angle_diff > 90 && global_path_.front().direction == 1) || fabs(start_point_.x - global_path_.front().x) <= 0.3 && fabs(start_point_.y - global_path_.front().y) <= 0.3) {
         global_path_.erase(global_path_.begin());
         threadLogger_->info("全局路径第一个位于实际起点前面，或者太近，现予以去除");
     }
-    else {
-        threadLogger_->info("全局路径第一个点位于实际起点后面，且与起点几何距离符合要求，不予以去除");
-    }
-
+    else {}
     // 添加起点到全局路径
     _TrajectoryPoint first_point;
     first_point.x           = start_point_.x;
@@ -710,18 +708,12 @@ void Planning::StartEndPointProcess() {
     if (end_point_last_point_angle_diff < 0) {
         end_point_last_point_angle_diff += 2 * M_PI; // 将终点与全局路径最后一个点的角度偏差规范[0,2π）
     }
-    // 如果最后一个点位于终点后面，需要进行删除
-    // 如果最后一个点没有位于终点后，但是基本与终点重合，也需要进行删除
-    double end_point_last_point_distance;
-    end_point_last_point_distance = sqrt(pow(end_point_.x - global_path_.back().x, 2) + pow(end_point_.y - global_path_.back().y, 2));
-    if ((fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI > 90 && fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI < 270) || (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3)) {
-        global_path_.pop_back();
-        threadLogger_->info("全局路径最后一个位于实际终点后面，或者最后一个点就是终点，现予以去除");
-    }
-    else {
-        threadLogger_->info("全局路径最后一个位于实际终点前面，且与终点几何距离适当，不予以去除");
-    }
+    float last_angle_diff = fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI : fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI;
 
+    if ((last_angle_diff > 90 && global_path_.back().direction == 0) || (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3) || (last_angle_diff < 90 && global_path_.back().direction == 1)) {
+        global_path_.pop_back();
+    }
+    else {}
     _TrajectoryPoint last_point;
     last_point.x           = end_point_.x;
     last_point.y           = end_point_.y;
