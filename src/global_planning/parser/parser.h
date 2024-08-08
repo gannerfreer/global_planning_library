@@ -448,7 +448,7 @@ bool GetMap(char* parea) {
 
 
     // 解析border_points
-    const Value&         borderPointsArray = doc["external_border"]["border_points"];
+    const Value&         borderPointsArray = doc["external_border"];
     _BorderPoint         bp;
     vector<_BorderPoint> v_bp;
     for (SizeType i = 0; i < borderPointsArray.Size(); i++) {

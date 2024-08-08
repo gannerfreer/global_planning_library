@@ -672,34 +672,33 @@ bool Planning::IsConnect(int start, int end) {
     }
 }
 void Planning::StartEndPointProcess() {
-    // 将起点添加到全局路径中
     // 计算全局路径第一个点与起点的角度偏差
     threadLogger_->info("StartEndPointProcess 开始");
 
 
-    float start_angle_diff;
-    start_angle_diff = atan2(start_point_.y - global_path_.front().y, start_point_.x - global_path_.front().x);
-    if (start_angle_diff < 0) {
-        start_angle_diff += 2 * M_PI; // 将终点与全局路径最后一个点的角度偏差规范[0,2π）
-    }
-    float first_angle_diff = fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI : fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI;
-    if ((first_angle_diff < 90 && global_path_.front().direction == 0) || (first_angle_diff > 90 && global_path_.front().direction == 1) || fabs(start_point_.x - global_path_.front().x) <= 0.3 && fabs(start_point_.y - global_path_.front().y) <= 0.3) {
-        global_path_.erase(global_path_.begin());
-        threadLogger_->info("全局路径第一个位于实际起点前面，或者太近，现予以去除");
-    }
-    else {}
-    // 添加起点到全局路径
-    _TrajectoryPoint first_point;
-    first_point.x           = start_point_.x;
-    first_point.y           = start_point_.y;
-    first_point.z           = start_point_.z;
-    first_point.yaw         = start_point_.yaw;
-    first_point.speed_limit = 0;
-    first_point.speed       = 0;
-    first_point.curvature   = 0;
-    first_point.distance    = 0;
-    first_point.direction   = global_path_.front().direction;
-    global_path_.insert(global_path_.begin(), first_point);
+    // float start_angle_diff;
+    // start_angle_diff = atan2(start_point_.y - global_path_.front().y, start_point_.x - global_path_.front().x);
+    // if (start_angle_diff < 0) {
+    //     start_angle_diff += 2 * M_PI; // 将终点与全局路径最后一个点的角度偏差规范[0,2π）
+    // }
+    // float first_angle_diff = fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI : fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI;
+    // if ((first_angle_diff < 90 && global_path_.front().direction == 0) || (first_angle_diff > 90 && global_path_.front().direction == 1) || fabs(start_point_.x - global_path_.front().x) <= 0.3 && fabs(start_point_.y - global_path_.front().y) <= 0.3) {
+    //     global_path_.erase(global_path_.begin());
+    //     threadLogger_->info("全局路径第一个位于实际起点前面，或者太近，现予以去除");
+    // }
+    // else {}
+    // // 添加起点到全局路径
+    // _TrajectoryPoint first_point;
+    // first_point.x           = start_point_.x;
+    // first_point.y           = start_point_.y;
+    // first_point.z           = start_point_.z;
+    // first_point.yaw         = start_point_.yaw;
+    // first_point.speed_limit = 0;
+    // first_point.speed       = 0;
+    // first_point.curvature   = 0;
+    // first_point.distance    = 0;
+    // first_point.direction   = global_path_.front().direction;
+    // global_path_.insert(global_path_.begin(), first_point);
 
     // 将终点添加到全局路径中
     // 判断终点与全局路径最后一个点的角度偏差，基于角度偏差信息来判断是否 将其抛弃

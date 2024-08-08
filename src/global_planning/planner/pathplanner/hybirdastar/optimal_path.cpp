@@ -745,6 +745,54 @@ void OptimalPath::CalGValue(const Vertex3D& start_point, Vertex3D& end_point) {
  *return
  */
 void OptimalPath::CalHValue(Vertex3D& point) {
+    if (m_vehicle_param_.bfs_search) {
+        if (flag_dubins_ == true) {
+            // 以当前点与终点的dubins曲线长度作为启发值
+            Point start(point.x, point.y, point.z, point.angle, point.direction);
+            point.h      = dubins_.GetDubinsCost(start);
+            flag_dubins_ = false;
+        }
+        else {
+            // 以Dijkstra搜索结果作为启发值
+            IntCoordinate temp_point;
+            temp_point.x = static_cast<int>(floor(point.x / m_vehicle_param_.grid_dist));
+            temp_point.y = static_cast<int>(floor(point.y / m_vehicle_param_.grid_dist));
+
+            uint64 hash = Coordinate2Hash(temp_point);
+            if (h_cost_map_.find(hash) == h_cost_map_.end())
+                point.h = DBL_MAX;
+            else
+                point.h = h_cost_map_[hash];
+        }
+    }
+    else {
+        // 以A*搜索结果为启发值
+        Node2D current2D(static_cast<int16>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<int16>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
+        // cout << "CalHValue--current2D pass" << endl;
+        auto iter = nodes2D_map_.find(current2D.getIdx());
+        // cout << "CalHValue--find  pass" << endl;
+        if (iter == nodes2D_map_.end()) {
+            // static int num = 0;
+            // if(num++ >40)
+            // {
+            //     point.h = 1000000000;
+            //     return;
+            // }
+            clock_t start_time, end_time;
+            start_time = clock();
+            Node2D goal2D(static_cast<int16>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<int16>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
+            // IntCoordinate point11(goal2D.getX(), goal2D.getY(), 0);
+            cout << "CalHValue--AStarSearch2D begin" << endl;
+            // point.h = AStarSearch2D(goal2D, current2D);
+            point.h = AStarSearch2D(goal2D, current2D);
+            cout << "CalHValue--AStarSearch2D end" << endl;
+            end_time = clock();
+        }
+        else {
+            point.h = iter->second.getG();
+        }
+    }
+
     Node2D current2D(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
     Node2D goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
     point.h = hypot(goal2D.getX() - current2D.getX(), goal2D.getY() - current2D.getY());
