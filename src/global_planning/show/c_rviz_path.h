@@ -86,7 +86,7 @@ class CRvizPath {
         end.type            = visualization_msgs::Marker::ARROW;
         end.action          = visualization_msgs::Marker::ADD;
     };
-    void Pub2DCostMap(const unordered_map<unsigned int, double> cost_map, Point midpoint_);
+    void Pub2DCostMap(const unordered_map<unsigned int, double>& cost_map, Point midpoint_);
 
 
     void PubMapborderAndReferenceline(vector<geometry_msgs::Point>& vec_msga);

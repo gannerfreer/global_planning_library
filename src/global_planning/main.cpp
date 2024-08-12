@@ -26,6 +26,9 @@ bool                         is_receive_end   = false;
 // const double x_o_ = -321737.4857;     // 舒兰偏移参数
 // const double y_o_ = 534463.584699999; // 舒兰偏移参数
 
+// const double x_o_ = -299; // 鲁南偏移参数
+// const double y_o_ = 920;  // 鲁南偏移参数
+
 const double x_o_ = -299; // 鲁南偏移参数
 const double y_o_ = 920;  // 鲁南偏移参数
 
@@ -204,16 +207,18 @@ int main(int argc, char** argv) {
                 speed_curve.data.emplace_back(global_path.at(index).speed);
             }
             pub_speed_curve.publish(speed_curve);
+            // spdlog::drop("example");
+            auto cost_map = planning.my_optimal_path_.GetHCostMap();
+            // cout << "midpoint_.x" << planning.my_optimal_path_.midpoint_.x << " midpoint_.y:" << planning.my_optimal_path_.midpoint_.y << endl;
+            // cout << "cost_map.size():" << cost_map.size() << endl;
+            planning.c_rviz_.Pub2DCostMap(cost_map, planning.my_optimal_path_.midpoint_);
         }
 
 
         //  cout << "aaglobal_path.size = " << global_path.size() <<  endl;
         planning.c_rviz_.PubGlobalPath(global_path);
 
-        // spdlog::drop("example");
-        auto cost_map = planning.my_optimal_path_.GetHCostMap();
-        // cout << "cost_map.size():" << cost_map.size() << endl;
-        planning.c_rviz_.Pub2DCostMap(cost_map, planning.my_optimal_path_.midpoint_);
+
         expand_point = planning.my_optimal_path_.GetExpandPoint();
         // cout << "expand_point.size():" << expand_point.size() << endl;
         planning.c_rviz_.PubExpandPoint(expand_point, planning.my_optimal_path_.midpoint_);

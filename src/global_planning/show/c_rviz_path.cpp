@@ -127,7 +127,7 @@ void CRvizPath::PubEndPosition(double x, double y, double yaw_angle) {
 }
 
 
-void CRvizPath::Pub2DCostMap(const unordered_map<unsigned int, double> cost_map, Point midpoint_) {
+void CRvizPath::Pub2DCostMap(const unordered_map<unsigned int, double>& cost_map, Point midpoint_) {
     double max_value = 0;
     double min_value = 1000;
     // const unordered_map<uint64, double>::iterator it;
@@ -151,8 +151,11 @@ void CRvizPath::Pub2DCostMap(const unordered_map<unsigned int, double> cost_map,
     bool          once = true;
     IntCoordinate point;
     for (auto it = cost_map.begin(); it != cost_map.end(); ++it) {
-        point.x = it->first >> 16;
-        point.y = it->first & 0xFFFF;
+        cout << "it->first:" << it->first << endl;
+        point.x = short(it->first >> 16);
+        cout << "point.x:" << point.x << endl;
+        point.y = short(it->first & 0x0000FFFF);
+        cout << "point.y:" << point.y << endl;
 
 
         visualization_msgs::Marker cost_cube;
@@ -178,8 +181,8 @@ void CRvizPath::Pub2DCostMap(const unordered_map<unsigned int, double> cost_map,
         cost_cube.color.g = green;
         cost_cube.color.b = blue;
         // center in cell +0.5
-        cost_cube.pose.position.x = point.x + midpoint_.x;
-        cost_cube.pose.position.y = point.y + midpoint_.y;
+        cost_cube.pose.position.x = point.x + midpoint_.x - x_o_;
+        cost_cube.pose.position.y = point.y + midpoint_.y - y_o_;
         h_value_map.markers.push_back(cost_cube);
     }
     // cout << "H_value_map.markers.size():" << h_value_map.markers.size() << endl;

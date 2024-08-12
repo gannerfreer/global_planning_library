@@ -121,7 +121,7 @@ class OptimalPath {
      * @param [in] current_point 混合A星搜索的当前点
      * @return 返回说明：无
      */
-    void FindExpandVertex(const Vertex3D& current_point, unsigned long long& time_expand, unsigned long long& time_expand_another);
+    void FindExpandVertex(const Vertex3D& current_point, unsigned long long& time_dy, unsigned long long& time_collision, unsigned long long& time_expand_other);
 
     /**
      * @brief 路径回溯函数
@@ -176,7 +176,7 @@ class OptimalPath {
      * @brief 采用A*搜索算法计算启发值
      * @return 返回说明：计算计算得到的启发值
      */
-    float AStarSearch2D(Node2D& start, Node2D& goal);
+    float AStarSearch2D(Node2D& start, Node2D& goal, int& num);
 
     /**
      * @brief 判断柵格点是否在边界上函数

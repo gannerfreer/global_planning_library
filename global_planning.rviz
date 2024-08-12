@@ -8,6 +8,8 @@ Panels:
         - /Status1
         - /Grid1
         - /PointCloud1
+        - /Marker1
+        - /MarkerArray1
         - /PointCloud2
         - /Marker2
         - /PointCloud3
@@ -135,22 +137,22 @@ Visualization Manager:
       Marker Topic: /path_global
       Name: Marker
       Namespaces:
-        my_namespace: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
-      Enabled: false
+      Enabled: true
       Marker Topic: /h_value_map
       Name: MarkerArray
       Namespaces:
         {}
       Queue Size: 100
-      Value: false
+      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 360.41650390625
-        Min Value: 0.09000491350889206
+        Max Value: 779.1719970703125
+        Min Value: -948.7966918945312
         Value: true
       Axis: Y
       Channel Name: intensity
@@ -179,14 +181,14 @@ Visualization Manager:
       Marker Topic: /point_expand
       Name: Marker
       Namespaces:
-        my_namespace: true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 0
-        Min Value: 0
+        Max Value: -9999
+        Min Value: 9999
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -247,11 +249,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 8.0967378616333
+      Scale: 7.0866312980651855
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: -42.75864028930664
-      Y: 332.20556640625
+      X: -48.82286071777344
+      Y: 350.98516845703125
     Saved: ~
 Window Geometry:
   Displays:
