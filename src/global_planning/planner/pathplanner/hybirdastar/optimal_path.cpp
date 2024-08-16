@@ -373,25 +373,25 @@ void OptimalPath::InitOpenClose() {
     temp_vertex.angle     = start_.angle;
     temp_vertex.parent_id = 0;
     temp_vertex.g         = 0;
-
+    temp_vertex.direction = Forward;
 
     CalHValue(temp_vertex); // 查询起点H值
 
 
-    temp_vertex.f             = temp_vertex.h + temp_vertex.g;
-    temp_vertex.direction     = Forward;
+    temp_vertex.f = temp_vertex.h + temp_vertex.g;
+
     temp_vertex.id            = Vertex2Hash(temp_vertex);
     open_map_[temp_vertex.id] = temp_vertex;
     open_map_f_.insert(make_pair(temp_vertex.f, temp_vertex));
     temp_vertex.parent_id = 0;
     temp_vertex.g         = 0;
-
+    temp_vertex.direction = Backward; // 倒退
 
     CalHValue(temp_vertex);
 
 
-    temp_vertex.f             = temp_vertex.h + temp_vertex.g;
-    temp_vertex.direction     = Backward; // 倒退
+    temp_vertex.f = temp_vertex.h + temp_vertex.g;
+
     temp_vertex.id            = Vertex2Hash(temp_vertex);
     open_map_[temp_vertex.id] = temp_vertex;
     open_map_f_.insert(make_pair(temp_vertex.f, temp_vertex));
@@ -758,7 +758,7 @@ void OptimalPath::CalGValue(const Vertex3D& start_point, Vertex3D& end_point) {
  *return
  */
 void OptimalPath::CalHValue(Vertex3D& point) {
-    double dubins_h = 0, bfs_h = 0, a_start_h = 0, hypot_h = 0;
+    double dubins_h = 0, bfs_h = 0, a_start_h = 0, hypot_h = 0, rs_h;
     // Point  start(point.x, point.y, point.z, point.angle, point.direction);
     // dubins_h = dubins_.GetDubinsCost(start);
 
@@ -774,6 +774,37 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     //     bfs_h = DBL_MAX;
     // else
     //     bfs_h = h_cost_map_[hash];
+
+    // // 使用rs曲线来评估当前point距离终点的启发值
+    // Point temp_start_point;
+    // temp_start_point.x         = point.x;
+    // temp_start_point.y         = point.y;
+    // temp_start_point.z         = point.z;
+    // temp_start_point.angle     = point.angle;
+    // temp_start_point.direction = point.direction;
+
+    // Point temp_end_point;
+    // temp_end_point.x     = end_.x;
+    // temp_end_point.y     = end_.y;
+    // temp_end_point.z     = end_.z;
+    // temp_end_point.angle = end_.angle;
+    // // if (temp_start_point.direction == Forward) {
+    // //     my_r_s_curve.PlanRSPath(temp_start_point, temp_end_point, path_r_s_, PlanRule::Backward_To_End);
+    // //     path_r_s_.clear();
+    // //     rs_h = my_r_s_curve.opti_rs_path.length * 15;
+    // // }
+    // // else {
+    // //     my_r_s_curve.PlanRSPath(temp_start_point, temp_end_point, path_r_s_, PlanRule::Backward_All_Time);
+    // //     path_r_s_.clear();
+    // //     rs_h = my_r_s_curve.opti_rs_path.length * 15;
+    // // }
+    // if (!my_r_s_curve.PlanRSPath_another(temp_start_point, temp_end_point, path_r_s_, PlanRule::Normal_Planning)) {
+    //     threadLogger_->info("RS规划路径失败");
+    // }
+    // path_r_s_.clear();
+    // rs_h = my_r_s_curve.opti_rs_path.length * 15;
+
+    // threadLogger_->info("RS曲线到终点的预测距离：{}", my_r_s_curve.opti_rs_path.length * 15);
 
 
     utility::CTimeClock init_time;
@@ -808,7 +839,9 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     Node2D current2D_(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
     Node2D goal2D_(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
     hypot_h = hypot(goal2D_.getX() - current2D_.getX(), goal2D_.getY() - current2D_.getY());
-    point.h = max(dubins_h, max(bfs_h, max(a_start_h, hypot_h)));
+    point.h = max(dubins_h, max(bfs_h, max(a_start_h, max(rs_h, hypot_h))));
+    // point.h = hypot_h;
+    threadLogger_->info("RS:{},A*:{},欧式：{}", my_r_s_curve.opti_rs_path.length * 15, a_start_h, hypot_h);
     cout << "dubins_h:" << dubins_h << "  bfs_h:" << bfs_h << "  a_start_h:" << a_start_h << "  hypot_h:" << hypot_h << endl;
     cout << "point.h:" << point.h << endl;
 }

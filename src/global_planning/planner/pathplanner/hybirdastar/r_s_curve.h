@@ -19,12 +19,7 @@
 namespace GlobalPlanning {
 
 using std::vector;
-enum ReedsSheppPathSegmentType : unsigned char {
-    RS_NOP      = 0,
-    RS_LEFT     = 1,
-    RS_STRAIGHT = 2,
-    RS_RIGHT    = 3
-}; // 枚举路段类型
+enum ReedsSheppPathSegmentType : unsigned char { RS_NOP = 0, RS_LEFT = 1, RS_STRAIGHT = 2, RS_RIGHT = 3 }; // 枚举路段类型
 
 /**
  * @brief 最优RS路段各段起点
@@ -50,8 +45,7 @@ struct ReedsSheppPath {
     double                            w;
     double                            x;
     double                            length;
-    void set(const vector<ReedsSheppPathSegmentType>& type, double t, double u, double v, double w, double x,
-             double length) {
+    void                              set(const vector<ReedsSheppPathSegmentType>& type, double t, double u, double v, double w, double x, double length) {
         this->type   = type;
         this->t      = t;
         this->u      = u;
@@ -102,6 +96,7 @@ class RSCurve {
      * @return 返回说明：无
      */
     bool PlanRSPath(const Point start, const Point end, Path& rs_path, PlanRule plan_rule);
+    bool PlanRSPath_another(const Point start, const Point end, Path& rs_path, PlanRule plan_rule);
 
     /**
      * @brief 坐标系转换和归一化函数
@@ -134,8 +129,7 @@ class RSCurve {
      * @param[out] point　计算得到的下一路径点
      * @return 返回说明：无
      */
-    void CalNextPoint(double s, double x, double y, double th, ReedsSheppPathSegmentType type_, Point& point,
-                      MotionDirection& directions);
+    void CalNextPoint(double s, double x, double y, double th, ReedsSheppPathSegmentType type_, Point& point, MotionDirection& directions);
 
     /**
      * @brief CSC、CCC、CCCC、CCSC、CCSCC五种类型的Reeds-Shepp路段
@@ -149,26 +143,27 @@ class RSCurve {
     /**
      * @brief 计算辅助函数
      */
-    inline double Mod2pi(double x);                                  // 使用2*pi取模
-    inline void Polar(double x, double y, double& r, double& theta); // 将笛卡尔坐标系下的点转换至极坐标下
-    inline bool Valid(double theta);                                 // 验证角度是否有效条件
-    inline bool LengthValid(); // 判断生成的最优RS路径各段是否满足最小长度要求
+    inline double Mod2pi(double x);                                    // 使用2*pi取模
+    inline void   Polar(double x, double y, double& r, double& theta); // 将笛卡尔坐标系下的点转换至极坐标下
+    inline bool   Valid(double theta);                                 // 验证角度是否有效条件
+    inline bool   LengthValid();                                       // 判断生成的最优RS路径各段是否满足最小长度要求
     /**
      * @brief RS曲线各类型计算公式
      */
-    inline bool   LpSpLp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpSpRp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRnLp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRnLn(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRpLn(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRupLumRm(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRumLumRp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRmSmLm(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRmSmLmBack(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRmSmRmBack(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRmSmRm(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool   LpRmSLmRp(double x, double y, double phi, double& t, double& u, double& v);
-    _VehicleParam m_vehicle_prarm_;
+    inline bool    LpSpLp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpSpRp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRnLp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRnLn(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRpLn(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRupLumRm(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRumLumRp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRmSmLm(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRmSmLmBack(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRmSmRmBack(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRmSmRm(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool    LpRmSLmRp(double x, double y, double phi, double& t, double& u, double& v);
+    _VehicleParam  m_vehicle_prarm_;
+    ReedsSheppPath opti_rs_path; // 最优RS曲线路段
 
   private:
     /**
@@ -179,7 +174,7 @@ class RSCurve {
     PlanRule                                  rs_plan_rule;
     Point                                     new_end; // 旋转坐标系下的终点坐标
     vector<vector<ReedsSheppPathSegmentType>> reeds_shepp_path_type_v;
-    ReedsSheppPath                            opti_rs_path; // 最优RS曲线路段
+
 
     // apollo
     // const double kStepLength = 1.5;//最终rs路径点之间的间距(单位：m)

@@ -112,12 +112,14 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
     // 路径断裂检查
     if (!Helper::CheckPathFracture(global_path_)) {
+        threadLogger_->info("CheckPathFracture fail");
         return;
     }
     threadLogger_->info("CheckPathFracture");
 
 
     if (Helper::OverSpeedCheck(global_path_)) {
+        threadLogger_->info("OverSpeedCheck fail");
         return;
     }
     threadLogger_->info("OverSpeedCheck");
@@ -865,10 +867,38 @@ bool Planning::HybirdAStarFitting() {
 }
 bool Planning::JudgeFittingDirection(_SinglePoint point, int search_index, bool is_start) {
     // 判断tra
+    // if (is_start) {
+    //     if ((search_index + 10) < global_path_.size()) {
+    //         double lon_dis = (global_path_.at(search_index + 10).x - point.x) * cos(point.yaw) + (global_path_.at(search_index + 10).y - point.y) * sin(point.yaw);
+    //         if (lon_dis >= 0) {
+    //             threadLogger_->info("正向拟合");
+    //             return true; // 正向拟合
+    //         }
+    //         else {
+    //             threadLogger_->info("倒车拟合");
+    //             return false; // 倒车拟合
+    //         }
+    //     }
+    //     return true;
+    // }
+    // else {
+    //     if ((search_index - 10) >= 0) {
+    //         double lon_dis = (global_path_.at(search_index - 10).x - point.x) * cos(point.yaw) + (global_path_.at(search_index - 10).y - point.y) * sin(point.yaw);
+    //         if (lon_dis >= 0) {
+    //             threadLogger_->info("倒向拟合");
+    //             return false; // 倒车拟合
+    //         }
+    //         else {
+    //             threadLogger_->info("正向拟合");
+    //             return true; // 正向拟合
+    //         }
+    //     }
+    //     return true;
+    // }
     if (is_start) {
         if ((search_index + 10) < global_path_.size()) {
-            double lon_dis = (global_path_.at(search_index + 10).x - point.x) * cos(point.yaw) + (global_path_.at(search_index + 10).y - point.y) * sin(point.yaw);
-            if (lon_dis >= 0) {
+            double lon_dis = (point.x - global_path_.at(search_index + 10).x) * cos(global_path_.at(search_index + 10).yaw) + (point.y - global_path_.at(search_index + 10).y) * sin(global_path_.at(search_index + 10).yaw);
+            if (lon_dis <= 0) {
                 threadLogger_->info("正向拟合");
                 return true; // 正向拟合
             }
@@ -881,8 +911,8 @@ bool Planning::JudgeFittingDirection(_SinglePoint point, int search_index, bool 
     }
     else {
         if ((search_index - 10) >= 0) {
-            double lon_dis = (global_path_.at(search_index - 10).x - point.x) * cos(point.yaw) + (global_path_.at(search_index - 10).y - point.y) * sin(point.yaw);
-            if (lon_dis >= 0) {
+            double lon_dis = (point.x - global_path_.at(search_index - 10).x) * cos(global_path_.at(search_index - 10).yaw) + (point.y - global_path_.at(search_index - 10).y) * sin(global_path_.at(search_index - 10).yaw);
+            if (lon_dis <= 0) {
                 threadLogger_->info("倒向拟合");
                 return false; // 倒车拟合
             }

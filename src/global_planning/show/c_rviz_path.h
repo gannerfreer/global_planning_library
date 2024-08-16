@@ -105,8 +105,11 @@ class CRvizPath {
     // const double x_o_ = -321737.4857;     // 舒兰
     // const double y_o_ = 534463.584699999; // 舒兰
 
-    const double x_o_ = -299; // 鲁南
-    const double y_o_ = 920;  // 鲁南
+    // const double x_o_ = -299; // 鲁南
+    // const double y_o_ = 920;  // 鲁南
+    const double x_o_ = 193.55615432;    // 实验偏移参数
+    const double y_o_ = 1075.6719204094; // 实验偏移参数
+
 
   private:
     ros::NodeHandle                 n;

@@ -151,11 +151,8 @@ void CRvizPath::Pub2DCostMap(const unordered_map<unsigned int, double>& cost_map
     bool          once = true;
     IntCoordinate point;
     for (auto it = cost_map.begin(); it != cost_map.end(); ++it) {
-        cout << "it->first:" << it->first << endl;
         point.x = short(it->first >> 16);
-        cout << "point.x:" << point.x << endl;
         point.y = short(it->first & 0x0000FFFF);
-        cout << "point.y:" << point.y << endl;
 
 
         visualization_msgs::Marker cost_cube;

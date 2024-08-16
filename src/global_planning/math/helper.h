@@ -187,7 +187,9 @@ inline bool CheckPathFracture(vector<_TrajectoryPoint>& traj) {
     double dis = 0;
     for (int i = 0; i < traj.size() - 1; i++) {
         dis = pow(traj.at(i).x - traj.at(i + 1).x, 2) + pow(traj.at(i).y - traj.at(i + 1).y, 2);
+
         if (dis > 9) {
+            cout << "traj.at(i).x" << traj.at(i).x << "traj.at(i).y " << traj.at(i).y << endl;
             return false; // 如果相邻点间距大于3m，说明路径产生断裂
         }
     }
@@ -360,7 +362,13 @@ inline void Calrad2deg(vector<_TrajectoryPoint>& traj) {
     }
 }
 
-inline void RemoveSamePoint(vector<_TrajectoryPoint>& traj) {
+inline void RemoveSamePoint(std::vector<_TrajectoryPoint>& traj) {
+    if (traj.size() < 2) return; // 如果轨迹点少于2个，则无需处理
+
+    // 反转轨迹
+    std::reverse(traj.begin(), traj.end());
+
+    // 应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
     int slow = 0, fast = 0;
     while (fast < traj.size()) {
         if (slow == 0 || hypot(traj.at(fast).x - traj.at(slow - 1).x, traj.at(fast).y - traj.at(slow - 1).y) > 0.3) {
@@ -369,7 +377,12 @@ inline void RemoveSamePoint(vector<_TrajectoryPoint>& traj) {
         }
         fast++;
     }
+
+    // 保留不重复的部分
     traj.resize(slow);
+
+    // 再次反转以恢复原始顺序
+    std::reverse(traj.begin(), traj.end());
 }
 
 inline bool CheckCurvature(vector<_TrajectoryPoint>& tra) {

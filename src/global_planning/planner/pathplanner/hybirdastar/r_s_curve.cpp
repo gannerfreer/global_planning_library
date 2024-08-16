@@ -47,6 +47,30 @@ bool RSCurve::PlanRSPath(const Point start, const Point end, Path& rs_path, Plan
         if (a_star_direction != rs_path.at(0).direction) return false;
         return true;
     }
+    else {
+        return false;
+    }
+}
+
+bool RSCurve::PlanRSPath_another(const Point start, const Point end, Path& rs_path, PlanRule plan_rule) {
+    //     cout << "6666m_vehicle_prarm_.radious = " << m_vehicle_prarm_.radious << "\n";
+    rs_plan_rule = plan_rule;
+    if (rs_plan_rule == PlanRule::Forward_All_Time) {
+        rs_plan_rule = PlanRule::Forward_To_End;
+    }
+    // opti_rs_path.length = DBL_MAX;
+    opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, DBL_MAX);
+    a_star_direction = start.direction;
+    Path().swap(rs_path);
+    CoordinateTransformation(start, end, m_vehicle_prarm_.radious); // 坐标转换及归一化
+    if (ReedsSheppGeneration()) {
+        if (opti_rs_path.type.empty()) {
+            return false;
+        }
+        Interpolate(start, rs_path); // 插值、还原得到最终RS路径
+
+        return true;
+    }
     else
         return false;
 }
@@ -92,23 +116,23 @@ bool RSCurve::LengthValid() {
                 }
                 else if (i == s.size() - 2) {
                     if (fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length) {
-                        return true;
+                        return false;
                     }
                 }
                 else
                     ;
                 if (sum < m_vehicle_prarm_.min_path_Length) {
-                    return true;
+                    return false;
                 }
                 else
                     ;
             }
             sum = 0;
         }
-        return false;
+        return true;
     }
     else
-        return true;
+        return false;
 }
 
 /**
@@ -116,41 +140,42 @@ bool RSCurve::LengthValid() {
  */
 bool RSCurve::ReedsSheppGeneration() {
     CSC();
-    if (LengthValid()) // true:存在路段长度小于最短长度限制,清空 opti_rs_path
+    if (!LengthValid()) // true:存在路段长度小于最短长度限制,清空 opti_rs_path
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCC();
-    if (LengthValid()) {
+    if (!LengthValid()) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCCC();
-    if (LengthValid()) {
+    if (!LengthValid()) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCSC();
-    if (LengthValid()) {
+    if (!LengthValid()) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCSCC();
-    if (LengthValid()) {
+    if (!LengthValid()) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
-
+    // return true;
     if (fabs(opti_rs_path.t) > 1e-6 && fabs(opti_rs_path.u) > 1e-6 && fabs(opti_rs_path.v) > 1e-6)
         return true; // RS路径前三段存在则认为生成最优RS路径成功
-    else
+    else {
         return false;
+    }
 }
 
 /**
@@ -178,23 +203,19 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
         }
         else {
             if (i == 0) {
-                CalNextPoint(opti_rs_path.t, temp_point.x, temp_point.y, temp_point.angle, opti_rs_path.type.at(i),
-                             temp_point, directions);
+                CalNextPoint(opti_rs_path.t, temp_point.x, temp_point.y, temp_point.angle, opti_rs_path.type.at(i), temp_point, directions);
                 rspoint_vertex.length = opti_rs_path.u;
             }
             else if (i == 1) {
-                CalNextPoint(opti_rs_path.u, rspoint.at(rspoint.size() - 1).x, rspoint.at(rspoint.size() - 1).y,
-                             rspoint.at(rspoint.size() - 1).theta, opti_rs_path.type.at(i), temp_point, directions);
+                CalNextPoint(opti_rs_path.u, rspoint.at(rspoint.size() - 1).x, rspoint.at(rspoint.size() - 1).y, rspoint.at(rspoint.size() - 1).theta, opti_rs_path.type.at(i), temp_point, directions);
                 rspoint_vertex.length = opti_rs_path.v;
             }
             else if (i == 2) {
-                CalNextPoint(opti_rs_path.v, rspoint.at(rspoint.size() - 1).x, rspoint.at(rspoint.size() - 1).y,
-                             rspoint.at(rspoint.size() - 1).theta, opti_rs_path.type.at(i), temp_point, directions);
+                CalNextPoint(opti_rs_path.v, rspoint.at(rspoint.size() - 1).x, rspoint.at(rspoint.size() - 1).y, rspoint.at(rspoint.size() - 1).theta, opti_rs_path.type.at(i), temp_point, directions);
                 rspoint_vertex.length = opti_rs_path.w;
             }
             else if (i == 3) {
-                CalNextPoint(opti_rs_path.w, rspoint.at(rspoint.size() - 1).x, rspoint.at(rspoint.size() - 1).y,
-                             rspoint.at(rspoint.size() - 1).theta, opti_rs_path.type.at(i), temp_point, directions);
+                CalNextPoint(opti_rs_path.w, rspoint.at(rspoint.size() - 1).x, rspoint.at(rspoint.size() - 1).y, rspoint.at(rspoint.size() - 1).theta, opti_rs_path.type.at(i), temp_point, directions);
                 rspoint_vertex.length = opti_rs_path.x;
             }
             rspoint_vertex.types = opti_rs_path.type.at(i + 1);
@@ -211,8 +232,7 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
         double s = 0;
         while (s < fabs(rspoint.at(i).length)) {
             double sign_s = (rspoint.at(i).length > 0) ? s : (-s);
-            CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np,
-                         directions);
+            CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
             np.x     = np.x * m_vehicle_prarm_.radious + start.x;
             np.y     = np.y * m_vehicle_prarm_.radious + start.y;
             np.angle = Mod2pi(np.angle);
@@ -224,17 +244,14 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
             s += step_size;
         }
     }
-    CalNextPoint(rspoint.at(rspoint.size() - 1).length, rspoint.at(rspoint.size() - 1).x,
-                 rspoint.at(rspoint.size() - 1).y, rspoint.at(rspoint.size() - 1).theta,
-                 rspoint.at(rspoint.size() - 1).types, np, directions);
+    CalNextPoint(rspoint.at(rspoint.size() - 1).length, rspoint.at(rspoint.size() - 1).x, rspoint.at(rspoint.size() - 1).y, rspoint.at(rspoint.size() - 1).theta, rspoint.at(rspoint.size() - 1).types, np, directions);
     np.x         = np.x * m_vehicle_prarm_.radious + start.x;
     np.y         = np.y * m_vehicle_prarm_.radious + start.y;
     np.angle     = Mod2pi(np.angle);
     np.direction = directions;
     rs_path.push_back(np);
 
-    if (sqrt(pow(rs_path.at(rs_path.size() - 1).x - rs_path.at(rs_path.size() - 2).x, 2) +
-             pow(rs_path.at(rs_path.size() - 1).x - rs_path.at(rs_path.size() - 2).x, 2)) < 0.6) {
+    if (sqrt(pow(rs_path.at(rs_path.size() - 1).x - rs_path.at(rs_path.size() - 2).x, 2) + pow(rs_path.at(rs_path.size() - 1).x - rs_path.at(rs_path.size() - 2).x, 2)) < 0.6) {
         auto iter1 = rs_path.erase(rs_path.end() - 2);
     }
 }
@@ -266,8 +283,7 @@ inline bool RSCurve::Valid(double theta) {
 /**
  * @brief 根据当前点计算下一点
  */
-void RSCurve::CalNextPoint(double s, double x, double y, double th, ReedsSheppPathSegmentType type_, Point& point,
-                           MotionDirection& directions) {
+void RSCurve::CalNextPoint(double s, double x, double y, double th, ReedsSheppPathSegmentType type_, Point& point, MotionDirection& directions) {
     if (s > 0)
         directions = Forward;
     else
@@ -337,62 +353,54 @@ inline bool RSCurve::LpSpRp(double x, double y, double phi, double& t, double& u
 void RSCurve::CSC() {
     double t, u, v, Lmin = DBL_MAX, L;
     double x = new_end.x, y = new_end.y, phi = new_end.angle;
-    if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpLp(x, y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
+    if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpLp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(14), t, u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && LpSpLp(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
+    if (PlanRule::Forward_To_End != rs_plan_rule && LpSpLp(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(14), -t, -u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpLp(x, -y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
+    if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpLp(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(15), t, u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && LpSpLp(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
+    if (PlanRule::Forward_To_End != rs_plan_rule && LpSpLp(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(15), -t, -u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpRp(x, y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
+    if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpRp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(12), t, u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && LpSpRp(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
+    if (PlanRule::Forward_To_End != rs_plan_rule && LpSpRp(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(12), -t, -u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpRp(x, -y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
+    if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpRp(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(13), t, u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && LpSpRp(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
+    if (PlanRule::Forward_To_End != rs_plan_rule && LpSpRp(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(13), -t, -u, -v, 0, 0, L);
     }
@@ -470,31 +478,27 @@ void RSCurve::CCC() {
     else
         ;
     double x = new_end.x, y = new_end.y, phi = new_end.angle;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLp(x, y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), t, -u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLp(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLp(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), -t, u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLp(x, -y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLp(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(1), t, -u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLp(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLp(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(1), -t, u, -v, 0, 0, L);
         Lmin = L;
@@ -502,31 +506,27 @@ void RSCurve::CCC() {
     else
         ;
 
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRnLn(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRnLn(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), t, -u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLn(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLn(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), -t, u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRnLn(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRnLn(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(1), t, -u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLn(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLn(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(1), -t, u, v, 0, 0, L);
         Lmin = L;
@@ -534,31 +534,27 @@ void RSCurve::CCC() {
     else
         ;
     // backwards
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRpLn(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRpLn(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), t, u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRpLn(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRpLn(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), -t, -u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRpLn(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRpLn(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(1), t, u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRpLn(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRpLn(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(1), -t, -u, v, 0, 0, L);
     }
@@ -632,8 +628,7 @@ void RSCurve::CCCC() {
     //             Lmin = L;
     //         }
     //         else;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRupLumRm(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRupLumRm(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(2), -t, -u, u, v, 0, L);
         Lmin = L;
@@ -648,8 +643,7 @@ void RSCurve::CCCC() {
     //             Lmin = L;
     //         }
     //         else;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRupLumRm(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRupLumRm(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(3), -t, -u, u, v, 0, L);
         Lmin = L;
@@ -657,31 +651,27 @@ void RSCurve::CCCC() {
     else
         ;
 
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRumLumRp(x, y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) {
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRumLumRp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(2), t, -u, -u, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRumLumRp(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRumLumRp(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(2), -t, u, u, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRumLumRp(x, -y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRumLumRp(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(3), t, -u, -u, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRumLumRp(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRumLumRp(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(3), -t, u, u, -v, 0, L);
     }
@@ -788,31 +778,27 @@ void RSCurve::CCSC() {
     else
         ;
     double x = new_end.x, y = new_end.y, phi = new_end.angle;
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRmSmLm(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRmSmLm(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(4), t, -0.5 * M_PI, -u, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLm(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLm(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(4), -t, 0.5 * M_PI, u, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && LpRmSmLm(x, -y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // reflect
+    if (PlanRule::Forward_To_End != rs_plan_rule && LpRmSmLm(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(5), t, -0.5 * M_PI, -u, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLm(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLm(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(5), -t, 0.5 * M_PI, u, v, 0, L);
         Lmin = L;
@@ -820,31 +806,27 @@ void RSCurve::CCSC() {
     else
         ;
 
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRmSmRm(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRmSmRm(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(8), t, -0.5 * M_PI, -u, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRm(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRm(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(8), -t, 0.5 * M_PI, u, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRmSmRm(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // reflect
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRmSmRm(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(9), t, -0.5 * M_PI, -u, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRm(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRm(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(9), -t, 0.5 * M_PI, u, v, 0, L);
         Lmin = L;
@@ -853,31 +835,27 @@ void RSCurve::CCSC() {
         ;
 
     // backwards
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRmSmLmBack(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRmSmLmBack(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(6), t, u, 0.5 * M_PI, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLmBack(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLmBack(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(6), -t, -u, -0.5 * M_PI, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRmSmLmBack(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // reflect
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRmSmLmBack(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(7), t, u, 0.5 * M_PI, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLmBack(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLmBack(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(7), -t, -u, -0.5 * M_PI, v, 0, L);
         Lmin = L;
@@ -885,31 +863,27 @@ void RSCurve::CCSC() {
     else
         ;
 
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRmSmRmBack(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRmSmRmBack(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(11), t, u, 0.5 * M_PI, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRmBack(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRmBack(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(11), -t, -u, -0.5 * M_PI, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule &&
-        LpRmSmRmBack(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // reflect
+    if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRmSmRmBack(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(10), t, u, 0.5 * M_PI, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRmBack(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRmBack(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(10), -t, -u, -0.5 * M_PI, v, 0, L);
     }
@@ -950,31 +924,27 @@ void RSCurve::CCSCC() {
     else
         ;
     double x = new_end.x, y = new_end.y, phi = new_end.angle;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSLmRp(x, y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + M_PI)) {
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSLmRp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + M_PI)) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(16), t, -0.5 * M_PI, -u, -0.5 * M_PI, v, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSLmRp(-x, y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + M_PI)) // timeflip
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSLmRp(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + M_PI)) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(16), -t, 0.5 * M_PI, u, 0.5 * M_PI, -v, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSLmRp(x, -y, -phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + M_PI)) // reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSLmRp(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + M_PI)) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(17), t, -0.5 * M_PI, -u, -0.5 * M_PI, v, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSLmRp(-x, -y, phi, t, u, v) &&
-        Lmin > (L = fabs(t) + fabs(u) + fabs(v) + M_PI)) // timeflip + reflect
+    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSLmRp(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + M_PI)) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(17), -t, 0.5 * M_PI, u, 0.5 * M_PI, -v, L);
     }
