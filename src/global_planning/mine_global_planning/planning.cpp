@@ -157,7 +157,7 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_dir
             temp_end.y   = global_path_.at(i).y;
             temp_end.z   = global_path_.at(i).z;
             temp_end.yaw = global_path_.at(i).yaw;
-            threadLogger_->info("第 {}个候选点，其索引：{} rule_id:{}", cal, i, float(rule_id));
+            threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{}", cal, i, temp_end.yaw, float(rule_id));
             // 到8个点的时候，时间得提升到800ms
             if (counter > 4) time_threshold = 0.8 * 1000 * 1000;
             if (ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id,

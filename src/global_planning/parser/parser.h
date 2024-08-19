@@ -475,7 +475,7 @@ bool GetMap(char* parea) {
             tp.x         = trajPointsArray[j]["x"].GetDouble();
             tp.y         = trajPointsArray[j]["y"].GetDouble();
             tp.z         = trajPointsArray[j]["z"].GetDouble();
-            tp.yaw       = trajPointsArray[j]["yaw"].GetDouble();
+            tp.yaw       = trajPointsArray[j]["yaw"].GetDouble() / 180.0 * M_PI;
             tp.curvature = trajPointsArray[j]["curvature"].GetDouble();
             tp.attribute = static_cast<unsigned char>(trajPointsArray[j]["attribute"].GetInt());
             tp.direction = static_cast<unsigned char>(trajPointsArray[j]["direction"].GetInt());

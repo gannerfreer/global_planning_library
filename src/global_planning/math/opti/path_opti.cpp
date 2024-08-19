@@ -15,8 +15,7 @@ using namespace GlobalPlanning;
  *@param
  *return
  */
-void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collison_check,
-                             _VehicleParam m_vehicle_param) {
+void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collison_check, _VehicleParam m_vehicle_param) {
     // 清空相关容器
     path_.clear();
     new_path_.clear();
@@ -31,13 +30,11 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
 
     // 将传入路径插值成间距step_length的路点
     for (unsigned int i = 0; i < original_path.size() - 1; ++i) {
-        double dis_square = pow(original_path.at(i).x - original_path.at(i + 1).x, 2) +
-                            pow(original_path.at(i).y - original_path.at(i + 1).y, 2);
+        double dis_square = pow(original_path.at(i).x - original_path.at(i + 1).x, 2) + pow(original_path.at(i).y - original_path.at(i + 1).y, 2);
 
         if (dis_square > pow(1.5 * m_vehicle_param_.step_length, 2)) {
             Path tem_path;
-            CubicInterpolate2Point(original_path.at(i), original_path.at(i + 1), m_vehicle_param_.step_length,
-                                   tem_path);
+            CubicInterpolate2Point(original_path.at(i), original_path.at(i + 1), m_vehicle_param_.step_length, tem_path);
             path_.insert(path_.end(), tem_path.begin(), tem_path.begin() + 2);
         }
         else {
@@ -71,6 +68,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
             UpdateFixPointSet(collision_point);
         }
     }
+
     // std::ofstream file_out;
     // file_out.open("control_point.txt");
     // for (size_t index = 0; index < new_path_.size(); index++)
@@ -237,8 +235,8 @@ inline Vector2D Path_Opti::CurvatureTerm(Vector2D xim1, Vector2D xi, Vector2D xi
     norm_delta_xi   = sqrt(pow(delta_xi.x, 2) + pow(delta_xi.y, 2));     // |Δxi|
     norm_delta_xip1 = sqrt(pow(delta_xip1.x, 2) + pow(delta_xip1.y, 2)); // |Δxi+1|
     d               = norm_delta_xi * norm_delta_xip1;
-    dphi = acos((delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d); // 通过向量积求出两向量之间夹角
-    kappa = dphi / norm_delta_xi;
+    dphi            = acos((delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d); // 通过向量积求出两向量之间夹角
+    kappa           = dphi / norm_delta_xi;
 
     if (kappa >= m_vehicle_param_.max_kappa) {
         double pdphi_pcosdphi = -1 / sqrt(1 - pow(cos(dphi), 2));
@@ -474,6 +472,7 @@ void Path_Opti::InterpolatePath(Path& opti_path) {
         }
     }
 
+
     // cout << "插值结束" << endl;
 }
 
@@ -552,8 +551,7 @@ void Path_Opti::InterpolatePath(Path& opti_path) {
  *@param
  *return
  */
-void Path_Opti::CubicInterpolate2Point(const Point start_point, const Point end_point, const double delta_s,
-                                       Path& interpolate_path) {
+void Path_Opti::CubicInterpolate2Point(const Point start_point, const Point end_point, const double delta_s, Path& interpolate_path) {
     // cout << "start_point.x:" << start_point.x << " start_point.y:" << start_point.y << " end_point.x:" << end_point.x
     // << " end_point.y:" << end_point.y << endl;
     double x1_t   = end_point.x - start_point.x;

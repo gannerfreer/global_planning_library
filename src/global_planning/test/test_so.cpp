@@ -74,7 +74,7 @@ int main() {
     }
     auto start = std::chrono::high_resolution_clock::now();
     // 读取json参数
-    char* map_file = "../map/map.json";
+    char* map_file = "../map/map_shiyan.json";
     char* map      = ReadFile(map_file);
 
     GetMap(map);

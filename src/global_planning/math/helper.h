@@ -20,7 +20,6 @@ namespace GlobalPlanning {
 
 namespace Helper {
 
-
 /**
  * @brief 将角度转换到0~2pi
  * @param [in] angle 输入角度值(rad)
@@ -202,12 +201,15 @@ inline bool doesTrajectorySelfIntersect(Path& path) {
     // cout << "进入检测绕圈函数" << endl;
 
     vector<int> vec(36, 0);
-    // for (int i = 0; i < path.size(); i++) {
-    //     cout << path.at(i).angle << endl;
-    // }
+    cout << "检查角度" << endl;
+    for (int i = 0; i < path.size(); i++) {
+        cout << path.at(i).angle << endl;
+    }
+    cout << "准备经过这里" << endl;
     for (int i = 0; i < path.size(); i++) {
         vec.at(floor(path.at(i).angle * 18.0 / M_PI)) = 1;
     }
+    cout << "成功的经过这里" << endl;
     int sum = 0;
     for (int i = 0; i < vec.size(); i++) {
         if (vec.at(i) == 1) {
