@@ -23,6 +23,7 @@ using namespace GlobalPlanning;
 PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, const Bound& road_bound, const Bound& obstacle_bound, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule plan_path_rule) {
     m_vehicle_param_ = m_vehicle_param;
     my_r_s_curve.Init(m_vehicle_param_);
+    my_r_s_curve.threadLogger_ = threadLogger_;
     dubins_.SetParam(m_vehicle_param_.radious, end, plan_path_rule);
     plan_path_rule_ = plan_path_rule;
 
@@ -407,9 +408,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
     // 判断是否可以进行RS曲线拟合
     double dis = hypot(min_point.x - end_.x, min_point.y - end_.y);
 
-    threadLogger_->info("enter IfExitAStar {}", m_vehicle_param_.max_fitting_radius);
     if (dis < m_vehicle_param_.max_fitting_radius) {
-        threadLogger_->info("coming here");
         All++;
         flag_dubins_ = true;
         Point temp_start_point;
@@ -768,7 +767,7 @@ void OptimalPath::CalGValue(const Vertex3D& start_point, Vertex3D& end_point) {
  *return
  */
 void OptimalPath::CalHValue(Vertex3D& point) {
-    double dubins_h = 0, bfs_h = 0, a_start_h = 0, hypot_h = 0, rs_h;
+    double dubins_h = 0, bfs_h = 0, a_start_h = 0, hypot_h = 0, rs_h = 0;
     // Point  start(point.x, point.y, point.z, point.angle, point.direction);
     // dubins_h = dubins_.GetDubinsCost(start);
 
@@ -817,42 +816,40 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     // threadLogger_->info("RS曲线到终点的预测距离：{}", my_r_s_curve.opti_rs_path.length * 15);
 
 
-    utility::CTimeClock init_time;
+    // utility::CTimeClock init_time;
 
-    // 以A*搜索结果为启发值
-    Node2D current2D(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
-    // cout << "CalHValue--current2D pass" << endl;
-    auto iter = nodes2D_map_.find(current2D.getIdx());
-    // cout << "CalHValue--find  pass" << endl;
-    if (iter == nodes2D_map_.end()) {
-        // static int num = 0;
-        // if(num++ >40)
-        // {
-        //     point.h = 1000000000;
-        //     return;
-        // }
+    // // 以A*搜索结果为启发值
+    // Node2D current2D(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
+    // auto   iter = nodes2D_map_.find(current2D.getIdx());
+    // if (iter == nodes2D_map_.end()) {
+    //     // static int num = 0;
+    //     // if(num++ >40)
+    //     // {
+    //     //     point.h = 1000000000;
+    //     //     return;
+    //     // }
 
-        Node2D goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
-        int    total = 0;
+    //     Node2D goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
+    //     int    total = 0;
 
-        a_start_h = AStarSearch2D(goal2D, current2D, total);
+    //     a_start_h = AStarSearch2D(goal2D, current2D, total);
 
 
-        long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time); // 开始时间精确到微秒
-        threadLogger_->info("本次A*搜素{}轮，耗时:{} ms", total, init_time_end * 0.001);
-    }
-    else {
-        a_start_h = iter->second.getG();
-    }
+    //     long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time); // 开始时间精确到微秒
+    //     threadLogger_->info("本次A*搜素{}轮，耗时:{} ms", total, init_time_end * 0.001);
+    // }
+    // else {
+    //     a_start_h = iter->second.getG();
+    // }
 
 
     Node2D current2D_(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
     Node2D goal2D_(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
-    hypot_h = hypot(goal2D_.getX() - current2D_.getX(), goal2D_.getY() - current2D_.getY());
-    point.h = max(dubins_h, max(bfs_h, max(a_start_h, max(rs_h, hypot_h))));
+    point.h = hypot(goal2D_.getX() - current2D_.getX(), goal2D_.getY() - current2D_.getY());
+    // point.h = max(dubins_h, max(bfs_h, max(a_start_h, max(rs_h, hypot_h))));
     // point.h = hypot_h;
-    threadLogger_->info("RS:{},A*:{},欧式：{}", my_r_s_curve.opti_rs_path.length * 15, a_start_h, hypot_h);
-    cout << "dubins_h:" << dubins_h << "  bfs_h:" << bfs_h << "  a_start_h:" << a_start_h << "  hypot_h:" << hypot_h << endl;
+    // threadLogger_->info("RS:{},A*:{},欧式：{}", my_r_s_curve.opti_rs_path.length * 15, a_start_h, hypot_h);
+    // cout << "dubins_h:" << dubins_h << "  bfs_h:" << bfs_h << "  a_start_h:" << a_start_h << "  hypot_h:" << hypot_h << endl;
     cout << "point.h:" << point.h << endl;
 }
 

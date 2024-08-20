@@ -202,9 +202,9 @@ inline bool doesTrajectorySelfIntersect(Path& path) {
 
     vector<int> vec(36, 0);
     cout << "检查角度" << endl;
-    for (int i = 0; i < path.size(); i++) {
-        cout << path.at(i).angle << endl;
-    }
+    // for (int i = 0; i < path.size(); i++) {
+    //     cout << path.at(i).angle << endl;
+    // }
     cout << "准备经过这里" << endl;
     for (int i = 0; i < path.size(); i++) {
         vec.at(floor(path.at(i).angle * 18.0 / M_PI)) = 1;

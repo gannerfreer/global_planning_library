@@ -150,20 +150,21 @@ class RSCurve {
     /**
      * @brief RS曲线各类型计算公式
      */
-    inline bool    LpSpLp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpSpRp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRnLp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRnLn(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRpLn(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRupLumRm(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRumLumRp(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRmSmLm(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRmSmLmBack(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRmSmRmBack(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRmSmRm(double x, double y, double phi, double& t, double& u, double& v);
-    inline bool    LpRmSLmRp(double x, double y, double phi, double& t, double& u, double& v);
-    _VehicleParam  m_vehicle_prarm_;
-    ReedsSheppPath opti_rs_path; // 最优RS曲线路段
+    inline bool                     LpSpLp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpSpRp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRnLp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRnLn(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRpLn(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRupLumRm(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRumLumRp(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRmSmLm(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRmSmLmBack(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRmSmRmBack(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRmSmRm(double x, double y, double phi, double& t, double& u, double& v);
+    inline bool                     LpRmSLmRp(double x, double y, double phi, double& t, double& u, double& v);
+    _VehicleParam                   m_vehicle_prarm_;
+    ReedsSheppPath                  opti_rs_path; // 最优RS曲线路段
+    std::shared_ptr<spdlog::logger> threadLogger_;
 
   private:
     /**

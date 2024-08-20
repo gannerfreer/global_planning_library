@@ -32,6 +32,7 @@ void RSCurve::Init(_VehicleParam& vehicleparam) {
  */
 bool RSCurve::PlanRSPath(const Point start, const Point end, Path& rs_path, PlanRule plan_rule) {
     //     cout << "6666m_vehicle_prarm_.radious = " << m_vehicle_prarm_.radious << "\n";
+    threadLogger_->info("start:{},{},{}  end:{},{},{}", start.x, start.y, start.angle, end.x, end.y, end.angle);
     rs_plan_rule = plan_rule;
     if (rs_plan_rule == PlanRule::Forward_All_Time) {
         rs_plan_rule = PlanRule::Forward_To_End;
@@ -116,12 +117,14 @@ bool RSCurve::LengthValid() {
                 }
                 else if (i == s.size() - 2) {
                     if (fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length) {
+                        threadLogger_->info("fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length");
                         return false;
                     }
                 }
                 else
                     ;
                 if (sum < m_vehicle_prarm_.min_path_Length) {
+                    threadLogger_->info("sum < m_vehicle_prarm_.min_path_Length");
                     return false;
                 }
                 else
@@ -131,8 +134,8 @@ bool RSCurve::LengthValid() {
         }
         return true;
     }
-    else
-        return false;
+    else {}
+    return false;
 }
 
 /**
@@ -142,30 +145,35 @@ bool RSCurve::ReedsSheppGeneration() {
     CSC();
     if (!LengthValid()) // true:存在路段长度小于最短长度限制,清空 opti_rs_path
     {
+        threadLogger_->info("CSC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCC();
     if (!LengthValid()) {
+        threadLogger_->info("CCC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCCC();
     if (!LengthValid()) {
+        threadLogger_->info("CCCC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCSC();
     if (!LengthValid()) {
+        threadLogger_->info("CCSC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCSCC();
     if (!LengthValid()) {
+        threadLogger_->info("CCSCC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
@@ -174,6 +182,15 @@ bool RSCurve::ReedsSheppGeneration() {
     if (fabs(opti_rs_path.t) > 1e-6 && fabs(opti_rs_path.u) > 1e-6 && fabs(opti_rs_path.v) > 1e-6)
         return true; // RS路径前三段存在则认为生成最优RS路径成功
     else {
+        if (fabs(opti_rs_path.t) <= 1e-6) {
+            threadLogger_->info("t<=0");
+        }
+        if (fabs(opti_rs_path.u) <= 1e-6) {
+            threadLogger_->info("u<=0");
+        }
+        if (fabs(opti_rs_path.v) <= 1e-6) {
+            threadLogger_->info("v<=0");
+        }
         return false;
     }
 }
@@ -320,12 +337,16 @@ void RSCurve::CalNextPoint(double s, double x, double y, double th, ReedsSheppPa
  */
 // formula 8.1
 inline bool RSCurve::LpSpLp(double x, double y, double phi, double& t, double& u, double& v) {
+    threadLogger_->info("enter LpSpLp");
     Polar(x - sin(phi), y - 1. + cos(phi), u, t);
     v = Mod2pi(phi - t);
-    if (Valid(v) && Valid(t))
+    if (Valid(v) && Valid(t)) {
+        threadLogger_->info("LpSpLp success");
         return true;
-    else
-        ;
+    }
+    else {
+        threadLogger_->info("LpSpLp fail");
+    }
     t = 0;
     u = 0;
     v = 0;
@@ -333,6 +354,7 @@ inline bool RSCurve::LpSpLp(double x, double y, double phi, double& t, double& u
 }
 // formula 8.2
 inline bool RSCurve::LpSpRp(double x, double y, double phi, double& t, double& u, double& v) {
+    threadLogger_->info("enter LpSpRp");
     double t1, u1, theta;
     Polar(x + sin(phi), y - 1. - cos(phi), u1, t1);
     u1 = u1 * u1;
@@ -341,10 +363,18 @@ inline bool RSCurve::LpSpRp(double x, double y, double phi, double& t, double& u
         theta = atan2(2., u);
         t     = Mod2pi(t1 + theta);
         v     = Mod2pi(t - phi);
-        if (Valid(t) && Valid(v)) return true;
+        if (Valid(t) && Valid(v)) {
+            threadLogger_->info("LpSpRp success");
+            return true;
+        }
+        else {
+            threadLogger_->info("LpSpRp fail");
+        }
     }
-    else
-        ;
+    else {
+        threadLogger_->info("LpSpRp fail");
+    }
+
     t = 0;
     u = 0;
     v = 0;

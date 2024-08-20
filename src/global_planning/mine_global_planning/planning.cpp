@@ -267,14 +267,14 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
         }
         // 针对rule:5的情况，进行绕圈检查，检查原理：判断两个点之间的距离进行判断，是否有间距小于0.8m的点
 
-        if (plan_rule_id == 5 || plan_rule_id == 4) {
-            threadLogger_->info("开始绕圈检测");
-            // 针对rule:5的情况，进行绕圈检查，检查原理：判断角度是否产生0~2M_PI的变化
-            if (Helper::doesTrajectorySelfIntersect(final_path)) {
-                threadLogger_->info("检测到路径绕圈");
-                return false;
-            }
-        }
+        // if (plan_rule_id == 5 || plan_rule_id == 4) {
+        //     threadLogger_->info("开始绕圈检测");
+        //     // 针对rule:5的情况，进行绕圈检查，检查原理：判断角度是否产生0~2M_PI的变化
+        //     if (Helper::doesTrajectorySelfIntersect(final_path)) {
+        //         threadLogger_->info("检测到路径绕圈");
+        //         return false;
+        //     }
+        // }
         threadLogger_->info("绕圈检测达标");
 
         return true;
@@ -577,19 +577,19 @@ bool Planning::FollowReferencelinePlanning() {
                 return false;
             }
             searched_flag = true;
-            threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
-            threadLogger_->info("搜索到的路径ID信息如下");
-            for (auto i : end_path_vec) {
-                threadLogger_->info(i);
-            }
+            // threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
+            // threadLogger_->info("搜索到的路径ID信息如下");
+            // for (auto i : end_path_vec) {
+            //     threadLogger_->info(i);
+            // }
             start_search_radius = 0.5;
             while (start_search_radius <= 70) {
                 if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
-                    threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius, start_path_vec.size());
-                    threadLogger_->info("搜索到的路径ID信息如下");
-                    for (auto i : start_path_vec) {
-                        threadLogger_->info(i);
-                    }
+                    // threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius, start_path_vec.size());
+                    // threadLogger_->info("搜索到的路径ID信息如下");
+                    // for (auto i : start_path_vec) {
+                    //     threadLogger_->info(i);
+                    // }
                     vector<int> start_path_vec_switch, end_path_vec_switch;
                     for (auto i : start_path_vec) {
                         start_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
