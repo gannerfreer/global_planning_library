@@ -187,7 +187,7 @@ inline bool CheckPathFracture(vector<_TrajectoryPoint>& traj) {
     for (int i = 0; i < traj.size() - 1; i++) {
         dis = pow(traj.at(i).x - traj.at(i + 1).x, 2) + pow(traj.at(i).y - traj.at(i + 1).y, 2);
 
-        if (dis > 9) {
+        if (dis > 100) {
             cout << "traj.at(i).x" << traj.at(i).x << "traj.at(i).y " << traj.at(i).y << endl;
             return false; // 如果相邻点间距大于3m，说明路径产生断裂
         }

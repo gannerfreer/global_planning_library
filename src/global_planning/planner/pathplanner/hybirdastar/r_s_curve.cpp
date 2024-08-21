@@ -32,7 +32,7 @@ void RSCurve::Init(_VehicleParam& vehicleparam) {
  */
 bool RSCurve::PlanRSPath(const Point start, const Point end, Path& rs_path, PlanRule plan_rule) {
     //     cout << "6666m_vehicle_prarm_.radious = " << m_vehicle_prarm_.radious << "\n";
-    threadLogger_->info("start:{},{},{}  end:{},{},{}", start.x, start.y, start.angle, end.x, end.y, end.angle);
+    // threadLogger_->info("start:{},{},{}  end:{},{},{}", start.x, start.y, start.angle, end.x, end.y, end.angle);
     rs_plan_rule = plan_rule;
     if (rs_plan_rule == PlanRule::Forward_All_Time) {
         rs_plan_rule = PlanRule::Forward_To_End;
@@ -53,28 +53,6 @@ bool RSCurve::PlanRSPath(const Point start, const Point end, Path& rs_path, Plan
     }
 }
 
-bool RSCurve::PlanRSPath_another(const Point start, const Point end, Path& rs_path, PlanRule plan_rule) {
-    //     cout << "6666m_vehicle_prarm_.radious = " << m_vehicle_prarm_.radious << "\n";
-    rs_plan_rule = plan_rule;
-    if (rs_plan_rule == PlanRule::Forward_All_Time) {
-        rs_plan_rule = PlanRule::Forward_To_End;
-    }
-    // opti_rs_path.length = DBL_MAX;
-    opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, DBL_MAX);
-    a_star_direction = start.direction;
-    Path().swap(rs_path);
-    CoordinateTransformation(start, end, m_vehicle_prarm_.radious); // 坐标转换及归一化
-    if (ReedsSheppGeneration()) {
-        if (opti_rs_path.type.empty()) {
-            return false;
-        }
-        Interpolate(start, rs_path); // 插值、还原得到最终RS路径
-
-        return true;
-    }
-    else
-        return false;
-}
 
 /**
  * @brief 坐标系转换和归一化函数
@@ -117,14 +95,14 @@ bool RSCurve::LengthValid() {
                 }
                 else if (i == s.size() - 2) {
                     if (fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length) {
-                        threadLogger_->info("fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length");
+                        // threadLogger_->info("fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length");
                         return false;
                     }
                 }
                 else
                     ;
                 if (sum < m_vehicle_prarm_.min_path_Length) {
-                    threadLogger_->info("sum < m_vehicle_prarm_.min_path_Length");
+                    // threadLogger_->info("sum < m_vehicle_prarm_.min_path_Length");
                     return false;
                 }
                 else
@@ -145,35 +123,35 @@ bool RSCurve::ReedsSheppGeneration() {
     CSC();
     if (!LengthValid()) // true:存在路段长度小于最短长度限制,清空 opti_rs_path
     {
-        threadLogger_->info("CSC fail");
+        // threadLogger_->info("CSC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCC();
     if (!LengthValid()) {
-        threadLogger_->info("CCC fail");
+        // threadLogger_->info("CCC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCCC();
     if (!LengthValid()) {
-        threadLogger_->info("CCCC fail");
+        // threadLogger_->info("CCCC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCSC();
     if (!LengthValid()) {
-        threadLogger_->info("CCSC fail");
+        // threadLogger_->info("CCSC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
         ;
     CCSCC();
     if (!LengthValid()) {
-        threadLogger_->info("CCSCC fail");
+        // threadLogger_->info("CCSCC fail");
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, 0);
     }
     else
@@ -183,13 +161,13 @@ bool RSCurve::ReedsSheppGeneration() {
         return true; // RS路径前三段存在则认为生成最优RS路径成功
     else {
         if (fabs(opti_rs_path.t) <= 1e-6) {
-            threadLogger_->info("t<=0");
+            // threadLogger_->info("t<=0");
         }
         if (fabs(opti_rs_path.u) <= 1e-6) {
-            threadLogger_->info("u<=0");
+            // threadLogger_->info("u<=0");
         }
         if (fabs(opti_rs_path.v) <= 1e-6) {
-            threadLogger_->info("v<=0");
+            // threadLogger_->info("v<=0");
         }
         return false;
     }
@@ -337,15 +315,15 @@ void RSCurve::CalNextPoint(double s, double x, double y, double th, ReedsSheppPa
  */
 // formula 8.1
 inline bool RSCurve::LpSpLp(double x, double y, double phi, double& t, double& u, double& v) {
-    threadLogger_->info("enter LpSpLp");
+    // threadLogger_->info("enter LpSpLp");
     Polar(x - sin(phi), y - 1. + cos(phi), u, t);
     v = Mod2pi(phi - t);
     if (Valid(v) && Valid(t)) {
-        threadLogger_->info("LpSpLp success");
+        // threadLogger_->info("LpSpLp success");
         return true;
     }
     else {
-        threadLogger_->info("LpSpLp fail");
+        // threadLogger_->info("LpSpLp fail");
     }
     t = 0;
     u = 0;
@@ -354,7 +332,7 @@ inline bool RSCurve::LpSpLp(double x, double y, double phi, double& t, double& u
 }
 // formula 8.2
 inline bool RSCurve::LpSpRp(double x, double y, double phi, double& t, double& u, double& v) {
-    threadLogger_->info("enter LpSpRp");
+    // threadLogger_->info("enter LpSpRp");
     double t1, u1, theta;
     Polar(x + sin(phi), y - 1. - cos(phi), u1, t1);
     u1 = u1 * u1;
@@ -364,15 +342,15 @@ inline bool RSCurve::LpSpRp(double x, double y, double phi, double& t, double& u
         t     = Mod2pi(t1 + theta);
         v     = Mod2pi(t - phi);
         if (Valid(t) && Valid(v)) {
-            threadLogger_->info("LpSpRp success");
+            // threadLogger_->info("LpSpRp success");
             return true;
         }
         else {
-            threadLogger_->info("LpSpRp fail");
+            // threadLogger_->info("LpSpRp fail");
         }
     }
     else {
-        threadLogger_->info("LpSpRp fail");
+        // threadLogger_->info("LpSpRp fail");
     }
 
     t = 0;
@@ -383,12 +361,20 @@ inline bool RSCurve::LpSpRp(double x, double y, double phi, double& t, double& u
 void RSCurve::CSC() {
     double t, u, v, Lmin = DBL_MAX, L;
     double x = new_end.x, y = new_end.y, phi = new_end.angle;
+
+    // if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpLp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
+    //     opti_rs_path.set(reeds_shepp_path_type_v.at(14), t, u, v, 0, 0, L);
+    //     Lmin = L;
+    // }
+    // else
+    //     ;
     if (PlanRule::Backward_All_Time != rs_plan_rule && LpSpLp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(14), t, u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
+
     if (PlanRule::Forward_To_End != rs_plan_rule && LpSpLp(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(14), -t, -u, -v, 0, 0, L);

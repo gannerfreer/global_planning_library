@@ -96,7 +96,6 @@ class RSCurve {
      * @return 返回说明：无
      */
     bool PlanRSPath(const Point start, const Point end, Path& rs_path, PlanRule plan_rule);
-    bool PlanRSPath_another(const Point start, const Point end, Path& rs_path, PlanRule plan_rule);
 
     /**
      * @brief 坐标系转换和归一化函数

@@ -56,7 +56,7 @@
         "safe_margin_error": 0,
         "veh_center_2_side": 1.825,
         "angle_discrete_num": 5,
-        "max_fitting_radius": 50,
+        "max_fitting_radius": 150,
         "veh_center_2_front": 7.3,
         "end_offset_distance": 2,
         "max_iterations_opti": 100,
@@ -81,7 +81,10 @@
         "multi_section_speed_limit_enable": 0,
         "heavy_intersection_road_speed_limit": 1.52,
         "light_intersection_road_speed_limit": 2.06,
-        "vehicle_code": 1012
+        "vehicle_code": 1012,
+        "hybrid_h_use_rs": false,
+        "hybrid_h_use_a_star": true,
+        "hybrid_h_use_max": false
     },
     "task_type": 2,
     "Inner_Borders": [],

@@ -253,6 +253,9 @@ _TarStartEnd ParseJson(char* str) {
             if (val.HasMember("is_light")) {
                 veh_start_end.veh_param.is_light = val["is_light"].GetBool();
             }
+            if (val.HasMember("hybrid_h_use_rs")) veh_start_end.veh_param.hybrid_h_use_rs = val["hybrid_h_use_rs"].GetBool();
+            if (val.HasMember("hybrid_h_use_a_star")) veh_start_end.veh_param.hybrid_h_use_a_star = val["hybrid_h_use_a_star"].GetBool();
+            if (val.HasMember("hybrid_h_use_max")) veh_start_end.veh_param.hybrid_h_use_max = val["hybrid_h_use_max"].GetBool();
         }
     }
 

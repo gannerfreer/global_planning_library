@@ -271,6 +271,9 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
             if (val.HasMember("max_l")) veh_start_end.veh_param.max_l = val["max_l"].GetFloat();
             if (val.HasMember("sita")) veh_start_end.veh_param.sita = val["sita"].GetFloat();
             if (val.HasMember("base")) veh_start_end.veh_param.base = val["base"].GetFloat();
+            if (val.HasMember("hybrid_h_use_rs")) veh_start_end.veh_param.hybrid_h_use_rs = val["hybrid_h_use_rs"].GetBool();
+            if (val.HasMember("hybrid_h_use_a_star")) veh_start_end.veh_param.hybrid_h_use_a_star = val["hybrid_h_use_a_star"].GetBool();
+            if (val.HasMember("hybrid_h_use_max")) veh_start_end.veh_param.hybrid_h_use_max = val["hybrid_h_use_max"].GetBool();
         }
         vehicle_param = veh_start_end.veh_param;
     }

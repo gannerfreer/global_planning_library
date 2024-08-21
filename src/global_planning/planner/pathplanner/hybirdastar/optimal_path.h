@@ -23,6 +23,7 @@ Description: The header file for C++ class OptimalPath.
 #include "../dubins/dubins.h"
 #include "node2d.h"
 #include "r_s_curve.h"
+#include "r_s_curve_for_h.h"
 
 namespace GlobalPlanning {
 /**
@@ -345,6 +346,7 @@ class OptimalPath {
 
   private:
     RSCurve          my_r_s_curve;
+    RSCurve_H        my_r_s_curve_h;
     Dubins           dubins_;
     CollisonCheck    collison_check_;
     PlanRule         plan_path_rule_;

@@ -223,6 +223,9 @@ struct _VehicleParam {
     /* 倒车速度 */
     float reverse_speed;
     bool  is_light;
+    bool  hybrid_h_use_rs;
+    bool  hybrid_h_use_a_star;
+    bool  hybrid_h_use_max;
 };
 
 // 调用全局规划时，需要传入的参数
@@ -269,7 +272,11 @@ typedef struct {
     double d_Max_Deceleration;
 } tar_Speed, *ptar_Speed;
 enum struct PlanRule : int {
-    Normal_Planning      = 0, // 正常规划,无特殊限制
+    Normal_Planning = 0, // 正常规划,无特殊限制
+    // START_BACK_END_IN   = 1, // 起点倒退，终点前进
+    // START_BACK_END_BACK = 2, // 起点倒退，终点倒退
+    // START_IN_END_IN     = 3, // 起点前进，终点前进
+    // START_IN_END_BACK   = 4, // 起点前进，终点倒退
     NO_Backward_In_Start = 1, // 不能倒车起步
     Backward_To_End      = 2, // 必须倒车进入终点，且前进后退只切换一次
     Forward_To_End       = 3, // RS曲线必须前进拟合到终点

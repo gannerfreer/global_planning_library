@@ -31,6 +31,7 @@ SRC = interface.cpp \
 	  planner/pathplanner/hybirdastar/node2d.cpp\
 	  planner/pathplanner/hybirdastar/optimal_path.cpp\
 	  planner/pathplanner/hybirdastar/r_s_curve.cpp\
+	  planner/pathplanner/hybirdastar/r_s_curve_for_h.cpp\
 	  planner/speedplanner/global_speed_planning.cpp\
       math/opti/path_opti.cpp\
 	  collision_check/collision_check.cpp\
