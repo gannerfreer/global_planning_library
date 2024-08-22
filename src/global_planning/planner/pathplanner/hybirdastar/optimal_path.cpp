@@ -785,73 +785,73 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     //     bfs_h = DBL_MAX;
     // else
     //     bfs_h = h_cost_map_[hash];
-    if (m_vehicle_param_.hybrid_h_use_rs || m_vehicle_param_.hybrid_h_use_max) {
-        // 使用rs曲线来评估当前point距离终点的启发值
-        Point temp_start_point;
-        temp_start_point.x         = point.x;
-        temp_start_point.y         = point.y;
-        temp_start_point.z         = point.z;
-        temp_start_point.angle     = point.angle;
-        temp_start_point.direction = point.direction;
+    // if (m_vehicle_param_.hybrid_h_use_rs || m_vehicle_param_.hybrid_h_use_max) {
+    // 使用rs曲线来评估当前point距离终点的启发值
+    Point temp_start_point;
+    temp_start_point.x         = point.x;
+    temp_start_point.y         = point.y;
+    temp_start_point.z         = point.z;
+    temp_start_point.angle     = point.angle;
+    temp_start_point.direction = point.direction;
 
-        Point temp_end_point;
-        temp_end_point.x     = end_.x;
-        temp_end_point.y     = end_.y;
-        temp_end_point.z     = end_.z;
-        temp_end_point.angle = end_.angle;
+    Point temp_end_point;
+    temp_end_point.x     = end_.x;
+    temp_end_point.y     = end_.y;
+    temp_end_point.z     = end_.z;
+    temp_end_point.angle = end_.angle;
 
-        if (!my_r_s_curve_h.PlanRSPath(temp_start_point, temp_end_point)) {
-            threadLogger_->info("采用RS曲线进行估算h值失败，这是不可能发生的");
-        }
-        rs_h = my_r_s_curve_h.opti_rs_path.length * 15;
-
-        threadLogger_->info("RS曲线到终点的预测距离：{}", my_r_s_curve_h.opti_rs_path.length * 15);
+    if (!my_r_s_curve_h.PlanRSPath(temp_start_point, temp_end_point)) {
+        threadLogger_->info("采用RS曲线进行估算h值失败，这是不可能发生的");
     }
-    if (m_vehicle_param_.hybrid_h_use_a_star || m_vehicle_param_.hybrid_h_use_max) {
-        utility::CTimeClock init_time;
+    rs_h = my_r_s_curve_h.opti_rs_path.length * 15;
 
-        // 以A*搜索结果为启发值
-        Node2D current2D(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
-        auto   iter = nodes2D_map_.find(current2D.getIdx());
-        if (iter == nodes2D_map_.end()) {
-            // static int num = 0;
-            // if(num++ >40)
-            // {
-            //     point.h = 1000000000;
-            //     return;
-            // }
+    threadLogger_->info("RS曲线到终点的预测距离：{}", my_r_s_curve_h.opti_rs_path.length * 15);
+    // }
+    // if (m_vehicle_param_.hybrid_h_use_a_star || m_vehicle_param_.hybrid_h_use_max) {
+    utility::CTimeClock init_time;
 
-            Node2D goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
-            int    total = 0;
+    // 以A*搜索结果为启发值
+    Node2D current2D(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
+    auto   iter = nodes2D_map_.find(current2D.getIdx());
+    if (iter == nodes2D_map_.end()) {
+        // static int num = 0;
+        // if(num++ >40)
+        // {
+        //     point.h = 1000000000;
+        //     return;
+        // }
 
-            a_start_h = AStarSearch2D(goal2D, current2D, total);
+        Node2D goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
+        int    total = 0;
+
+        a_start_h = AStarSearch2D(goal2D, current2D, total);
 
 
-            long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time); // 开始时间精确到微秒
-            threadLogger_->info("本次A*搜素{}轮，耗时:{} ms", total, init_time_end * 0.001);
-        }
-        else {
-            a_start_h = iter->second.getG();
-        }
+        long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time); // 开始时间精确到微秒
+        threadLogger_->info("本次A*搜素{}轮，耗时:{} ms", total, init_time_end * 0.001);
     }
+    else {
+        a_start_h = iter->second.getG();
+    }
+    // }
 
 
     // Node2D current2D_(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
     // Node2D goal2D_(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
     // point.h = hypot(goal2D_.getX() - current2D_.getX(), goal2D_.getY() - current2D_.getY());
     // point.h = max(a_start_h, rs_h);
-    if (m_vehicle_param_.hybrid_h_use_a_star) {
-        point.h = a_start_h;
-        threadLogger_->info("A*:{}", a_start_h);
-    }
-    else if (m_vehicle_param_.hybrid_h_use_rs) {
-        point.h = rs_h;
-        threadLogger_->info("RS:{}", rs_h);
-    }
-    else {
-        point.h = max(a_start_h, rs_h);
-        threadLogger_->info("RS:{},A*:{}", rs_h, a_start_h);
-    }
+    // if (m_vehicle_param_.hybrid_h_use_a_star) {
+    //     point.h = a_start_h;
+    //     threadLogger_->info("A*:{}", a_start_h);
+    // }
+    // else if (m_vehicle_param_.hybrid_h_use_rs) {
+    //     point.h = rs_h;
+    //     threadLogger_->info("RS:{}", rs_h);
+    // }
+    // else {
+    point.h = max(a_start_h, rs_h);
+    //     threadLogger_->info("RS:{},A*:{}", rs_h, a_start_h);
+    // }
 }
 
 /**

@@ -1,16 +1,16 @@
 {
     "m_Start_Point": {
-        "x": -468.4871490470058,
-        "y": 1480.6382843722963,
+        "x": -568.7935277692812,
+        "y": 1736.5558240669955,
         "z": 0.0,
-        "yaw": 122.54520416259766
+        "yaw": 239.88044859676378
     },
     "m_End_Point": {
-        "x": -573.5548492693,
-        "y": 1651.4126159172,
+        "x": -586.9170324663,
+        "y": 1640.1996047641,
         "z": 0.0,
-        "yaw": 126.9138093756,
-        "endPointId": 1
+        "yaw": 306.0390927323,
+        "endPointId": -1
     },
     "m_Veh_Param": {
         "delta_s": 0.1,
@@ -38,12 +38,12 @@
         "curvature_term": 0.01,
         "switch_penalty": 10,
         "forward_penalty": 1,
-        "kDiscreteNumber": 1,
+        "kDiscreteNumber": 5,
         "kSmoothnessTerm": 0.1,
-        "max_speed_limit": 3.88,
-        "mid_speed_limit": 2,
+        "max_speed_limit": 7,
+        "mid_speed_limit": 5,
         "min_path_Length": 8,
-        "min_speed_limit": 1.5,
+        "min_speed_limit": 3,
         "offset_distance": 4,
         "smoothness_term": 0.2,
         "backward_penalty": 5.5,
@@ -56,7 +56,7 @@
         "safe_margin_error": 0,
         "veh_center_2_side": 1.825,
         "angle_discrete_num": 5,
-        "max_fitting_radius": 150,
+        "max_fitting_radius": 50,
         "veh_center_2_front": 7.3,
         "end_offset_distance": 2,
         "max_iterations_opti": 100,
@@ -78,15 +78,15 @@
         "heavy_regular_road_speed_limit": 5.54,
         "light_regular_road_speed_limit": 6.08,
         "linear_preferred_distance_square": 25,
-        "multi_section_speed_limit_enable": 0,
+        "multi_section_speed_limit_enable": 1,
         "heavy_intersection_road_speed_limit": 1.52,
         "light_intersection_road_speed_limit": 2.06,
-        "vehicle_code": 1012,
+        "vehicle_code": 1023,
         "hybrid_h_use_rs": false,
-        "hybrid_h_use_a_star": true,
-        "hybrid_h_use_max": false
+        "hybrid_h_use_a_star": false,
+        "hybrid_h_use_max": true
     },
-    "task_type": 2,
+    "task_type": 3,
     "Inner_Borders": [],
     "Road_Directed_Graph": {
         "graph": [
@@ -452,5 +452,5 @@
             ]
         ]
     },
-    "key": "ids:mine:dispatch:planPath:result:1825459371668205568"
+    "key": "ids:mine:dispatch:planPath:result:1826450046442336256"
 }

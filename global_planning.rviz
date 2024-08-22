@@ -42,7 +42,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.15000000596046448
-      Cell Size: 20
+      Cell Size: 50
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -249,11 +249,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 9.786293029785156
+      Scale: 9.101683616638184
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: -509.6586608886719
-      Y: 275.9076843261719
+      X: -695.54052734375
+      Y: 565.4683227539062
     Saved: ~
 Window Geometry:
   Displays:

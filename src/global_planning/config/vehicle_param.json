@@ -29,7 +29,7 @@
     "safe_margin_error": 0.0,
     "veh_center_2_side": 3.0,
     "angle_discrete_num": 3,
-    "max_fitting_radius": 50,
+    "max_fitting_radius": 100,
     "veh_center_2_front": 7.3,
     "max_iterations_opti": 100,
     "safe_margin_obstacle": 2,

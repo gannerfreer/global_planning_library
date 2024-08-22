@@ -518,7 +518,7 @@ bool Planning::PathPlanning() {
 // 非调度规划任务
 bool Planning::NotFollowReferencelinePlanning() {
     vector<_TrajectoryPoint> temp_traj;
-    long long                time_threshold = 0.8 * 1000 * 1000;
+    long long                time_threshold = 2 * 1000 * 1000;
     unsigned char            rule_id_1 = 4, rule_id_2 = 5, rule_id_3 = 2;
     if (task_type_ == TaskType::TEMP_MOVE_CAR) { // 临时挪车任务，先采用纯倒车的规划，再采用纯往前开的策略
         // 先倒车规划，不行正向规划
@@ -803,10 +803,10 @@ bool Planning::HybirdAStarFitting() {
     unsigned char rule_id_1 = 4, rule_id_3 = 5;
     long long     time_threshold     = 0.8 * 1000 * 1000;
     bool          start_need_fitting = false, end_need_fitting = false;
-    int           off_set = 12;
-    if (start_lat_dis_ > lat_threshold || (fabs(start_lon_dis_) > lon_threshold && start_lat_dis_ > lat_threshold)) {
+    int           off_set = 31;
+    if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold) {
         start_need_fitting = true;
-        if (start_distance_ >= 20) {
+        if (start_distance_ >= 30) {
             off_set = 0;
         }
     }
