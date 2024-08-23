@@ -373,9 +373,10 @@ class OptimalPath {
     unordered_map<unsigned long long, Node2D> nodes2D_map_; // 存儲所有搜索得到的节点
     set<unsigned long long>                   nodes2D_set_; // open集
 
-    unordered_set<unsigned int> bound_set_; // 边界的整数坐标形式
-    vector<int>                 box_index_;
-    int                         All;
+    unordered_set<unsigned int> bound_set_, bound_set_for_Astar_; // 边界的整数坐标形式
+
+    vector<int> box_index_;
+    int         All;
 
 }; // end class optimal_path
 

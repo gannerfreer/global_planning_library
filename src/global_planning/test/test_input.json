@@ -1,16 +1,16 @@
 {
     "m_Start_Point": {
-        "x": -568.7935277692812,
-        "y": 1736.5558240669955,
+        "x": -573.5548492693,
+        "y": 1651.4126159172,
         "z": 0.0,
-        "yaw": 239.88044859676378
+        "yaw": 126.9138093756
     },
     "m_End_Point": {
-        "x": -586.9170324663,
-        "y": 1640.1996047641,
+        "x": -596.058333478,
+        "y": 1695.8323847661,
         "z": 0.0,
-        "yaw": 306.0390927323,
-        "endPointId": -1
+        "yaw": 113.0511730731,
+        "endPointId": 7
     },
     "m_Veh_Param": {
         "delta_s": 0.1,
@@ -62,7 +62,7 @@
         "max_iterations_opti": 100,
         "s_curve_speed_limit": 0,
         "max_iterations_astar": 150000,
-        "safe_margin_obstacle": 0,
+        "safe_margin_obstacle": 2,
         "backward_search_range": 20,
         "start_offset_distance": 5,
         "cusp_extension_distance": 3,
@@ -81,12 +81,9 @@
         "multi_section_speed_limit_enable": 1,
         "heavy_intersection_road_speed_limit": 1.52,
         "light_intersection_road_speed_limit": 2.06,
-        "vehicle_code": 1023,
-        "hybrid_h_use_rs": false,
-        "hybrid_h_use_a_star": false,
-        "hybrid_h_use_max": true
+        "vehicle_code": 1004
     },
-    "task_type": 3,
+    "task_type": 2,
     "Inner_Borders": [],
     "Road_Directed_Graph": {
         "graph": [
@@ -452,5 +449,5 @@
             ]
         ]
     },
-    "key": "ids:mine:dispatch:planPath:result:1826450046442336256"
+    "key": "ids:mine:dispatch:planPath:result:1826526083104190464"
 }

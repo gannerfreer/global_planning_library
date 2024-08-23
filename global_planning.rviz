@@ -42,7 +42,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.15000000596046448
-      Cell Size: 50
+      Cell Size: 6
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -151,8 +151,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 620.1604614257812
-        Min Value: -399.49737548828125
+        Max Value: 575.3817749023438
+        Min Value: -399.63531494140625
         Value: true
       Axis: Y
       Channel Name: intensity
@@ -252,8 +252,8 @@ Visualization Manager:
       Scale: 9.101683616638184
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: -695.54052734375
-      Y: 565.4683227539062
+      X: -671.473876953125
+      Y: 565.0497436523438
     Saved: ~
 Window Geometry:
   Displays:

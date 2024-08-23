@@ -220,6 +220,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         // 从优先队列open集中取出第一个点索引，及取出f值最小的点索引
         unsigned long long current_point_index = open_map_f_.begin()->second.id;
         current_point                          = open_map_[current_point_index]; // 通过key值获取当前点
+        threadLogger_->info("current_point:{},{}", current_point.x, current_point.y);
         open_map_.erase(current_point_index);
         open_map_f_.erase(open_map_f_.begin()); // 将该点从open集中删除
         close_map_[current_point_index] = current_point;
@@ -541,7 +542,7 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
                 {
                     // open集中存入该点
                     CalHValue(end_point);
-                    end_point.f             = end_point.g + end_point.h;
+                    end_point.f             = 0.5 * end_point.g + 0.5 * end_point.h;
                     open_map_[end_point.id] = end_point;
                     open_map_f_.insert(make_pair(end_point.f, end_point));
                 }
@@ -850,7 +851,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     // }
     // else {
     point.h = max(a_start_h, rs_h);
-    //     threadLogger_->info("RS:{},A*:{}", rs_h, a_start_h);
+    threadLogger_->info("RS:{},A*:{}", rs_h, a_start_h);
     // }
 }
 
@@ -1245,23 +1246,23 @@ bool OptimalPath::IsBoundGrid(IntCoordinate point) {
     point_east_south.z = point.z;
 
     // 以下5种情况都表明当前点是边界点
-    if (bound_set_.count(hash) == 1) // 当前点在边界上
+    if (bound_set_for_Astar_.count(hash) == 1) // 当前点在边界上
         return true;
-    else if ((bound_set_.count(Coordinate2Hash(point_west)) == 1) &&     // 当前点西和北方向是边界，西北方向
-             (bound_set_.count(Coordinate2Hash(point_north)) == 1) &&    // 不是边界，则当前点是
-             (bound_set_.count(Coordinate2Hash(point_west_north)) == 0)) // 边界点，下同理
+    else if ((bound_set_for_Astar_.count(Coordinate2Hash(point_west)) == 1) &&     // 当前点西和北方向是边界，西北方向
+             (bound_set_for_Astar_.count(Coordinate2Hash(point_north)) == 1) &&    // 不是边界，则当前点是
+             (bound_set_for_Astar_.count(Coordinate2Hash(point_west_north)) == 0)) // 边界点，下同理
         return true;
-    else if ((bound_set_.count(Coordinate2Hash(point_west)) == 1) &&     // 当前点西和北方向是边界，西北方向
-             (bound_set_.count(Coordinate2Hash(point_south)) == 1) &&    // 不是边界，则当前点是
-             (bound_set_.count(Coordinate2Hash(point_west_south)) == 0)) // 边界点，下同理
+    else if ((bound_set_for_Astar_.count(Coordinate2Hash(point_west)) == 1) &&     // 当前点西和北方向是边界，西北方向
+             (bound_set_for_Astar_.count(Coordinate2Hash(point_south)) == 1) &&    // 不是边界，则当前点是
+             (bound_set_for_Astar_.count(Coordinate2Hash(point_west_south)) == 0)) // 边界点，下同理
         return true;
-    else if ((bound_set_.count(Coordinate2Hash(point_east)) == 1) &&     // 当前点西和北方向是边界，西北方向
-             (bound_set_.count(Coordinate2Hash(point_south)) == 1) &&    // 不是边界，则当前点是
-             (bound_set_.count(Coordinate2Hash(point_east_south)) == 0)) // 边界点，下同理
+    else if ((bound_set_for_Astar_.count(Coordinate2Hash(point_east)) == 1) &&     // 当前点西和北方向是边界，西北方向
+             (bound_set_for_Astar_.count(Coordinate2Hash(point_south)) == 1) &&    // 不是边界，则当前点是
+             (bound_set_for_Astar_.count(Coordinate2Hash(point_east_south)) == 0)) // 边界点，下同理
         return true;
-    else if ((bound_set_.count(Coordinate2Hash(point_east)) == 1) &&     // 当前点西和北方向是边界，西北方向
-             (bound_set_.count(Coordinate2Hash(point_north)) == 1) &&    // 不是边界，则当前点是
-             (bound_set_.count(Coordinate2Hash(point_east_north)) == 0)) // 边界点，下同理
+    else if ((bound_set_for_Astar_.count(Coordinate2Hash(point_east)) == 1) &&     // 当前点西和北方向是边界，西北方向
+             (bound_set_for_Astar_.count(Coordinate2Hash(point_north)) == 1) &&    // 不是边界，则当前点是
+             (bound_set_for_Astar_.count(Coordinate2Hash(point_east_north)) == 0)) // 边界点，下同理
         return true;
     else
         return false;
@@ -1275,6 +1276,7 @@ bool OptimalPath::IsBoundGrid(IntCoordinate point) {
 void OptimalPath::GenerateBoundSet() {
     IntCoordinate temp_point;
     bound_set_.clear();
+    bound_set_for_Astar_.clear(); // 这个地图边界是为了给hybridA*算法中，采用A*计算h值时使用的边界，下面的代码会对此边界进行膨胀
     unsigned int hash;
 
     // 计算地图边界栅格
@@ -1294,6 +1296,38 @@ void OptimalPath::GenerateBoundSet() {
             temp_point.y = static_cast<short>(floor(obstacle_bound_.at(i).at(j).y / m_vehicle_param_.grid_dist));
             hash         = Coordinate2Hash(temp_point);
             bound_set_.insert(hash);
+        }
+    }
+
+    // 计算A*地图边界栅格
+    float         radius = m_vehicle_param_.veh_center_2_side; // 实际上，我们使用半径的两倍作为正方形的边长
+    IntCoordinate tp;
+    for (int i = 0; i < road_bound_.size(); ++i) {
+        for (int j = 0; j < road_bound_.at(i).size(); ++j) {
+            temp_point.x = static_cast<short>(floor(road_bound_.at(i).at(j).x / m_vehicle_param_.grid_dist));
+            temp_point.y = static_cast<short>(floor(road_bound_.at(i).at(j).y / m_vehicle_param_.grid_dist));
+
+            // 之所以进行膨胀，是为了堵住一些低于车辆车宽的狭隘间隙
+            for (int i = 0; i < 360; i++) {
+                tp.x = temp_point.x + radius * cos(i / 180.0 * M_PI);
+                tp.y = temp_point.y + radius * sin(i / 180.0 * M_PI);
+                hash = Coordinate2Hash(tp);
+                bound_set_for_Astar_.insert(hash);
+            }
+        }
+    }
+
+    // 计算A*障碍物边界栅格
+    for (int i = 0; i < obstacle_bound_.size(); ++i) {
+        for (int j = 0; j < obstacle_bound_.at(i).size(); ++j) {
+            temp_point.x = static_cast<short>(floor(obstacle_bound_.at(i).at(j).x / m_vehicle_param_.grid_dist));
+            temp_point.y = static_cast<short>(floor(obstacle_bound_.at(i).at(j).y / m_vehicle_param_.grid_dist));
+            for (int i = 0; i < 360; i++) {
+                tp.x = temp_point.x + radius * cos(i / 180.0 * M_PI);
+                tp.y = temp_point.y + radius * sin(i / 180.0 * M_PI);
+                hash = Coordinate2Hash(tp);
+                bound_set_for_Astar_.insert(hash);
+            }
         }
     }
 }

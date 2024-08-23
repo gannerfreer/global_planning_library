@@ -17,7 +17,7 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
 
     // char *file_name = (char *)"src/global_planning/map/map_shulan.json"; // 舒南
     // char* file_name = (char*)"src/global_planning/map/map.json"; // 鲁南
-    char* file_name = (char*)"src/global_planning/map/map_shiyan.json"; // 鲁南
+    char* file_name = (char*)"src/global_planning/map/map.json"; // 鲁南
 
     FILE* file = fopen(file_name, "rb+");
     if (!file) {
