@@ -267,15 +267,15 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
         }
         // 针对rule:5的情况，进行绕圈检查，检查原理：判断两个点之间的距离进行判断，是否有间距小于0.8m的点
 
-        // if (plan_rule_id == 5 || plan_rule_id == 4) {
-        //     threadLogger_->info("开始绕圈检测");
-        //     // 针对rule:5的情况，进行绕圈检查，检查原理：判断角度是否产生0~2M_PI的变化
-        //     if (Helper::doesTrajectorySelfIntersect(final_path)) {
-        //         threadLogger_->info("检测到路径绕圈");
-        //         return false;
-        //     }
-        // }
-        // threadLogger_->info("绕圈检测达标");
+        if (plan_rule_id == 5 || plan_rule_id == 4) {
+            threadLogger_->info("开始绕圈检测");
+            // 针对rule:5的情况，进行绕圈检查，检查原理：判断角度是否产生0~2M_PI的变化
+            if (Helper::doesTrajectorySelfIntersect(final_path)) {
+                threadLogger_->info("检测到路径绕圈");
+                return false;
+            }
+        }
+        threadLogger_->info("绕圈检测达标");
 
         return true;
     }
