@@ -13,8 +13,8 @@
 
 
 bool GetMap(char* parea) {
-    cout << "GlobalPathPlanning-IDS_Global_Planning_version: G_V1.0.1.20240819_RC" << endl;
-    cout << "规划库版本号:G_V1.0.1.20240819_RC" << endl;
+    cout << "GlobalPathPlanning-IDS_Global_Planning_version: G_V1.0.1.20240903_RC" << endl;
+    cout << "规划库版本号:G_V1.0.1.20240903_RC" << endl;
     if (GlobalPlanning::Parser::GetMap(parea)) {
         return true;
     }
@@ -24,7 +24,7 @@ bool GetMap(char* parea) {
 }
 char* GlobalPathPlanning(char* point_veh_start_end) {
     cout << "**********************欢迎光临后台全局规划库************************************" << endl;
-    cout << "规划库版本号:G_V1.0.1.20240819_RC" << endl;
+    cout << "规划库版本号:G_V1.0.1.20240903_RC" << endl;
     time_t start_time, end_time;
     time(&start_time);
     Planning                      planning;
@@ -73,7 +73,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     planning.threadLogger_->info(vehicle_code);
     planning.threadLogger_->info("point_veh_start_end.strlen().size:{}", strlen(point_veh_start_end));
     planning.threadLogger_->info("veh_start_end.my_key:{}", veh_start_end.my_key);
-    planning.threadLogger_->info("GlobalPathPlanning-IDS_Global_Planning_version: G_V1.0.1.20240819_RC");
+    planning.threadLogger_->info("GlobalPathPlanning-IDS_Global_Planning_version: G_V1.0.1.20240903_RC");
 
 
     {

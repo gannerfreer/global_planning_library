@@ -523,13 +523,13 @@ bool Planning::NotFollowReferencelinePlanning() {
     if (task_type_ == TaskType::TEMP_MOVE_CAR) { // 临时挪车任务，先采用纯倒车的规划，再采用纯往前开的策略
         // 先倒车规划，不行正向规划
         threadLogger_->error("挪车");
-        // if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_1, time_threshold)) {
-        if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_2, time_threshold)) {
-            threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
-            error_type_ = ErrorType::POINT_UNREASONABLE;
-            return false;
+        if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_1, time_threshold)) {
+            if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_2, time_threshold)) {
+                threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
+                error_type_ = ErrorType::POINT_UNREASONABLE;
+                return false;
+            }
         }
-        // }
         global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
         threadLogger_->info("临时挪车,路长:{}", global_path_.size());
     }

@@ -60,26 +60,26 @@ with open('../planner/speedplanner/global_speed_planning.h', 'r') as file, tempf
             tmpfile.write(line)  
 os.rename(tmpfile.name, '../planner/speedplanner/global_speed_planning.h') 
 
-with open('../planner/hybirdastar/r_s_curve.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+with open('../planner/pathplanner/hybirdastar/r_s_curve.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
         if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, '../planner/hybirdastar/r_s_curve.cpp') 
+os.rename(tmpfile.name, '../planner/pathplanner/hybirdastar/r_s_curve.cpp') 
 
-with open('../planner/hybirdastar/r_s_curve.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+with open('../planner/pathplanner/hybirdastar/r_s_curve.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
         if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, '../planner/hybirdastar/r_s_curve.h') 
+os.rename(tmpfile.name, '../planner/pathplanner/hybirdastar/r_s_curve.h') 
 
-with open('../planner/hybirdastar/r_s_curve_for_h.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+with open('../planner/pathplanner/hybirdastar/r_s_curve_for_h.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
         if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, '../planner/hybirdastar/r_s_curve_for_h.cpp') 
+os.rename(tmpfile.name, '../planner/pathplanner/hybirdastar/r_s_curve_for_h.cpp') 
 
-with open('../planner/hybirdastar/r_s_curve_for_h.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+with open('../planner/pathplanner/hybirdastar/r_s_curve_for_h.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
         if 'threadLogger_' not in line:  
             tmpfile.write(line)  
-os.rename(tmpfile.name, '../planner/hybirdastar/r_s_curve_for_h.h') 
+os.rename(tmpfile.name, '../planner/pathplanner/hybirdastar/r_s_curve_for_h.h') 
