@@ -648,10 +648,10 @@ bool Planning::FollowReferencelinePlanning() {
     end_key_   = sequence_mapping_.at(success_pair.second);
     start_traj = all_referencelines_.at(start_key_);
     end_traj   = all_referencelines_.at(end_key_);
-    Helper::CalNearestIndex(start_point_, start_traj, start_index_, start_lat_dis_, start_lon_dis_, start_distance_);
-    Helper::CalNearestIndex(end_point_, end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_);
-    threadLogger_->info("起点匹配上的路径索引{}，横向距离{}，纵向距离{}", start_index_, start_lat_dis_, start_lon_dis_);
-    threadLogger_->info("终点匹配上的路径索引{}，横向距离{}，纵向距离{}", end_index_, end_lat_dis_, end_lon_dis_);
+    Helper::CalNearestIndex(start_point_, start_traj, start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
+    Helper::CalNearestIndex(end_point_, end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_, end_angle_diff_);
+    threadLogger_->info("起点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", start_index_, start_lat_dis_, start_lon_dis_, start_angle_diff_ / M_PI * 180.0);
+    threadLogger_->info("终点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", end_index_, end_lat_dis_, end_lon_dis_, end_angle_diff_ / M_PI * 180.0);
 
     // 路径裁剪拼接
     PathClipAndSplice();
@@ -807,7 +807,7 @@ bool Planning::HybirdAStarFitting() {
     long long     time_threshold     = 0.8 * 1000 * 1000;
     bool          start_need_fitting = false, end_need_fitting = false;
     int           off_set = 31;
-    if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold) {
+    if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold || start_angle_diff_ > 8.0 / 180.0 * M_PI) { // 横向阈值大于0.7m,或者纵向阈值大于3m,就需要进行hybirdA*拟合
         start_need_fitting = true;
         if (start_distance_ >= 30) {
             off_set = 0;
