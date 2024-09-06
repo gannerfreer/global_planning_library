@@ -299,6 +299,7 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
     float            last_speed;   // PlanForSingleSegment()函数规划后，车辆能够达到的速度，最后一个点的速度
     if (2 == temp_keypoint.size()) // 若只有两个关键点，后面合成一条路径的时候再来根据方向，改变速度符号
     {
+        threadLogger_->error("2 == temp_keypoint.size()");
         keypoint1 = temp_keypoint.at(0);
         keypoint2 = temp_keypoint.at(1);
         if (!PlanForSingleSegment(num, keypoint1, keypoint2, temp_sparsespeedpoints, last_speed)) {
@@ -311,11 +312,13 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
         temp_sparsepoint.speed = last_speed;
         //     threadLogger_->info("...last_speed is "<<last_speed<<" ..."<<endl;
         temp_sparsespeedpoints.push_back(temp_sparsepoint);
+        threadLogger_->info("此段规划完毕，temp_sparsespeedpoints.size():{}", temp_sparsespeedpoints.size());
         global_speeds.emplace_back(temp_sparsespeedpoints);
         return true;
     }
     else if (2 < temp_keypoint.size()) // 若大于两个关键点
     {
+        threadLogger_->error("2 <temp_keypoint.size()");
         temp_sparsespeedpoints_all.clear();
         /*循环遍历关键点集*/
         float last_speed = temp_keypoint.at(0).speed_limit_left;
@@ -342,6 +345,7 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
         threadLogger_->info("last point temp_sparsepoint.speed = {}", temp_sparsepoint.speed);
 
         temp_sparsespeedpoints_all.emplace_back(temp_sparsepoint);
+        threadLogger_->info("此段规划完毕，temp_sparsespeedpoints.size():{}", temp_sparsespeedpoints.size());
         global_speeds.emplace_back(temp_sparsespeedpoints_all);
 
         return true;
@@ -997,7 +1001,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float s_1 = s_total - s_min; // 匀速截止的距离
             float s_0 = temp_traj.at(keypoint1.index).distance;
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
-                s_temp = temp_traj.at(i).distance - s_0;
+                s_temp = fabs(temp_traj.at(i).distance - s_0);
                 if (s_temp <= s_1) {
                     temp_sparsepoint.index = i;
                     temp_sparsepoint.speed = v1;
@@ -1025,7 +1029,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         float s_temp;
         float s_0 = temp_traj.at(keypoint1.index).distance;
         for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
-            s_temp = temp_traj.at(i).distance - s_0; // 距起点的距离
+            s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
             if (s_temp < s_min) {
                 temp_sparsepoint.index = i;
                 temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
@@ -1064,14 +1068,22 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         float s_dec = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration);
         if (s_acc + s_dec < s_total) // 先加速到最大速度，再减速到v2
         {
+            threadLogger_->info("先加速到最大速度，再减速到v2");
+
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
+            threadLogger_->error("...Case 4:s_0:{}", s_0);
+
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
-                s_temp = temp_traj.at(i).distance - s_0; // 距起点的距离
-                if (s_temp < s_acc)                      // 加速
+                s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
+                threadLogger_->error("...Case 4:temp_traj.at(i).distance :{} ", temp_traj.at(i).distance);
+
+                if (s_temp < s_acc) // 加速
                 {
                     temp_sparsepoint.index = i;
                     temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
+
+                    threadLogger_->error("...Case 4: temp_sparsepoint.speed :{} index:{} v0:{} s_temp:{}", temp_sparsepoint.speed, temp_sparsepoint.index, v0, s_temp);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
                 else if (s_temp < s_total - s_dec) // 匀速
@@ -1089,17 +1101,19 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 }
             }
             last_speed = v2;
+            threadLogger_->info("temp_sparsespeedpoints.size():{}", temp_sparsespeedpoints.size());
             return true;
         }
         else if (s_acc + s_dec >= s_total) // 先加速，再减速，无匀速阶段
         {
+            threadLogger_->info("先加速，再减速，无匀速阶段");
             float s_as  = (2 * kMinAcceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (kMinAcceleration - kMaxAcceleration)); // 加速的距离
             float v_max = sqrt((2 * kMinAcceleration * kMaxAcceleration * s_total + kMinAcceleration * pow(v0, 2) - kMaxAcceleration * pow(v2, 2)) / (kMinAcceleration - kMaxAcceleration));
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
-                s_temp = temp_traj.at(i).distance - s_0; // 距起点的距离
-                if (s_temp < s_as)                       // 加速
+                s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
+                if (s_temp < s_as)                             // 加速
                 {
                     temp_sparsepoint.index = i;
                     temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
@@ -1132,8 +1146,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
-                s_temp = temp_traj.at(i).distance - s_0; // 距起点的距离
-                if (s_temp < s_acc)                      // 加速
+                s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
+                if (s_temp < s_acc)                            // 加速
                 {
                     temp_sparsepoint.index = i;
                     temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
@@ -1163,8 +1177,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
-                s_temp = temp_traj.at(i).distance - s_0; // 距起点的距离
-                if (s_temp < s_as)                       // 加速
+                s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
+                if (s_temp < s_as)                             // 加速
                 {
                     temp_sparsepoint.index = i;
                     temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
@@ -1186,7 +1200,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
-                s_temp                 = temp_traj.at(i).distance - s_0; // 距起点的距离
+                s_temp                 = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 temp_sparsepoint.index = i;
                 temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
                 temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
@@ -1531,6 +1545,10 @@ bool GlobalSpeedPlanning::GetKeypoint() {
  */
 void GlobalSpeedPlanning::SpeedCurveSmooth(unsigned char num) {
     std::vector<SparseSpeedPoint> temp_opti_global_speed = global_speeds.at(num);
+
+    for (int i = 0; i < temp_opti_global_speed.size(); i++) {
+        threadLogger_->info("temp_opti_global_speed.at{}.speed:{}  index:{}", i, temp_opti_global_speed.at(i).speed, temp_opti_global_speed.at(i).index);
+    }
     //   threadLogger_->info("~~~~~temp_opti_global_speed.back().index = " << temp_opti_global_speed.back().index <<
     //   "\n"; threadLogger_->info("~~~~~temp_opti_global_speed.back().speed = " << temp_opti_global_speed.back().speed
     //   << "\n";
@@ -1548,6 +1566,7 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(unsigned char num) {
             float gradient_smooth = kSmoothnessTerm * (v0 + v2 - 2 * v1);
 
             temp_opti_global_speed.at(i).speed += gradient_error + gradient_smooth;
+            threadLogger_->info("优化过程中实时速度：{}", temp_opti_global_speed.at(i).speed);
         }
     }
     opti_global_speeds.emplace_back(temp_opti_global_speed);
