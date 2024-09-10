@@ -15,7 +15,7 @@ bool Planning::InitialFunction() {
     inner_borders_.clear(); // 全局路径
     all_referencelines_.clear();
     global_path_.clear();
-    v_fail_pair_.clear();
+    v_has_calculate_pair_.clear();
     task_type_ = TaskType::RESERVED;
 
 
@@ -568,11 +568,11 @@ bool Planning::NotFollowReferencelinePlanning() {
 // 沿路网路径规划
 bool Planning::FollowReferencelinePlanning() {
     // 起点、终点渐进式扩大搜索
-    pair<int, int> success_pair  = {-1, -1};
-    bool           searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
-    double         end_search_radius = 0.5, start_search_radius = 0.5;
-    vector<int>    start_path_vec, end_path_vec;
-    while (end_search_radius <= 2) {
+    vector<pair<pair<int, int>, int>> success_pair;
+    bool                              searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
+    double                            end_search_radius = 0.5, start_search_radius = 0.5;
+    vector<int>                       start_path_vec, end_path_vec;
+    while (end_search_radius <= 0.6) {
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
             if (searched_flag == true) {
                 return false;
@@ -584,7 +584,7 @@ bool Planning::FollowReferencelinePlanning() {
                 threadLogger_->info(i);
             }
             start_search_radius = 0.5;
-            while (start_search_radius <= 150) {
+            while (start_search_radius <= 30) {
                 if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
                     threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius, start_path_vec.size());
                     threadLogger_->info("搜索到的路径ID信息如下");
@@ -604,24 +604,26 @@ bool Planning::FollowReferencelinePlanning() {
                     for (auto start : start_path_vec_switch) {
                         for (auto end : end_path_vec_switch) {
                             if (HasSearched(start, end)) {
+                                threadLogger_->info("路径{}与路径{}已经计算过，为节约计算资源，予以跳过");
                                 continue;
                             }
                             threadLogger_->info("索引  start:{},end:{}", start, end);
                             if (IsConnect(start, end)) {
                                 threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
-                                success_pair = make_pair(start, end);
-                                is_found     = true; // 标记为已找到
-                                break;               // 退出内层循环
+                                success_pair.push_back(make_pair(make_pair(start, end), road_sequence_.size()));
+                                // is_found = true; // 标记为已找到
+                                // break;           // 退出内层循环
                             }
                             else {
-                                v_fail_pair_.push_back(pair(start, end));
                                 threadLogger_->info("start:{},end:{}", start, end);
                                 threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
                             }
+
+                            v_has_calculate_pair_.push_back(pair(start, end));
                         }
-                        if (is_found) break; // 如果已找到，退出中间层循环
+                        // if (is_found) break; // 如果已找到，退出中间层循环
                     }
-                    if (is_found) break; // 如果已找到，退出外层循环
+                    // if (is_found) break; // 如果已找到，退出外层循环
                 }
                 else {
                     threadLogger_->info("起点搜索半径{},无参考路径", start_search_radius);
@@ -629,7 +631,7 @@ bool Planning::FollowReferencelinePlanning() {
                 start_search_radius += 0.5;
             }
 
-            if (is_found) break;
+            // if (is_found) break;
         }
         else {
             threadLogger_->info("终点搜索,半径{}内无参考路径", end_search_radius);
@@ -637,16 +639,36 @@ bool Planning::FollowReferencelinePlanning() {
         end_search_radius += 0.5;
     }
 
-    if (success_pair.first == -1 || success_pair.second == -1) {
+    if (success_pair.empty()) {
         error_type_ = ErrorType::ROAD_GRAPH_ERROR;
         return false;
     }
-    threadLogger_->info("找到路径对{}-{}", sequence_mapping_.at(success_pair.first), sequence_mapping_.at(success_pair.second));
+    else {
+        threadLogger_->info("规划算法找到的成功路径对id如下：");
+        for (int i = 0; i < success_pair.size(); i++) {
+            threadLogger_->info("{},{}", sequence_mapping_.at(success_pair.at(i).first.first), sequence_mapping_.at(success_pair.at(i).first.second));
+        }
+    }
+
+
+    // 从success_pair中挑选最优的路径对
+    int            min = INT_MAX;
+    pair<int, int> best_pair;
+    for (int i = 0; i < success_pair.size(); i++) {
+        if (success_pair.at(i).second < min) {
+            best_pair.first  = success_pair.at(i).first.first;
+            best_pair.second = success_pair.at(i).first.second;
+            min              = success_pair.at(i).second;
+        }
+    }
+
+
+    threadLogger_->info("找到路径对{}-{}", sequence_mapping_.at(best_pair.first), sequence_mapping_.at(best_pair.second));
     // 找到起点、终点对应的索引及其横纵向距离
     _SingleTraj start_traj, end_traj;
 
-    start_key_ = sequence_mapping_.at(success_pair.first);
-    end_key_   = sequence_mapping_.at(success_pair.second);
+    start_key_ = sequence_mapping_.at(best_pair.first);
+    end_key_   = sequence_mapping_.at(best_pair.second);
     start_traj = all_referencelines_.at(start_key_);
     end_traj   = all_referencelines_.at(end_key_);
     Helper::CalNearestIndex(start_point_, start_traj, start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
@@ -659,7 +681,7 @@ bool Planning::FollowReferencelinePlanning() {
     return true;
 }
 bool Planning::HasSearched(int start, int end) {
-    for (auto pair : v_fail_pair_) {
+    for (auto pair : v_has_calculate_pair_) {
         if (pair.first == start && pair.second == end) return true;
     }
     return false;

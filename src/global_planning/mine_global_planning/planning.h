@@ -166,7 +166,7 @@ class Planning {
     TaskType               task_type_;     // 任务类型 用于终点处规划，规划方案选型
     unsigned char          light_or_heavy_;
     CollisonCheck          collison_check_;
-    vector<pair<int, int>> v_fail_pair_;
+    vector<pair<int, int>> v_has_calculate_pair_;
 
     ErrorType                  error_type_ = ErrorType::SUCCESS;
     shared_ptr<spdlog::logger> threadLogger_;
