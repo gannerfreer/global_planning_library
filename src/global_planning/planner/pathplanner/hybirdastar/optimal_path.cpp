@@ -203,7 +203,8 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     threadLogger_->info("hybirdA*搜索启动");
     while (!open_map_f_.empty()) {
         long long cal_time = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time); // 开始时间精确到微秒
-        if (cal_time > timeThreshold)                                                       // 若超过最大迭代次数则直接返回
+        threadLogger_->info("open_map_f_.size():{}", open_map_f_.size());
+        if (cal_time > timeThreshold) // 若超过最大迭代次数则直接返回
         {
             threadLogger_->info("A star overtime!, timeThreshold:{} ms,AStarPath while循环已经被调用: {} 次", timeThreshold * 0.001, sum);
 
@@ -220,7 +221,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         // 从优先队列open集中取出第一个点索引，及取出f值最小的点索引
         unsigned long long current_point_index = open_map_f_.begin()->second.id;
         current_point                          = open_map_[current_point_index]; // 通过key值获取当前点
-        threadLogger_->info("current_point:{},{}", current_point.x, current_point.y);
+        // threadLogger_->info("current_point:{},{}", current_point.x, current_point.y);
         open_map_.erase(current_point_index);
         open_map_f_.erase(open_map_f_.begin()); // 将该点从open集中删除
         close_map_[current_point_index] = current_point;
@@ -246,12 +247,15 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
         // 基于当前点进行节点拓展
         utility::CTimeClock start_time_expand;
+        threadLogger_->info("FindExpandVertex");
         FindExpandVertex(current_point, time_spend_dynamic, time_spend_collsion, time_spend_other);
+        threadLogger_->info("record");
         expand_time_collision += time_spend_collsion;
         expand_time_dynamic += time_spend_dynamic;
         expand_time_other += time_spend_other;
         expand_time += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_expand);
     }
+
 
     if (open_map_f_.empty()) // 如果open_set为空表示无法搜索到可行路径
     {
@@ -433,6 +437,9 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         return true;
                     }
                 }
+                else {
+                    threadLogger_->info("RS曲线规划失败");
+                }
                 break;
             case FittingDirection::Forword_Fitting:
 
@@ -500,20 +507,25 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
             // 根据车辆当前点位置、拓展方向和角度，得到拓展终点消息
             utility::CTimeClock start_time_rs_;
             VehDynam(current_point, direction, temp_steering, end_point);
+            threadLogger_->info("VehDynam ");
             time1 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs_);
             end_point.id = Vertex2Hash(end_point); // 计算哈希值索引
+            threadLogger_->info("Vertex2Hash ");
             // 判断拓展点是否碰撞
             Point               temp_point(end_point.x, end_point.y, end_point.z, end_point.angle, end_point.direction);
             utility::CTimeClock start_time_rs;
             flag = collison_check_.IsVehicleCollision(temp_point);
+            threadLogger_->info("IsVehicleCollision ");
             time2 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs);
             utility::CTimeClock start_time_rs__;
             if (flag == false) {
                 // 计算该点g值
                 CalGValue(current_point, end_point);
+                threadLogger_->info("CalGValue");
                 // 判断该点是否已经存放于open集中或close集中
                 if (open_map_.find(end_point.id) != open_map_.end()) // 如果在open集中
                 {
+                    threadLogger_->info("open_map_.find(end_point.id) != open_map_.end()");
                     // g值检查，判断该点g值是否小于open集中相应点g值
                     if (open_map_[end_point.id].g > end_point.g) {
                         // 节点更新
@@ -540,16 +552,25 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
                 }
                 else if (close_map_.find(end_point.id) == close_map_.end()) // 如果不在close集中
                 {
+                    threadLogger_->info("close_map_.find(end_point.id) == close_map_.end()");
+
                     // open集中存入该点
                     CalHValue(end_point);
+                    threadLogger_->info("探索到新的end_point");
                     end_point.f             = 0.5 * end_point.g + 0.5 * end_point.h;
                     open_map_[end_point.id] = end_point;
                     open_map_f_.insert(make_pair(end_point.f, end_point));
                 }
             }
+            else {
+                threadLogger_->info("探索过程中的点碰撞");
+            }
             time3 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs__);
+            threadLogger_->info("line559");
         }
+        threadLogger_->info("line561");
     }
+    threadLogger_->info("line561");
     // 在每个离散转向角处进行节点扩展
 
     // auto end_time = ros::Time::now();
@@ -806,7 +827,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     }
     rs_h = my_r_s_curve_h.opti_rs_path.length * 15;
 
-    threadLogger_->info("RS曲线到终点的预测距离：{}", my_r_s_curve_h.opti_rs_path.length * 15);
+    // threadLogger_->info("RS曲线到终点的预测距离：{}", my_r_s_curve_h.opti_rs_path.length * 15);
     // }
     // if (m_vehicle_param_.hybrid_h_use_a_star || m_vehicle_param_.hybrid_h_use_max) {
     utility::CTimeClock init_time;
@@ -833,6 +854,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     }
     else {
         a_start_h = iter->second.getG();
+        threadLogger_->info("本次A*不用搜索");
     }
     // }
 
@@ -851,7 +873,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     // }
     // else {
     point.h = max(a_start_h, rs_h);
-    threadLogger_->info("RS:{},A*:{}", rs_h, a_start_h);
+    // threadLogger_->info("RS:{},A*:{}", rs_h, a_start_h);
     // }
 }
 
@@ -1128,11 +1150,15 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
     threadLogger_->info("nodes2D_map_.size():{} ", nodes2D_map_.size());
     while (!nodes2D_set_.empty()) {
         num++;
-        // threadLogger_->info("第{}轮,开始从node2D_set_中挑选最小代价点", num);
+        // if (num > 100) {
+        //     threadLogger_->info("A*算法异常");
+        //     break;
+        // }
+        threadLogger_->info("第{}轮,开始从node2D_set_中挑选最小代价点", num);
         iPred = *nodes2D_set_.begin() & 0x00000000FFFFFFFF;
         // threadLogger_->info("iPred:{} ", iPred);
         nPred = nodes2D_map_[iPred];
-        // threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
+        threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
         if (nodes2D_map_[iPred].isClosed()) {
             threadLogger_->info("nodes2D_map_[iPred] is Closed");
             nodes2D_set_.erase(nodes2D_set_.begin());
@@ -1140,7 +1166,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
         }
 
         if (nodes2D_map_[iPred].isOpen()) {
-            // threadLogger_->info("nodes2D_map_[iPred] is Open");
+            threadLogger_->info("nodes2D_map_[iPred] is Open");
             nodes2D_set_.erase(nodes2D_set_.begin());
             nodes2D_map_[iPred].close();
             nodes2D_map_[iPred].discover();
@@ -1150,19 +1176,19 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
             }
             for (int i = 0; i < Node2D::dir; ++i) {
                 nSucc = nPred.createSuccessor(i);
-                // threadLogger_->info("");
-                // threadLogger_->info("nSucc :{} {}", nSucc.getX(), nSucc.getY());
+                threadLogger_->info("");
+                threadLogger_->info("nSucc :{} {}", nSucc.getX(), nSucc.getY());
                 iSucc = nSucc.getIdx();
                 // threadLogger_->info("iSucc :{}", iSucc);
                 IntCoordinate point(nSucc.getX(), nSucc.getY(), 0);
                 bool          flag_in_nodes2D = (nodes2D_map_.find(iSucc) != nodes2D_map_.end());
                 if (!IsBoundGrid(point) && (!flag_in_nodes2D || !nodes2D_map_[iSucc].isClosed())) { // 节点不是边界点且节点没有探索过，或者探索过，但是不是close的，就可以作为继承点
-                    // threadLogger_->info("符合要求的点");
+                    threadLogger_->info("符合要求的点");
                     nSucc.open();
                     nSucc.discover();
 
                     newG = nSucc.getG();
-                    // threadLogger_->info("newG:{}", newG);
+                    threadLogger_->info("newG:{}", newG);
                     if (flag_in_nodes2D && nodes2D_map_[iSucc].isOpen()) // 节点探索过，并且是open性质
                     {
                         // threadLogger_->info("iSucc is Open");
@@ -1184,7 +1210,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
                     nodes2D_map_[iSucc] = nSucc;
                 }
                 else {
-                    // threadLogger_->info("该点是边界点或者该点已经被探索过，但已经进close");
+                    threadLogger_->info("该点是边界点或者该点已经被探索过，但已经进close");
                 }
             }
         }
@@ -1298,38 +1324,39 @@ void OptimalPath::GenerateBoundSet() {
             bound_set_.insert(hash);
         }
     }
+    bound_set_for_Astar_ = bound_set_;
 
-    // 计算A*地图边界栅格
-    float         radius = m_vehicle_param_.veh_center_2_side; // 实际上，我们使用半径的两倍作为正方形的边长
-    IntCoordinate tp;
-    for (int i = 0; i < road_bound_.size(); ++i) {
-        for (int j = 0; j < road_bound_.at(i).size(); ++j) {
-            temp_point.x = static_cast<short>(floor(road_bound_.at(i).at(j).x / m_vehicle_param_.grid_dist));
-            temp_point.y = static_cast<short>(floor(road_bound_.at(i).at(j).y / m_vehicle_param_.grid_dist));
+    // // 计算A*地图边界栅格
+    // float         radius = m_vehicle_param_.veh_center_2_side; // 实际上，我们使用半径的两倍作为正方形的边长
+    // IntCoordinate tp;
+    // for (int i = 0; i < road_bound_.size(); ++i) {
+    //     for (int j = 0; j < road_bound_.at(i).size(); ++j) {
+    //         temp_point.x = static_cast<short>(floor(road_bound_.at(i).at(j).x / m_vehicle_param_.grid_dist));
+    //         temp_point.y = static_cast<short>(floor(road_bound_.at(i).at(j).y / m_vehicle_param_.grid_dist));
 
-            // 之所以进行膨胀，是为了堵住一些低于车辆车宽的狭隘间隙
-            for (int i = 0; i < 360; i++) {
-                tp.x = temp_point.x + radius * cos(i / 180.0 * M_PI);
-                tp.y = temp_point.y + radius * sin(i / 180.0 * M_PI);
-                hash = Coordinate2Hash(tp);
-                bound_set_for_Astar_.insert(hash);
-            }
-        }
-    }
+    //         // 之所以进行膨胀，是为了堵住一些低于车辆车宽的狭隘间隙
+    //         for (int i = 0; i < 360; i++) {
+    //             tp.x = temp_point.x + radius * cos(i / 180.0 * M_PI);
+    //             tp.y = temp_point.y + radius * sin(i / 180.0 * M_PI);
+    //             hash = Coordinate2Hash(tp);
+    //             bound_set_for_Astar_.insert(hash);
+    //         }
+    //     }
+    // }
 
-    // 计算A*障碍物边界栅格
-    for (int i = 0; i < obstacle_bound_.size(); ++i) {
-        for (int j = 0; j < obstacle_bound_.at(i).size(); ++j) {
-            temp_point.x = static_cast<short>(floor(obstacle_bound_.at(i).at(j).x / m_vehicle_param_.grid_dist));
-            temp_point.y = static_cast<short>(floor(obstacle_bound_.at(i).at(j).y / m_vehicle_param_.grid_dist));
-            for (int i = 0; i < 360; i++) {
-                tp.x = temp_point.x + radius * cos(i / 180.0 * M_PI);
-                tp.y = temp_point.y + radius * sin(i / 180.0 * M_PI);
-                hash = Coordinate2Hash(tp);
-                bound_set_for_Astar_.insert(hash);
-            }
-        }
-    }
+    // // 计算A*障碍物边界栅格
+    // for (int i = 0; i < obstacle_bound_.size(); ++i) {
+    //     for (int j = 0; j < obstacle_bound_.at(i).size(); ++j) {
+    //         temp_point.x = static_cast<short>(floor(obstacle_bound_.at(i).at(j).x / m_vehicle_param_.grid_dist));
+    //         temp_point.y = static_cast<short>(floor(obstacle_bound_.at(i).at(j).y / m_vehicle_param_.grid_dist));
+    //         for (int i = 0; i < 360; i++) {
+    //             tp.x = temp_point.x + radius * cos(i / 180.0 * M_PI);
+    //             tp.y = temp_point.y + radius * sin(i / 180.0 * M_PI);
+    //             hash = Coordinate2Hash(tp);
+    //             bound_set_for_Astar_.insert(hash);
+    //         }
+    //     }
+    // }
 }
 
 void OptimalPath::CalCurv(Path& temp_path) {

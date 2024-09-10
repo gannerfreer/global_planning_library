@@ -97,6 +97,17 @@ void Path_Opti::GetCuspIndex() {
             cusp_set_.insert(i);
         }
     }
+    if (path_.size() > 10) {
+        // 将前5个路径点加入固定点
+        for (int i = 1; i < 4; i++) {
+            cusp_set_.insert(i);
+        }
+
+        // 将后5个路径点加入固定点
+        for (int i = path_.size() - 2; i >= path_.size() - 4; i--) {
+            cusp_set_.insert(i);
+        }
+    }
     // std::cout << "cusp_set_.size() :" << cusp_set_.size() << std::endl;
 }
 

@@ -42,7 +42,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.15000000596046448
-      Cell Size: 6
+      Cell Size: 10
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -151,8 +151,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 575.3817749023438
-        Min Value: -399.63531494140625
+        Max Value: 170.94793701171875
+        Min Value: -1119.202880859375
         Value: true
       Axis: Y
       Channel Name: intensity
@@ -249,11 +249,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 9.101683616638184
+      Scale: 8.222929954528809
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: -671.473876953125
-      Y: 565.0497436523438
+      X: -515.4649658203125
+      Y: 179.6024932861328
     Saved: ~
 Window Geometry:
   Displays:

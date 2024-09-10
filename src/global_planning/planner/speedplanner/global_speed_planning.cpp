@@ -1566,7 +1566,7 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(unsigned char num) {
             float gradient_smooth = kSmoothnessTerm * (v0 + v2 - 2 * v1);
 
             temp_opti_global_speed.at(i).speed += gradient_error + gradient_smooth;
-            threadLogger_->info("优化过程中实时速度：{}", temp_opti_global_speed.at(i).speed);
+            // threadLogger_->info("优化过程中实时速度：{}", temp_opti_global_speed.at(i).speed);
         }
     }
     opti_global_speeds.emplace_back(temp_opti_global_speed);

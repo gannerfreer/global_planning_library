@@ -535,6 +535,7 @@ bool Planning::NotFollowReferencelinePlanning() {
     }
     else if (task_type_ == TaskType::LOAD) { // 装载任务，先纯倒车，纯倒车不行再往前开，再倒车
         threadLogger_->error("装载");
+        vehicle_param_.end_offset_distance = 8.0; // 装载任务，最后倒车进去的轨迹必须是一条8m的直线
         if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_1, time_threshold)) {
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_3, time_threshold)) {
                 threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
