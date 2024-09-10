@@ -1150,10 +1150,10 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
     threadLogger_->info("nodes2D_map_.size():{} ", nodes2D_map_.size());
     while (!nodes2D_set_.empty()) {
         num++;
-        // if (num > 100) {
-        //     threadLogger_->info("A*算法异常");
-        //     break;
-        // }
+        if (num > 500) {
+            threadLogger_->info("A*算法异常");
+            break;
+        }
         threadLogger_->info("第{}轮,开始从node2D_set_中挑选最小代价点", num);
         iPred = *nodes2D_set_.begin() & 0x00000000FFFFFFFF;
         // threadLogger_->info("iPred:{} ", iPred);
@@ -1210,7 +1210,12 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
                     nodes2D_map_[iSucc] = nSucc;
                 }
                 else {
-                    threadLogger_->info("该点是边界点或者该点已经被探索过，但已经进close");
+                    if (IsBoundGrid(point)) {
+                        threadLogger_->info("该点是边界点或者该点已经被探索过，但已经进close");
+                    }
+                    else {
+                        threadLogger_->info("该该点已经被探索过，但已经进close");
+                    }
                 }
             }
         }

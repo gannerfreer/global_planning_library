@@ -569,9 +569,10 @@ bool Planning::NotFollowReferencelinePlanning() {
 bool Planning::FollowReferencelinePlanning() {
     // 起点、终点渐进式扩大搜索
     vector<pair<pair<int, int>, int>> success_pair;
-    bool                              searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
-    double                            end_search_radius = 0.5, start_search_radius = 0.5;
-    vector<int>                       start_path_vec, end_path_vec;
+    v_has_calculate_pair_.clear();
+    bool        searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
+    double      end_search_radius = 0.5, start_search_radius = 0.5;
+    vector<int> start_path_vec, end_path_vec;
     while (end_search_radius <= 0.6) {
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
             if (searched_flag == true) {
@@ -661,6 +662,9 @@ bool Planning::FollowReferencelinePlanning() {
             min              = success_pair.at(i).second;
         }
     }
+
+    dijkstra_.searchpath(best_pair.first, best_pair.second);
+    road_sequence_ = dijkstra_.GetPath();
 
 
     threadLogger_->info("找到路径对{}-{}", sequence_mapping_.at(best_pair.first), sequence_mapping_.at(best_pair.second));
@@ -829,7 +833,7 @@ bool Planning::HybirdAStarFitting() {
     unsigned char rule_id_1 = 4, rule_id_3 = 5;
     long long     time_threshold     = 0.8 * 1000 * 1000;
     bool          start_need_fitting = false, end_need_fitting = false;
-    int           off_set = 31;
+    int           off_set = 23;
     if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold || start_angle_diff_ > 8.0 / 180.0 * M_PI) { // 横向阈值大于0.7m,或者纵向阈值大于3m,就需要进行hybirdA*拟合
         start_need_fitting = true;
         if (start_distance_ >= 30) {
