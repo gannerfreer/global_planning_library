@@ -62,6 +62,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("PathPlanning 成功");
 
     if (IsShortDistance()) {
+        path = global_path_;
         return;
     }
     threadLogger_->info("IsShortDistance 成功");
