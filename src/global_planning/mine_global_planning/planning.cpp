@@ -968,7 +968,7 @@ bool Planning::SpeedPlanning() {
     return true;
 }
 bool Planning::IsShortDistance() {
-    if (global_path_.size() == 2) {
+    if (global_path_.size() <= 2) {
         threadLogger_->info("超短距离规划");
         global_path_.clear();
         _TrajectoryPoint temp_point;
