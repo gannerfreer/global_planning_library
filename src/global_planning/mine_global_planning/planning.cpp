@@ -61,17 +61,17 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     }
     threadLogger_->info("PathPlanning 成功");
 
-    if (IsShortDistance()) {
-        path = global_path_;
-        return;
-    }
-    threadLogger_->info("IsShortDistance 成功");
+
     // 只针对DISPATCH任务进行参考路径拼接
     //  HybirdA*拟合：起点、终点需要拟合则拟合，否则跳过
     if (task_type_ == TaskType::DISPATCH) {
         if (!HybirdAStarFitting()) {
             return;
         }
+    }
+    if (IsShortDistance()) {
+        path = global_path_;
+        return;
     }
 
     threadLogger_->info("StartEndPointProcess global_path_.size():{}", global_path_.size());
@@ -586,7 +586,7 @@ bool Planning::FollowReferencelinePlanning() {
                 threadLogger_->info(i);
             }
             start_search_radius = 0.5;
-            while (start_search_radius <= 30) {
+            while (start_search_radius <= 100) {
                 if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
                     threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius, start_path_vec.size());
                     threadLogger_->info("搜索到的路径ID信息如下");
@@ -630,7 +630,7 @@ bool Planning::FollowReferencelinePlanning() {
                 else {
                     threadLogger_->info("起点搜索半径{},无参考路径", start_search_radius);
                 }
-                start_search_radius += 0.5;
+                start_search_radius += 5;
             }
 
             // if (is_found) break;
