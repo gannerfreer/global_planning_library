@@ -1,16 +1,16 @@
 {
     "m_Start_Point": {
-        "x": -302.2864957031,
-        "y": 1094.5390707469,
-        "z": 0.0,
-        "yaw": 268.8748601745
+        "x": -596.905,
+        "y": 1066.1,
+        "z": 0,
+        "yaw": 359.94000244140625
     },
     "m_End_Point": {
-        "x": 275.9499618853,
-        "y": 206.9571945062,
-        "z": 0.0,
-        "yaw": 53.3658555123,
-        "endPointId": 66
+        "x": -273.2569284659,
+        "y": 1022.6342984242,
+        "z": 0,
+        "yaw": 86.8780346094,
+        "endPointId": 1
     },
     "m_Veh_Param": {
         "delta_s": 0.1,
@@ -55,12 +55,12 @@
         "safe_margin_bound": 0.5,
         "safe_margin_error": 0,
         "veh_center_2_side": 1.825,
-        "angle_discrete_num": 3,
+        "angle_discrete_num": 5,
         "max_fitting_radius": 50,
         "veh_center_2_front": 7.3,
         "end_offset_distance": 1,
         "max_iterations_opti": 100,
-        "s_curve_speed_limit": 1,
+        "s_curve_speed_limit": 0,
         "max_iterations_astar": 150000,
         "safe_margin_obstacle": 2,
         "backward_search_range": 20,
@@ -69,21 +69,21 @@
         "lat_min_distance_struct": 0.5,
         "veh_center_2_rear_bound": 0.5,
         "veh_center_2_rear_obstacle": 2.77,
-        "heavy_bumpy_road_speed_limit": 5,
-        "heavy_slope_road_speed_limit": 6,
-        "light_bumpy_road_speed_limit": 6,
-        "light_slope_road_speed_limit": 7,
-        "heavy_narrow_road_speed_limit": 6,
-        "light_narrow_road_speed_limit": 7,
-        "heavy_regular_road_speed_limit": 7,
-        "light_regular_road_speed_limit": 8,
+        "heavy_bumpy_road_speed_limit": 2.01,
+        "heavy_slope_road_speed_limit": 2.53,
+        "light_bumpy_road_speed_limit": 2.55,
+        "light_slope_road_speed_limit": 4.07,
+        "heavy_narrow_road_speed_limit": 2,
+        "light_narrow_road_speed_limit": 3,
+        "heavy_regular_road_speed_limit": 5.54,
+        "light_regular_road_speed_limit": 6.08,
         "linear_preferred_distance_square": 25,
         "multi_section_speed_limit_enable": 1,
-        "heavy_intersection_road_speed_limit": 6,
-        "light_intersection_road_speed_limit": 7,
-        "vehicle_code": 1011
+        "heavy_intersection_road_speed_limit": 1.52,
+        "light_intersection_road_speed_limit": 2.06,
+        "vehicle_code": 1006
     },
     "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1834417116436942848"
+    "key": "ids:mine:dispatch:planPath:result:1834520628006285312"
 }

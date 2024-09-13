@@ -247,7 +247,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
         // 基于当前点进行节点拓展
         utility::CTimeClock start_time_expand;
-        threadLogger_->info("FindExpandVertex");
+        // threadLogger_->info("FindExpandVertex");
         FindExpandVertex(current_point, time_spend_dynamic, time_spend_collsion, time_spend_other);
         expand_time_collision += time_spend_collsion;
         expand_time_dynamic += time_spend_dynamic;
@@ -844,7 +844,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     }
     else {
         a_start_h = iter->second.getG();
-        threadLogger_->info("本次A*不用搜索");
+        // threadLogger_->info("本次A*不用搜索");
     }
     // }
 
@@ -1140,7 +1140,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
     threadLogger_->info("nodes2D_map_.size():{} ", nodes2D_map_.size());
     while (!nodes2D_set_.empty()) {
         num++;
-        if (num > 500) {
+        if (num > 1500) {
             threadLogger_->info("搜索超过500轮,强制退出");
             break;
         }
