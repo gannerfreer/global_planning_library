@@ -63,7 +63,7 @@ bool Dijkstra::searchpath(int start_, int end_) {
                 min     = dist.at(w);
             }
         }
-        threadLogger_->info("当前节点：{},min:{}", curNode, min);
+        // threadLogger_->info("当前节点：{},min:{}", curNode, min);
         // cout<<"当前节点 "<<curNode<<endl;
         // 将curNode加入close中
         if (close.at(curNode) == true) {

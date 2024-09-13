@@ -60,7 +60,7 @@
     "heavy_intersection_road_speed_limit": 1.52,
     "weather": 1,
     "s_curve_speed_limit": 1,
-    "task_type": 1,
+    "task_type": 2,
     "max_l": 0.5,
     "sita": 200,
     "base": 1.10,

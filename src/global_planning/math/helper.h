@@ -73,9 +73,10 @@ inline double ToRad(double t) {
 }
 
 
-inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius, vector<int>& vec) {
+inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius, map<int, bool>& vec) {
     cout << "Coming GetReferencelinesWithRadius" << endl;
     vec.clear();
+    _TrajectoryPoint nearest_point;
     cout << "Point.x" << point.x << "point.y:" << point.y << endl;
     cout << "radius:" << radius << endl;
     if (!trajs.size()) {
@@ -97,9 +98,19 @@ inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _Sing
                 index       = i;
             }
         }
+        nearest_point = pair.second.trajectory.at(index);
         cout << "nearest_dis:" << nearest_dis << "            id:" << pair.first << endl;
         if (nearest_dis < radius) {
-            vec.push_back(pair.first);
+            double angle_diff = fabs(point.yaw - nearest_point.yaw) > M_PI ? 2 * M_PI - fabs(point.yaw - nearest_point.yaw) : fabs(point.yaw - nearest_point.yaw);
+            cout << "angle_diff: " << angle_diff << endl;
+            cout << "point.yaw: " << point.yaw << endl;
+            cout << "nearest_point.yaw: " << nearest_point.yaw << endl;
+            if (angle_diff > M_PI / 2.0) { // 逆向车道
+                vec[pair.first] = true;
+            }
+            else {
+                vec[pair.first] = false;
+            }
             cout << "index:" << index << endl;
             temp_bool = true;
         }
@@ -163,7 +174,7 @@ inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest
     lat_dis    = fabs((point.y - nearest_point.y) * cos(nearest_point.yaw) - (point.x - nearest_point.x) * sin(nearest_point.yaw)); // 横向距离先不区分左正右负
     lon_dis    = (point.x - nearest_point.x) * cos(nearest_point.yaw) + (point.y - nearest_point.y) * sin(nearest_point.yaw);
     distance   = hypot(point.x - nearest_point.x, point.y - nearest_point.y);
-    angle_diff = fabs(point.yaw - nearest_point.yaw) > M_PI ? fabs(point.yaw - nearest_point.yaw) - M_PI : fabs(point.yaw - nearest_point.yaw);
+    angle_diff = fabs(point.yaw - nearest_point.yaw) > M_PI ? 2 * M_PI - fabs(point.yaw - nearest_point.yaw) : fabs(point.yaw - nearest_point.yaw);
     // cout << "计算纵向距离" << endl;
     // cout << "x偏差： " << point.x - nearest_point.x << "   y偏差： " << point.y - nearest_point.y << "最近点角度："
     //      << nearest_point.yaw << endl;

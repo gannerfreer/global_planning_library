@@ -43,9 +43,9 @@ void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::Const
     start_point.x   = msg->pose.pose.position.x;
     start_point.y   = msg->pose.pose.position.y;
     start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    // start_point.x   = -468.4871490470058 - x_o_;
-    // start_point.y   = 1480.6382843722963 - y_o_;
-    // start_point.yaw = 122.54520416259766 / 180.0 * M_PI;
+    // start_point.x   = -338.6055888440625 - x_o_;
+    // start_point.y   = 1038.2877803947515 - y_o_;
+    // start_point.yaw = 97.44291428455442 / 180.0 * M_PI;
 
     is_receive_start = true;
 }
@@ -54,9 +54,9 @@ void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     end_point.x   = msg->pose.position.x;
     end_point.y   = msg->pose.position.y;
     end_point.yaw = tf::getYaw(msg->pose.orientation);
-    // end_point.x   = -573.5548492693 - x_o_;
-    // end_point.y   = 1651.4126159172 - y_o_;
-    // end_point.yaw = 126.91381072998047 / 180.0 * M_PI;
+    // end_point.x   = -252.88601486945313 - x_o_;
+    // end_point.y   = 1107.093494048316 - y_o_;
+    // end_point.yaw = 3.9114683376532966 / 180.0 * M_PI;
 
     is_receive_end = true;
 }
@@ -172,14 +172,14 @@ int main(int argc, char** argv) {
             temp_path.way_point.clear();
             for (size_t jndex = 0; jndex < global_path.size(); jndex++) {
                 msg_common::WayPoint temp_point;
-                temp_point.x             = global_path.at(jndex).x;
-                temp_point.y             = global_path.at(jndex).y;
-                temp_point.z             = global_path.at(jndex).z;
-                temp_point.heading_angle = global_path.at(jndex).yaw;
-                temp_point.speed         = global_path.at(jndex).speed;
-                temp_point.speed_limit   = global_path.at(jndex).speed_limit;
-                temp_point.distance      = global_path.at(jndex).distance;
-                temp_point.direction     = global_path.at(jndex).direction;
+                // temp_point.x             = global_path.at(jndex).x;
+                // temp_point.y             = global_path.at(jndex).y;
+                // temp_point.z             = global_path.at(jndex).z;
+                // temp_point.heading_angle = global_path.at(jndex).yaw;
+                temp_point.speed       = global_path.at(jndex).speed;
+                temp_point.speed_limit = global_path.at(jndex).speed_limit;
+                // temp_point.distance      = global_path.at(jndex).distance;
+                // temp_point.direction     = global_path.at(jndex).direction;
                 temp_path.way_point.emplace_back(temp_point);
             }
             pub_global_path.publish(temp_path);
@@ -200,7 +200,8 @@ int main(int argc, char** argv) {
                 //          << global_path.at(i).distance << " "
                 //          << static_cast<int>(global_path.at(i).attribute) << " "
                 //          << static_cast<int>(global_path.at(i).direction) <<  endl;
-                file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << global_path.at(i).speed << " " << global_path.at(i).speed_limit << " " << global_path.at(i).curvature << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << " " << global_path.at(i).distance << endl;
+                // file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << global_path.at(i).speed << " " << global_path.at(i).speed_limit << " " << global_path.at(i).curvature << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << " " << global_path.at(i).distance << endl;
+                file_out << setprecision(11) << global_path.at(i).speed << " " << global_path.at(i).speed_limit << endl;
             }
             file_out.close();
             std_msgs::Float64MultiArray speed_curve;

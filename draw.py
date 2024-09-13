@@ -8,9 +8,9 @@ plt.rcParams['axes.unicode_minus'] = False  # 解决负号 '-' 显示为方块�
   
 # 加载数据  
 data = np.loadtxt('global_path.txt')  
-speed = data[:, 4]  
-speed_limit = data[:, 5]  
-curvature=data[:,6]
+speed = data[:,0]  
+speed_limit = data[:, 1]  
+# curvature=data[:,5]
   
 # 绘制第一张图：速度  
 plt.figure(1)  # 创建一个新的图形窗口，编号为1  
@@ -22,12 +22,12 @@ plt.title('speed_graph')
 plt.legend()  
   
 # 绘制第二张图：速度限制  
-plt.figure(2)  # 创建一个新的图形窗口，编号为2  
-plt.plot(curvature, label='curvature')  
-plt.xlabel('index')  
-plt.ylabel('curvature')  
-plt.title('curvature_graph')  
-plt.legend()  
+# plt.figure(2)  # 创建一个新的图形窗口，编号为2  
+# plt.plot(curvature, label='curvature')  
+# plt.xlabel('index')  
+# plt.ylabel('curvature')  
+# plt.title('curvature_graph')  
+# plt.legend()  
   
 # 显示所有图形窗口  
 plt.show()

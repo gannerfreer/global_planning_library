@@ -1447,7 +1447,6 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
  * @return 无
  */
 bool GlobalSpeedPlanning::SplitPath() {
-    threadLogger_->info("line1498");
     unsigned int start_id, end_id;
     start_id = 0;
     end_id   = 0;
@@ -1457,7 +1456,7 @@ bool GlobalSpeedPlanning::SplitPath() {
             temp_traj.clear();
             end_id = i;
             temp_traj.insert(temp_traj.begin(), trajectory_points.begin() + start_id, trajectory_points.begin() + end_id + 1);
-            start_id = end_id; // 每个点不重复出现在不同的路径端中
+            start_id = end_id;
             trajectory_fragments.emplace_back(temp_traj);
         }
 
@@ -1468,7 +1467,7 @@ bool GlobalSpeedPlanning::SplitPath() {
             trajectory_fragments.emplace_back(temp_traj);
         }
     }
-    threadLogger_->info("line1520");
+
     threadLogger_->info("trajectory_fragments.size():{}", trajectory_fragments.size());
     if (trajectory_fragments.at(0).size() <= 2) {
         trajectory_fragments.erase(trajectory_fragments.begin());
@@ -1489,7 +1488,7 @@ bool GlobalSpeedPlanning::GetKeypoint() {
             temp_traj.clear();
             temp_traj = trajectory_fragments.at(i);
             // 如果是倒车，暂时按照最简单的加速、匀速、加速的模式进行速度规划，全段最大速度提前设定为
-            if (1 == temp_traj.at(1).direction) {
+            if (1 == temp_traj.at(1).direction) { // 判断第一个点的原因在于分段时会存在重合点
                 temp_keypoints.clear();
                 temp_keypoint.Set(0, temp_traj.at(0).distance, 1, 0, reverse_speed); // 给关键点赋值
                 temp_keypoints.emplace_back(temp_keypoint);                          // 倒车模式下的关键点只有两个
@@ -1500,7 +1499,7 @@ bool GlobalSpeedPlanning::GetKeypoint() {
             else if (0 == temp_traj.at(1).direction) // 如果是前行，可能有多个不同的限速，关键点数量大于等于两个
             {
                 temp_keypoints.clear();
-                temp_keypoint.Set(0, temp_traj.at(0).distance, 0, 0, temp_traj.at(0).speed_limit); // 给关键点赋值
+                temp_keypoint.Set(0, temp_traj.at(0).distance, 0, 0, temp_traj.at(1).speed_limit); // 给关键点赋值
                 temp_keypoints.emplace_back(temp_keypoint);
                 for (unsigned int j = 1; j < temp_traj.size() - 1; j++) {
                     if (temp_traj.at(j).speed_limit != temp_traj.at(j + 1).speed_limit) // 最大速度改变处设置一个关键点

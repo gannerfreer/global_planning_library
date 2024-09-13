@@ -571,9 +571,10 @@ bool Planning::FollowReferencelinePlanning() {
     // 起点、终点渐进式扩大搜索
     vector<pair<pair<int, int>, int>> success_pair;
     v_has_calculate_pair_.clear();
-    bool        searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
-    double      end_search_radius = 0.5, start_search_radius = 0.5;
-    vector<int> start_path_vec, end_path_vec;
+    bool           searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
+    double         end_search_radius = 0.5, start_search_radius = 0.5;
+    map<int, bool> start_path_vec;
+    vector<int>    end_path_vec;
     while (end_search_radius <= 0.6) {
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
             if (searched_flag == true) {
@@ -586,16 +587,17 @@ bool Planning::FollowReferencelinePlanning() {
                 threadLogger_->info(i);
             }
             start_search_radius = 0.5;
-            while (start_search_radius <= 100) {
+            while (start_search_radius <= 200) {
                 if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
                     threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius, start_path_vec.size());
                     threadLogger_->info("搜索到的路径ID信息如下");
                     for (auto i : start_path_vec) {
-                        threadLogger_->info(i);
+                        threadLogger_->info(i.first);
                     }
-                    vector<int> start_path_vec_switch, end_path_vec_switch;
+                    map<int, bool> start_path_vec_switch;
+                    vector<int>    end_path_vec_switch;
                     for (auto i : start_path_vec) {
-                        start_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
+                        start_path_vec_switch[GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i.first)] = i.second;
                     }
 
                     for (auto i : end_path_vec) {
@@ -605,35 +607,38 @@ bool Planning::FollowReferencelinePlanning() {
                     // 在start_path_vec_switch和end_path_vec_switch中查找连通路径
                     for (auto start : start_path_vec_switch) {
                         for (auto end : end_path_vec_switch) {
-                            if (HasSearched(start, end)) {
-                                threadLogger_->info("路径{}与路径{}已经计算过，为节约计算资源，予以跳过");
+                            if (HasSearched(start.first, end)) {
+                                threadLogger_->info("路径{}->路径{}已经计算过，为节约计算资源，予以跳过", start.first, end);
                                 continue;
                             }
-                            threadLogger_->info("索引  start:{},end:{}", start, end);
-                            if (IsConnect(start, end)) {
-                                threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
-                                success_pair.push_back(make_pair(make_pair(start, end), road_sequence_.size()));
-                                // is_found = true; // 标记为已找到
-                                // break;           // 退出内层循环
+                            threadLogger_->info("索引  start:{},end:{}", start.first, end);
+                            if (IsConnect(start.first, end)) {
+                                threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start.first), sequence_mapping_.at(end));
+                                success_pair.push_back(make_pair(make_pair(start.first, end), road_sequence_.size()));
+                                // 如何找到的连通路径是顺向的，并且起点搜索距离已经大于5m，就可以退出来，没必要继续扩大搜索了
+                                if (start.second == false) {
+                                    threadLogger_->info("找到顺向车道，准备break");
+                                    is_found = true; // 标记为已找到
+                                    break;           // 退出内层循环
+                                }
                             }
                             else {
-                                threadLogger_->info("start:{},end:{}", start, end);
-                                threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
+                                threadLogger_->info("start:{},end:{}", start.first, end);
+                                threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start.first), sequence_mapping_.at(end));
                             }
 
-                            v_has_calculate_pair_.push_back(pair(start, end));
+                            v_has_calculate_pair_.push_back(pair(start.first, end));
                         }
-                        // if (is_found) break; // 如果已找到，退出中间层循环
+                        if (is_found) break; // 如果已找到，退出中间层循环
                     }
-                    // if (is_found) break; // 如果已找到，退出外层循环
+                    if (is_found) break; // 如果已找到，退出外层循环
                 }
                 else {
                     threadLogger_->info("起点搜索半径{},无参考路径", start_search_radius);
                 }
-                start_search_radius += 5;
+                start_search_radius += 0.5;
             }
-
-            // if (is_found) break;
+            if (is_found) break;
         }
         else {
             threadLogger_->info("终点搜索,半径{}内无参考路径", end_search_radius);
@@ -792,7 +797,7 @@ void Planning::PathClipAndSplice() {
     if (road_sequence_.size() == 1) {
         threadLogger_->info("起点、终点位于同一条参考路径");
         int temp_key = sequence_mapping_.at(road_sequence_.at(0));
-        if (start_index_ < end_index_) {
+        if (start_index_ <= end_index_) {
             global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + start_index_, all_referencelines_.at(temp_key).trajectory.begin() + end_index_ + 1);
         }
         else // 同一路段，支持短距离倒车
@@ -837,7 +842,8 @@ bool Planning::HybirdAStarFitting() {
     int           off_set = 23;
     if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold || start_angle_diff_ > 8.0 / 180.0 * M_PI) { // 横向阈值大于0.7m,或者纵向阈值大于3m,就需要进行hybirdA*拟合
         start_need_fitting = true;
-        if (start_distance_ >= 30) {
+        // 当start_index==0,end_index==0,start_key_==end_key_时，说明这是一个从装载点到驶离装载点的任务，off_set必须是0
+        if (start_index_ == 0 && end_index_ == 0 && start_key_ == end_key_) {
             off_set = 0;
         }
     }
@@ -848,7 +854,7 @@ bool Planning::HybirdAStarFitting() {
     // 先看起点
     if (start_need_fitting) // 起点需要进行HybirdA*拟合
     {
-        threadLogger_->info("起点需要HybirdA*拟合");
+        threadLogger_->info("起点需要HybirdA*拟合,offset:{}", off_set);
         vector<_TrajectoryPoint> temp_traj;
 
         int search_index = 0;
@@ -934,7 +940,7 @@ bool Planning::JudgeFittingDirection(_SinglePoint point, int search_index, bool 
                 return true; // 正向拟合
             }
             else {
-                threadLogger_->info("倒车拟合");
+                threadLogger_->info("倒车拟合 point:({},{})  global_path_.at(search_index + 10):({},{},{})  lon_dis:{}", point.x, point.y, global_path_.at(search_index + 10).x, global_path_.at(search_index + 10).y, global_path_.at(search_index + 10).yaw, lon_dis);
                 return false; // 倒车拟合
             }
         }

@@ -249,7 +249,6 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         utility::CTimeClock start_time_expand;
         threadLogger_->info("FindExpandVertex");
         FindExpandVertex(current_point, time_spend_dynamic, time_spend_collsion, time_spend_other);
-        threadLogger_->info("record");
         expand_time_collision += time_spend_collsion;
         expand_time_dynamic += time_spend_dynamic;
         expand_time_other += time_spend_other;
@@ -507,25 +506,20 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
             // 根据车辆当前点位置、拓展方向和角度，得到拓展终点消息
             utility::CTimeClock start_time_rs_;
             VehDynam(current_point, direction, temp_steering, end_point);
-            threadLogger_->info("VehDynam ");
             time1 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs_);
             end_point.id = Vertex2Hash(end_point); // 计算哈希值索引
-            threadLogger_->info("Vertex2Hash ");
             // 判断拓展点是否碰撞
             Point               temp_point(end_point.x, end_point.y, end_point.z, end_point.angle, end_point.direction);
             utility::CTimeClock start_time_rs;
             flag = collison_check_.IsVehicleCollision(temp_point);
-            threadLogger_->info("IsVehicleCollision ");
             time2 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs);
             utility::CTimeClock start_time_rs__;
             if (flag == false) {
                 // 计算该点g值
                 CalGValue(current_point, end_point);
-                threadLogger_->info("CalGValue");
                 // 判断该点是否已经存放于open集中或close集中
                 if (open_map_.find(end_point.id) != open_map_.end()) // 如果在open集中
                 {
-                    threadLogger_->info("open_map_.find(end_point.id) != open_map_.end()");
                     // g值检查，判断该点g值是否小于open集中相应点g值
                     if (open_map_[end_point.id].g > end_point.g) {
                         // 节点更新
@@ -552,11 +546,8 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
                 }
                 else if (close_map_.find(end_point.id) == close_map_.end()) // 如果不在close集中
                 {
-                    threadLogger_->info("close_map_.find(end_point.id) == close_map_.end()");
-
                     // open集中存入该点
                     CalHValue(end_point);
-                    threadLogger_->info("探索到新的end_point");
                     end_point.f             = 0.5 * end_point.g + 0.5 * end_point.h;
                     open_map_[end_point.id] = end_point;
                     open_map_f_.insert(make_pair(end_point.f, end_point));
@@ -566,11 +557,10 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
                 threadLogger_->info("探索过程中的点碰撞");
             }
             time3 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs__);
-            threadLogger_->info("line559");
         }
-        threadLogger_->info("line561");
+        // threadLogger_->info("line561");
     }
-    threadLogger_->info("line561");
+    // threadLogger_->info("line561");
     // 在每个离散转向角处进行节点扩展
 
     // auto end_time = ros::Time::now();
@@ -1151,22 +1141,22 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
     while (!nodes2D_set_.empty()) {
         num++;
         if (num > 500) {
-            threadLogger_->info("A*算法异常");
+            threadLogger_->info("搜索超过500轮,强制退出");
             break;
         }
-        threadLogger_->info("第{}轮,开始从node2D_set_中挑选最小代价点", num);
+        // threadLogger_->info("第{}轮,开始从node2D_set_中挑选最小代价点", num);.
         iPred = *nodes2D_set_.begin() & 0x00000000FFFFFFFF;
         // threadLogger_->info("iPred:{} ", iPred);
         nPred = nodes2D_map_[iPred];
-        threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
+        // threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
         if (nodes2D_map_[iPred].isClosed()) {
-            threadLogger_->info("nodes2D_map_[iPred] is Closed");
+            // threadLogger_->info("nodes2D_map_[iPred] is Closed");
             nodes2D_set_.erase(nodes2D_set_.begin());
             continue;
         }
 
         if (nodes2D_map_[iPred].isOpen()) {
-            threadLogger_->info("nodes2D_map_[iPred] is Open");
+            // threadLogger_->info("nodes2D_map_[iPred] is Open");
             nodes2D_set_.erase(nodes2D_set_.begin());
             nodes2D_map_[iPred].close();
             nodes2D_map_[iPred].discover();
@@ -1176,19 +1166,19 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
             }
             for (int i = 0; i < Node2D::dir; ++i) {
                 nSucc = nPred.createSuccessor(i);
-                threadLogger_->info("");
-                threadLogger_->info("nSucc :{} {}", nSucc.getX(), nSucc.getY());
+                // threadLogger_->info("");
+                // threadLogger_->info("nSucc :{} {}", nSucc.getX(), nSucc.getY());
                 iSucc = nSucc.getIdx();
                 // threadLogger_->info("iSucc :{}", iSucc);
                 IntCoordinate point(nSucc.getX(), nSucc.getY(), 0);
                 bool          flag_in_nodes2D = (nodes2D_map_.find(iSucc) != nodes2D_map_.end());
                 if (!IsBoundGrid(point) && (!flag_in_nodes2D || !nodes2D_map_[iSucc].isClosed())) { // 节点不是边界点且节点没有探索过，或者探索过，但是不是close的，就可以作为继承点
-                    threadLogger_->info("符合要求的点");
+                    // threadLogger_->info("符合要求的点");
                     nSucc.open();
                     nSucc.discover();
 
                     newG = nSucc.getG();
-                    threadLogger_->info("newG:{}", newG);
+                    // threadLogger_->info("newG:{}", newG);
                     if (flag_in_nodes2D && nodes2D_map_[iSucc].isOpen()) // 节点探索过，并且是open性质
                     {
                         // threadLogger_->info("iSucc is Open");
@@ -1210,12 +1200,12 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
                     nodes2D_map_[iSucc] = nSucc;
                 }
                 else {
-                    if (IsBoundGrid(point)) {
-                        threadLogger_->info("该点是边界点或者该点已经被探索过，但已经进close");
-                    }
-                    else {
-                        threadLogger_->info("该该点已经被探索过，但已经进close");
-                    }
+                    // if (IsBoundGrid(point)) {
+                    //     // threadLogger_->info("该点是边界点或者该点已经被探索过，但已经进close");
+                    // }
+                    // else {
+                    //     // threadLogger_->info("该该点已经被探索过，但已经进close");
+                    // }
                 }
             }
         }
