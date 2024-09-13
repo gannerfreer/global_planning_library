@@ -1140,10 +1140,10 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
     threadLogger_->info("nodes2D_map_.size():{} ", nodes2D_map_.size());
     while (!nodes2D_set_.empty()) {
         num++;
-        if (num > 1500) {
-            threadLogger_->info("搜索超过500轮,强制退出");
-            break;
-        }
+        // if (num > 1500) {
+        //     threadLogger_->info("搜索超过1500轮,强制退出");
+        //     break;
+        // }
         // threadLogger_->info("第{}轮,开始从node2D_set_中挑选最小代价点", num);.
         iPred = *nodes2D_set_.begin() & 0x00000000FFFFFFFF;
         // threadLogger_->info("iPred:{} ", iPred);
