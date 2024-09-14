@@ -201,7 +201,7 @@ int main(int argc, char** argv) {
                 //          << static_cast<int>(global_path.at(i).attribute) << " "
                 //          << static_cast<int>(global_path.at(i).direction) <<  endl;
                 // file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << global_path.at(i).speed << " " << global_path.at(i).speed_limit << " " << global_path.at(i).curvature << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << " " << global_path.at(i).distance << endl;
-                file_out << setprecision(11) << global_path.at(i).speed << " " << global_path.at(i).speed_limit << endl;
+                file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).yaw << " " << static_cast<int>(global_path.at(i).direction) << " " << global_path.at(i).speed << endl;
             }
             file_out.close();
             std_msgs::Float64MultiArray speed_curve;
@@ -221,7 +221,7 @@ int main(int argc, char** argv) {
         //  cout << "aaglobal_path.size = " << global_path.size() <<  endl;
         planning.c_rviz_.PubGlobalPath(global_path);
 
-
+        expand_point.clear();
         expand_point = planning.my_optimal_path_.GetExpandPoint();
         // cout << "expand_point.size():" << expand_point.size() << endl;
         planning.c_rviz_.PubExpandPoint(expand_point, planning.my_optimal_path_.midpoint_);

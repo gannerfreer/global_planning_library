@@ -317,6 +317,7 @@ class OptimalPath {
             temp_point.direction = (iter->second.direction == Backward) ? Forward : Backward;
             expandpoint.push_back(temp_point);
         }
+        // cout << "GetExpandPoint--expandpoint.size():" << expandpoint.size() << endl;
 
         return expandpoint;
     }

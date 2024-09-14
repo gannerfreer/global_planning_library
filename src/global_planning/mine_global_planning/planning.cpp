@@ -73,14 +73,11 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         path = global_path_;
         return;
     }
+    Helper::RemoveAfterSamePoint(global_path_);
 
     threadLogger_->info("StartEndPointProcess global_path_.size():{}", global_path_.size());
     // 将起点、终点放入全局路径
     StartEndPointProcess();
-
-
-    // 路径去重
-    Helper::RemoveSamePoint(global_path_);
 
 
     threadLogger_->info("global_path_.size():{}", global_path_.size());
@@ -109,26 +106,30 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     if (!SpeedPlanning()) {
         return;
     }
+    Helper::RemoveAfterSamePoint(global_path_);
 
 
-    // 路径断裂检查
+    // 路径断裂检查,涉及相邻点间距和相邻点角度差
     if (!Helper::CheckPathFracture(global_path_)) {
         threadLogger_->info("CheckPathFracture fail");
         return;
     }
     threadLogger_->info("CheckPathFracture");
 
-
-    if (Helper::OverSpeedCheck(global_path_)) {
+    // 超速检测
+    if (!Helper::OverSpeedCheck(global_path_)) {
         threadLogger_->info("OverSpeedCheck fail");
         return;
     }
     threadLogger_->info("OverSpeedCheck");
 
 
-    // 路径去重
-    Helper::RemoveSamePoint(global_path_);
-    threadLogger_->info("RemoveSamePoint");
+    // 路径点顺序和direction校验
+    if (!Helper::SequenceAndDirectionCheck(global_path_)) {
+        threadLogger_->info("SequenceAndDirectionCheck fail");
+        return;
+    }
+
 
     // // 计算加速度
     // Helper::CalAcc(global_path_);
