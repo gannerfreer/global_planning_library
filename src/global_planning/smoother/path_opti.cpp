@@ -53,10 +53,23 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     unsigned int opti_num     = 0;
     unsigned int max_opti_num = 10;
 
+
+    cout << "优化前角度：" << endl;
+    for (int i = 0; i < path_.size(); i++) {
+        cout << path_.at(i).angle << " ";
+    }
     // 迭代优化
+    cout << "本次优化前的路径信息" << endl;
+    for (int i = 0; i < path_.size(); i++) {
+        cout << "i" << i << " x:" << path_.at(i).x << " y:" << path_.at(i).y << endl;
+    }
     while (opti_num++ < max_opti_num) {
-        // cout << "第" << opti_num << "次" << endl;
+        cout << "第" << opti_num << "次" << endl;
         SmoothPath();
+        cout << "本次优化后的路径信息" << endl;
+        for (int i = 0; i < new_path_.size(); i++) {
+            cout << "i" << i << " x:" << new_path_.at(i).x << " y:" << new_path_.at(i).y << endl;
+        }
         CalculatePathAngle();
         auto collision_point = collison_check.OptiPathCollisionCheck(new_path_); // 判断优化路径是否碰撞
         if (true == collision_point.empty())                                     // 若无碰撞直接输出
@@ -171,6 +184,7 @@ void Path_Opti::SmoothPath() {
     Vector2D     gradient_error_term;
     Vector2D     gradient_curvature_term;
     Vector2D     gradient_smoothness_term;
+    Vector2D     gradient_vonoroi_term;
     new_path_ = path_;
 
     // 梯度下降法迭代优化
@@ -208,6 +222,29 @@ void Path_Opti::SmoothPath() {
             gradient_smoothness_term = SmoothnessTerm(xim2, xim1, xi, xip1, xip2);
             new_path_.at(i).x -= coeff.at(i) * gradient_smoothness_term.x;
             new_path_.at(i).y -= coeff.at(i) * gradient_smoothness_term.y;
+
+            // Vonoroi项
+            // 需要满足两个条件才会利用voronoi项进行平滑，1、需要使用voronoi图，2、当前传入的路径坐标xi位于voronoi图范围内
+            bool in_x_range = false;
+            bool in_y_range = false;
+            if (static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram.sizeX) {
+                in_x_range = true;
+            }
+            if (static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram.sizeY) {
+                in_y_range = true;
+            }
+
+            if (use_voronoi && in_x_range && in_y_range) {
+                cout << "计算voronoiterm" << endl;
+                gradient_vonoroi_term = VoronoiTerm(xi);
+                // cout << "算出的梯度为：" << gradient_vonoroi_term.getX() << " " << gradient_vonoroi_term.getY() << endl;
+                if (!isnan(gradient_vonoroi_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_vonoroi_term.x;
+                if (!isnan(gradient_vonoroi_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_vonoroi_term.y;
+                cout << "delta_x:" << coeff.at(i) * gradient_vonoroi_term.x << " delta_y:" << coeff.at(i) * gradient_vonoroi_term.y << endl;
+            }
+            else {
+                // cout << "跳过voronoiterm" << endl;
+            }
         }
     }
     //     for (int i = 0; i < new_path_.size(); i++)
@@ -294,6 +331,62 @@ inline Vector2D Path_Opti::SmoothnessTerm(Vector2D xim2, Vector2D xim1, Vector2D
     return gradient;
 }
 
+
+Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
+    Vector2D gradient(0, 0);
+
+    //    alpha > 0 = falloff rate
+    //    dObs(x,y) = distance to nearest obstacle
+    //    dEge(x,y) = distance to nearest edge of the GVD
+    //    dObsMax   = maximum distance for the cost to be applicable
+    // distance to the closest obstacle
+    // 最近障碍物
+    int   index_x = static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist));
+    int   index_y = static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist));
+    float obsDst  = voronoiDiagram.getDistance(index_x, index_y);
+    // distance to the closest voronoiDiagram edge
+    // 最近边
+    // wsl-add11
+    float edgDst          = 0; // todo
+    Vec2i closest_edge_pt = voronoiDiagram.GetClosestVoronoiEdgePoint({index_x, index_y}, edgDst);
+    // the vector determining where the obstacle is
+    Vector2D obsVct(index_x - voronoiDiagram.data[index_x][index_y].obstX, index_y - voronoiDiagram.data[index_x][index_y].obstY);
+    // the vector determining where the voronoiDiagram edge is
+    // wsl-add12
+    Vector2D edgVct(index_x - closest_edge_pt.x(), index_y - closest_edge_pt.y()); // todo
+                                                                                   // Vec2d edgVct(xi.x() - closest_edge_pt.x(), xi.y() - closest_edge_pt.y());
+                                                                                   //  calculate the distance to the closest obstacle from the current node
+                                                                                   //  obsDist =  voronoiDiagram.getDistance(node->getX(),node->getY())
+                                                                                   //  调试输出
+    std::cout << "obsDst: " << obsDst << std::endl;
+    //  std::cout << "edgDst: " << edgDst << std::endl;
+    //  std::cout << "obsVct: (" << obsVct.getX() << ", " << obsVct.getY() << ")" << std::endl;
+    //  std::cout << "edgVct: (" << edgVct.getX() << ", " << edgVct.getY() << ")" << std::endl;
+    edgDst = hypot(edgVct.getX(), edgVct.getY());
+    std::cout << "new_edgDst: " << edgDst << std::endl;
+
+    if (obsDst < vorObsDMax) {
+        // calculate the distance to the closest GVD edge from the current node
+        //  the node is away from the optimal free space area
+        if (edgDst > 0) {
+            cout << "edgDst>0" << endl;
+            // float PobsDst_Pxi; // todo = obsVct / obsDst;
+            // float PedgDst_Pxi; // todo = edgVct / edgDst;
+            Vector2D PobsDst_Pxi     = obsVct / obsDst;
+            Vector2D PedgDst_Pxi     = edgVct / edgDst;
+            float    PvorPtn_PedgDst = alpha * obsDst * std::pow(obsDst - vorObsDMax, 2) / (std::pow(vorObsDMax, 2) * (obsDst + alpha) * std::pow(edgDst + obsDst, 2));
+
+            float PvorPtn_PobsDst = (alpha * edgDst * (obsDst - vorObsDMax) * ((edgDst + 2 * vorObsDMax + alpha) * obsDst + (vorObsDMax + 2 * alpha) * edgDst + alpha * vorObsDMax)) / (std::pow(vorObsDMax, 2) * std::pow(obsDst + alpha, 2) * std::pow(obsDst + edgDst, 2));
+            gradient              = m_vehicle_param_.kVoronoiTerm * PvorPtn_PobsDst * PobsDst_Pxi + PvorPtn_PedgDst * PedgDst_Pxi;
+
+            return gradient;
+        }
+        return gradient;
+    }
+    return gradient;
+}
+
+
 /**
  *@brief: 求解两向量的正交补
  *@param
@@ -373,9 +466,12 @@ void Path_Opti::CalculatePathAngle() {
         if (IsCusp(i)) {
             continue;
         }
-        double dx    = (new_path_.at(i + 1).x - new_path_.at(i - 1).x);
-        double dy    = (new_path_.at(i + 1).y - new_path_.at(i - 1).y);
+        double dx = (new_path_.at(i + 1).x - new_path_.at(i - 1).x);
+
+        double dy = (new_path_.at(i + 1).y - new_path_.at(i - 1).y);
+
         double angle = atan(dy / dx);
+        cout << "dx:" << dx << "dy:" << dy << "angle:" << angle << endl;
         if (dx < 0)
             angle = angle + M_PI;
         else if (dx >= 0 && dy < 0)
@@ -383,9 +479,12 @@ void Path_Opti::CalculatePathAngle() {
         else
             ;
         if (new_path_.at(i).direction == Backward) // 表示后退
+        {
             new_path_.at(i).angle = Helper::NormalizeAngleRad(angle + M_PI);
-        else
+        }
+        else {
             new_path_.at(i).angle = Helper::NormalizeAngleRad(angle);
+        }
     }
 }
 

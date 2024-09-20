@@ -90,7 +90,7 @@ inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _Sing
     int    index = -1;
     for (const auto pair : trajs) {
         nearest_dis = numeric_limits<double>::max();
-        cout << "轨迹id：" << pair.first << "轨迹点数量：" << pair.second.trajectory.size() << endl;
+        // cout << "轨迹id：" << pair.first << "轨迹点数量：" << pair.second.trajectory.size() << endl;
         for (unsigned int i = 0; i < pair.second.trajectory.size(); i++) {
             temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) + pow(point.y - pair.second.trajectory.at(i).y, 2));
             if (temp_dis < nearest_dis) {
@@ -99,12 +99,12 @@ inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _Sing
             }
         }
         nearest_point = pair.second.trajectory.at(index);
-        cout << "nearest_dis:" << nearest_dis << "            id:" << pair.first << endl;
+        // cout << "nearest_dis:" << nearest_dis << "            id:" << pair.first << endl;
         if (nearest_dis < radius) {
             double angle_diff = fabs(point.yaw - nearest_point.yaw) > M_PI ? 2 * M_PI - fabs(point.yaw - nearest_point.yaw) : fabs(point.yaw - nearest_point.yaw);
-            cout << "angle_diff: " << angle_diff << endl;
-            cout << "point.yaw: " << point.yaw << endl;
-            cout << "nearest_point.yaw: " << nearest_point.yaw << endl;
+            // cout << "angle_diff: " << angle_diff << endl;
+            // cout << "point.yaw: " << point.yaw << endl;
+            // cout << "nearest_point.yaw: " << nearest_point.yaw << endl;
             if (angle_diff > M_PI / 2.0) { // 逆向车道
                 vec[pair.first] = true;
             }
@@ -205,6 +205,7 @@ inline bool doesTrajectorySelfIntersect(Path& path) {
     // }
     cout << "准备经过这里" << endl;
     for (int i = 0; i < path.size(); i++) {
+        cout << "path.at(i).angle:" << path.at(i).angle << endl;
         vec.at(floor(path.at(i).angle * 18.0 / M_PI)) = 1;
     }
     cout << "成功的经过这里" << endl;

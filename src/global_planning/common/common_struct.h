@@ -226,6 +226,8 @@ struct _VehicleParam {
     bool  hybrid_h_use_rs;
     bool  hybrid_h_use_a_star;
     bool  hybrid_h_use_max;
+    float vonoroi_grid_dist;
+    float kVoronoiTerm;
 };
 
 // 调用全局规划时，需要传入的参数
@@ -348,7 +350,7 @@ struct Point {
 /**
  * @brief 用于在open集和close集查找的取整point
  */
-struct IntPoint {
+struct IntPoint_ {
     int             x;         // x坐标
     int             y;         // y坐标
     int             angle;     // 角度,rad

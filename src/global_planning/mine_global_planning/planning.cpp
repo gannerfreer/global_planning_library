@@ -147,7 +147,7 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_dir
     bool         success_flag   = false;
     _SinglePoint temp_start, temp_end;
     int          cal = 0;
-    threadLogger_->info("搜索起点索引：{}  搜索方向  -- 1(顺着参考线)  --0(逆着参考线)：{}", search_start, search_direction);
+    threadLogger_->info("搜索方向  -- 1(顺着参考线)  --0(逆着参考线)：{}", search_start, search_direction);
     int offset = off_set;
     if (search_direction == true) // 顺着参考线进行搜索，这种case为找拼接终点
     {
@@ -229,7 +229,9 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
             temp_Coordinate.x = map_border_.at(index).x;
             temp_Coordinate.y = map_border_.at(index).y;
             temp_Coordinate.z = map_border_.at(index).z;
-            v_road_outer_bound.emplace_back(temp_Coordinate);
+            if (hypot(s_point.x - temp_Coordinate.x, s_point.y - temp_Coordinate.y) < 200) {
+                v_road_outer_bound.emplace_back(temp_Coordinate);
+            }
         }
     }
     // threadLogger_->info("內边界大小  inner_borders_.size():{} ,inner_borders_.at(0).size():{}", inner_borders_.size(), inner_borders_.at(0).size());

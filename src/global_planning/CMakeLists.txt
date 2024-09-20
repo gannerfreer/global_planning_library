@@ -137,7 +137,9 @@ include_directories(
 add_executable(${PROJECT_NAME}
   collision_check/collision_check.cpp
   map/c_map_analysis.cpp
-  math/opti/path_opti.cpp
+  smoother/path_opti.cpp
+  smoother/dynamicvoronoi.cpp
+  smoother/bucketedqueue.cpp
   mine_global_planning/planning.cpp
   planner/pathplanner/dijkstra/dijkstra.cpp
   planner/pathplanner/dubins/dubins.cpp

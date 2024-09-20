@@ -13,11 +13,13 @@
 
 #include <unordered_set>
 
-#include "../../collision_check/collision_check.h"
-#include "../../common/common_struct.h"
+#include "../collision_check/collision_check.h"
+#include "../common/common_struct.h"
 // #include "../../planner/pathplanner/spline/spline.h"
-#include "../helper.h"
+#include "../math/helper.h"
+#include "dynamicvoronoi.h"
 // #include "../os/os.h"
+#include "vector2d.h"
 
 using namespace GlobalPlanning;
 using namespace std;
@@ -28,10 +30,10 @@ using namespace std;
 /**
  * @brief 二维向量
  */
-struct Vector2D {
-    double x;
-    double y;
-};
+// struct Vector2D {
+//     double x;
+//     double y;
+// };
 /**
  * @brief 路径优化结果枚举
  */
@@ -54,10 +56,15 @@ class Path_Opti {
      * true:  优化成功
      * false: 优化失败
      */
-    void OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collisonCheck,
-                      _VehicleParam m_vehicle_param);
+    void OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collisonCheck, _VehicleParam m_vehicle_param);
     // void CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
     // void CalculateStation(const std::vector<double>& xs, const std::vector<double>& ys);
+    DynamicVoronoi voronoiDiagram;
+    float          obsDMax    = 2;
+    float          vorObsDMax = 282;
+    float          alpha      = 0.1;
+    bool           use_voronoi;
+    float          voronoi_origin_x, voronoi_origin_y;
 
   private:
     /**
@@ -115,6 +122,7 @@ class Path_Opti {
      * 返回梯度求解结果
      */
     inline Vector2D SmoothnessTerm(Vector2D xim2, Vector2D xim1, Vector2D xi, Vector2D xip1, Vector2D xip2);
+    Vector2D        VoronoiTerm(Vector2D xi);
     /**
      * @brief 平滑项梯度求解函数
      * @param[in]  a,b 输入的两个向量
@@ -141,8 +149,7 @@ class Path_Opti {
      * @param[out] interpolate_path 插值后路径
      * @return 返回说明：无
      */
-    void CubicInterpolate2Point(const Point start_point, const Point end_point, const double delta_s,
-                                Path& interpolate_path);
+    void CubicInterpolate2Point(const Point start_point, const Point end_point, const double delta_s, Path& interpolate_path);
     /**
      * @brief 判断当前点是否为尖点函数
      * @param[in]  n 当前点索引值
@@ -157,6 +164,7 @@ class Path_Opti {
     inline bool IsFixPoint(unsigned int m);
 
     _VehicleParam m_vehicle_param_;
+
 
   private:
     unordered_set<unsigned int> cusp_set_;     // 存放尖点索引

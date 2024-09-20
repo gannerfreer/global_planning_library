@@ -14,10 +14,11 @@ Description: The header file for C++ class OptimalPath.
 #include "../../../collision_check/collision_check.h"
 #include "../../../common/common_struct.h"
 #include "../../../math/helper.h"
-#include "../../../math/opti/path_opti.h"
+#include "../../../smoother/path_opti.h"
 // #include "../../../os/os.h" //包含所有所需标准头文件
 #include <set>
 
+#include "../../../smoother/dynamicvoronoi.h"
 #include "../../../time/StringHelper.h"
 #include "../../../time/TimeHelper.h"
 #include "../dubins/dubins.h"
@@ -232,7 +233,7 @@ class OptimalPath {
      * @return 返回说明：对应哈希值
      */
     inline unsigned long long Vertex2Hash(Vertex3D v) {
-        IntPoint int_vertex;
+        IntPoint_ int_vertex;
         int_vertex.x         = static_cast<int>(floor(v.x / m_vehicle_param_.grid_dist));
         int_vertex.y         = static_cast<int>(floor(v.y / m_vehicle_param_.grid_dist));
         int_vertex.angle     = static_cast<int>(floor(v.angle / m_vehicle_param_.grid_angle));
@@ -244,7 +245,7 @@ class OptimalPath {
      * @param [in] p 3D柵格点
      * @return 返回说明：对应哈希值
      */
-    inline unsigned long long Point2Hash(IntPoint p) {
+    inline unsigned long long Point2Hash(IntPoint_ p) {
         unsigned long long hash = 0;
         unsigned long long tmp;
         if (p.direction == MotionDirection::Backward) {
@@ -344,11 +345,18 @@ class OptimalPath {
 
   public:
     std::shared_ptr<spdlog::logger> threadLogger_;
+    bool**                          binMap = nullptr;
+    int                             width;
+    int                             height;
+    bool                            use_voronoi;
+
 
   private:
     RSCurve          my_r_s_curve;
     RSCurve_H        my_r_s_curve_h;
     Dubins           dubins_;
+    DynamicVoronoi   voronoiDiagram;
+    double           voronoi_origin_x, voronoi_origin_y; // 记录voronoi图的原点
     CollisonCheck    collison_check_;
     PlanRule         plan_path_rule_;
     FittingDirection fitting_direction_;
