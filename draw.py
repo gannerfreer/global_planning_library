@@ -14,7 +14,7 @@ speed_limit = data[:, 1]
   
 # 绘制第一张图：速度  
 plt.figure(1)  # 创建一个新的图形窗口，编号为1  
-plt.plot(speed, label='speed')  
+# plt.plot(speed, label='speed')  
 plt.plot(speed_limit, label='speed_limit')  
 plt.xlabel('index')  
 plt.ylabel('speed')  

@@ -12,7 +12,7 @@ Planning::~Planning() {
 bool Planning::InitialFunction() {
     road_directed_graph_.clear(); // 储存所有区域信息的容器
     map_border_.clear();
-    inner_borders_.clear(); // 全局路径
+    inner_borders_.clear();
     all_referencelines_.clear();
     global_path_.clear();
     v_has_calculate_pair_.clear();
@@ -152,6 +152,7 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_dir
     if (search_direction == true) // 顺着参考线进行搜索，这种case为找拼接终点
     {
         cal = 0;
+
         for (int i = search_start + offset; i < global_path_.size(); i += 5) {
             cal++;
             counter++;
@@ -214,48 +215,14 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
     Point temp_start_point(s_point.x, s_point.y, s_point.z, s_point.yaw, MotionDirection ::Forward);
     Point temp_end_point(e_point.x, e_point.y, e_point.z, e_point.yaw, MotionDirection ::Forward);
 
-    // 区域外边界、区域内边界转换
-    Bound              road_outer_bound;
-    Bound              road_inner_bound;
-    vector<Coordinate> v_road_outer_bound;
-    vector<Coordinate> v_road_inner_bound;
-    Coordinate         temp_Coordinate;
 
-    // threadLogger_->info("外邊界大小 map_border_.size():{}", map_border_.size());
-    // 获取道路外边界 (以传入参数的外边界点作为道路外边界)
-    for (int index = 0; index < map_border_.size(); index++) {
-        if (map_border_.at(index).type == 0) // 只传不可穿越的边界点
-        {
-            temp_Coordinate.x = map_border_.at(index).x;
-            temp_Coordinate.y = map_border_.at(index).y;
-            temp_Coordinate.z = map_border_.at(index).z;
-            if (hypot(s_point.x - temp_Coordinate.x, s_point.y - temp_Coordinate.y) < 200) {
-                v_road_outer_bound.emplace_back(temp_Coordinate);
-            }
-        }
-    }
-    // threadLogger_->info("內边界大小  inner_borders_.size():{} ,inner_borders_.at(0).size():{}", inner_borders_.size(), inner_borders_.at(0).size());
-    // 获取道路内边界 (暂时以传入参数的障碍物边界作为道路内边界)
-    for (int index = 0; index < inner_borders_.size(); index++) {
-        for (int j = 0; j < inner_borders_.at(index).size(); j++) {
-            temp_Coordinate.x = inner_borders_.at(index).at(j).x;
-            temp_Coordinate.y = inner_borders_.at(index).at(j).y;
-            temp_Coordinate.z = inner_borders_.at(index).at(j).z;
-            // cout << "x:" << temp_Coordinate.x << "  y:" << temp_Coordinate.y << "  z:" << temp_Coordinate.z << endl;
-            v_road_inner_bound.emplace_back(temp_Coordinate);
-        }
-    }
-
-    road_inner_bound.emplace_back(v_road_inner_bound);
-    road_outer_bound.emplace_back(v_road_outer_bound);
     // 搜索获取轨迹
     traj.clear();
     Path     final_path;
     PlanRule planrule = static_cast<PlanRule>(plan_rule_id);
 
-    my_optimal_path_.threadLogger_ = threadLogger_;
 
-    if (my_optimal_path_.SearchGlobalPath(temp_start_point, temp_end_point, road_outer_bound, road_inner_bound, vehicle_param_, final_path, time_threshold, planrule) == PlanResult::Plan_OK) {
+    if (my_optimal_path_.SearchGlobalPath(temp_start_point, temp_end_point, vehicle_param_, final_path, time_threshold, planrule) == PlanResult::Plan_OK) {
         threadLogger_->info("SearchGlobalPath success");
         _TrajectoryPoint temp_point;
         for (int i = 0; i < final_path.size(); i++) {
@@ -271,15 +238,15 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
         }
         // 针对rule:5的情况，进行绕圈检查，检查原理：判断两个点之间的距离进行判断，是否有间距小于0.8m的点
 
-        if (plan_rule_id == 5 || plan_rule_id == 4) {
-            threadLogger_->info("开始绕圈检测");
-            // 针对rule:5的情况，进行绕圈检查，检查原理：判断角度是否产生0~2M_PI的变化
-            if (Helper::doesTrajectorySelfIntersect(final_path)) {
-                threadLogger_->info("检测到路径绕圈");
-                return false;
-            }
-        }
-        threadLogger_->info("绕圈检测达标");
+        // if (plan_rule_id == 5 || plan_rule_id == 4) {
+        //     threadLogger_->info("开始绕圈检测");
+        //     // 针对rule:5的情况，进行绕圈检查，检查原理：判断角度是否产生0~2M_PI的变化
+        //     if (Helper::doesTrajectorySelfIntersect(final_path)) {
+        //         threadLogger_->info("检测到路径绕圈");
+        //         return false;
+        //     }
+        // }
+        // threadLogger_->info("绕圈检测达标");
 
         return true;
     }
@@ -472,6 +439,7 @@ bool Planning::RandomOffsetWithoutCuravture() {
 
     return true;
 }
+
 float Planning::CalculateOffSetWithoutCuravture(int index, int sum, float weight) {
     float max_l = vehicle_param_.max_l;
     float L     = max_l * weight; // 控制默认偏移量
@@ -836,6 +804,9 @@ void Planning::PathClipAndSplice() {
     threadLogger_->info("PathClipAndSplice---global_path_.size():{}", global_path_.size());
 }
 bool Planning::HybirdAStarFitting() {
+    //  初始化HybrdiA*算法地图边界及voronoi图
+    my_optimal_path_.threadLogger_ = threadLogger_;
+    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, true);
     // 基于横纵向距离来判断是否进行hybirdA*拟合
     threadLogger_->info("Enter HybirdAStarFitting");
     double        lat_threshold = 0.7, lon_threshold = 3;
@@ -846,7 +817,7 @@ bool Planning::HybirdAStarFitting() {
     if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold || start_angle_diff_ > 8.0 / 180.0 * M_PI) { // 横向阈值大于0.7m,或者纵向阈值大于3m,就需要进行hybirdA*拟合
         start_need_fitting = true;
         // 当start_index==0,end_index==0,start_key_==end_key_时，说明这是一个从装载点到驶离装载点的任务，off_set必须是0
-        if (start_index_ == 0 && end_index_ == 0 && start_key_ == end_key_) {
+        if (start_index_ == 0) {
             off_set = 0;
         }
     }
@@ -902,6 +873,7 @@ bool Planning::HybirdAStarFitting() {
         global_path_.erase(global_path_.begin() + search_index, global_path_.end());
         global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
     }
+    my_optimal_path_.DeleteVoronoiSpace(true);
     threadLogger_->info("HybirdAStarFitting结束");
     return true;
 }

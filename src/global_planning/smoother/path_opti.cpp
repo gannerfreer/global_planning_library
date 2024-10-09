@@ -227,10 +227,10 @@ void Path_Opti::SmoothPath() {
             // 需要满足两个条件才会利用voronoi项进行平滑，1、需要使用voronoi图，2、当前传入的路径坐标xi位于voronoi图范围内
             bool in_x_range = false;
             bool in_y_range = false;
-            if (static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram.sizeX) {
+            if (static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->sizeX) {
                 in_x_range = true;
             }
-            if (static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram.sizeY) {
+            if (static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->sizeY) {
                 in_y_range = true;
             }
 
@@ -343,14 +343,14 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
     // 最近障碍物
     int   index_x = static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist));
     int   index_y = static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist));
-    float obsDst  = voronoiDiagram.getDistance(index_x, index_y);
+    float obsDst  = voronoiDiagram->getDistance(index_x, index_y);
     // distance to the closest voronoiDiagram edge
     // 最近边
     // wsl-add11
     float edgDst          = 0; // todo
-    Vec2i closest_edge_pt = voronoiDiagram.GetClosestVoronoiEdgePoint({index_x, index_y}, edgDst);
+    Vec2i closest_edge_pt = voronoiDiagram->GetClosestVoronoiEdgePoint({index_x, index_y}, edgDst);
     // the vector determining where the obstacle is
-    Vector2D obsVct(index_x - voronoiDiagram.data[index_x][index_y].obstX, index_y - voronoiDiagram.data[index_x][index_y].obstY);
+    Vector2D obsVct(index_x - voronoiDiagram->data[index_x][index_y].obstX, index_y - voronoiDiagram->data[index_x][index_y].obstY);
     // the vector determining where the voronoiDiagram edge is
     // wsl-add12
     Vector2D edgVct(index_x - closest_edge_pt.x(), index_y - closest_edge_pt.y()); // todo

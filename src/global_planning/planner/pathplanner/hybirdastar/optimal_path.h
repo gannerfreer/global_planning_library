@@ -70,7 +70,6 @@ class OptimalPath {
   public:
     OptimalPath() {}  // 默认构造函数
     ~OptimalPath() {} // 析构函数
-    _VehicleParam m_vehicle_param_;
     /**
      * @brief 全局路径规划类接口函数
      * @param [in] start            起始构型(x,y,theta)
@@ -82,8 +81,10 @@ class OptimalPath {
      * @return 返回说明：
      * 返回规划结果
      */
-
-    PlanResult SearchGlobalPath(const Point start, const Point end, const Bound& road_bound, const Bound& obstacle_bound, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule plan_path_rule = PlanRule ::Normal_Planning);
+    PlanResult    SearchGlobalPath(const Point start, const Point end, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule plan_path_rule = PlanRule ::Normal_Planning);
+    void          InitVoronoiAndBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders, const _VehicleParam& m_vehicle_param, bool enable_voronoi);
+    void          DeleteVoronoiSpace(bool enable_voronoi);
+    _VehicleParam m_vehicle_param_;
 
   private:
     /**
@@ -93,7 +94,7 @@ class OptimalPath {
      * @param [in] road_bound     道路边界
      * @param [in] obstacle_bound 障碍物边界
      */
-    void InitData(Point start, Point end, const Bound& road_bound, const Bound& obstacle_bound);
+    void InitData(Point start, Point end);
 
     /**
      * @brief 混合A*搜索主函数
@@ -348,15 +349,16 @@ class OptimalPath {
     bool**                          binMap = nullptr;
     int                             width;
     int                             height;
-    bool                            use_voronoi;
+    bool                            use_voronoi = false;
 
 
   private:
-    RSCurve          my_r_s_curve;
-    RSCurve_H        my_r_s_curve_h;
-    Dubins           dubins_;
-    DynamicVoronoi   voronoiDiagram;
+    RSCurve   my_r_s_curve;
+    RSCurve_H my_r_s_curve_h;
+    Dubins    dubins_;
+
     double           voronoi_origin_x, voronoi_origin_y; // 记录voronoi图的原点
+    Path_Opti        my_path_opti;
     CollisonCheck    collison_check_;
     PlanRule         plan_path_rule_;
     FittingDirection fitting_direction_;
@@ -365,12 +367,15 @@ class OptimalPath {
     Point start_, actual_start_;
     Point end_, end_f_, end_r_;
 
-    Path            path_a_star_;
-    Path            path_r_s_;
-    Bound           road_bound_;
-    Bound           obstacle_bound_;
-    MotionDirection start_d_; // 开始拓展方向
-    MotionDirection end_d_;   // 结束拓展方向
+    Path path_a_star_, path_r_s_;
+
+    vector<Coordinate> v_road_outer_bound_, v_road_inner_bound_; // hybridA*规划框定的地图外边界和内边界
+    Bound              init_road_bound_, init_obstacle_bound_;
+    Bound              offset_road_bound_, offset_obstacle_bound_;
+    Bound              voronoi_bound_;
+    DynamicVoronoi*    voronoiDiagram;
+
+    MotionDirection start_d_, end_d_; // 结束拓展方向
 
     /// Hybrid A*
     unordered_map<unsigned long long, Vertex3D> close_map_;  // 混合A星算法的close集

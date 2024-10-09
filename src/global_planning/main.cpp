@@ -40,23 +40,23 @@ vector<Point>            expand_point;
 
 
 void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
-    // start_point.x   = msg->pose.pose.position.x;
-    // start_point.y   = msg->pose.pose.position.y;
-    // start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    start_point.x   = -282.3192424085156 - x_o_;
-    start_point.y   = 1007.2517086174078 - y_o_;
-    start_point.yaw = 88.72529112986786 / 180.0 * M_PI;
+    start_point.x   = msg->pose.pose.position.x;
+    start_point.y   = msg->pose.pose.position.y;
+    start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
+    // start_point.x   = -282.3192424085156 - x_o_;
+    // start_point.y   = 1007.2517086174078 - y_o_;
+    // start_point.yaw = 88.72529112986786 / 180.0 * M_PI;
 
     is_receive_start = true;
 }
 
 void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-    // end_point.x   = msg->pose.position.x;
-    // end_point.y   = msg->pose.position.y;
-    // end_point.yaw = tf::getYaw(msg->pose.orientation);
-    end_point.x   = -263.3295878675 - x_o_;
-    end_point.y   = 1112.3878894950933 - y_o_;
-    end_point.yaw = 65.37178835751622 / 180.0 * M_PI;
+    end_point.x   = msg->pose.position.x;
+    end_point.y   = msg->pose.position.y;
+    end_point.yaw = tf::getYaw(msg->pose.orientation);
+    // end_point.x   = -263.3295878675 - x_o_;
+    // end_point.y   = 1112.3878894950933 - y_o_;
+    // end_point.yaw = 65.37178835751622 / 180.0 * M_PI;
 
     is_receive_end = true;
 }
@@ -187,21 +187,9 @@ int main(int argc, char** argv) {
             ofstream file_out;
             file_out.open("global_path.txt", ios::out);
             for (size_t i = 0; i < global_path.size(); i++) {
-                // file_out <<  setprecision(11)
-                //          << global_path.at(i).x << " "
-                //          << global_path.at(i).y << " "
-                //          << global_path.at(i).z << " "
-                //          << global_path.at(i).yaw << " "
-                //          << global_path.at(i).left << " "
-                //          << global_path.at(i).right << " "
-                //          << global_path.at(i).speed << " "
-                //          << global_path.at(i).speed_limit << " "
-                //          << global_path.at(i).curvature << " "
-                //          << global_path.at(i).distance << " "
-                //          << static_cast<int>(global_path.at(i).attribute) << " "
-                //          << static_cast<int>(global_path.at(i).direction) <<  endl;
-                // file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << global_path.at(i).speed << " " << global_path.at(i).speed_limit << " " << global_path.at(i).curvature << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << " " << global_path.at(i).distance << endl;
-                file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).yaw << " " << static_cast<int>(global_path.at(i).direction) << " " << global_path.at(i).speed << endl;
+                // file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << global_path.at(i).speed << " " << global_path.at(i).speed_limit << " " << global_path.at(i).curvature << " " << global_path.at(i).distance << " " << static_cast<int>(global_path.at(i).attribute) << " " << static_cast<int>(global_path.at(i).direction) << endl;
+                file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << " " << global_path.at(i).distance << endl;
+                // file_out << setprecision(11) << global_path.at(i).speed << " " << global_path.at(i).speed_limit << endl;
             }
             file_out.close();
             std_msgs::Float64MultiArray speed_curve;
