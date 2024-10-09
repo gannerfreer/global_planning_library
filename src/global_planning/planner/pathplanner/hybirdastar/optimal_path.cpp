@@ -19,7 +19,7 @@ using namespace GlobalPlanning;
 void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders, const _VehicleParam& m_vehicle_param, bool enable_voronoi) {
     // 初始化当前任务HybridA*所需要的地图边界和障碍物边界
     //  区域外边界、区域内边界转换
-    threadLogger_->info("初始化当前任务HybridA*所需要的地图边界和障碍物边界");
+    threadLogger_->info("初始化当前任务HybridA*所需要的地图边界、障碍物边界及Voronoi图");
     Coordinate temp_Coordinate;
     v_road_outer_bound_.clear();
     v_road_inner_bound_.clear();
@@ -125,11 +125,26 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
             //     }
             // }
             // pgmFile.close();
-            // threadLogger_->info("初始化voronoi图结束");
+            std::ofstream file("output.pgm");
+            if (file.is_open()) {
+                file << "P5\n" << width << " " << height << "\n255\n";
+                for (int y = height - 1; y >= 0; --y) {
+                    for (int x = 0; x < width; ++x) {
+                        int color = binMap[x][y] ? 0 : 255;
+                        file << color << " " << color << " " << color << " ";
+                    }
+                    file << "\n";
+                }
+                file.close();
+            }
+            else {
+                std::cerr << "无法打开文件进行写入。" << std::endl;
+            }
+            threadLogger_->info("初始化voronoi图结束");
 
 
             // 初始化vonoroi图
-            cout << "binMap adress:" << &binMap << endl;
+            // threadLogger_->info("binMap adress {}", &binMap);
             voronoiDiagram = new DynamicVoronoi;
             voronoiDiagram->initializeMap(width, height, binMap);
             threadLogger_->info("initializeMap结束");
@@ -142,18 +157,17 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
             threadLogger_->info("visualize结束");
         }
         threadLogger_->info("voronoi栅格地图长{}宽{}", height, width);
-        // 在堆上申请一片上述width*height的内存空间并初始化为false
     }
 }
 
 void OptimalPath::DeleteVoronoiSpace(bool enable_voronoi) {
-    threadLogger_->info("删除本次规划所使用的vonoroi空间");
     if (enable_voronoi) {
         if (binMap) {
             for (int x = 0; x < width; x++) {
                 delete[] binMap[x];
             }
             delete[] binMap;
+            threadLogger_->info("删除本次规划所使用的vonoroi空间");
         }
         else {
             threadLogger_->error("error,空间已经被释放");
@@ -333,10 +347,12 @@ void OptimalPath::InitData(Point start, Point end) {
  */
 PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     // 以下3行代码用于超时退出
+    threadLogger_->info("开始给路径平滑赋予voronoi图");
     my_path_opti.voronoiDiagram   = voronoiDiagram;
     my_path_opti.use_voronoi      = use_voronoi;
     my_path_opti.voronoi_origin_x = voronoi_origin_x - midpoint_.x;
     my_path_opti.voronoi_origin_y = voronoi_origin_y - midpoint_.y;
+    threadLogger_->info("给路径平滑赋予voronoi图结束");
 
 
     utility::CTimeClock init_time;
@@ -453,9 +469,9 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
 
     // 路径优化，得到最终的path
-
+    threadLogger_->info("OptimizePath Begin");
     my_path_opti.OptimizePath(path_a_star_, path, collison_check_, m_vehicle_param_);
-    threadLogger_->info("OptimizePath() Successfuly!");
+    threadLogger_->info("OptimizePath End");
     cout << "优化后角度：" << endl;
     for (int i = 0; i < path.size(); i++) {
         cout << path.at(i).angle << " ";
@@ -591,7 +607,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                     }
                 }
                 else {
-                    threadLogger_->info("RS曲线规划失败");
+                    threadLogger_->info("RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Forword_Fitting:
@@ -599,15 +615,14 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) && (MotionDirection::Forward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
-
                         return true;
                     }
                     else {
-                        threadLogger_->info("RS曲线碰撞检测失败");
+                        threadLogger_->info("RS曲线规划成功，但碰撞检测失败");
                     }
                 }
                 else {
-                    threadLogger_->info("RS曲线规划失败");
+                    threadLogger_->info("RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Both_Fitting:

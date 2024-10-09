@@ -579,7 +579,7 @@ bool Planning::FollowReferencelinePlanning() {
                     for (auto start : start_path_vec_switch) {
                         for (auto end : end_path_vec_switch) {
                             if (HasSearched(start.first, end)) {
-                                threadLogger_->info("路径{}->路径{}已经计算过，为节约计算资源，予以跳过", start.first, end);
+                                // threadLogger_->info("路径{}->路径{}已经计算过，为节约计算资源，予以跳过", start.first, end);
                                 continue;
                             }
                             threadLogger_->info("索引  start:{},end:{}", start.first, end);
