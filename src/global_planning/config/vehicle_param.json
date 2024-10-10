@@ -68,6 +68,6 @@
     "hybrid_h_use_a_star": true,
     "hybrid_h_use_max": false,
     "kVoronoiTerm": 0.1,
-    "vonoroi_grid_dist": 0.2
+    "vonoroi_grid_dist": 0.1
   }
 }

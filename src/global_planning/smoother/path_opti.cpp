@@ -358,12 +358,10 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
                                                                                    //  calculate the distance to the closest obstacle from the current node
                                                                                    //  obsDist =  voronoiDiagram.getDistance(node->getX(),node->getY())
                                                                                    //  调试输出
-    cout << "该节点距离最近障碍物的距离 obsDst: " << obsDst / 10.0 << " m" << endl;
-    //    cout << "edgDst: " << edgDst <<   endl;
-    //    cout << "obsVct: (" << obsVct.getX() << ", " << obsVct.getY() << ")" <<   endl;
-    //    cout << "edgVct: (" << edgVct.getX() << ", " << edgVct.getY() << ")" <<   endl;
+
+    cout << "节点{" << index_x << "," << index_y << "}距离最近障碍物的距离 obsDst: " << obsDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
     edgDst = hypot(edgVct.getX(), edgVct.getY());
-    cout << "该节点距离最近voronoi边的距离 edgDst: " << edgDst / 10.0 << " m" << endl;
+    cout << "节点{" << index_x << "," << index_y << "}距离最近voronoi边的距离 edgDst: " << edgDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
 
     if (obsDst < vorObsDMax) {
         // calculate the distance to the closest GVD edge from the current node
