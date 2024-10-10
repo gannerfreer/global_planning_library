@@ -353,9 +353,9 @@ class OptimalPath {
 
 
   private:
-    RSCurve   my_r_s_curve;
-    RSCurve_H my_r_s_curve_h;
-    Dubins    dubins_;
+    RSCurve       my_r_s_curve;
+    RSCurve_H     my_r_s_curve_h;
+    curve::Dubins dubins_;
 
     double           voronoi_origin_x, voronoi_origin_y; // 记录voronoi图的原点
     Path_Opti        my_path_opti;

@@ -178,10 +178,11 @@ void OptimalPath::DeleteVoronoiSpace(bool enable_voronoi) {
                 delete[] binMap[x];
             }
             delete[] binMap;
+            binMap = nullptr;
             threadLogger_->info("删除本次规划所使用的vonoroi空间");
         }
         else {
-            threadLogger_->error("error,空间已经被释放");
+            threadLogger_->error("error,空间未申请或已经被释放");
         }
     }
 }
@@ -199,7 +200,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
 
     my_r_s_curve.threadLogger_   = threadLogger_;
     my_r_s_curve_h.threadLogger_ = threadLogger_;
-    dubins_.SetParam(m_vehicle_param_.radious, end, plan_path_rule);
+    // dubins_.SetParam(m_vehicle_param_.radious, end, plan_path_rule);
     plan_path_rule_ = plan_path_rule;
 
     utility::CTimeLog timelog("SearchGlobalPath");

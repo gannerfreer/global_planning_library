@@ -1,89 +1,100 @@
-﻿#ifndef DUBINS_H
+/***************************************************/
+/*            Author: Xinpeng Chen                 */
+/*            Contact: *********@163.com           */
+/*            Last update: 2020-11-02              */
+/***************************************************/
+/*
+Description: The header file for C++ class Dubis.
+*/
+
+#ifndef DUBINS_H
 #define DUBINS_H
+#include <tuple>
 
 #include "../../../common/common_struct.h"
-// #include "../../../os/os.h"
+#include "point.h"
 
-#define M_PI 3.14159265358979323846
-
-const double twopi = 2 * M_PI;
-
-
-namespace GlobalPlanning {
+const float twopi = 2 * M_PI;
+namespace curve {
 using std ::vector;
-
 class Dubins {
   public:
     Dubins() {}
     ~Dubins() {}
-    _VehicleParam m_vehicle_prarm_;
-
-    void SetParam(double radius, Point end, PlanRule plan_rule) {
-        radius_ = radius;
-        if (PlanRule ::Backward_All_Time == plan_rule) {
-            start_     = end;
-            flag_back_ = true;
-        }
-        else {
-            end_       = end;
-            flag_back_ = false;
-        }
-    }
     /**
-     * @brief 获取dubins路径代价接口函数
-     * @param[in] start　起点
-     * @return 返回说明：　dubins路径长度
+     * @brief 获取dubins路径函数
+     * @param[in] start_pose 起始位姿
+     * @param[in] end_pose 目标位姿
+     * @param[in] path 目标位姿
+     * @return 返回说明：路径是否可行
      */
-    double GetDubinsCost(const Point start);
+    bool GetDubinsPath(const Point start_pose, const Point end_pose, std::vector<Point>& path);
 
   private:
+    enum DubinsPathSegmentType : unsigned char {
+        L = 1,
+        S = 2,
+        R = 3,
+    }; // 枚举路段类型
     /**
      * @brief 左转－直行－左转
      * @return 返回说明：　无
      */
-    void LSL();
+    std::tuple<float, float, float> LSL();
     /**
      * @brief 左转－直行－右转
      * @return 返回说明：　无
      */
-    void LSR();
+    std::tuple<float, float, float> LSR();
     /**
      * @brief 右转－直行－左转
      * @return 返回说明：　无
      */
-    void RSL();
+    std::tuple<float, float, float> RSL();
     /**
      * @brief 右转－直行－右转
      * @return 返回说明：　无
      */
-    void RSR();
+    std::tuple<float, float, float> RSR();
     /**
      * @brief 右转－左转－右转
      * @return 返回说明：　无
      */
-    void RLR();
+    std::tuple<float, float, float> RLR();
     /**
      * @brief 左转－右转－左转
      * @return 返回说明：　无
      */
-    void LRL();
+    std::tuple<float, float, float> LRL();
     /**
      * @brief 取模运算函数
      * @return 返回说明：　无
      */
-    inline double mod(double a, double b) {
+    inline float mod(float a, float b) {
         return a - b * static_cast<int>(floor(a / b));
     }
+    /**
+     * @brief 计算下一个点函数
+     * @return 返回说明：　点信息
+     */
+    Point CalNextPoint(float v, float x, float y, float theta, DubinsPathSegmentType type);
 
   private:
-    bool           flag_back_;
-    Point          start_, end_;
-    double         radius_;
-    double         alpha_, beta_, d_;
-    vector<double> path_len_;
-    double         sin_alpha_, sin_beta_, cos_alpha_, cos_beta_, cos_alpha_m_beta_;
+    const DubinsPathSegmentType dubins_path_type_[6][3] = {
+        {L, S, L},
+        {L, S, R},
+        {R, S, L},
+        {R, S, R},
+        {R, L, R},
+        {L, R, L}
+    }; // dubins曲线的6种组成类型
+
+    const float radius_  = 15;
+    const float delta_s_ = 0.1;
+    float       alpha_, beta_, d_;
+    float       sin_alpha_, sin_beta_, cos_alpha_, cos_beta_, cos_alpha_m_beta_;
 };
 
-} // namespace GlobalPlanning
+} // namespace curve
 
-#endif // DUBINS_H
+#endif

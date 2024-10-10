@@ -14,7 +14,8 @@
 #include "../map/c_map_analysis.h"
 #include "../show/c_rviz_path.h"
 #endif
-
+#include "../planner/pathplanner/dubins/dubins.h"
+#include "../planner/pathplanner/dubins/point.h"
 using namespace GlobalPlanning;
 // using namespace HybridAStar;
 using namespace rapidjson;
@@ -144,6 +145,7 @@ class Planning {
     bool JudgeFittingDirection(_SinglePoint point, int start_index, bool is_start);
     bool IsShortDistance();
     bool HasSearched(int start, int end);
+    bool PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag = 0);
 
   public:
     _SinglePoint start_point_, end_point_;                                                                                                                                       // 起、终点坐标
@@ -172,6 +174,8 @@ class Planning {
     shared_ptr<spdlog::logger> threadLogger_;
     string                     vehicle_code_;
     string                     key_;
+
+
 #ifdef SKIP_HEADER
 #else
   private:

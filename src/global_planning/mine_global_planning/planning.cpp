@@ -160,15 +160,22 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_dir
             temp_end.y   = global_path_.at(i).y;
             temp_end.z   = global_path_.at(i).z;
             temp_end.yaw = global_path_.at(i).yaw;
-            threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{}", cal, i, temp_end.yaw, float(rule_id));
+            // threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{}", cal, i, temp_end.yaw, float(rule_id));
             // 到8个点的时候，时间得提升到800ms
             if (counter > 4) time_threshold = 0.8 * 1000 * 1000;
-            if (ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id,
-                                         time_threshold)) // rule_id:5，只前进
-            {
-                search_index = i;
-                success_flag = true;
-                break;
+            if (PoseVerificationInterface(input_point, temp_end, false)) {
+                threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{},经过dubins曲线预先校验，合格", cal, i, temp_end.yaw, float(rule_id));
+
+                if (ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id,
+                                             time_threshold)) // rule_id:5，只前进
+                {
+                    search_index = i;
+                    success_flag = true;
+                    break;
+                }
+            }
+            else {
+                threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{},经过dubins曲线预先校验，不合格", cal, i, temp_end.yaw, float(rule_id));
             }
             if (counter > 8) {
                 threadLogger_->info("最多搜索8个点");
@@ -186,17 +193,23 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_dir
             temp_start.y   = global_path_.at(i).y;
             temp_start.z   = global_path_.at(i).z;
             temp_start.yaw = global_path_.at(i).yaw;
-            threadLogger_->info("第{}个候选点，其索引：{} rule_id:{}", cal, i, float(rule_id));
+            // threadLogger_->info("第{}个候选点，其索引：{} rule_id:{}", cal, i, float(rule_id));
             if (counter > 4) time_threshold = 0.8 * 1000 * 1000;
-            if (ApplyHibridAStarWithTime(temp_start, input_point, result_trajectory, rule_id,
-                                         time_threshold)) // rule_id:5，只前进
-            {
-                search_index = i;
-                success_flag = true;
-                break;
+            if (PoseVerificationInterface(temp_start, input_point, false)) {
+                threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{},经过dubins曲线预先校验，合格", cal, i, temp_end.yaw, float(rule_id));
+                if (ApplyHibridAStarWithTime(temp_start, input_point, result_trajectory, rule_id,
+                                             time_threshold)) // rule_id:5，只前进
+                {
+                    search_index = i;
+                    success_flag = true;
+                    break;
+                }
+            }
+            else {
+                threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{},经过dubins曲线预先校验，不合格", cal, i, temp_end.yaw, float(rule_id));
             }
             if (counter > 8) {
-                threadLogger_->info("最多搜索16个点，不搜了");
+                threadLogger_->info("最多搜索8个点，不搜了");
                 return false;
             }
         }
@@ -238,15 +251,15 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
         }
         // 针对rule:5的情况，进行绕圈检查，检查原理：判断两个点之间的距离进行判断，是否有间距小于0.8m的点
 
-        // if (plan_rule_id == 5 || plan_rule_id == 4) {
-        //     threadLogger_->info("开始绕圈检测");
-        //     // 针对rule:5的情况，进行绕圈检查，检查原理：判断角度是否产生0~2M_PI的变化
-        //     if (Helper::doesTrajectorySelfIntersect(final_path)) {
-        //         threadLogger_->info("检测到路径绕圈");
-        //         return false;
-        //     }
-        // }
-        // threadLogger_->info("绕圈检测达标");
+        if (plan_rule_id == 5 || plan_rule_id == 4) {
+            threadLogger_->info("开始绕圈检测");
+            // 针对rule:5的情况，进行绕圈检查，检查原理：判断角度是否产生0~2M_PI的变化
+            if (Helper::doesTrajectorySelfIntersect(final_path)) {
+                threadLogger_->info("检测到路径绕圈");
+                return false;
+            }
+        }
+        threadLogger_->info("绕圈检测达标");
 
         return true;
     }
@@ -991,4 +1004,45 @@ bool Planning::IsShortDistance() {
     }
     threadLogger_->info("不是超短距离规划");
     return false;
+}
+
+bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag) {
+    threadLogger_->info("start_pose:{},{},{}", start_pose.x, start_pose.y, start_pose.yaw);
+    threadLogger_->info("end_pose:{},{},{}", end_pose.x, end_pose.y, end_pose.yaw);
+    curve::Point dubins_start, dubins_end;
+    float        L1 = 9.0; // 倒车装载终点延伸距离
+    float        L2 = 1.0; // 其他工况终点延伸距离
+    float        L3 = 1.0; // 起点延伸距离
+    if (flag == 0) {
+        auto x = start_pose.x + L3 * std::cos(start_pose.yaw);
+        auto y = start_pose.y + L3 * std::sin(start_pose.yaw);
+        dubins_start.SetX(x);
+        dubins_start.SetY(y);
+        dubins_start.SetAngle(start_pose.yaw / M_PI * 180.0);
+        x = end_pose.x - L2 * std::cos(end_pose.yaw);
+        y = end_pose.y - L2 * std::sin(end_pose.yaw);
+        dubins_end.SetX(x);
+        dubins_end.SetY(y);
+        dubins_end.SetAngle(end_pose.yaw / M_PI * 180.0);
+    }
+    else if (flag == 1) {
+        auto x = end_pose.x + L1 * std::cos(end_pose.yaw);
+        auto y = end_pose.y + L1 * std::sin(end_pose.yaw);
+        dubins_start.SetX(x);
+        dubins_start.SetY(y);
+        dubins_start.SetAngle(end_pose.yaw / M_PI * 180.0);
+        x = start_pose.x - L2 * std::cos(start_pose.yaw);
+        y = start_pose.y - L2 * std::sin(start_pose.yaw);
+        dubins_end.SetX(x);
+        dubins_end.SetY(y);
+        dubins_end.SetAngle(start_pose.yaw / M_PI * 180.0);
+    }
+    else {
+        std::cout << "入参有误！！！" << std::endl;
+        return false;
+    }
+    curve::Dubins             dubis;
+    std::vector<curve::Point> path;
+
+    return dubis.GetDubinsPath(dubins_start, dubins_end, path);
 }
