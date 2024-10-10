@@ -7,18 +7,22 @@
 #include <stdlib.h>
 
 #include <queue>
-
-#include "bucketedqueue.h"
-// wsl-add1
 #include <unordered_map>
 
-#include "../common/common_struct.h"
-#include "vec2d.h"
+#include "bucketedqueue.h"
 #include "vec2i.h"
 #include "vector2d.h"
 
-namespace GlobalPlanning {
 //! A DynamicVoronoi object computes and updates a distance map and Voronoi diagram.
+struct dataCell {
+    float dist;
+    char  voronoi;
+    char  queueing;
+    int   obstX;
+    int   obstY;
+    bool  needsRaise;
+    int   sqdist;
+};
 class DynamicVoronoi {
   public:
     DynamicVoronoi();
@@ -34,50 +38,53 @@ class DynamicVoronoi {
     //! remove an obstacle at the specified cell coordinate
     void clearCell(int x, int y);
     //! remove old dynamic obstacles and add the new ones
-    void exchangeObstacles(const std::vector<IntPoint>& newObstacles);
+    void exchangeObstacles(std::vector<INTPOINT>& newObstacles);
 
     //! update distance map and Voronoi diagram to reflect the changes
     void update(bool updateRealDist = true);
     //! prune the Voronoi diagram
     void prune();
+    //! prune the Voronoi diagram by globally revisiting all Voronoi nodes. Takes more time but gives a more sparsely pruned Voronoi graph. You need to call this after every call to udpate()
+    void updateAlternativePrunedDiagram();
+    //! retrieve the alternatively pruned diagram. see updateAlternativePrunedDiagram()
+    int** alternativePrunedDiagram() {
+        return alternativeDiagram;
+    };
+    //! retrieve the number of neighbors that are Voronoi nodes (4-connected)
+    int getNumVoronoiNeighborsAlternative(int x, int y);
+    //! returns whether the specified cell is part of the alternatively pruned diagram. See updateAlternativePrunedDiagram.
+    bool isVoronoiAlternative(int x, int y);
 
     //! returns the obstacle distance at the specified location
-    float getDistance(int x, int y) const;
+    float getDistance(int x, int y);
     //! returns whether the specified cell is part of the (pruned) Voronoi graph
-    bool isVoronoi(int x, int y) const;
+    bool isVoronoi(int x, int y);
     //! checks whether the specficied location is occupied
-    bool isOccupied(int x, int y) const;
+    bool isOccupied(int x, int y);
     //! write the current distance map and voronoi diagram as ppm file
     void visualize(const char* filename = "result.ppm");
-    // wsl-add3
-    void CollectVoronoiEdgePoints();
-    // std::vector<Vec2i> GetVoronoiEdgePoints() const{return edge_points_;};
-    // Vector2D GetClosestVoronoiEdgePoint(const Vector2D& xi, float& closest_dis);
-    Vec2i GetClosestVoronoiEdgePoint(Vector2D xi, float& closest_dis);
-    Vec2i GetClosetObstacleCoor(const Vec2i& p) const;
-
 
     //! returns the horizontal size of the workspace/map
-    unsigned int getSizeX() const {
+    unsigned int getSizeX() {
         return sizeX;
     }
     //! returns the vertical size of the workspace/map
-    unsigned int getSizeY() const {
+    unsigned int getSizeY() {
         return sizeY;
     }
+    // wsl-add5
+    void CollectVoronoiEdgePoints();
+    // std::vector<Vec2i> GetVoronoiEdgePoints() const{return edge_points_;};
+    // Vector2D GetClosestVoronoiEdgePoint(const Vector2D& xi, float& closest_dis);
+    Vec2i       GetClosestVoronoiEdgePoint(Vector2D xi, float& closest_dis);
+    Vec2i       GetClosetObstacleCoor(const Vec2i& p) const;
+    std::string ComputeIndex(Vector2D& pi);
+    dataCell**  getData() {
+        return data;
+    }
 
-    // was private, changed to public for obstX, obstY
-  public:
-    struct dataCell {
-        float dist;
-        char  voronoi;
-        char  queueing;
-        int   obstX;
-        int   obstY;
-        bool  needsRaise;
-        int   sqdist;
-    };
 
+  private:
     typedef enum { voronoiKeep = -4, freeQueued = -3, voronoiRetry = -2, voronoiPrune = -1, free = 0, occupied = 1 } State;
     typedef enum { fwNotQueued = 1, fwQueued = 2, fwProcessed = 3, bwQueued = 4, bwProcessed = 1 } QueueingState;
     typedef enum { invalidObstData = SHRT_MAX / 2 } ObstDataState;
@@ -94,15 +101,14 @@ class DynamicVoronoi {
 
     inline bool              isOccupied(int& x, int& y, dataCell& c);
     inline markerMatchResult markerMatch(int x, int y);
-
-    // wsl-add4
-    std::string ComputeIndex(Vector2D& pi);
-    // std::string ComputeIndex(Vector2D& pd);
+    inline bool              markerMatchAlternative(int x, int y);
+    inline int               getVoronoiPruneValence(int x, int y);
 
     // queues
 
-    BucketPrioQueue      open;
-    std::queue<INTPOINT> pruneQueue;
+    BucketPrioQueue<INTPOINT> open;
+    std::queue<INTPOINT>      pruneQueue;
+    BucketPrioQueue<INTPOINT> sortedPruneQueue;
 
     std::vector<INTPOINT> removeList;
     std::vector<INTPOINT> addList;
@@ -113,10 +119,7 @@ class DynamicVoronoi {
     int        sizeX;
     dataCell** data;
     bool**     gridMap;
-    // wsl-add5
-    std::vector<Vec2i>                                       edge_points_;
-    std::unordered_map<std::string, std::pair<Vec2i, float>> closest_edge_points_;
-
+    bool       allocatedGridMap;
 
     // parameters
     int    padding;
@@ -124,8 +127,14 @@ class DynamicVoronoi {
 
     double sqrt2;
 
-    //  dataCell** getData(){ return data; }
+
+    int** alternativeDiagram;
+
+
+    // wsl-add5
+    std::vector<Vec2i>                                       edge_points_;
+    std::unordered_map<std::string, std::pair<Vec2i, float>> closest_edge_points_;
 };
-} // namespace GlobalPlanning
+
 
 #endif

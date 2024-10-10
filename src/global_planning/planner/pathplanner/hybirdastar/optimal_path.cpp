@@ -125,9 +125,9 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
             //     }
             // }
             // pgmFile.close();
-            std::ofstream file("output.pgm");
+            std::ofstream file("output.ppm");
             if (file.is_open()) {
-                file << "P5\n" << width << " " << height << "\n255\n";
+                file << "P3\n" << width << " " << height << "\n255\n";
                 for (int y = height - 1; y >= 0; --y) {
                     for (int x = 0; x < width; ++x) {
                         int color = binMap[x][y] ? 0 : 255;
@@ -140,17 +140,28 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
             else {
                 std::cerr << "无法打开文件进行写入。" << std::endl;
             }
-            threadLogger_->info("初始化voronoi图结束");
 
 
             // 初始化vonoroi图
-            // threadLogger_->info("binMap adress {}", &binMap);
-            voronoiDiagram = new DynamicVoronoi;
+            // DynamicVoronoi voronoiDiagram;
+            // voronoiDiagram.initializeMap(width, height, binMap);
+            // threadLogger_->info("initializeMap结束");
+            // voronoiDiagram.update();
+            // threadLogger_->info("update结束");
+            // // voronoiDiagram->CollectVoronoiEdgePoints();
+            // threadLogger_->info("CollectVoronoiEdgePoints结束");
+            // voronoiDiagram.visualize("../voronoi_graph.ppm");
+            // use_voronoi = true;
+            // threadLogger_->info("visualize结束");
+
+            threadLogger_->info("初始化vonoroi图");
+            // 初始化vonoroi图
+            voronoiDiagram = new DynamicVoronoi();
             voronoiDiagram->initializeMap(width, height, binMap);
             threadLogger_->info("initializeMap结束");
             voronoiDiagram->update();
             threadLogger_->info("update结束");
-            voronoiDiagram->CollectVoronoiEdgePoints();
+            // voronoiDiagram->CollectVoronoiEdgePoints();
             threadLogger_->info("CollectVoronoiEdgePoints结束");
             voronoiDiagram->visualize("../voronoi_graph.ppm");
             use_voronoi = true;
@@ -436,6 +447,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     threadLogger_->info("TracePath() Successfuly!");
     PathIntegration(); // 将混合A*搜索路径、RS曲线拟合路径与终点补偿的直线路径整合
     threadLogger_->info("PathIntegration() Successfuly!");
+    cout << "PathIntegration() Successfuly!" << endl;
 
     // 保存路点，并打印出来
     // std::ofstream file_out;
@@ -449,6 +461,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     temp_path = path_a_star_; // 弧度
     removeDuplicates(temp_path, path_a_star_);
     threadLogger_->info("removeDuplicates() Successfuly!");
+    cout << "removeDuplicates() Successfuly!" << endl;
 
     // 保存路点，并打印出来
     // std::ofstream file_out;
@@ -492,9 +505,10 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
     return PlanResult::Plan_OK;
 }
-bool OptimalPath::removeDuplicates(Path& input, Path& result) {
+void OptimalPath::removeDuplicates(Path& input, Path& result) {
     result.clear();
     result.push_back(input.front());
+
     for (int i = 1; i < input.size(); i++) {
         if (fabs(input.at(i).x - input.at(i - 1).x) <= 1e-6 && fabs(input.at(i).y - input.at(i - 1).y) <= 1e-6) {
             continue;

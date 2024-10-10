@@ -1,47 +1,64 @@
 #ifndef _PRIORITYQUEUE2_H_
 #define _PRIORITYQUEUE2_H_
 
-#define MAXDIST 1000
-#define RESERVE 64
-
 #include <assert.h>
 
+#include <map>
 #include <queue>
 #include <set>
 #include <vector>
 
-#include "../common/common_struct.h"
 #include "point.h"
 
-namespace GlobalPlanning {
 //! Priority queue for integer coordinates with squared distances as priority.
 /** A priority queue that uses buckets to group elements with the same priority.
-    The individual buckets are unsorted, which increases efficiency if these groups are large.
-    The elements are assumed to be integer coordinates, and the priorities are assumed
-    to be squared euclidean distances (integers).
-*/
+ *  The individual buckets are unsorted, which increases efficiency if these groups are large.
+ *  The elements are assumed to be integer coordinates, and the priorities are assumed
+ *  to be squared Euclidean distances (integers).
+ */
+
+template <typename T>
 class BucketPrioQueue {
   public:
     //! Standard constructor
     /** Standard constructor. When called for the first time it creates a look up table
-        that maps square distanes to bucket numbers, which might take some time...
-    */
+     *  that maps square distances to bucket numbers, which might take some time...
+     */
     BucketPrioQueue();
+
+
+    void clear() {
+        buckets.clear();
+        count   = 0;
+        nextPop = buckets.end();
+    }
+
     //! Checks whether the Queue is empty
-    bool empty() const;
+    bool empty();
     //! push an element
-    void push(int prio, INTPOINT t);
+    void push(int prio, T t);
     //! return and pop the element with the lowest squared distance */
-    INTPOINT pop();
+    T pop();
+
+    int size() {
+        return count;
+    }
+    int getNumBuckets() {
+        return buckets.size();
+    }
+
+    int getTopPriority() {
+        return nextPop->first;
+    }
 
   private:
-    static void             initSqrIndices();
-    static std::vector<int> sqrIndices;
-    static int              numBuckets;
-    int                     count;
-    int                     nextBucket;
+    int count;
 
-    std::vector<std::queue<INTPOINT>> buckets;
+    typedef std::map<int, std::queue<T>> BucketType;
+    BucketType                           buckets;
+    typename BucketType::iterator        nextPop;
 };
-} // namespace GlobalPlanning
+
+#include "bucketedqueue.hxx"
+
 #endif

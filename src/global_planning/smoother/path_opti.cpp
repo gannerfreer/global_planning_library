@@ -82,7 +82,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         }
     }
 
-    // std::ofstream file_out;
+    //   ofstream file_out;
     // file_out.open("control_point.txt");
     // for (size_t index = 0; index < new_path_.size(); index++)
     // {
@@ -121,7 +121,7 @@ void Path_Opti::GetCuspIndex() {
             cusp_set_.insert(i);
         }
     }
-    // std::cout << "cusp_set_.size() :" << cusp_set_.size() << std::endl;
+    //   cout << "cusp_set_.size() :" << cusp_set_.size() <<   endl;
 }
 
 /**
@@ -227,10 +227,10 @@ void Path_Opti::SmoothPath() {
             // 需要满足两个条件才会利用voronoi项进行平滑，1、需要使用voronoi图，2、当前传入的路径坐标xi位于voronoi图范围内
             bool in_x_range = false;
             bool in_y_range = false;
-            if (static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->sizeX) {
+            if (static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->getSizeX()) {
                 in_x_range = true;
             }
-            if (static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->sizeY) {
+            if (static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->getSizeY()) {
                 in_y_range = true;
             }
 
@@ -350,7 +350,7 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
     float edgDst          = 0; // todo
     Vec2i closest_edge_pt = voronoiDiagram->GetClosestVoronoiEdgePoint({index_x, index_y}, edgDst);
     // the vector determining where the obstacle is
-    Vector2D obsVct(index_x - voronoiDiagram->data[index_x][index_y].obstX, index_y - voronoiDiagram->data[index_x][index_y].obstY);
+    Vector2D obsVct(index_x - voronoiDiagram->getData()[index_x][index_y].obstX, index_y - voronoiDiagram->getData()[index_x][index_y].obstY);
     // the vector determining where the voronoiDiagram edge is
     // wsl-add12
     Vector2D edgVct(index_x - closest_edge_pt.x(), index_y - closest_edge_pt.y()); // todo
@@ -358,12 +358,12 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
                                                                                    //  calculate the distance to the closest obstacle from the current node
                                                                                    //  obsDist =  voronoiDiagram.getDistance(node->getX(),node->getY())
                                                                                    //  调试输出
-    std::cout << "obsDst: " << obsDst << std::endl;
-    //  std::cout << "edgDst: " << edgDst << std::endl;
-    //  std::cout << "obsVct: (" << obsVct.getX() << ", " << obsVct.getY() << ")" << std::endl;
-    //  std::cout << "edgVct: (" << edgVct.getX() << ", " << edgVct.getY() << ")" << std::endl;
+    cout << "该节点距离最近障碍物的距离 obsDst: " << obsDst / 10.0 << " m" << endl;
+    //    cout << "edgDst: " << edgDst <<   endl;
+    //    cout << "obsVct: (" << obsVct.getX() << ", " << obsVct.getY() << ")" <<   endl;
+    //    cout << "edgVct: (" << edgVct.getX() << ", " << edgVct.getY() << ")" <<   endl;
     edgDst = hypot(edgVct.getX(), edgVct.getY());
-    std::cout << "new_edgDst: " << edgDst << std::endl;
+    cout << "该节点距离最近voronoi边的距离 edgDst: " << edgDst / 10.0 << " m" << endl;
 
     if (obsDst < vorObsDMax) {
         // calculate the distance to the closest GVD edge from the current node
@@ -374,9 +374,9 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
             // float PedgDst_Pxi; // todo = edgVct / edgDst;
             Vector2D PobsDst_Pxi     = obsVct / obsDst;
             Vector2D PedgDst_Pxi     = edgVct / edgDst;
-            float    PvorPtn_PedgDst = alpha * obsDst * std::pow(obsDst - vorObsDMax, 2) / (std::pow(vorObsDMax, 2) * (obsDst + alpha) * std::pow(edgDst + obsDst, 2));
+            float    PvorPtn_PedgDst = alpha * obsDst * pow(obsDst - vorObsDMax, 2) / (pow(vorObsDMax, 2) * (obsDst + alpha) * pow(edgDst + obsDst, 2));
 
-            float PvorPtn_PobsDst = (alpha * edgDst * (obsDst - vorObsDMax) * ((edgDst + 2 * vorObsDMax + alpha) * obsDst + (vorObsDMax + 2 * alpha) * edgDst + alpha * vorObsDMax)) / (std::pow(vorObsDMax, 2) * std::pow(obsDst + alpha, 2) * std::pow(obsDst + edgDst, 2));
+            float PvorPtn_PobsDst = (alpha * edgDst * (obsDst - vorObsDMax) * ((edgDst + 2 * vorObsDMax + alpha) * obsDst + (vorObsDMax + 2 * alpha) * edgDst + alpha * vorObsDMax)) / (pow(vorObsDMax, 2) * pow(obsDst + alpha, 2) * pow(obsDst + edgDst, 2));
             gradient              = m_vehicle_param_.kVoronoiTerm * PvorPtn_PobsDst * PobsDst_Pxi + PvorPtn_PedgDst * PedgDst_Pxi;
 
             return gradient;
@@ -425,7 +425,7 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
 
             // 尖点前直线延伸，最大延伸距离为cusp_extension_distance
             for (int j = 0; j <= m_vehicle_param_.cusp_extension_distance; j++) {
-                // std::cout<<" J = " << j << std::endl;
+                //   cout<<" J = " << j <<   endl;
                 temp_point.angle     = path_.at(i).angle;
                 temp_point.x         = path_.at(i).x + flag_pos_neg * j * cos(temp_point.angle);
                 temp_point.y         = path_.at(i).y + flag_pos_neg * j * sin(temp_point.angle);
@@ -443,7 +443,7 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
 
             // 尖点后直线延伸
             for (int k = num - 1; k >= 0; k--) {
-                // std::cout << "k = " << k << "\n";
+                //   cout << "k = " << k << "\n";
                 temp_point.angle     = path_.at(i).angle;
                 temp_point.x         = path_.at(i).x + flag_pos_neg * k * cos(temp_point.angle);
                 temp_point.y         = path_.at(i).y + flag_pos_neg * k * sin(temp_point.angle);
@@ -588,8 +588,8 @@ void Path_Opti::InterpolatePath(Path& opti_path) {
 
 // void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path) {
 //     // cout << "line511" << endl;
-//     std::vector<double> x_set;
-//     std::vector<double> y_set;
+//       vector<double> x_set;
+//       vector<double> y_set;
 //     x_set.reserve(points.size());
 //     y_set.reserve(points.size());
 //     for (const auto& pt : points) {
@@ -639,7 +639,7 @@ void Path_Opti::InterpolatePath(Path& opti_path) {
 //     // cout << "cubicspline_path.size():" << cubicspline_path.size() << endl;
 // }
 
-// void Path_Opti::CalculateStation(const std::vector<double>& xs, const std::vector<double>& ys) {
+// void Path_Opti::CalculateStation(const   vector<double>& xs, const   vector<double>& ys) {
 //     double cum = 0.0;
 //     s_.clear();
 //     s_.push_back(cum);
@@ -649,7 +649,7 @@ void Path_Opti::InterpolatePath(Path& opti_path) {
 //     for (unsigned int i = 1; i < xs.size(); i++) {
 //         double dx = xs.at(i) - xs.at(i - 1);
 //         double dy = ys.at(i) - ys.at(i - 1);
-//         cum += std::hypot(dx, dy);
+//         cum +=   hypot(dx, dy);
 //         // cout<<"cun:"<<cum<<endl;
 //         s_.push_back(cum);
 //     }
@@ -686,7 +686,7 @@ void Path_Opti::CubicInterpolate2Point(const Point start_point, const Point end_
     {
         // cout << ">" << endl;
         // cout<<"x1_t_r:"<<x1_t_r<<endl;
-        while ((k * delta_s <= x1_t_r) && (std::fabs(k * delta_s - x1_t_r) > 1e-3)) {
+        while ((k * delta_s <= x1_t_r) && (fabs(k * delta_s - x1_t_r) > 1e-3)) {
             // cout << "x_i:" << x_i << endl;
             x_i       = k * delta_s;
             y_i       = a * x_i * x_i * x_i + b * x_i * x_i;
@@ -710,7 +710,7 @@ void Path_Opti::CubicInterpolate2Point(const Point start_point, const Point end_
     }
     else {
         // cout << "<" << endl;
-        while (-k * delta_s >= x1_t_r && (std::fabs(-k * delta_s - x1_t_r) > 1e-3)) {
+        while (-k * delta_s >= x1_t_r && (fabs(-k * delta_s - x1_t_r) > 1e-3)) {
             // cout << "x_i:" << x_i << endl;
             x_i       = -k * delta_s;
             y_i       = a * x_i * x_i * x_i + b * x_i * x_i;

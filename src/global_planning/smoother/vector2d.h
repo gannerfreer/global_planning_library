@@ -3,7 +3,7 @@
 
 #include <cmath>
 #include <iostream>
-namespace GlobalPlanning {
+// namespace GlobalPlanning {
 // ###################################################
 //                                             VECTOR2
 // ###################################################
@@ -123,5 +123,5 @@ class Vector2D {
 inline Vector2D operator*(double k, const Vector2D& b) {
     return (b * k);
 }
-} // namespace GlobalPlanning
+// } // namespace GlobalPlanning
 #endif // VECTOR2D

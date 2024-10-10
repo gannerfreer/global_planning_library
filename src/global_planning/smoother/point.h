@@ -3,7 +3,7 @@
 
 #define INTPOINT IntPoint
 
-namespace GlobalPlanning {
+// namespace GlobalPlanning {
 /*! A light-weight integer point with fields x,y */
 class IntPoint {
   public:
@@ -11,5 +11,5 @@ class IntPoint {
     IntPoint(int _x, int _y) : x(_x), y(_y) {}
     int x, y;
 };
-} // namespace GlobalPlanning
+// } // namespace GlobalPlanning
 #endif

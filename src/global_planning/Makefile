@@ -4,7 +4,7 @@
 #如果这个工程的头文件被改变了，那么我们需要编译引用了这几个头文件的c文件，并链接目标程序。
 CC = gcc # C 编译器
 CXX = g++ # C++ 编译器
-CXXFLAGS = -fPIC -shared -std=c++17   -D SKIP_HEADER   -lstdc++fs   # C++ 编译选项，g 选项表示要将调试信息编译到可执行文件中
+CXXFLAGS = -fPIC -shared -std=c++17   -D SKIP_HEADER   -lstdc++fs  -O3  # C++ 编译选项，g 选项表示要将调试信息编译到可执行文件中
 # LDFLAGS = -lhiredis 
 # STATICLIBS = -lhiredis
 # LDFLAGS += -leasylogging++

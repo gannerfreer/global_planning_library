@@ -143,7 +143,7 @@ class OptimalPath {
      * @return 返回说明：无
      */
 
-    bool removeDuplicates(Path& input, Path& result);
+    void removeDuplicates(Path& input, Path& result);
     void RestoreData(Path& path);
     /**
      * @brief 基于车辆运动学模型的节点拓展函数
