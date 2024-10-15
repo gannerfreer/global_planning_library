@@ -225,18 +225,35 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
     Point  np;
     for (int i = 0; i < rspoint.size(); i++) {
         double s = 0;
-        while (s < fabs(rspoint.at(i).length)) {
-            double sign_s = (rspoint.at(i).length > 0) ? s : (-s);
-            CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
-            np.x     = np.x * m_vehicle_prarm_.radious + start.x;
-            np.y     = np.y * m_vehicle_prarm_.radious + start.y;
-            np.angle = Mod2pi(np.angle);
-            if (0.0 == s) {
-                directions = (rspoint.at(i).length > 0) ? Forward : Backward;
+        if (i == rspoint.size() - 1 || (rspoint.at(i).length * rspoint.at(i + 1).length > 0)) {
+            while (s < fabs(rspoint.at(i).length)) {
+                double sign_s = (rspoint.at(i).length > 0) ? s : (-s);
+                CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
+                np.x     = np.x * m_vehicle_prarm_.radious + start.x;
+                np.y     = np.y * m_vehicle_prarm_.radious + start.y;
+                np.angle = Mod2pi(np.angle);
+                if (0.0 == s) {
+                    directions = (rspoint.at(i).length > 0) ? Forward : Backward;
+                }
+                np.direction = directions;
+                rs_path.push_back(np);
+                s += step_size;
             }
-            np.direction = directions;
-            rs_path.push_back(np);
-            s += step_size;
+        }
+        else {
+            while (s < fabs(rspoint.at(i).length) + step_size) {
+                double sign_s = (rspoint.at(i).length > 0) ? s : (-s);
+                CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
+                np.x     = np.x * m_vehicle_prarm_.radious + start.x;
+                np.y     = np.y * m_vehicle_prarm_.radious + start.y;
+                np.angle = Mod2pi(np.angle);
+                if (0.0 == s) {
+                    directions = (rspoint.at(i).length > 0) ? Forward : Backward;
+                }
+                np.direction = directions;
+                rs_path.push_back(np);
+                s += step_size;
+            }
         }
     }
     CalNextPoint(rspoint.at(rspoint.size() - 1).length, rspoint.at(rspoint.size() - 1).x, rspoint.at(rspoint.size() - 1).y, rspoint.at(rspoint.size() - 1).theta, rspoint.at(rspoint.size() - 1).types, np, directions);

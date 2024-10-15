@@ -69,9 +69,17 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
             return;
         }
     }
+    threadLogger_->info("在执行完HybridAStarFitting之后，打印一下轨迹点direction信息");
+    for (auto i : global_path_) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+    }
     if (IsShortDistance()) {
         path = global_path_;
         return;
+    }
+    threadLogger_->info("在执行RemoveAfterSamePoint之前，打印一下轨迹点direction信息");
+    for (auto i : global_path_) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
     }
     Helper::RemoveAfterSamePoint(global_path_);
 
@@ -87,6 +95,11 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         if (!PathOffset()) {
             return;
         }
+    }
+
+    threadLogger_->info("在进入速度规划之前，打印一下轨迹点direction信息");
+    for (auto i : global_path_) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
     }
 
 
@@ -249,6 +262,7 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
             temp_point.curvature = final_path.at(i).curvature;
             traj.emplace_back(temp_point);
         }
+
         // 针对rule:5的情况，进行绕圈检查，检查原理：判断两个点之间的距离进行判断，是否有间距小于0.8m的点
 
         if (plan_rule_id == 5 || plan_rule_id == 4) {
@@ -260,6 +274,9 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
             }
         }
         threadLogger_->info("绕圈检测达标");
+        for (auto i : traj) {
+            threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+        }
 
         return true;
     }
@@ -502,6 +519,8 @@ bool Planning::PathPlanning() {
 }
 // 非调度规划任务
 bool Planning::NotFollowReferencelinePlanning() {
+    my_optimal_path_.threadLogger_ = threadLogger_;
+    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, true);
     vector<_TrajectoryPoint> temp_traj;
     long long                time_threshold = 2 * 1000 * 1000;
     unsigned char            rule_id_1 = 4, rule_id_2 = 5, rule_id_3 = 2;
@@ -521,7 +540,7 @@ bool Planning::NotFollowReferencelinePlanning() {
     else if (task_type_ == TaskType::LOAD) { // 装载任务，先纯倒车，纯倒车不行再往前开，再倒车
         threadLogger_->error("装载");
         vehicle_param_.end_offset_distance = 8.0; // 装载任务，最后倒车进去的轨迹必须是一条8m的直线
-        if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_1, time_threshold)) {
+        if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_3, time_threshold)) {
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_3, time_threshold)) {
                 threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
                 error_type_ = ErrorType::POINT_UNREASONABLE;
@@ -545,6 +564,7 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("未定义的任务");
         return false;
     }
+    my_optimal_path_.DeleteVoronoiSpace(true);
 
     return true;
 }
@@ -599,7 +619,7 @@ bool Planning::FollowReferencelinePlanning() {
                             if (IsConnect(start.first, end)) {
                                 threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start.first), sequence_mapping_.at(end));
                                 success_pair.push_back(make_pair(make_pair(start.first, end), road_sequence_.size()));
-                                // 如何找到的连通路径是顺向的，并且起点搜索距离已经大于5m，就可以退出来，没必要继续扩大搜索了
+                                // 如果找到的连通路径是顺向的就可以退出来，没必要继续扩大搜索了
                                 if (start.second == false) {
                                     threadLogger_->info("找到顺向车道，准备break");
                                     is_found = true; // 标记为已找到

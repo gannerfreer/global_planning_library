@@ -46,6 +46,11 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     // 如果有尖点，则尝试在尖点处补偿直线
     CuspPointExtension(collison_check);
 
+    cout << "检点延伸后，每个轨迹点的坐标及direction信息" << endl;
+    for (auto i : path_) {
+        cout << i.x << " " << i.y << " " << i.direction << endl;
+    }
+
     // 得到节点和固定点索引
     GetCuspIndex();     // 得到尖点索引查询表cuspLookup
     GetFixPointIndex(); // 得到固定点索引查询表fixpLookup
@@ -82,6 +87,8 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         }
     }
 
+    // 在这里对平滑后的路径点进行顺序校验，防止平滑后点顺序出现错乱
+
     //   ofstream file_out;
     // file_out.open("control_point.txt");
     // for (size_t index = 0; index < new_path_.size(); index++)
@@ -107,7 +114,7 @@ void Path_Opti::GetCuspIndex() {
     // 方向属性切换的点则为尖点
     for (unsigned int i = 1; i < path_.size(); ++i) {
         if (path_.at(i).direction != path_.at(i - 1).direction) {
-            cusp_set_.insert(i);
+            cusp_set_.insert(i - 1);
         }
     }
     if (path_.size() > 10) {
@@ -413,8 +420,8 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
         }
         else {
             // 尖点处两点距离较近，则舍去一个点
-            double dis_square = pow(path_.at(i).x - path_.at(i - 1).x, 2) + pow(path_.at(i).y - path_.at(i - 1).y, 2);
-            if (dis_square < pow(0.5 * m_vehicle_param_.step_length, 2)) {
+            double dis = hypot(path_.at(i).x - path_.at(i - 1).x, path_.at(i).y - path_.at(i - 1).y);
+            if (dis < 0.5 * m_vehicle_param_.step_length) {
                 temp_path.pop_back();
             }
             double       flag_pos_neg = (path_.at(i).direction == Forward) ? -1.0 : 1.0;
@@ -428,7 +435,9 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
                 temp_point.x         = path_.at(i).x + flag_pos_neg * j * cos(temp_point.angle);
                 temp_point.y         = path_.at(i).y + flag_pos_neg * j * sin(temp_point.angle);
                 temp_point.direction = (path_.at(i).direction == Forward) ? Backward : Forward;
-                num                  = j - 1;
+                cout << "尖点前直线延伸的点坐标" << endl;
+                cout << temp_point.x << "  " << temp_point.y << "  " << temp_point.direction << endl;
+                num = j - 1;
                 if (false == collison_check.IsVehicleCollision(temp_point)) // 如果碰撞，则放弃继续延伸
                 {
                     temp_path.push_back(temp_point);
@@ -437,7 +446,7 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
                     break;
                 }
             }
-            temp_path.back().direction = (temp_path.back().direction == Forward) ? Backward : Forward;
+            // temp_path.back().direction = (temp_path.back().direction == Forward) ? Backward : Forward;
 
             // 尖点后直线延伸
             for (int k = num - 1; k >= 0; k--) {
@@ -447,6 +456,8 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
                 temp_point.y         = path_.at(i).y + flag_pos_neg * k * sin(temp_point.angle);
                 temp_point.direction = path_.at(i).direction;
                 temp_path.push_back(temp_point);
+                cout << "尖点后直线延伸的点坐标" << endl;
+                cout << temp_point.x << "  " << temp_point.y << "  " << temp_point.direction << endl;
             }
         }
     }

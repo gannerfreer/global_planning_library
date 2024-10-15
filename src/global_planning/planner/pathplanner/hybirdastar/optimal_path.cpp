@@ -337,7 +337,7 @@ void OptimalPath::InitData(Point start, Point end) {
         offset_obstacle_bound_.push_back(temp_bound_2);
     }
     actual_start_ = start_;
-    if (plan_path_rule_ == PlanRule::Backward_To_End || plan_path_rule_ == PlanRule::Forward_All_Time) {
+    if (plan_path_rule_ == PlanRule::Forward_All_Time) {
         threadLogger_->info("起点进行{}米的延伸", m_vehicle_param_.start_offset_distance);
         actual_start_ = start_;
         start_.x      = start_.x + m_vehicle_param_.start_offset_distance * cos(start_.angle);
@@ -464,6 +464,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     threadLogger_->info("removeDuplicates() Successfuly!");
     cout << "removeDuplicates() Successfuly!" << endl;
 
+
     // 保存路点，并打印出来
     // std::ofstream file_out;
     // file_out.open("init_path.txt", std::ios::out);
@@ -486,6 +487,11 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     threadLogger_->info("OptimizePath Begin");
     my_path_opti.OptimizePath(path_a_star_, path, collison_check_, m_vehicle_param_);
     threadLogger_->info("OptimizePath End");
+    for (auto i : path) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+    }
+
+
     cout << "优化后角度：" << endl;
     for (int i = 0; i < path.size(); i++) {
         cout << path.at(i).angle << " ";
@@ -501,8 +507,11 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     threadLogger_->info("获取左右边界用时: {} ms", 0.001 * cal_time3);
 
     RestoreData(path); // 数据恢复
-
     threadLogger_->info("RestoreData() Successfuly!");
+    for (auto i : path) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+    }
+
 
     return PlanResult::Plan_OK;
 }
@@ -617,6 +626,10 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) && (MotionDirection::Backward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Backward_Fitting oneshot成功，一共oneshot了 {}  次 ", All);
+
+                        for (auto i : path_r_s_) {
+                            threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+                        }
 
                         return true;
                     }
@@ -789,11 +802,27 @@ void OptimalPath::TracePath(const Vertex3D final_point) {
         path_point.direction = temp_path.at(i).direction;
         path_a_star_.push_back(path_point);
     }
-    // 改变尖点属性
-    for (unsigned int i = 0; i < path_a_star_.size() - 1; ++i) {
-        if (path_a_star_.at(i).direction != path_a_star_.at(i + 1).direction) {
-            path_a_star_.at(i).direction = path_a_star_.at(i + 1).direction;
+
+    threadLogger_->info("改变尖点属性之前");
+    for (auto i : path_a_star_) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+    }
+    // 注释这段代码，注释原因：考虑到尖点属性问题，这个代码会将运动学搜索的部分的尖点属性改为后面的点的属性，与项目需求不符
+    //  改变尖点属性
+    //  for (unsigned int i = 0; i < path_a_star_.size() - 1; ++i) {
+    //      if (path_a_star_.at(i).direction != path_a_star_.at(i + 1).direction) {
+    //          path_a_star_.at(i).direction = path_a_star_.at(i + 1).direction;
+    //      }
+    //  }
+    //  这段代码是基本只会在BACK_TO_END规则中可能出现，即第一个点是正向的，后面搜寻到的点是倒向的，这是应该用后面的点将第一个点的方向属性覆盖掉
+    if (path_a_star_.size() > 2) {
+        if (path_a_star_.at(0).direction != path_a_star_.at(1).direction) {
+            path_a_star_.at(0).direction = path_a_star_.at(1).direction;
         }
+    }
+    threadLogger_->info("改变尖点属性之后");
+    for (auto i : path_a_star_) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
     }
 }
 
@@ -809,7 +838,7 @@ void OptimalPath::PathIntegration() {
 
     threadLogger_->info("PathIntegration--start_offset_distance:{}", m_vehicle_param_.start_offset_distance);
 
-    if (plan_path_rule_ == PlanRule::Backward_To_End || plan_path_rule_ == PlanRule::Forward_All_Time) {
+    if (plan_path_rule_ == PlanRule::Forward_All_Time) {
         threadLogger_->info("向前路径拼接");
         temp_point.angle = actual_start_.angle;
         cout << "start_offset_distance:" << m_vehicle_param_.start_offset_distance << endl;
@@ -821,7 +850,7 @@ void OptimalPath::PathIntegration() {
             temp_path.emplace_back(temp_point);
         }
         temp_path.pop_back();
-        cout << "temp_path.size();" << temp_path.size() << endl;
+        cout << "temp_path.size() " << temp_path.size() << endl;
         path_a_star_.insert(path_a_star_.begin(), temp_path.begin(), temp_path.end());
         path_a_star_.pop_back();
         cout << "拼接起点" << endl;
@@ -829,6 +858,11 @@ void OptimalPath::PathIntegration() {
             cout << path_a_star_.at(i).angle << endl;
         }
     }
+    threadLogger_->info("拼接起点的路径的direction信息");
+    for (auto i : path_a_star_) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+    }
+
 
     if (plan_path_rule_ == PlanRule::Backward_All_Time) {
         threadLogger_->info("向后路径拼接");
@@ -852,6 +886,10 @@ void OptimalPath::PathIntegration() {
     cout << "拼接RS" << endl;
     for (int i = 0; i < path_a_star_.size(); i++) {
         cout << path_a_star_.at(i).angle << endl;
+    }
+    threadLogger_->info("拼接完RS路径的direction信息");
+    for (auto i : path_a_star_) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
     }
 
     // 拼接终点直线路径
@@ -883,6 +921,10 @@ void OptimalPath::PathIntegration() {
             temp_point.z         = 0;
             temp_point.direction = MotionDirection::Backward;
             path_a_star_.push_back(temp_point);
+        }
+        threadLogger_->info("拼接完成终点的路径的direction信息");
+        for (auto i : path_a_star_) {
+            threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
         }
     }
 }
