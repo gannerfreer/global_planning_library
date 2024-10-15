@@ -149,6 +149,9 @@ inline bool GetReferencelinesWithRadiusAndAngle(_SinglePoint point, const map<in
             cout << "index:" << index << endl;
             temp_bool = true;
         }
+        else {
+            // cout << "id: " << pair.first << " nearest_dis: " << nearest_dis << " 此时搜索半径： " << radius << " 最近点角度差： " << fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 << endl;
+        }
     }
     if (temp_bool)
         return true;

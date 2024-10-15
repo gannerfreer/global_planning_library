@@ -35,9 +35,9 @@ SRC = interface.cpp \
 	  planner/speedplanner/global_speed_planning.cpp\
       smoother/path_opti.cpp\
 	  smoother/dynamicvoronoi.cpp\
-	  smoother/bucketedqueue.cpp\
 	  collision_check/collision_check.cpp\
 	  planner/pathplanner/spline/spline.cpp
+
 	  
 OBJS = $(SRC:.cpp = .o)
 

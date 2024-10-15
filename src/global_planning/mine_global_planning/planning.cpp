@@ -155,9 +155,10 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
 
 bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_direction, int search_start, int& search_index, vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id, int off_set) {
-    long long    time_threshold = 0.8 * 1000 * 1000;
-    int          counter        = 0;
-    bool         success_flag   = false;
+    long long    time_threshold    = 0.8 * 1000 * 1000;
+    int          counter           = 0;
+    bool         success_flag      = false;
+    bool         verification_flag = false;
     _SinglePoint temp_start, temp_end;
     int          cal = 0;
     threadLogger_->info("搜索方向  -- 1(顺着参考线)  --0(逆着参考线)：{}", search_start, search_direction);
@@ -176,12 +177,16 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_dir
             // threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{}", cal, i, temp_end.yaw, float(rule_id));
             // 到8个点的时候，时间得提升到800ms
             if (counter > 4) time_threshold = 0.8 * 1000 * 1000;
-            if (PoseVerificationInterface(input_point, temp_end, false)) {
+            if (rule_id == 5) {
+                verification_flag = false;
+            }
+            else {
+                verification_flag = true;
+            }
+            if (PoseVerificationInterface(input_point, temp_end, verification_flag)) { // false表示默认由起点向终点拟合
                 threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{},经过dubins曲线预先校验，合格", cal, i, temp_end.yaw, float(rule_id));
 
-                if (ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id,
-                                             time_threshold)) // rule_id:5，只前进
-                {
+                if (ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id, time_threshold)) {
                     search_index = i;
                     success_flag = true;
                     break;
@@ -208,11 +213,15 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_dir
             temp_start.yaw = global_path_.at(i).yaw;
             // threadLogger_->info("第{}个候选点，其索引：{} rule_id:{}", cal, i, float(rule_id));
             if (counter > 4) time_threshold = 0.8 * 1000 * 1000;
-            if (PoseVerificationInterface(temp_start, input_point, false)) {
+            if (rule_id == 5) {
+                verification_flag = false;
+            }
+            else {
+                verification_flag = true;
+            }
+            if (PoseVerificationInterface(temp_start, input_point, verification_flag)) {
                 threadLogger_->info("第 {}个候选点，其索引：{},yaw:{}, rule_id:{},经过dubins曲线预先校验，合格", cal, i, temp_end.yaw, float(rule_id));
-                if (ApplyHibridAStarWithTime(temp_start, input_point, result_trajectory, rule_id,
-                                             time_threshold)) // rule_id:5，只前进
-                {
+                if (ApplyHibridAStarWithTime(temp_start, input_point, result_trajectory, rule_id, time_threshold)) {
                     search_index = i;
                     success_flag = true;
                     break;
@@ -579,7 +588,7 @@ bool Planning::FollowReferencelinePlanning() {
     double         end_search_radius = 0.5, start_search_radius = 0.5;
     map<int, bool> start_path_vec;
     vector<int>    end_path_vec;
-    while (end_search_radius <= 0.6) {
+    while (end_search_radius <= 100) {
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
             if (searched_flag == true) {
                 return false;
