@@ -229,28 +229,28 @@ void Path_Opti::SmoothPath() {
             gradient_smoothness_term = SmoothnessTerm(xim2, xim1, xi, xip1, xip2);
             new_path_.at(i).x -= coeff.at(i) * gradient_smoothness_term.x;
             new_path_.at(i).y -= coeff.at(i) * gradient_smoothness_term.y;
-
             // Vonoroi项
             // 需要满足两个条件才会利用voronoi项进行平滑，1、需要使用voronoi图，2、当前传入的路径坐标xi位于voronoi图范围内
-            bool in_x_range = false;
-            bool in_y_range = false;
-            if (static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->getSizeX()) {
-                in_x_range = true;
-            }
-            if (static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->getSizeY()) {
-                in_y_range = true;
-            }
-
-            if (use_voronoi && in_x_range && in_y_range) {
-                cout << "计算voronoiterm" << endl;
-                gradient_vonoroi_term = VoronoiTerm(xi);
-                // cout << "算出的梯度为：" << gradient_vonoroi_term.getX() << " " << gradient_vonoroi_term.getY() << endl;
-                if (!isnan(gradient_vonoroi_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_vonoroi_term.x;
-                if (!isnan(gradient_vonoroi_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_vonoroi_term.y;
-                cout << "delta_x:" << coeff.at(i) * gradient_vonoroi_term.x << " delta_y:" << coeff.at(i) * gradient_vonoroi_term.y << endl;
-            }
-            else {
-                // cout << "跳过voronoiterm" << endl;
+            if (use_voronoi) {
+                bool in_x_range = false;
+                bool in_y_range = false;
+                if (static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->getSizeX()) {
+                    in_x_range = true;
+                }
+                if (static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->getSizeY()) {
+                    in_y_range = true;
+                }
+                if (use_voronoi && in_x_range && in_y_range) {
+                    cout << "计算voronoiterm" << endl;
+                    gradient_vonoroi_term = VoronoiTerm(xi);
+                    // cout << "算出的梯度为：" << gradient_vonoroi_term.getX() << " " << gradient_vonoroi_term.getY() << endl;
+                    if (!isnan(gradient_vonoroi_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_vonoroi_term.x;
+                    if (!isnan(gradient_vonoroi_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_vonoroi_term.y;
+                    cout << "delta_x:" << coeff.at(i) * gradient_vonoroi_term.x << " delta_y:" << coeff.at(i) * gradient_vonoroi_term.y << endl;
+                }
+                else {
+                    // cout << "跳过voronoiterm" << endl;
+                }
             }
         }
     }

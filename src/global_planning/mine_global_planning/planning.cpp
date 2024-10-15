@@ -520,7 +520,7 @@ bool Planning::PathPlanning() {
 // 非调度规划任务
 bool Planning::NotFollowReferencelinePlanning() {
     my_optimal_path_.threadLogger_ = threadLogger_;
-    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, true);
+    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
     vector<_TrajectoryPoint> temp_traj;
     long long                time_threshold = 2 * 1000 * 1000;
     unsigned char            rule_id_1 = 4, rule_id_2 = 5, rule_id_3 = 2;
@@ -564,7 +564,7 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("未定义的任务");
         return false;
     }
-    my_optimal_path_.DeleteVoronoiSpace(true);
+    my_optimal_path_.DeleteVoronoiSpace(false);
 
     return true;
 }
@@ -839,7 +839,7 @@ void Planning::PathClipAndSplice() {
 bool Planning::HybirdAStarFitting() {
     //  初始化HybrdiA*算法地图边界及voronoi图
     my_optimal_path_.threadLogger_ = threadLogger_;
-    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, true);
+    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
     // 基于横纵向距离来判断是否进行hybirdA*拟合
     threadLogger_->info("Enter HybirdAStarFitting");
     double        lat_threshold = 0.7, lon_threshold = 3;
@@ -906,7 +906,7 @@ bool Planning::HybirdAStarFitting() {
         global_path_.erase(global_path_.begin() + search_index, global_path_.end());
         global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
     }
-    my_optimal_path_.DeleteVoronoiSpace(true);
+    my_optimal_path_.DeleteVoronoiSpace(false);
     threadLogger_->info("HybirdAStarFitting结束");
     return true;
 }
