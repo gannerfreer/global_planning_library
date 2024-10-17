@@ -28,6 +28,7 @@ SRC = interface.cpp \
       mine_global_planning/planning.cpp\
 	  globalvariable.cpp \
       planner/pathplanner/dijkstra/dijkstra.cpp\
+	  planner/pathplanner/dubins/dubins.cpp\
 	  planner/pathplanner/hybirdastar/node2d.cpp\
 	  planner/pathplanner/hybirdastar/optimal_path.cpp\
 	  planner/pathplanner/hybirdastar/r_s_curve.cpp\

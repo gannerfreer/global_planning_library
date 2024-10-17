@@ -9,6 +9,8 @@ Description: The header file for C++ class Dubis.
 
 #ifndef DUBINS_H
 #define DUBINS_H
+#include <float.h>
+
 #include <tuple>
 
 #include "../../../common/common_struct.h"
