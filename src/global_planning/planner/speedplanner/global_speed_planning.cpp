@@ -1399,7 +1399,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
     if (vehicle_param.s_curve_speed_limit) {
         // 遍历整个trajectory_points，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
         // vector<float> vec_exceeding_speed_index; // 存放整条路径中限速超标的点的索引
-        float         L_vehicle                = 5.95;
+        float         L_vehicle                = vehicle_param.wheel_base;
         float         max_Steering_wheel_speed = 0.175;
         float         temp_max_speed;
         float         wheel_delta_angle, wheel_angle1, wheel_angle2;

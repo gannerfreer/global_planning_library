@@ -184,13 +184,20 @@ inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest
     // cout << "lon_dis:" << lon_dis << endl;
 }
 
-inline bool OverSpeedCheck(vector<_TrajectoryPoint>& traj) {
+inline bool OverSpeedCheck(vector<_TrajectoryPoint>& traj, float L) {
     bool flag = false;
     for (int i = 0; i < traj.size() - 1; i++) {
         if (traj.at(i).speed > traj.at(i).speed_limit + 0.5) {
             flag = true;
         }
+        if (traj.at(i).speed > sqrt(0.2 / traj.at(i).curvature)) {
+            flag = true;
+        }
+        if (traj.at(i).speed > 1.0 * 0.349 / fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature))) {
+            flag = true;
+        }
     }
+
     if (flag == true) return false;
     return true;
 }

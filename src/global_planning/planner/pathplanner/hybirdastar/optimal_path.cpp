@@ -815,11 +815,11 @@ void OptimalPath::TracePath(const Vertex3D final_point) {
     //      }
     //  }
     //  这段代码是基本只会在BACK_TO_END规则中可能出现，即第一个点是正向的，后面搜寻到的点是倒向的，这是应该用后面的点将第一个点的方向属性覆盖掉
-    if (path_a_star_.size() > 2) {
-        if (path_a_star_.at(0).direction != path_a_star_.at(1).direction) {
-            path_a_star_.at(0).direction = path_a_star_.at(1).direction;
-        }
-    }
+    // if (path_a_star_.size() > 2) {
+    //     if (path_a_star_.at(0).direction != path_a_star_.at(1).direction) {
+    //         path_a_star_.at(0).direction = path_a_star_.at(1).direction;
+    //     }
+    // }
     threadLogger_->info("改变尖点属性之后");
     for (auto i : path_a_star_) {
         threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
@@ -865,6 +865,9 @@ void OptimalPath::PathIntegration() {
 
 
     if (plan_path_rule_ == PlanRule::Backward_All_Time) {
+        if (path_a_star_.at(0).direction == 0) {
+            path_a_star_.at(0).direction = MotionDirection::Backward;
+        }
         threadLogger_->info("向后路径拼接");
         temp_point.angle = actual_start_.angle;
         for (double i = 0; i <= m_vehicle_param_.start_offset_distance + 1e-3; i += m_vehicle_param_.step_length) {

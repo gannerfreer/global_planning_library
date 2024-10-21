@@ -42,12 +42,13 @@ enum struct TaskType : unsigned int {
 };
 enum struct ErrorType : unsigned int {
     SUCCESS,
-    POINT_UNREASONABLE,  // 作业点不合理
-    ROAD_GRAPH_ERROR,    // 路网权重图存在问题
-    SPEED_PLANNING_FAIL, // 速度规划失败
-    ALGORITHM_ERROR,     // 规划算法崩溃，拿出日志，并联系开发人员
-    OFFSET_FAIL,         // 均匀碾压失败
-    NO_MAP,              // 规划库无地图，可能是容器被重启了，需要重新加载地图
+    POINT_UNREASONABLE,    // 作业点不合理
+    ROAD_GRAPH_ERROR,      // 路网权重图存在问题
+    SPEED_PLANNING_FAIL,   // 速度规划失败
+    ALGORITHM_ERROR,       // 规划算法崩溃，拿出日志，并联系开发人员
+    OFFSET_FAIL,           // 均匀碾压失败
+    NO_MAP,                // 规划库无地图，可能是容器被重启了，需要重新加载地图
+    END_POINT_UNREASONABLE // 终点不合理
 };
 
 struct _TrajectoryPoint {

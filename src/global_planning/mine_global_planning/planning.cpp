@@ -585,10 +585,10 @@ bool Planning::FollowReferencelinePlanning() {
     vector<pair<pair<int, int>, int>> success_pair;
     v_has_calculate_pair_.clear();
     bool           searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
-    double         end_search_radius = 0.5, start_search_radius = 0.5;
+    double         end_search_radius = 1.0, start_search_radius = 0.5;
     map<int, bool> start_path_vec;
     vector<int>    end_path_vec;
-    while (end_search_radius <= 100) {
+    while (end_search_radius <= 1.0) {
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
             if (searched_flag == true) {
                 return false;
@@ -629,11 +629,6 @@ bool Planning::FollowReferencelinePlanning() {
                                 threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start.first), sequence_mapping_.at(end));
                                 success_pair.push_back(make_pair(make_pair(start.first, end), road_sequence_.size()));
                                 // 如果找到的连通路径是顺向的就可以退出来，没必要继续扩大搜索了
-                                if (start.second == false) {
-                                    threadLogger_->info("找到顺向车道，准备break");
-                                    is_found = true; // 标记为已找到
-                                    break;           // 退出内层循环
-                                }
                             }
                             else {
                                 threadLogger_->info("start:{},end:{}", start.first, end);
@@ -642,16 +637,13 @@ bool Planning::FollowReferencelinePlanning() {
 
                             v_has_calculate_pair_.push_back(pair(start.first, end));
                         }
-                        if (is_found) break; // 如果已找到，退出中间层循环
                     }
-                    if (is_found) break; // 如果已找到，退出外层循环
                 }
                 else {
                     threadLogger_->info("起点搜索半径{},无参考路径", start_search_radius);
                 }
                 start_search_radius += 0.5;
             }
-            if (is_found) break;
         }
         else {
             threadLogger_->info("终点搜索,半径{}内无参考路径", end_search_radius);
@@ -672,14 +664,29 @@ bool Planning::FollowReferencelinePlanning() {
 
 
     // 从success_pair中挑选最优的路径对
-    int            min = INT_MAX;
-    pair<int, int> best_pair;
+    int                               min = INT_MAX;
+    pair<int, int>                    best_pair;
+    vector<pair<pair<int, int>, int>> record;
     for (int i = 0; i < success_pair.size(); i++) {
-        if (success_pair.at(i).second < min) {
-            best_pair.first  = success_pair.at(i).first.first;
-            best_pair.second = success_pair.at(i).first.second;
-            min              = success_pair.at(i).second;
+        record.push_back(pair<pair, int>(success_pair.at(i), 0));
+    }
+    float       cost1, cost2, cost3 = 0;
+    _SingleTraj start_traj;
+    int         start_key;
+    int         start_index, start_lat_dis, start_lon_dis, start_distance, start_angle_diff = 0;
+    for (auto i : record) {
+        start_key  = sequence_mapping_.at(i.first.first);
+        start_traj = all_referencelines_.at(start_key);
+        Helper::CalNearestIndex(start_point_, start_traj, start_index, start_lat_dis, start_lon_dis, start_distance, start_angle_diff);
+        if (start_angle_diff > M_PI / 2) {
+            cost1 = 100;
         }
+        else {
+            cost1 = 0;
+        }
+        cost2 = start_distance;
+        cost3 = ReferencelineTotalDis();
+        cost1 = i.second = cost1 + cost2 + cost3;
     }
 
     dijkstra_.searchpath(best_pair.first, best_pair.second);
@@ -688,7 +695,7 @@ bool Planning::FollowReferencelinePlanning() {
 
     threadLogger_->info("找到路径对{}-{}", sequence_mapping_.at(best_pair.first), sequence_mapping_.at(best_pair.second));
     // 找到起点、终点对应的索引及其横纵向距离
-    _SingleTraj start_traj, end_traj;
+
 
     start_key_ = sequence_mapping_.at(best_pair.first);
     end_key_   = sequence_mapping_.at(best_pair.second);
@@ -894,6 +901,8 @@ bool Planning::HybirdAStarFitting() {
     // 最后看终点
     if (end_need_fitting) // 终点需要进行HybirdA*拟合
     {
+        error_type_ = ErrorType::END_POINT_UNREASONABLE;
+        return false;
         threadLogger_->info("终点需要HybirdA*拟合");
         vector<_TrajectoryPoint> temp_traj;
 
@@ -1072,6 +1081,8 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
     }
     curve::Dubins             dubis;
     std::vector<curve::Point> path;
-
+    dubis.SetRadius(vehicle_param_.radius);
+    threadLogger_->info("dubins radius:{}", radius.GetRadius());
     return dubis.GetDubinsPath(dubins_start, dubins_end, path);
 }
+float Planning::ReferencelineTotalDis() {}

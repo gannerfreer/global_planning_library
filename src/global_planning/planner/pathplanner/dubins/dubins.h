@@ -31,6 +31,12 @@ class Dubins {
      * @return 返回说明：路径是否可行
      */
     bool GetDubinsPath(const Point start_pose, const Point end_pose, std::vector<Point>& path);
+    void SetRadius(float radius) {
+        radius_ = radius;
+    }
+    float GetRadius() {
+        return radius_;
+    }
 
   private:
     enum DubinsPathSegmentType : unsigned char {
@@ -81,6 +87,7 @@ class Dubins {
      */
     Point CalNextPoint(float v, float x, float y, float theta, DubinsPathSegmentType type);
 
+
   private:
     const DubinsPathSegmentType dubins_path_type_[6][3] = {
         {L, S, L},
@@ -91,7 +98,7 @@ class Dubins {
         {L, R, L}
     }; // dubins曲线的6种组成类型
 
-    const float radius_  = 15;
+    const float radius_  = 11;
     const float delta_s_ = 0.1;
     float       alpha_, beta_, d_;
     float       sin_alpha_, sin_beta_, cos_alpha_, cos_beta_, cos_alpha_m_beta_;
