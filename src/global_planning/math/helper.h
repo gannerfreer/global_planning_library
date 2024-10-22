@@ -73,7 +73,7 @@ inline double ToRad(double t) {
 }
 
 
-inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius, map<int, bool>& vec) {
+inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _SingleTraj>& trajs, double radius, vector<int>& vec) {
     cout << "Coming GetReferencelinesWithRadius" << endl;
     vec.clear();
     _TrajectoryPoint nearest_point;
@@ -101,16 +101,7 @@ inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _Sing
         nearest_point = pair.second.trajectory.at(index);
         // cout << "nearest_dis:" << nearest_dis << "            id:" << pair.first << endl;
         if (nearest_dis < radius) {
-            double angle_diff = fabs(point.yaw - nearest_point.yaw) > M_PI ? 2 * M_PI - fabs(point.yaw - nearest_point.yaw) : fabs(point.yaw - nearest_point.yaw);
-            // cout << "angle_diff: " << angle_diff << endl;
-            // cout << "point.yaw: " << point.yaw << endl;
-            // cout << "nearest_point.yaw: " << nearest_point.yaw << endl;
-            if (angle_diff > M_PI / 2.0) { // 逆向车道
-                vec[pair.first] = true;
-            }
-            else {
-                vec[pair.first] = false;
-            }
+            vec.push_back(pair.first);
             cout << "index:" << index << endl;
             temp_bool = true;
         }

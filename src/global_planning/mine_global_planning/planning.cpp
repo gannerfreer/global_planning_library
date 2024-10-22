@@ -130,7 +130,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("CheckPathFracture");
 
     // 超速检测
-    if (!Helper::OverSpeedCheck(global_path_)) {
+    if (!Helper::OverSpeedCheck(global_path_, vehicle_param_.wheel_base)) {
         threadLogger_->info("OverSpeedCheck fail");
         return;
     }
@@ -161,7 +161,7 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_dir
     bool         verification_flag = false;
     _SinglePoint temp_start, temp_end;
     int          cal = 0;
-    threadLogger_->info("搜索方向  -- 1(顺着参考线)  --0(逆着参考线)：{}", search_start, search_direction);
+    threadLogger_->info("搜索方向  -- 1(顺着参考线)  --0(逆着参考线)：{}", search_direction);
     int offset = off_set;
     if (search_direction == true) // 顺着参考线进行搜索，这种case为找拼接终点
     {
@@ -582,12 +582,11 @@ bool Planning::NotFollowReferencelinePlanning() {
 // 沿路网路径规划
 bool Planning::FollowReferencelinePlanning() {
     // 起点、终点渐进式扩大搜索
-    vector<pair<pair<int, int>, int>> success_pair;
+    vector<pair<int, int>> success_pair;
     v_has_calculate_pair_.clear();
-    bool           searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
-    double         end_search_radius = 1.0, start_search_radius = 0.5;
-    map<int, bool> start_path_vec;
-    vector<int>    end_path_vec;
+    bool        searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
+    double      end_search_radius = 1.0, start_search_radius = 0.5;
+    vector<int> start_path_vec, end_path_vec;
     while (end_search_radius <= 1.0) {
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
             if (searched_flag == true) {
@@ -605,12 +604,11 @@ bool Planning::FollowReferencelinePlanning() {
                     threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius, start_path_vec.size());
                     threadLogger_->info("搜索到的路径ID信息如下");
                     for (auto i : start_path_vec) {
-                        threadLogger_->info(i.first);
+                        threadLogger_->info(i);
                     }
-                    map<int, bool> start_path_vec_switch;
-                    vector<int>    end_path_vec_switch;
+                    vector<int> start_path_vec_switch, end_path_vec_switch;
                     for (auto i : start_path_vec) {
-                        start_path_vec_switch[GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i.first)] = i.second;
+                        start_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
                     }
 
                     for (auto i : end_path_vec) {
@@ -620,22 +618,22 @@ bool Planning::FollowReferencelinePlanning() {
                     // 在start_path_vec_switch和end_path_vec_switch中查找连通路径
                     for (auto start : start_path_vec_switch) {
                         for (auto end : end_path_vec_switch) {
-                            if (HasSearched(start.first, end)) {
+                            if (HasSearched(start, end)) {
                                 // threadLogger_->info("路径{}->路径{}已经计算过，为节约计算资源，予以跳过", start.first, end);
                                 continue;
                             }
-                            threadLogger_->info("索引  start:{},end:{}", start.first, end);
-                            if (IsConnect(start.first, end)) {
-                                threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start.first), sequence_mapping_.at(end));
-                                success_pair.push_back(make_pair(make_pair(start.first, end), road_sequence_.size()));
+                            threadLogger_->info("索引  start:{},end:{}", start, end);
+                            if (IsConnect(start, end)) {
+                                threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
+                                success_pair.push_back(make_pair(start, end));
                                 // 如果找到的连通路径是顺向的就可以退出来，没必要继续扩大搜索了
                             }
                             else {
-                                threadLogger_->info("start:{},end:{}", start.first, end);
-                                threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start.first), sequence_mapping_.at(end));
+                                threadLogger_->info("start:{},end:{}", start, end);
+                                threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
                             }
 
-                            v_has_calculate_pair_.push_back(pair(start.first, end));
+                            v_has_calculate_pair_.push_back(pair(start, end));
                         }
                     }
                 }
@@ -658,7 +656,7 @@ bool Planning::FollowReferencelinePlanning() {
     else {
         threadLogger_->info("规划算法找到的成功路径对id如下：");
         for (int i = 0; i < success_pair.size(); i++) {
-            threadLogger_->info("{},{}", sequence_mapping_.at(success_pair.at(i).first.first), sequence_mapping_.at(success_pair.at(i).first.second));
+            threadLogger_->info("{},{}", sequence_mapping_.at(success_pair.at(i).first), sequence_mapping_.at(success_pair.at(i).second));
         }
     }
 
@@ -668,27 +666,42 @@ bool Planning::FollowReferencelinePlanning() {
     pair<int, int>                    best_pair;
     vector<pair<pair<int, int>, int>> record;
     for (int i = 0; i < success_pair.size(); i++) {
-        record.push_back(pair<pair, int>(success_pair.at(i), 0));
+        record.push_back(pair<pair<int, int>, int>(success_pair.at(i), 0));
     }
     float       cost1, cost2, cost3 = 0;
-    _SingleTraj start_traj;
-    int         start_key;
-    int         start_index, start_lat_dis, start_lon_dis, start_distance, start_angle_diff = 0;
+    _SingleTraj temp_start_traj, temp_end_traj;
+    int         temp_start_key, temp_end_key;
+    int         temp_start_index, temp_end_index;
+    double      temp_start_lat_dis, temp_start_lon_dis, temp_start_distance, temp_start_angle_diff = 0;
+    double      temp_end_lat_dis, temp_end_lon_dis, temp_end_distance, temp_end_angle_diff         = 0;
+
     for (auto i : record) {
-        start_key  = sequence_mapping_.at(i.first.first);
-        start_traj = all_referencelines_.at(start_key);
-        Helper::CalNearestIndex(start_point_, start_traj, start_index, start_lat_dis, start_lon_dis, start_distance, start_angle_diff);
-        if (start_angle_diff > M_PI / 2) {
+        temp_start_key = sequence_mapping_.at(i.first.first);
+        temp_end_key   = sequence_mapping_.at(i.first.second);
+
+        temp_start_traj = all_referencelines_.at(temp_start_key);
+        temp_end_traj   = all_referencelines_.at(temp_start_key);
+        Helper::CalNearestIndex(start_point_, temp_start_traj, temp_start_index, temp_start_lat_dis, temp_start_lon_dis, temp_start_distance, temp_start_angle_diff);
+        Helper::CalNearestIndex(end_point_, temp_end_traj, temp_end_index, temp_end_lat_dis, temp_end_lon_dis, temp_end_distance, temp_end_angle_diff);
+        if (temp_start_angle_diff > M_PI / 2) {
             cost1 = 100;
         }
         else {
             cost1 = 0;
         }
-        cost2 = start_distance;
-        cost3 = ReferencelineTotalDis();
-        cost1 = i.second = cost1 + cost2 + cost3;
+        cost2    = temp_start_distance;
+        cost3    = ReferencelineTotalDis(i.first, temp_start_index, temp_end_index);
+        i.second = cost1 + cost2 + cost3;
     }
-
+    int min_cost = INT_MAX, min_index = -1;
+    for (int i = 0; i < record.size(); i++) {
+        if (record.at(i).second > min_cost) {
+            min_cost  = record.at(i).second;
+            min_index = i;
+        }
+    }
+    best_pair.first  = record.at(min_index).first.first;
+    best_pair.second = record.at(min_index).first.second;
     dijkstra_.searchpath(best_pair.first, best_pair.second);
     road_sequence_ = dijkstra_.GetPath();
 
@@ -697,12 +710,12 @@ bool Planning::FollowReferencelinePlanning() {
     // 找到起点、终点对应的索引及其横纵向距离
 
 
-    start_key_ = sequence_mapping_.at(best_pair.first);
-    end_key_   = sequence_mapping_.at(best_pair.second);
-    start_traj = all_referencelines_.at(start_key_);
-    end_traj   = all_referencelines_.at(end_key_);
-    Helper::CalNearestIndex(start_point_, start_traj, start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
-    Helper::CalNearestIndex(end_point_, end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_, end_angle_diff_);
+    start_key_      = sequence_mapping_.at(best_pair.first);
+    end_key_        = sequence_mapping_.at(best_pair.second);
+    temp_start_traj = all_referencelines_.at(start_key_);
+    temp_end_traj   = all_referencelines_.at(end_key_);
+    Helper::CalNearestIndex(start_point_, temp_start_traj, start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
+    Helper::CalNearestIndex(end_point_, temp_end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_, end_angle_diff_);
     threadLogger_->info("起点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", start_index_, start_lat_dis_, start_lon_dis_, start_angle_diff_ / M_PI * 180.0);
     threadLogger_->info("终点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", end_index_, end_lat_dis_, end_lon_dis_, end_angle_diff_ / M_PI * 180.0);
 
@@ -1081,8 +1094,30 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
     }
     curve::Dubins             dubis;
     std::vector<curve::Point> path;
-    dubis.SetRadius(vehicle_param_.radius);
-    threadLogger_->info("dubins radius:{}", radius.GetRadius());
+    dubis.SetRadius(vehicle_param_.radious);
+    threadLogger_->info("dubins radius:{}", dubis.GetRadius());
     return dubis.GetDubinsPath(dubins_start, dubins_end, path);
 }
-float Planning::ReferencelineTotalDis() {}
+float Planning::ReferencelineTotalDis(pair<int, int>& input_pair, int start_index, int end_index) {
+    dijkstra_.searchpath(input_pair.first, input_pair.second);
+    road_sequence_   = dijkstra_.GetPath();
+    int total_length = 0;
+    if (road_sequence_.size() > 1) {
+        for (int i = 0; i < road_sequence_.size(); i++) {
+            int temp_key = sequence_mapping_.at(road_sequence_.at(i));
+            if (i == 0) {
+                total_length += all_referencelines_.at(temp_key).trajectory.size() - start_index;
+            }
+            else if (i == road_sequence_.size() - 1) {
+                total_length += end_index;
+            }
+            else {
+                total_length += all_referencelines_.at(temp_key).trajectory.size();
+            }
+        }
+        return total_length;
+    }
+    else {
+        return end_index - start_index;
+    }
+}

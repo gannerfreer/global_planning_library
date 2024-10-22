@@ -232,28 +232,23 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
 
         return PlanResult::StartPoint_Infeasible;
     }
+    if (plan_path_rule_ == PlanRule::Forward_All_Time && collison_check_.IsVehicleCollision(end_r_)) {
+        threadLogger_->info("PlanRule::Forward_All_Time ,but end_r_ 碰撞检测失败 ");
+        return PlanResult::EndPoint_Infeasible;
+    }
+    if ((plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Backward_To_End) && collison_check_.IsVehicleCollision(end_f_)) {
+        threadLogger_->info("PlanRule::Backward_All_Time或Backward_To_End ,but end_f_ 碰撞检测失败 ");
+        return PlanResult::EndPoint_Infeasible;
+    }
     timelog.AddLog("IsVehicleCollision");
-    // threadLogger_->info( "plan_path_rule_:" << static_cast<float>(plan_path_rule) );
 
-    if (collison_check_.IsVehicleCollision(end_r_) || plan_path_rule_ == PlanRule::Backward_To_End || plan_path_rule_ == PlanRule::Backward_All_Time) {
-        if (collison_check_.IsVehicleCollision(end_r_)) {
-            threadLogger_->info("终点碰撞检测不通过(end_r_)");
-        }
-        else {
-            threadLogger_->info("plan_path_rule_ == PlanRule::Backward_To_End");
-        }
 
+    if (plan_path_rule_ == PlanRule::Backward_To_End || plan_path_rule_ == PlanRule::Backward_All_Time) {
         threadLogger_->info(" fitting_direction_ = FittingDirection::Backward_Fitting");
 
         fitting_direction_ = FittingDirection::Backward_Fitting;
     }
-    else if (collison_check_.IsVehicleCollision(end_f_) || plan_path_rule_ == PlanRule::Forward_To_End || plan_path_rule_ == PlanRule::Forward_All_Time) {
-        if (collison_check_.IsVehicleCollision(end_f_)) {
-            threadLogger_->info("终点碰撞检测不通过(end_f_)");
-        }
-        else {
-            threadLogger_->info("plan_path_rule_ == PlanRule::Forward_To_End");
-        }
+    else if (plan_path_rule_ == PlanRule::Forward_All_Time) {
         threadLogger_->info(" fitting_direction_ = FittingDirection::Forword_Fitting");
 
         fitting_direction_ = FittingDirection::Forword_Fitting;
@@ -263,12 +258,9 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
 
         fitting_direction_ = FittingDirection::Both_Fitting;
     }
-    // threadLogger_->info( "FittingDirection:" << static_cast<int>(fitting_direction_) );
-    // 混合A*搜索 确定调整后的起点、终点、前向终点、后向终点、区域i边界后、拟合方式后开始干活
-    // threadLogger_->info( "规划终点符合碰撞要求,前延点/后延点也符合碰撞要求,开始hybird A*拟合" );
-    // cout << "调用A*" << endl;
+
+
     PlanResult result = AStarPath(final_path, time_threshold);
-    // cout << "line121" << endl;
     timelog.AddLog("AStarPath");
     threadLogger_->info(timelog.GetLog());
     return result;

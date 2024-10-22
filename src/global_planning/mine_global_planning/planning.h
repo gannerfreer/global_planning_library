@@ -135,17 +135,18 @@ class Planning {
      * @brief
      *
      */
-    bool HybirdAStarFitting();
-    void StartEndPointProcess();
-    bool PathOffset();
-    bool SpeedPlanning();
-    bool NotFollowReferencelinePlanning();
-    bool FollowReferencelinePlanning();
-    void PathClipAndSplice();
-    bool JudgeFittingDirection(_SinglePoint point, int start_index, bool is_start);
-    bool IsShortDistance();
-    bool HasSearched(int start, int end);
-    bool PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag = 0);
+    bool  HybirdAStarFitting();
+    void  StartEndPointProcess();
+    bool  PathOffset();
+    bool  SpeedPlanning();
+    bool  NotFollowReferencelinePlanning();
+    bool  FollowReferencelinePlanning();
+    void  PathClipAndSplice();
+    bool  JudgeFittingDirection(_SinglePoint point, int start_index, bool is_start);
+    bool  IsShortDistance();
+    bool  HasSearched(int start, int end);
+    bool  PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag = 0);
+    float ReferencelineTotalDis(pair<int, int>& input_pair, int start_index, int end_index);
 
   public:
     _SinglePoint start_point_, end_point_;                                                                                                                                       // 起、终点坐标
@@ -178,12 +179,12 @@ class Planning {
 
 #ifdef SKIP_HEADER
 #else
-  private:
-    CConfigureIO configio_;
+      private:
+        CConfigureIO configio_;
 
-  public:
-    rviz_path ::CRvizPath c_rviz_; // for 显示
-    tarRviz               m_tar_rviz_data_;
+      public:
+        rviz_path ::CRvizPath c_rviz_; // for 显示
+        tarRviz               m_tar_rviz_data_;
 #endif
-};
+    };
 #endif // GLOBAL_PLANNING_PLANNING_H
