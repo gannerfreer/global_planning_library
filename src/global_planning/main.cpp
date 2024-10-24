@@ -32,31 +32,35 @@ bool                         is_receive_end   = false;
 // const double x_o_ = -299; // 鲁南偏移参数
 // const double y_o_ = 920;  // 鲁南偏移参数
 
-const double x_o_ = 193.55615432;    // 实验偏移参数
-const double y_o_ = 1075.6719204094; // 实验偏移参数
+// const double x_o_ = 193.55615432;    // 实验偏移参数
+// const double y_o_ = 1075.6719204094; // 实验偏移参数
+
+const double x_o_ = -94.5797536231; // 实验偏移参数
+const double y_o_ = 173.6083593499; // 实验偏移参数
+
 
 vector<_TrajectoryPoint> global_path, road_nodes;
 vector<Point>            expand_point;
 
 
 void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
-    // start_point.x   = msg->pose.pose.position.x;
-    // start_point.y   = msg->pose.pose.position.y;
-    // start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    start_point.x   = -83.33236496710938 - x_o_;
-    start_point.y   = -16.580032715600055 - y_o_;
-    start_point.yaw = 10.93929500771589 / 180.0 * M_PI;
+    start_point.x   = msg->pose.pose.position.x;
+    start_point.y   = msg->pose.pose.position.y;
+    start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
+    // start_point.x   = 30.703327431587496 - x_o_;
+    // start_point.y   = 33.88472653740001 - y_o_;
+    // start_point.yaw = 35.61491152129136 / 180.0 * M_PI;
 
     is_receive_start = true;
 }
 
 void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-    // end_point.x   = msg->pose.position.x;
-    // end_point.y   = msg->pose.position.y;
-    // end_point.yaw = tf::getYaw(msg->pose.orientation);
-    end_point.x   = -338.76751511359373 - x_o_;
-    end_point.y   = 1233.099670043189 - y_o_;
-    end_point.yaw = 115.01686124540299 / 180.0 * M_PI;
+    end_point.x   = msg->pose.position.x;
+    end_point.y   = msg->pose.position.y;
+    end_point.yaw = tf::getYaw(msg->pose.orientation);
+    // end_point.x   = 20.616153969673434 - x_o_;
+    // end_point.y   = 14.100455297165638 - y_o_;
+    // end_point.yaw = 89.75448452457287 / 180.0 * M_PI;
 
     is_receive_end = true;
 }
@@ -95,7 +99,7 @@ int main(int argc, char** argv) {
     stringstream ss;
     ss << put_time(localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
     string timeStr         = ss.str();
-    string filePath        = dirPath + "/log_" + timeStr + ".txt";
+    string filePath        = dirPath + "/log_" + timeStr + ".log";
     planning.threadLogger_ = spdlog::rotating_logger_mt(logger_id, filePath, 10 * 1024 * 1024, 1, true);
     planning.threadLogger_->flush_on(spdlog::level::info);
     planning.threadLogger_->info("本地仿真环境日志");

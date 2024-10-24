@@ -318,7 +318,7 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
     }
     else if (2 < temp_keypoint.size()) // 若大于两个关键点
     {
-        threadLogger_->error("2 <temp_keypoint.size()");
+        threadLogger_->info("2 <temp_keypoint.size()");
         temp_sparsespeedpoints_all.clear();
         /*循环遍历关键点集*/
         float last_speed = temp_keypoint.at(0).speed_limit_left;

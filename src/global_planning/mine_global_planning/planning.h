@@ -40,7 +40,7 @@ class Planning {
     bool ApplyHibridAStar(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, int plan_rule_id);
 
 
-    bool ProgressiveHybirdAStar(_SinglePoint& input_point, bool search_direction, int search_start, int& search_index, vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id, int off_set);
+    bool ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id);
 
     /**
      * @brief
@@ -142,7 +142,7 @@ class Planning {
     bool  NotFollowReferencelinePlanning();
     bool  FollowReferencelinePlanning();
     void  PathClipAndSplice();
-    bool  JudgeFittingDirection(_SinglePoint point, int start_index, bool is_start);
+    bool  JudgeFittingDirection();
     bool  IsShortDistance();
     bool  HasSearched(int start, int end);
     bool  PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag = 0);
@@ -179,12 +179,12 @@ class Planning {
 
 #ifdef SKIP_HEADER
 #else
-      private:
-        CConfigureIO configio_;
+  private:
+    CConfigureIO configio_;
 
-      public:
-        rviz_path ::CRvizPath c_rviz_; // for 显示
-        tarRviz               m_tar_rviz_data_;
+  public:
+    rviz_path ::CRvizPath c_rviz_; // for 显示
+    tarRviz               m_tar_rviz_data_;
 #endif
-    };
+};
 #endif // GLOBAL_PLANNING_PLANNING_H

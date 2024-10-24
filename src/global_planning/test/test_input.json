@@ -1,9 +1,9 @@
 {
     "m_Start_Point": {
-        "x": -84.85991823707978,
-        "y": 127.35615242753077,
-        "z": 12.810966491699219,
-        "yaw": 275.4893798828125
+        "x": -85.43011203323908,
+        "y": 134.35357784515327,
+        "z": 12.86037826538086,
+        "yaw": 273.48919677734375
     },
     "m_End_Point": {
         "x": -7.3474959944,
@@ -52,9 +52,9 @@
         "lat_min_distance": 1,
         "lon_min_distance": 15,
         "turnning_penalty": 2.468,
-        "safe_margin_bound": 0.5,
+        "safe_margin_bound": 0,
         "safe_margin_error": 0,
-        "veh_center_2_side": 1.825,
+        "veh_center_2_side": 1.735,
         "angle_discrete_num": 3,
         "max_fitting_radius": 100,
         "veh_center_2_front": 7.3,
@@ -85,5 +85,5 @@
     },
     "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1848569058961207296"
+    "key": "ids:mine:dispatch:planPath:result:1848929668316082176"
 }

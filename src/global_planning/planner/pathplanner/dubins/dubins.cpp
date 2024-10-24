@@ -13,7 +13,11 @@ using namespace curve;
  * @brief 获取dubins路径代价接口函数实现
  */
 bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::vector<Point>& path) {
+    std::cout << "start_pose.x = " << start_pose.GetX() << std::endl;
+    std::cout << "start_pose.y = " << start_pose.GetY() << std::endl;
     std::cout << "start_pose.angle = " << start_pose.GetAngle() << std::endl;
+    std::cout << "end_pose.x = " << end_pose.GetX() << std::endl;
+    std::cout << "end_pose.y = " << end_pose.GetY() << std::endl;
     std::cout << "end_pose.angle = " << end_pose.GetAngle() << std::endl;
     float dx    = end_pose.GetX() - start_pose.GetX();
     float dy    = end_pose.GetY() - start_pose.GetY();
@@ -78,6 +82,7 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
             }
         }
     }
+    cout << "path.size():" << path.size() << endl;
     return true;
 }
 /**

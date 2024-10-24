@@ -396,11 +396,11 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
     writer.Key("vec_path");
     writer.StartArray();
     if (plan_obj.road_sequence_.size() == 0) {
-        writer.Uint(plan_obj.start_key_);
+        writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.start_key_));
     }
     else {
         for (size_t j = 0; j < plan_obj.road_sequence_.size(); j++) {
-            writer.Uint(plan_obj.road_sequence_.at(j));
+            writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.road_sequence_.at(j)));
         }
     }
 
@@ -438,7 +438,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
     {
         unique_lock<shared_mutex> lock(GlobalVariable::getInstance()->record_file_write_lock);
         ofstream                  record;
-        record.open("record.txt", ios_base::app);
+        record.open("GlobalPlanning_record.txt", ios_base::app);
         record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << endl;
         record.close();
     }

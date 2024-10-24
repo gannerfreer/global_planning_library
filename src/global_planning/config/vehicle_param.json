@@ -1,7 +1,7 @@
 {
   "m_Veh_Param": {
     "delta_s": 0.1,
-    "radious": 15,
+    "radious": 11,
     "grid_dist": 1.0,
     "max_kappa": 0.07,
     "delta_dist": 2,
@@ -27,7 +27,7 @@
     "turnning_penalty": 2.468,
     "safe_margin_bound": 1.0,
     "safe_margin_error": 0.0,
-    "veh_center_2_side": 3.0,
+    "veh_center_2_side": 1.735,
     "angle_discrete_num": 3,
     "max_fitting_radius": 50,
     "veh_center_2_front": 7.3,
@@ -60,7 +60,7 @@
     "heavy_intersection_road_speed_limit": 1.52,
     "weather": 1,
     "s_curve_speed_limit": 1,
-    "task_type": 2,
+    "task_type": 3,
     "max_l": 0.5,
     "sita": 200,
     "base": 1.10,

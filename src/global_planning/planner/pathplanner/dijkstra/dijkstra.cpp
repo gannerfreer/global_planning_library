@@ -131,7 +131,7 @@ bool Dijkstra::searchpath(int start_, int end_) {
     }
     for (int i = 0; i < path.size(); i++) {
         // path.at(i) += 1;
-        threadLogger_->info("path.at(i) = {}", path.at(i));
+        // threadLogger_->info("path.at(i) = {}", path.at(i));
     }
 
     return true;
