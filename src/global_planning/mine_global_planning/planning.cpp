@@ -183,7 +183,7 @@ bool Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_ind
             }
         }
         else {
-            threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{},经过dubins曲线预先校验，合格", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, float(rule_id));
+            threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{},经过dubins曲线预先校验，不合格", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, float(rule_id));
         }
         if (counter > 18) {
             threadLogger_->info("最多搜索18个点");

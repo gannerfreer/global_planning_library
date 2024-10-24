@@ -32,11 +32,11 @@ bool                         is_receive_end   = false;
 // const double x_o_ = -299; // 鲁南偏移参数
 // const double y_o_ = 920;  // 鲁南偏移参数
 
-// const double x_o_ = 193.55615432;    // 实验偏移参数
-// const double y_o_ = 1075.6719204094; // 实验偏移参数
+const double x_o_ = 193.55615432;    // 实验偏移参数
+const double y_o_ = 1075.6719204094; // 实验偏移参数
 
-const double x_o_ = -94.5797536231; // 实验偏移参数
-const double y_o_ = 173.6083593499; // 实验偏移参数
+// const double x_o_ = -94.5797536231; // 实验偏移参数
+// const double y_o_ = 173.6083593499; // 实验偏移参数
 
 
 vector<_TrajectoryPoint> global_path, road_nodes;
