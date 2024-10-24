@@ -43,7 +43,7 @@
     "reverse_speed": 1.0,
     "kErrorTerm": 0.1,
     "kDiscreteNumber": 1,
-    "kSmoothnessTerm": 0.001,
+    "kSmoothnessTerm": 0.1,
     "kDeltaSpeed": 5,
     "linear_preferred_distance_square": 9,
     "offset_enable": 0,

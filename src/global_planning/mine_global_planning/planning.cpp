@@ -130,6 +130,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("CheckPathFracture");
 
     // // 超速检测
+    std::ofstream file_out;
+    file_out.open("speed_limit2.txt");
+    for (size_t index = 0; index < global_path_.size(); index++) {
+        file_out << 0 << " " << global_path_.at(index).speed_limit << endl;
+    }
+    file_out.close();
     if (!Helper::OverSpeedCheck(global_path_, vehicle_param_.wheel_base)) {
         threadLogger_->error("OverSpeedCheck fail");
         return;
@@ -138,6 +144,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
 
     // 路径点顺序和direction校验
+
     if (!Helper::SequenceAndDirectionCheck(global_path_)) {
         threadLogger_->error("SequenceAndDirectionCheck fail");
         return;

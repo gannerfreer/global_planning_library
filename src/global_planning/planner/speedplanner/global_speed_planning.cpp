@@ -1411,8 +1411,8 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
         {
             wheel_angle1   = atan(L_vehicle * trajectory_points.at(i).curvature);
             wheel_angle2   = atan(L_vehicle * trajectory_points.at(i + 1).curvature);
-            temp_max_speed = sampling_distance * max_Steering_wheel_speed / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速 if (temp_max_speed >= 10)
-            temp_max_speed = 10;
+            temp_max_speed = sampling_distance * max_Steering_wheel_speed / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速
+            if (temp_max_speed >= 10) temp_max_speed = 10;
             vec_temp_max_speed.push_back(temp_max_speed);
         }
         threadLogger_->info("方向盘转速速度限制");
@@ -1421,18 +1421,20 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
             if (vec_temp_max_speed.at(i) < trajectory_points.at(i).speed_limit) {
                 if (trajectory_points.at(i).direction == 0) {
                     trajectory_points.at(i).speed_limit = vec_temp_max_speed.at(i);
-                    // 为了便于控制跟踪，将i附近的10(10m)路径点限速也降低i为vec_temp_max_speed.at(i)
+                    // 为了便于控制跟踪，将i附近的10(10m) 路径点限速也降低i为vec_temp_max_speed.at(i)
                     for (int j = i - 5; j < i + 5; j++) {
                         if (j >= 0 && j < vec_temp_max_speed.size()) {
                             if (trajectory_points.at(j).direction == 0) {
-                                trajectory_points.at(j).speed_limit = vec_temp_max_speed.at(i);
+                                if (trajectory_points.at(j).speed_limit > vec_temp_max_speed.at(i)) {
+                                    trajectory_points.at(j).speed_limit = vec_temp_max_speed.at(i);
+                                }
                             }
                         }
                     }
                 }
             }
+            threadLogger_->info("方向盘转速速度限制左右5m扩张");
         }
-        threadLogger_->info("方向盘转速速度限制左右5m扩张");
     }
     // 曲率限速
     iter = trajectory_points.begin();
@@ -1441,6 +1443,13 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
             iter->speed_limit = sqrt(0.2 / fabs(iter->curvature));
         }
     }
+
+    std::ofstream file_out;
+    file_out.open("speed_limit1.txt");
+    for (size_t index = 0; index < trajectory_points.size(); index++) {
+        file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
+    }
+    file_out.close();
 }
 /**
  * @brief: 路径划分，将全局路径按照前进、后退切换的点划分为不同的片段，分别进行速度规划
@@ -1563,6 +1572,7 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(unsigned char num) {
 
             float gradient_error  = kErrorTerm * (vo - v1);
             float gradient_smooth = kSmoothnessTerm * (v0 + v2 - 2 * v1);
+
 
             temp_opti_global_speed.at(i).speed += gradient_error + gradient_smooth;
             // threadLogger_->info("优化过程中实时速度：{}", temp_opti_global_speed.at(i).speed);

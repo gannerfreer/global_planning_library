@@ -9,9 +9,9 @@ plt.rcParams['axes.unicode_minus'] = False  # 解决负号 '-' 显示为方块�
 
 
 
-data = np.loadtxt('speed_limit_before.txt')
+data = np.loadtxt('speed_limit1.txt')
 curvature1 = data[:, 1]  
-data = np.loadtxt('speed_limit_after.txt')
+data = np.loadtxt('speed_limit2.txt')
 curvature2 = data[:, 1]  
 
 
