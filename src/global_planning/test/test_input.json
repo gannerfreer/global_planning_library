@@ -1,20 +1,20 @@
 {
     "m_Start_Point": {
-        "x": -678.435,
-        "y": 1139.357,
-        "z": 0.0,
-        "yaw": 356.7330017089844
+        "x": -85.43011203323908,
+        "y": 134.35357784515327,
+        "z": 12.86037826538086,
+        "yaw": 273.48919677734375
     },
     "m_End_Point": {
-        "x": -273.2569329496,
-        "y": 1022.6343025588,
-        "z": 0.0,
-        "yaw": 86.8780346094,
-        "endPointId": 1
+        "x": -7.3474959944,
+        "y": 41.0198557507,
+        "z": 0,
+        "yaw": 308.2495321418,
+        "endPointId": 6
     },
     "m_Veh_Param": {
         "delta_s": 0.1,
-        "radious": 15,
+        "radious": 11,
         "weather": 1,
         "lat_term": 1,
         "lon_term": 0.8,
@@ -24,7 +24,7 @@
         "delta_dist": 2,
         "error_term": 0,
         "grid_angle": 1,
-        "kErrorTerm": 0.0,
+        "kErrorTerm": 0.1,
         "wheel_base": 5.95,
         "kDeltaSpeed": 5,
         "step_length": 1,
@@ -39,7 +39,7 @@
         "switch_penalty": 10,
         "forward_penalty": 1,
         "kDiscreteNumber": 5,
-        "kSmoothnessTerm": 0.0,
+        "kSmoothnessTerm": 0.01,
         "max_speed_limit": 7,
         "mid_speed_limit": 5,
         "min_path_Length": 8,
@@ -52,18 +52,18 @@
         "lat_min_distance": 1,
         "lon_min_distance": 15,
         "turnning_penalty": 2.468,
-        "safe_margin_bound": 0.5,
+        "safe_margin_bound": 0,
         "safe_margin_error": 0,
-        "veh_center_2_side": 1.825,
+        "veh_center_2_side": 1.735,
         "angle_discrete_num": 3,
-        "max_fitting_radius": 50,
+        "max_fitting_radius": 100,
         "veh_center_2_front": 7.3,
         "end_offset_distance": 1,
         "max_iterations_opti": 100,
         "s_curve_speed_limit": 1,
         "max_iterations_astar": 150000,
         "safe_margin_obstacle": 2,
-        "backward_search_range": 20,
+        "backward_search_range": 100,
         "start_offset_distance": 1,
         "cusp_extension_distance": 3,
         "lat_min_distance_struct": 0.5,
@@ -81,9 +81,9 @@
         "multi_section_speed_limit_enable": 1,
         "heavy_intersection_road_speed_limit": 6,
         "light_intersection_road_speed_limit": 7,
-        "vehicle_code": 1004
+        "vehicle_code": 1001
     },
     "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1849294220891590656"
+    "key": "ids:mine:dispatch:planPath:result:1848929668316082176"
 }

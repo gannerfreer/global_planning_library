@@ -46,8 +46,8 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
         }
     }
 
-    init_road_bound_.emplace_back(v_road_inner_bound_);
-    init_obstacle_bound_.emplace_back(v_road_outer_bound_); // 这里填充好的road_inner_bound_和road_outer_bound_会在调用globalPlanning()函数时作为入参传入
+    init_road_bound_.emplace_back(v_road_outer_bound_);
+    init_obstacle_bound_.emplace_back(v_road_inner_bound_); // 这里填充好的road_inner_bound_和road_outer_bound_会在调用globalPlanning()函数时作为入参传入
     // 结合当前任务的起点位置，地图边界及障碍物边界，申请相应大小的二维空间用于构建voronoi图
     if (enable_voronoi) {
         voronoi_bound_ = init_road_bound_;
@@ -220,11 +220,12 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     nodes2D_set_.clear();
     h_cost_map_.clear();
     nodes2D_map_.clear();
-
+    threadLogger_->info("终点碰撞检测");
+    cout << "终点碰撞检测" << endl;
     // 终点区域碰撞判断
     if (true == collison_check_.IsVehicleCollision(end_)) {
         threadLogger_->info("终点碰撞检测不通过");
-
+        cout << "终点碰撞检测不通过" << endl;
         return PlanResult::EndPoint_Infeasible;
     }
     if (true == collison_check_.IsVehicleCollision(actual_start_)) {
