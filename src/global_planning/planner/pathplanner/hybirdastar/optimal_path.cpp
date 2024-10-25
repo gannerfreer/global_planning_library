@@ -260,7 +260,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
         fitting_direction_ = FittingDirection::Both_Fitting;
     }
 
-
+    cout << "开始AStarPath" << endl;
     PlanResult result = AStarPath(final_path, time_threshold);
     timelog.AddLog("AStarPath");
     threadLogger_->info(timelog.GetLog());
@@ -701,10 +701,13 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
             // 判断拓展点是否碰撞
             Point               temp_point(end_point.x, end_point.y, end_point.z, end_point.angle, end_point.direction);
             utility::CTimeClock start_time_rs;
+            threadLogger_->info("检测运动学拓展的点是否碰撞");
             flag = collison_check_.IsVehicleCollision(temp_point);
+
             time2 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs);
             utility::CTimeClock start_time_rs__;
             if (flag == false) {
+                threadLogger_->info("不碰撞");
                 // 计算该点g值
                 CalGValue(current_point, end_point);
                 // 判断该点是否已经存放于open集中或close集中
@@ -1055,10 +1058,17 @@ void OptimalPath::CalHValue(Vertex3D& point) {
         //     return;
         // }
 
-        Node2D goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
-        int    total = 0;
-
-        a_start_h = AStarSearch2D(goal2D, current2D, total);
+        Node2D        goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
+        int           total = 0;
+        IntCoordinate temp_point;
+        temp_point.x = current2D.getX();
+        temp_point.y = current2D.getY();
+        if (IsBoundGrid(temp_point)) {
+            a_start_h = numeric_limits<double>::max();
+        }
+        else {
+            a_start_h = AStarSearch2D(goal2D, current2D, total);
+        }
 
 
         long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time); // 开始时间精确到微秒
@@ -1370,7 +1380,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
         iPred = *nodes2D_set_.begin() & 0x00000000FFFFFFFF;
         // threadLogger_->info("iPred:{} ", iPred);
         nPred = nodes2D_map_[iPred];
-        // threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
+        threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
         if (nodes2D_map_[iPred].isClosed()) {
             // threadLogger_->info("nodes2D_map_[iPred] is Closed");
             nodes2D_set_.erase(nodes2D_set_.begin());
@@ -1422,17 +1432,18 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
                     nodes2D_map_[iSucc] = nSucc;
                 }
                 else {
-                    // if (IsBoundGrid(point)) {
-                    //     // threadLogger_->info("该点是边界点或者该点已经被探索过，但已经进close");
-                    // }
-                    // else {
-                    //     // threadLogger_->info("该该点已经被探索过，但已经进close");
-                    // }
+                    if (IsBoundGrid(point)) {
+                        threadLogger_->info("{} {}该点是边界点", point.x, point.y);
+                    }
+                    else {
+                        // threadLogger_->info("该该点已经被探索过，但已经进close");
+                    }
                 }
             }
         }
     }
-    // threadLogger_->info("line1405 ");
+    cout << "出现了不可能出现的错误" << endl;
+    threadLogger_->info("出现了不可能出现的错误");
 }
 
 /**

@@ -651,7 +651,7 @@ bool Planning::FollowReferencelinePlanning() {
         else {
             cost1 = 0;
         }
-        cost2    = temp_start_distance * 2;
+        cost2    = temp_start_distance * 10;
         cost3    = ReferencelineTotalDis(i.first, temp_start_index, temp_end_index);
         i.second = cost1 + cost2 + cost3;
         threadLogger_->info("路径对 {}--{}  cost1: {}  cost2: {}  cost3: {}  total_cost:{}", sequence_mapping_.at(i.first.first), sequence_mapping_.at(i.first.second), cost1, cost2, cost3, cost1 + cost2 + cost3);

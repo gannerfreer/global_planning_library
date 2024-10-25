@@ -201,8 +201,8 @@ bool CollisonCheck::IsVehicleCollisionRoadBound(const Point& my_point, const dou
             if (iter_vec != road_bound_map_.end()) {
                 for (auto iter = iter_vec->second.begin(); iter != iter_vec->second.end(); ++iter) {
                     if (IsPointInMatrix(*iter, point_lf, point_lr, point_rr, point_rf) == true) {
-                        cout << "点坐标：(" << iter->x << " ," << iter->y << ")" << endl;
-                        cout << "车坐标：(" << point_lf.x << "," << point_lf.y << "),(" << point_lr.x << "," << point_lr.y << "),(" << point_rr.x << "," << point_rr.y << "),(" << point_rf.x << "," << point_rf.y << ")" << endl;
+                        // cout << "点坐标：(" << iter->x << " ," << iter->y << ")" << endl;
+                        // cout << "车坐标：(" << point_lf.x << "," << point_lf.y << "),(" << point_lr.x << "," << point_lr.y << "),(" << point_rr.x << "," << point_rr.y << "),(" << point_rf.x << "," << point_rf.y << ")" << endl;
                         return true;
                     }
                     else
