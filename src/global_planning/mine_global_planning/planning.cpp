@@ -137,18 +137,38 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     }
     file_out.close();
     if (!Helper::OverSpeedCheck(global_path_, vehicle_param_.wheel_base)) {
-        threadLogger_->error("OverSpeedCheck fail");
+        threadLogger_->error("存在超速，检测失败");
         return;
     }
     threadLogger_->info("OverSpeedCheck");
 
 
     // 路径点顺序和direction校验
-
     if (!Helper::SequenceAndDirectionCheck(global_path_)) {
-        threadLogger_->error("SequenceAndDirectionCheck fail");
+        threadLogger_->error("路径点顺序或direction校验不通过");
         return;
     }
+
+    // 路径段数校验
+    // int count = 0;
+    // for (int i = 0; i < global_path_.size() - 1; i++) {
+    //     if (global_path_.at(i).direction != global_path_.at(i + 1).direction) {
+    //         count++;
+    //     }
+    // }
+    // if (count > 1) {
+    //     threadLogger_->error("路径段数大于2段，不予输出");
+    //     error_type_ = ErrorType::POINT_UNREASONABLE;
+    //     return;
+    // }
+    // 曲率检查
+    // for (int i = 0; i < global_path_.size(); i++) {
+    //     if (fabs(global_path_.at(i).curvature) > 0.09999) {
+    //         threadLogger_->error("规划库输出的轨迹曲率第 {}  个点超标，为 {}", i, global_path_.at(i).curvature);
+    //         error_type_ = ErrorType::POINT_UNREASONABLE;
+    //         return;
+    //     }
+    // }
 
 
     // // 计算加速度
@@ -156,7 +176,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     // threadLogger_->info("CalAcc");
 
     path = global_path_;
-    threadLogger_->info("final_out global_Path.size():{}", global_path_.size());
+    threadLogger_->info("规划成功，即将返回轨迹 final_out global_Path.size():{}", global_path_.size());
     return;
 }
 
@@ -511,6 +531,7 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("装载");
         vehicle_param_.end_offset_distance = 8.0; // 装载任务，最后倒车进去的轨迹必须是一条8m的直线
         if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_1, time_threshold)) {
+            threadLogger_->info("纯倒车失败，换成先前进，再后退规则");
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_3, time_threshold)) {
                 threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
                 error_type_ = ErrorType::POINT_UNREASONABLE;

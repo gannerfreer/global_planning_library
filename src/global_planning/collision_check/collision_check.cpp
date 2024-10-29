@@ -39,7 +39,7 @@ void CollisonCheck::InitBoundMap(const Bound road_bound) {
         }
     }
 
-    cout << "road_bound_map_.size():" << road_bound_map_.size() << endl;
+    cout << "InitBoundMap--road_bound_map_.size():" << road_bound_map_.size() << endl;
 }
 
 /**

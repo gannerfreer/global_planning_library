@@ -1,7 +1,7 @@
 {
   "m_Veh_Param": {
     "delta_s": 0.1,
-    "radious": 11,
+    "radious": 15,
     "grid_dist": 1.0,
     "max_kappa": 0.07,
     "delta_dist": 2,
@@ -60,7 +60,7 @@
     "heavy_intersection_road_speed_limit": 1.52,
     "weather": 1,
     "s_curve_speed_limit": 1,
-    "task_type": 2,
+    "task_type": 3,
     "max_l": 0.5,
     "sita": 200,
     "base": 1.10,

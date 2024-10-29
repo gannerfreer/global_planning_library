@@ -1433,9 +1433,14 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
                     }
                 }
             }
-            threadLogger_->info("方向盘转速速度限制左右5m扩张");
         }
     }
+    std::ofstream file_out;
+    file_out.open("speed_limit0.txt");
+    for (size_t index = 0; index < trajectory_points.size(); index++) {
+        file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
+    }
+    file_out.close();
     // 曲率限速
     iter = trajectory_points.begin();
     for (; iter != trajectory_points.end(); iter++) {
@@ -1444,7 +1449,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
         }
     }
 
-    std::ofstream file_out;
+    // std::ofstream file_out;
     file_out.open("speed_limit1.txt");
     for (size_t index = 0; index < trajectory_points.size(); index++) {
         file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
@@ -1478,6 +1483,7 @@ bool GlobalSpeedPlanning::SplitPath() {
     }
 
     threadLogger_->info("trajectory_fragments.size():{}", trajectory_fragments.size());
+
     if (trajectory_fragments.at(0).size() <= 2) {
         trajectory_fragments.erase(trajectory_fragments.begin());
     }

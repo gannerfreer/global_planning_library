@@ -45,6 +45,9 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
             v_road_inner_bound_.emplace_back(temp_Coordinate);
         }
     }
+    threadLogger_->info("v_road_outer_bound_.size():{}", v_road_inner_bound_.size());
+    threadLogger_->info("v_road_inner_bound_.size():{}", v_road_inner_bound_.size());
+
 
     init_road_bound_.emplace_back(v_road_outer_bound_);
     init_obstacle_bound_.emplace_back(v_road_inner_bound_); // 这里填充好的road_inner_bound_和road_outer_bound_会在调用globalPlanning()函数时作为入参传入
@@ -286,6 +289,8 @@ void OptimalPath::InitData(Point start, Point end) {
     end_ = end;
     end_.x -= midpoint_.x;
     end_.y -= midpoint_.y;
+    threadLogger_->info("midpoint_.x:{}  midpoint_.y:{}", midpoint_.x, midpoint_.y);
+
     // threadLogger_->info("start_:{} {}", m_vehicle_param_.end_offset_distance);
     // threadLogger_->info("end_", m_vehicle_param_.end_offset_distance);
     threadLogger_->info("终点进行{}米的延伸", m_vehicle_param_.end_offset_distance);
@@ -312,6 +317,8 @@ void OptimalPath::InitData(Point start, Point end) {
             temp_point.y = temp_bound.at(j).y - midpoint_.y;
             temp_bound_2.push_back(temp_point);
         }
+        threadLogger_->info("外边界大小：{}", temp_bound_2.size());
+
         offset_road_bound_.push_back(temp_bound_2);
     }
 
@@ -327,6 +334,7 @@ void OptimalPath::InitData(Point start, Point end) {
             temp_point.y = temp_bound.at(j).y - midpoint_.y;
             temp_bound_2.push_back(temp_point);
         }
+        threadLogger_->info("内边界大小：{}", temp_bound_2.size());
         offset_obstacle_bound_.push_back(temp_bound_2);
     }
     actual_start_ = start_;
@@ -357,6 +365,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     my_path_opti.use_voronoi      = use_voronoi;
     my_path_opti.voronoi_origin_x = voronoi_origin_x - midpoint_.x;
     my_path_opti.voronoi_origin_y = voronoi_origin_y - midpoint_.y;
+    my_path_opti.threadLogger_    = threadLogger_;
     threadLogger_->info("给路径平滑赋予voronoi图结束");
 
 
@@ -441,7 +450,6 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     threadLogger_->info("TracePath() Successfuly!");
     PathIntegration(); // 将混合A*搜索路径、RS曲线拟合路径与终点补偿的直线路径整合
     threadLogger_->info("PathIntegration() Successfuly!");
-    cout << "PathIntegration() Successfuly!" << endl;
 
     // 保存路点，并打印出来
     // std::ofstream file_out;
@@ -455,7 +463,6 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     temp_path = path_a_star_; // 弧度
     removeDuplicates(temp_path, path_a_star_);
     threadLogger_->info("removeDuplicates() Successfuly!");
-    cout << "removeDuplicates() Successfuly!" << endl;
 
 
     // 保存路点，并打印出来
@@ -468,27 +475,22 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     // file_out.close();
 
     utility::CTimeClock start_time_opti;
-    threadLogger_->info("Hybird A*运行完成，并将其与RS曲线连接");
 
     // 平滑前打印路径曲率
-    threadLogger_->info("path_a_star_.size():{}", path_a_star_.size());
-    // cout << "path_a_star_.size():" << path_a_star_.size() << endl;
     CalCurv(path_a_star_);
+    threadLogger_->info("平滑前路径点信息 ");
+    for (auto i : path_a_star_) {
+        threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} ", i.x, i.y, i.angle / M_PI * 180.0, i.curvature, i.direction);
+    }
 
 
     // 路径优化，得到最终的path
-    threadLogger_->info("OptimizePath Begin");
     my_path_opti.OptimizePath(path_a_star_, path, collison_check_, m_vehicle_param_);
-    threadLogger_->info("OptimizePath End");
+    threadLogger_->info("平滑后路径点信息");
     for (auto i : path) {
-        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+        threadLogger_->info("x:{} y:{} angle:{} curvature:{} direction:{} ", i.x, i.y, i.angle / M_PI * 180.0, i.curvature, i.direction);
     }
 
-
-    cout << "优化后角度：" << endl;
-    for (int i = 0; i < path.size(); i++) {
-        cout << path.at(i).angle << " ";
-    }
     long long cal_time2 = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_opti);
     threadLogger_->info("路径优化完成，用时: {} ms ", 0.001 * cal_time2);
 
@@ -620,15 +622,16 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Backward_Fitting oneshot成功，一共oneshot了 {}  次 ", All);
 
-                        for (auto i : path_r_s_) {
-                            threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+                        for (auto& i : path_r_s_) {
+                            if (i.angle < 0) i.angle += 2 * M_PI;
+                            threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
                         }
 
                         return true;
                     }
                 }
                 else {
-                    threadLogger_->info("RS曲线因加入构型限制，规划失败");
+                    threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Forword_Fitting:
@@ -636,6 +639,10 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) && (MotionDirection::Forward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
+                        for (auto& i : path_r_s_) {
+                            if (i.angle < 0) i.angle += 2 * M_PI;
+                            threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+                        }
                         return true;
                     }
                     else {
@@ -643,7 +650,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                     }
                 }
                 else {
-                    threadLogger_->info("RS曲线因加入构型限制，规划失败");
+                    threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Both_Fitting:
@@ -651,7 +658,10 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) && (MotionDirection::Forward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
-
+                        for (auto& i : path_r_s_) {
+                            if (i.angle < 0) i.angle += 2 * M_PI;
+                            threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+                        }
                         fitting_direction_ = FittingDirection::Forword_Fitting;
                         return true;
                     }
@@ -659,7 +669,10 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 else if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) && (MotionDirection::Backward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Backward_Fitting oneshot成功，一共oneshot了 {}  次 ", All);
-
+                        for (auto& i : path_r_s_) {
+                            if (i.angle < 0) i.angle += 2 * M_PI;
+                            threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+                        }
                         fitting_direction_ = FittingDirection::Backward_Fitting;
                         return true;
                     }
@@ -701,7 +714,7 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
             // 判断拓展点是否碰撞
             Point               temp_point(end_point.x, end_point.y, end_point.z, end_point.angle, end_point.direction);
             utility::CTimeClock start_time_rs;
-            threadLogger_->info("检测运动学拓展的点是否碰撞");
+            threadLogger_->info("检测运动学拓展的点({} {} {})是否碰撞", end_point.x, end_point.y, end_point.angle / M_PI * 180.0);
             flag = collison_check_.IsVehicleCollision(temp_point);
 
             time2 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs);
@@ -799,26 +812,9 @@ void OptimalPath::TracePath(const Vertex3D final_point) {
         path_a_star_.push_back(path_point);
     }
 
-    threadLogger_->info("改变尖点属性之前");
+    threadLogger_->info("运动学搜索出来的点坐标");
     for (auto i : path_a_star_) {
-        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
-    }
-    // 注释这段代码，注释原因：考虑到尖点属性问题，这个代码会将运动学搜索的部分的尖点属性改为后面的点的属性，与项目需求不符
-    //  改变尖点属性
-    //  for (unsigned int i = 0; i < path_a_star_.size() - 1; ++i) {
-    //      if (path_a_star_.at(i).direction != path_a_star_.at(i + 1).direction) {
-    //          path_a_star_.at(i).direction = path_a_star_.at(i + 1).direction;
-    //      }
-    //  }
-    //  这段代码是基本只会在BACK_TO_END规则中可能出现，即第一个点是正向的，后面搜寻到的点是倒向的，这是应该用后面的点将第一个点的方向属性覆盖掉
-    // if (path_a_star_.size() > 2) {
-    //     if (path_a_star_.at(0).direction != path_a_star_.at(1).direction) {
-    //         path_a_star_.at(0).direction = path_a_star_.at(1).direction;
-    //     }
-    // }
-    threadLogger_->info("改变尖点属性之后");
-    for (auto i : path_a_star_) {
-        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+        threadLogger_->info("{} {} {} {} ", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
     }
 }
 
@@ -854,9 +850,12 @@ void OptimalPath::PathIntegration() {
             cout << path_a_star_.at(i).angle << endl;
         }
     }
-    threadLogger_->info("拼接起点的路径的direction信息");
-    for (auto i : path_a_star_) {
-        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+    if (plan_path_rule_ == PlanRule::Backward_To_End) {
+        if (path_a_star_.size() >= 2) {
+            if (path_a_star_.at(0).direction == 0 && path_a_star_.at(1).direction == 1) {
+                path_a_star_.at(0).direction = MotionDirection::Backward;
+            }
+        }
     }
 
 
@@ -877,7 +876,10 @@ void OptimalPath::PathIntegration() {
         path_a_star_.insert(path_a_star_.begin(), temp_path.begin(), temp_path.end());
         path_a_star_.pop_back();
     }
-
+    threadLogger_->info("拼接起点的路径的direction信息，只对Forward_All_TIme规则有效");
+    for (auto i : path_a_star_) {
+        threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+    }
     // 拼接RS路径
     path_a_star_.insert(path_a_star_.end(), path_r_s_.begin(), path_r_s_.end());
     Path().swap(path_r_s_);
@@ -886,9 +888,9 @@ void OptimalPath::PathIntegration() {
     for (int i = 0; i < path_a_star_.size(); i++) {
         cout << path_a_star_.at(i).angle << endl;
     }
-    threadLogger_->info("拼接完RS路径的direction信息");
+    threadLogger_->info("拼接完RS路径");
     for (auto i : path_a_star_) {
-        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+        threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
     }
 
     // 拼接终点直线路径
@@ -905,9 +907,9 @@ void OptimalPath::PathIntegration() {
             cout << "temp_point.angle" << temp_point.angle << endl;
             path_a_star_.push_back(temp_point);
         }
-        cout << "拼接完终点" << endl;
-        for (int i = 0; i < path_a_star_.size(); i++) {
-            cout << path_a_star_.at(i).angle << endl;
+        threadLogger_->info("拼接完成终点的路径");
+        for (auto i : path_a_star_) {
+            threadLogger_->info("{} {} {} {}", i.x, i.y, i.direction, i.angle / M_PI * 180.0);
         }
     }
     else // 倒退直线拼接
@@ -921,9 +923,9 @@ void OptimalPath::PathIntegration() {
             temp_point.direction = MotionDirection::Backward;
             path_a_star_.push_back(temp_point);
         }
-        threadLogger_->info("拼接完成终点的路径的direction信息");
+        threadLogger_->info("拼接完成终点的路径");
         for (auto i : path_a_star_) {
-            threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+            threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180, i.direction);
         }
     }
 }
@@ -1064,9 +1066,12 @@ void OptimalPath::CalHValue(Vertex3D& point) {
         temp_point.x = current2D.getX();
         temp_point.y = current2D.getY();
         if (IsBoundGrid(temp_point)) {
+            threadLogger_->info("该节点为障碍物节点");
+
             a_start_h = numeric_limits<double>::max();
         }
         else {
+            threadLogger_->info("该节点非障碍物节点");
             a_start_h = AStarSearch2D(goal2D, current2D, total);
         }
 
@@ -1075,6 +1080,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
         threadLogger_->info("本次A*搜素{}轮，耗时:{} ms", total, init_time_end * 0.001);
     }
     else {
+        threadLogger_->info("该节点可通过增量式A*直接查询");
         a_start_h = iter->second.getG();
         // threadLogger_->info("本次A*不用搜索");
     }
@@ -1362,7 +1368,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
     start.open();
     unsigned long long hash = start.getIdx() | (static_cast<unsigned long long>(start.getF() * 1000) << 32); // 包含点的F值和索引
     nodes2D_set_.insert(hash);                                                                               // 存入起点
-    threadLogger_->info("start's idx:{},  start's x:{},   start's y:{}", start.getIdx(), start.getIdx() >> 16, short(start.getIdx() & 0xFFFF));
+    // threadLogger_->info("start's idx:{},  start's x:{},   start's y:{}", start.getIdx(), start.getIdx() >> 16, short(start.getIdx() & 0xFFFF));
     nodes2D_map_[start.getIdx()] = start;
     Node2D       nPred, nSucc; // 当前操作的点和其继任点
     unsigned int iPred, iSucc;
@@ -1380,7 +1386,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
         iPred = *nodes2D_set_.begin() & 0x00000000FFFFFFFF;
         // threadLogger_->info("iPred:{} ", iPred);
         nPred = nodes2D_map_[iPred];
-        threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
+        // threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
         if (nodes2D_map_[iPred].isClosed()) {
             // threadLogger_->info("nodes2D_map_[iPred] is Closed");
             nodes2D_set_.erase(nodes2D_set_.begin());
@@ -1444,6 +1450,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
     }
     cout << "出现了不可能出现的错误" << endl;
     threadLogger_->info("出现了不可能出现的错误");
+    return numeric_limits<double>::max();
 }
 
 /**
@@ -1552,6 +1559,8 @@ void OptimalPath::GenerateBoundSet() {
             bound_set_.insert(hash);
         }
     }
+    threadLogger_->info("GenerateBoundSet--bound_set_.size():{}", bound_set_.size());
+
     bound_set_for_Astar_ = bound_set_;
 
     // // 计算A*地图边界栅格

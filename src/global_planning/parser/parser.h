@@ -432,14 +432,14 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
     outputFile.close();
 
 
-    cout << "规划库成功返回轨迹，欢迎下次光临" << endl;
+    cout << "规划库成功返回轨迹，欢迎下次光临                 " << timeStr << endl;
     time(&end_time);
 
     {
         unique_lock<shared_mutex> lock(GlobalVariable::getInstance()->record_file_write_lock);
         ofstream                  record;
         record.open("GlobalPlanning_record.txt", ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "规划库版本号:G_V1.0.1.20241024_RC" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "规划库版本号:G_V1.0.1.20241029_RC" << endl;
         record.close();
     }
 

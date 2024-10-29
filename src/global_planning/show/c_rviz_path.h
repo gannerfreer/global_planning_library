@@ -110,8 +110,11 @@ class CRvizPath {
     // const double x_o_ = 193.55615432;    // 实验偏移参数
     // const double y_o_ = 1075.6719204094; // 实验偏移参数
 
-    const double x_o_ = -122.591; // 实验偏移参数
-    const double y_o_ = -22.3275; // 实验偏移参数
+    // const double x_o_ = -122.591; // 实验偏移参数
+    // const double y_o_ = -22.3275; // 实验偏移参数
+
+    const double x_o_ = -94.5797536231; // 园区偏移参数
+    const double y_o_ = 173.6083593499; // 园区偏移参数
   private:
     ros::NodeHandle                 n;
     ros::Publisher                  pub_obstacle_, pub_area_path, publisher_global_path_, publisher_expand_point_, m_Publisher_road_node_, pub_end, pub_h_value_map, pub_start;

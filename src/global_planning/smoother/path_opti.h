@@ -57,15 +57,18 @@ class Path_Opti {
      * true:  优化成功
      * false: 优化失败
      */
-    void OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collisonCheck, _VehicleParam m_vehicle_param);
+    void                 OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collisonCheck, _VehicleParam m_vehicle_param);
+    vector<unsigned int> CurvatureCheck();
+    void                 CalCurv(Path& traj);
     // void CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
     // void CalculateStation(const std::vector<double>& xs, const std::vector<double>& ys);
-    DynamicVoronoi* voronoiDiagram;
-    float           obsDMax    = 2;
-    float           vorObsDMax = 282;
-    float           alpha      = 0.1;
-    bool            use_voronoi;
-    float           voronoi_origin_x, voronoi_origin_y;
+    DynamicVoronoi*                 voronoiDiagram;
+    float                           obsDMax    = 2;
+    float                           vorObsDMax = 282;
+    float                           alpha      = 0.1;
+    bool                            use_voronoi;
+    float                           voronoi_origin_x, voronoi_origin_y;
+    std::shared_ptr<spdlog::logger> threadLogger_;
 
   private:
     /**

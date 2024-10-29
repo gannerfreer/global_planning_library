@@ -13,8 +13,8 @@
 
 
 bool GetMap(char* parea) {
-    cout << "GlobalPathPlanning-IDS_Global_Planning_version: G_V1.0.1.20241024_RC" << endl;
-    cout << "规划库版本号:G_V1.0.1.20241024_RC" << endl;
+    cout << "GlobalPathPlanning-IDS_Global_Planning_version: G_V1.0.1.20241029_RC" << endl;
+    cout << "规划库版本号:G_V1.0.1.20241029_RC" << endl;
     auto              currentTime = std::chrono::system_clock::now();
     std::time_t       timestamp   = std::chrono::system_clock::to_time_t(currentTime);
     std::stringstream ss;
@@ -38,8 +38,13 @@ bool GetMap(char* parea) {
     }
 }
 char* GlobalPathPlanning(char* point_veh_start_end) {
-    cout << "**********************欢迎光临后台全局规划库************************************" << endl;
-    cout << "规划库版本号:G_V1.0.1.20241024_RC" << endl;
+    auto              currentTime = std::chrono::system_clock::now();
+    std::time_t       timestamp   = std::chrono::system_clock::to_time_t(currentTime);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
+    std::string timeStr = ss.str();
+    cout << "**********************欢迎光临后台全局规划库************************************" << timeStr << endl;
+    cout << "规划库版本号:G_V1.0.1.20241029_RC" << endl;
     time_t start_time, end_time;
     time(&start_time);
     Planning                      planning;
@@ -55,20 +60,17 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
 
     std::string vehicle_code = std::to_string(veh_start_end.veh_param.vehicle_code);
 
-    planning.vehicle_code_        = vehicle_code;
-    auto              currentTime = std::chrono::system_clock::now();
-    std::time_t       timestamp   = std::chrono::system_clock::to_time_t(currentTime);
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
-    std::string timeStr = ss.str();
+    planning.vehicle_code_ = vehicle_code;
+
 
     {
         std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->record_file_write_lock);
         std::ofstream                       record;
         record.open("GlobalPlanning_record.txt", std::ios_base::app);
-        record << timeStr << " ，收到规划请求，请求号：" << veh_start_end.my_key << "，车辆编号：" << vehicle_code << "规划库版本号:G_V1.0.1.20241024_RC" << endl;
+        record << timeStr << " ，收到规划请求，请求号：" << veh_start_end.my_key << "，车辆编号：" << vehicle_code << "规划库版本号:G_V1.0.1.20241029_RC" << endl;
         record.close();
     }
+    cout << "收到规划请求，请求号:" << veh_start_end.my_key << endl;
 
     // 创建 log 目录
     std::string dirPath = "log/" + vehicle_code;
@@ -88,7 +90,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     planning.threadLogger_->info(vehicle_code);
     planning.threadLogger_->info("point_veh_start_end.strlen().size:{}", strlen(point_veh_start_end));
     planning.threadLogger_->info("veh_start_end.my_key:{}", veh_start_end.my_key);
-    planning.threadLogger_->info("GlobalPathPlanning-IDS_Global_Planning_version: G_V1.0.1.20241024_RC");
+    planning.threadLogger_->info("GlobalPathPlanning-IDS_Global_Planning_version: G_V1.0.1.20241029_RC");
 
 
     {
@@ -229,14 +231,16 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             planning.threadLogger_->info("进锁成功");
             string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, planning);
             int    temp_string_size = temp_string.size();
+            cout << "temp_string_size:" << temp_string_size << endl;
 
             GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+            cout << "执行完 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data())" << endl;
             if (temp_string_size < 10) {
                 cout << "temp_string还没接就被释放了" << endl;
                 planning.threadLogger_->info("出锁成功");
             }
+            cout << "返回轨迹" << endl;
             planning.threadLogger_->info("VecWaypoint2json successfully");
-
             planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();

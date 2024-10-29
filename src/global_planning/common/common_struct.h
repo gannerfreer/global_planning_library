@@ -49,6 +49,7 @@ enum struct ErrorType : unsigned int {
     OFFSET_FAIL,           // 均匀碾压失败
     NO_MAP,                // 规划库无地图，可能是容器被重启了，需要重新加载地图
     END_POINT_UNREASONABLE // 终点不合理
+
 };
 
 struct _TrajectoryPoint {

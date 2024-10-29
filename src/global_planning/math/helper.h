@@ -184,11 +184,11 @@ inline bool OverSpeedCheck(vector<_TrajectoryPoint>& traj, float L) {
             flag = true;
         }
         if (traj.at(i).speed > sqrt(0.4 / traj.at(i).curvature)) {
-            cout << "超速类型2" << "index:" << i << "real_speed:" << traj.at(i).speed << "ideal_speed_limit:" << sqrt(0.2 / traj.at(i).curvature) << endl;
+            cout << "超速类型2" << "index:" << i << "real_speed:" << traj.at(i).speed << "  ideal_speed_limit:" << sqrt(0.2 / traj.at(i).curvature) << endl;
             flag = true;
         }
         if (traj.at(i).speed > 1.0 * 0.35 / (fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature)) + eps) + eps) {
-            cout << "超速类型3" << "index:" << i << "real_speed:" << traj.at(i).speed << "ideal_speed_limit:" << 1.0 * 0.174 / (fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature)) + eps) << endl;
+            cout << "超速类型3" << "index:" << i << "real_speed:" << traj.at(i).speed << "  ideal_speed_limit:" << 1.0 * 0.174 / (fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature)) + eps) << endl;
             flag = true;
         }
     }
@@ -440,7 +440,7 @@ inline bool CheckPathFracture(vector<_TrajectoryPoint>& traj) {
         angle_diff = fabs(traj.at(i + 1).yaw - traj.at(i).yaw) > 180.0 ? 360 - fabs(traj.at(i + 1).yaw - traj.at(i).yaw) : fabs(traj.at(i + 1).yaw - traj.at(i).yaw);
         if (angle_diff > 20) { // 角度偏差不允许超过20度
             cout << "轨迹连续性检测，角度有跳变，跳变" << angle_diff << " 度,索引：" << i + 1 << endl;
-            // return false;
+            return false;
         }
 
         if (dis > 10) { // 相邻点间隔不允许超过
