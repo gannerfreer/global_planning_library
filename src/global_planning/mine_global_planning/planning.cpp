@@ -150,17 +150,17 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     }
 
     // 路径段数校验
-    // int count = 0;
-    // for (int i = 0; i < global_path_.size() - 1; i++) {
-    //     if (global_path_.at(i).direction != global_path_.at(i + 1).direction) {
-    //         count++;
-    //     }
-    // }
-    // if (count > 1) {
-    //     threadLogger_->error("路径段数大于2段，不予输出");
-    //     error_type_ = ErrorType::POINT_UNREASONABLE;
-    //     return;
-    // }
+    int count = 0;
+    for (int i = 0; i < global_path_.size() - 1; i++) {
+        if (global_path_.at(i).direction != global_path_.at(i + 1).direction) {
+            count++;
+        }
+    }
+    if (count > 1) {
+        threadLogger_->error("路径段数大于2段，不予输出");
+        error_type_ = ErrorType::POINT_UNREASONABLE;
+        return;
+    }
     // 曲率检查
     // for (int i = 0; i < global_path_.size(); i++) {
     //     if (fabs(global_path_.at(i).curvature) > 0.09999) {

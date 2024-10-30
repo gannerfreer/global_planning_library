@@ -1597,14 +1597,12 @@ void OptimalPath::GenerateBoundSet() {
 }
 
 void OptimalPath::CalCurv(Path& temp_path) {
-    vector<double> cur_vec;
-    cur_vec.resize(temp_path.size());
     for (int i = 1; i < temp_path.size() - 1; ++i) {
-        double curvature = computeCurvature(temp_path.at(i - 1), temp_path.at(i), temp_path.at(i + 1));
-        cur_vec.at(i)    = curvature;
+        double curvature          = computeCurvature(temp_path.at(i - 1), temp_path.at(i), temp_path.at(i + 1));
+        temp_path.at(i).curvature = curvature;
     }
-    cur_vec.front() = cur_vec.at(1);
-    cur_vec.back()  = cur_vec.at(cur_vec.size() - 2);
+    temp_path.front().curvature = temp_path.at(1).curvature;
+    temp_path.back().curvature  = temp_path.at(temp_path.size() - 2).curvature;
 }
 double OptimalPath::computeCurvature(const Point& p1, const Point& p2, const Point& p3) {
     double x1 = p1.x;

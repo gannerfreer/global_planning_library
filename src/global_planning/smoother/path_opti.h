@@ -15,15 +15,14 @@
 
 #include "../collision_check/collision_check.h"
 #include "../common/common_struct.h"
-// #include "../../planner/pathplanner/spline/spline.h"
 #include "../math/helper.h"
+#include "../planner/pathplanner/spline/spline.h"
 #include "dynamicvoronoi.h"
 // #include "../os/os.h"
 #include "vector2d.h"
 
 using namespace GlobalPlanning;
 using namespace std;
-// using namespace curve;
 
 // namespace HybridAStar
 //{
@@ -57,11 +56,12 @@ class Path_Opti {
      * true:  优化成功
      * false: 优化失败
      */
-    void                 OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collisonCheck, _VehicleParam m_vehicle_param);
-    vector<unsigned int> CurvatureCheck();
-    void                 CalCurv(Path& traj);
-    // void CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
-    // void CalculateStation(const std::vector<double>& xs, const std::vector<double>& ys);
+    void                            OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collisonCheck, _VehicleParam m_vehicle_param);
+    bool                            CurvatureCheck();
+    void                            CalCurv(Path& traj);
+    void                            CalCurvature(Path& new_path_);
+    void                            CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
+    void                            CalculateStation(const std::vector<double>& xs, const std::vector<double>& ys);
     DynamicVoronoi*                 voronoiDiagram;
     float                           obsDMax    = 2;
     float                           vorObsDMax = 282;
@@ -175,10 +175,10 @@ class Path_Opti {
     unordered_set<unsigned int> fixpoint_set_; // 存放固定点索引
     Path                        path_;         // 原路径
     Path                        new_path_;     // 优化后的路径
-    // std::vector<double>         s_;
-    // spline                      sx_;
-    // spline                      sy_;
-    double kDeltaS = 0.1;
+    std::vector<double>         s_;
+    curve::spline               sx_;
+    curve::spline               sy_;
+    double                      kDeltaS = 0.1;
 }; // end class
 
 //} // end namespace

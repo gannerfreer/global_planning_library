@@ -73,15 +73,58 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     for (auto i : path_) {
         threadLogger_->info("x:{}  y:{}  angle:{}  direction:{}", i.x, i.y, i.angle / M_PI * 180, i.direction);
     }
+
     CuspPointExtension(collison_check);
-    // 在这里计算一个每当路点的曲率信息
-    CalCurv(path_);
+
+    CalCurvature(path_);
+    // CalCurvature(path_);
+
+    // Path         path_with_curvature;
+    // vector<Path> multipath;
+    // Path         temp_path;
+
+    // for (int i = 0; i < path_.size() - 1; i++) {
+    //     if (path_.at(i).direction == path_.at(i + 1).direction) {
+    //         temp_path.push_back(path_.at(i));
+    //     }
+    //     else {
+    //         temp_path.push_back(path_.at(i));
+    //         multipath.push_back(temp_path);
+    //         temp_path.clear();
+    //     }
+    // }
+    // multipath.push_back(temp_path);
 
 
-    threadLogger_->info("执行尖点延伸逻辑后，每个轨迹点的信息");
-    for (auto i : path_) {
-        threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", i.x, i.y, i.angle / M_PI * 180, i.curvature, i.direction);
+    // threadLogger_->info("三次样条插值环节，一共分出 {} 段路", multipath.size());
+    // Path final_path;
+    // for (int i = 0; i < multipath.size(); i++) {
+    //     temp_path.clear();
+    //     CalculateCubicSplineCurve(false, multipath.at(i), temp_path);
+    //     threadLogger_->info("待插值的点信息,数量：{}", multipath.at(i).size());
+    //     for (int j = 0; j < multipath.at(i).size(); j++) {
+    //         threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", multipath.at(i).at(j).x, multipath.at(i).at(j).y, multipath.at(i).at(j).angle / M_PI * 180, multipath.at(i).at(j).curvature, multipath.at(i).at(j).direction);
+    //     }
+    //     threadLogger_->info("插值后的点信息，数量：{}", temp_path.size());
+    //     for (int j = 0; j < temp_path.size(); j++) {
+    //         threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", temp_path.at(j).x, temp_path.at(j).y, temp_path.at(j).angle / M_PI * 180, temp_path.at(j).curvature, temp_path.at(j).direction);
+    //     }
+
+    //     final_path.insert(final_path.end(), temp_path.begin(), temp_path.end());
+    // }
+
+    // threadLogger_->info("执行三次样条插值后，每个轨迹点的信息，final_path.size():{}", final_path.size());
+    // for (int i = 0; i < final_path.size() - 1; i++) {
+    //     threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", final_path.at(i).x, final_path.at(i).y, final_path.at(i).angle / M_PI * 180, final_path.at(i).curvature, final_path.at(i).direction);
+    //     threadLogger_->info("相邻点间距 dis: {}", hypot(final_path.at(i).x - final_path.at(i + 1).x, final_path.at(i).y - final_path.at(i + 1).y));
+    // }
+
+    threadLogger_->info("执行尖点延伸逻辑后，每个轨迹点的信息,path_.size():{}", path_.size());
+    for (int i = 0; i < path_.size() - 1; i++) {
+        threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", path_.at(i).x, path_.at(i).y, path_.at(i).angle / M_PI * 180, path_.at(i).curvature, path_.at(i).direction);
+        threadLogger_->info("相邻点间距 dis: {}", hypot(path_.at(i).x - path_.at(i + 1).x, path_.at(i).y - path_.at(i + 1).y));
     }
+
     std::ofstream file_out;
     file_out.open("youhuaqian.txt");
     for (size_t index = 0; index < path_.size(); index++) {
@@ -101,17 +144,16 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         threadLogger_->info("第 {} 次优化,fixpoint_set_.size():{}", opti_num, fixpoint_set_.size());
         SmoothPath();
         CalculatePathAngle();
-        auto collision_point              = collison_check.OptiPathCollisionCheck(new_path_); // 判断优化路径是否碰撞
-        auto curvature_exceed_point_index = CurvatureCheck();
-        threadLogger_->info("曲率超标点数量：{}", curvature_exceed_point_index.size());
-        if (true == collision_point.empty() && true == curvature_exceed_point_index.empty()) // 若无碰撞且曲率不超标
+        auto collision_point  = collison_check.OptiPathCollisionCheck(new_path_); // 判断优化路径是否碰撞
+        bool curvature_exceed = CurvatureCheck();
+        if (true == collision_point.empty() && false == curvature_exceed) // 若无碰撞且曲率不超标
         {
             break;
         }
         else // 否则固定碰撞点，继续优化
         {
             UpdateFixPointSet(collision_point);
-            UpdateFixPointSet(curvature_exceed_point_index);
+            path_ = new_path_;
         }
     }
 
@@ -124,17 +166,58 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     }
     file_out.close();
 }
-vector<unsigned int> Path_Opti::CurvatureCheck() {
-    vector<unsigned int> output;
-    CalCurv(new_path_);
-    for (unsigned int i = 1; i < new_path_.size() - 1; i++) {
+bool Path_Opti::CurvatureCheck() {
+    CalCurvature(new_path_);
+    for (unsigned int i = 0; i < new_path_.size(); i++) {
         double curvature = new_path_.at(i).curvature;
         if (curvature > 0.1) {
-            threadLogger_->info("i:{}  curvature:{}", i, curvature);
-            output.push_back(i);
+            threadLogger_->info("i:{}  curvature:{}  优化过程中曲率超标", i, curvature);
+            return true;
         }
     }
-    return output;
+    threadLogger_->info("本次优化曲率达标");
+    return false;
+}
+void Path_Opti::CalCurvature(Path& path_) {
+    Point  delta_xi;   // Δxi
+    Point  delta_xip1; // Δxi+1
+    double norm_delta_xi, norm_delta_xip1, d, dphi, kappa;
+    if (path_.size() > 2) {
+        for (int i = 1; i < path_.size() - 1; i++) {
+            if (path_.at(i).direction == path_.at(i + 1).direction) {
+                delta_xi.x      = path_.at(i).x - path_.at(i - 1).x;
+                delta_xi.y      = path_.at(i).y - path_.at(i - 1).y;
+                delta_xip1.x    = path_.at(i + 1).x - path_.at(i).x;
+                delta_xip1.y    = path_.at(i + 1).y - path_.at(i).y;
+                norm_delta_xi   = sqrt(pow(delta_xi.x, 2) + pow(delta_xi.y, 2));     // |Δxi|
+                norm_delta_xip1 = sqrt(pow(delta_xip1.x, 2) + pow(delta_xip1.y, 2)); // |Δxi+1|
+                d               = norm_delta_xi * norm_delta_xip1;
+                double temp     = (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d;
+                if (temp > 1.0) {
+                    temp = 1.0;
+                }
+                if (temp < -1.0) {
+                    temp = -1.0;
+                }
+                dphi  = acos(temp); // 通过向量积求出两向量之间夹角
+                kappa = dphi / norm_delta_xi;
+                // threadLogger_->info("delta_xi.x :{} delta_xip1.x:{}  delta_xi.y :{}  delta_xip1.y:{}  d:{}  acos({})", delta_xi.x, delta_xip1.x, delta_xi.y, delta_xip1.y, d, (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d);
+                // threadLogger_->info("kappa :{} dphi:{}  norm_delta_xi:{} ", kappa, dphi, norm_delta_xi);
+                path_.at(i).curvature = kappa;
+            }
+
+            else {
+                if (i - 1 > 0) {
+                    path_.at(i).curvature = path_.at(i - 1).curvature;
+                }
+                else {
+                    path_.at(i).curvature = 0;
+                }
+            }
+        }
+        path_.front().curvature = path_.at(1).curvature;
+        path_.back().curvature  = path_.at(path_.size() - 2).curvature;
+    }
 }
 
 
@@ -262,10 +345,12 @@ void Path_Opti::SmoothPath() {
             new_path_.at(i).x -= coeff.at(i) * gradient_curvature_term.x;
             new_path_.at(i).y -= coeff.at(i) * gradient_curvature_term.y;
 
+
             // 平滑项
             gradient_smoothness_term = SmoothnessTerm(xim2, xim1, xi, xip1, xip2);
             new_path_.at(i).x -= coeff.at(i) * gradient_smoothness_term.x;
             new_path_.at(i).y -= coeff.at(i) * gradient_smoothness_term.y;
+
             // Vonoroi项
             // 需要满足两个条件才会利用voronoi项进行平滑，1、需要使用voronoi图，2、当前传入的路径坐标xi位于voronoi图范围内
             if (use_voronoi) {
@@ -628,75 +713,62 @@ void Path_Opti::InterpolatePath(Path& opti_path) {
     // cout << "插值结束" << endl;
 }
 
-// void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path) {
-//     // cout << "line511" << endl;
-//       vector<double> x_set;
-//       vector<double> y_set;
-//     x_set.reserve(points.size());
-//     y_set.reserve(points.size());
-//     for (const auto& pt : points) {
-//         // cout<<"pt.x:"<<pt.x<<" pt.y:"<<pt.y<<endl;
-//         x_set.push_back(pt.x);
-//         y_set.push_back(pt.y);
-//     }
-//     // cout << "x_set.size()" << x_set.size() << endl;
-//     // cout << "x_set.back():" << x_set.back() << endl;
-//     // cout << "y_set.size()" << y_set.size() << endl;
-//     // cout << "y_set.back():" << y_set.back() << endl;
-//     CalculateStation(x_set, y_set);
-//     sx_.set_points(s_, x_set);
-//     sy_.set_points(s_, y_set);
-//     // cout << "line10758  s_.size():" << s_.size() << endl;
-//     kDeltaS = 0.1;
-//     // cout << "s_.back():" << s_.back() << endl;
+void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path) {
+    vector<double> x_set;
+    vector<double> y_set;
+    x_set.reserve(points.size());
+    y_set.reserve(points.size());
+    for (const auto& pt : points) {
+        x_set.push_back(pt.x);
+        y_set.push_back(pt.y);
+    }
 
-//     float epsilon = 0.0001; // 容差值
-//     for (double s = 0.0; s <= s_.back(); s += kDeltaS) {
-//         double dx = sx_.deriv(1, s);
-//         double dy = sy_.deriv(1, s);
+    CalculateStation(x_set, y_set);
+    sx_.set_points(s_, x_set);
+    sy_.set_points(s_, y_set);
+    kDeltaS = 1;
 
-//         double ddx = sx_.deriv(2, s);
-//         double ddy = sy_.deriv(2, s);
+    float epsilon = 0.0001; // 容差值
+    for (double s = 0.0; s <= s_.back(); s += kDeltaS) {
+        double dx = sx_.deriv(1, s);
+        double dy = sy_.deriv(1, s);
 
-//         float angle = atan(dy / dx);
-//         if (dx < 0)
-//             angle = angle + M_PI;
-//         else if (dx >= 0 && dy < 0)
-//             angle = angle + 2 * M_PI;
-//         //  cout << "angle = " << angle << endl;
-//         double cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
+        double ddx = sx_.deriv(2, s);
+        double ddy = sy_.deriv(2, s);
 
-//         Point temp_point;
-//         temp_point.x         = sx_(s);
-//         temp_point.y         = sy_(s);
-//         temp_point.angle     = angle;
-//         temp_point.curvature = cur;
-//         if (flag == true)
-//             temp_point.direction = MotionDirection::Forward;
-//         else
-//             temp_point.direction = MotionDirection::Backward;
-//         ;
-//         cubicspline_path.emplace_back(temp_point);
-//     }
-//     // cout << "cubicspline_path.size():" << cubicspline_path.size() << endl;
-// }
+        float angle = atan(dy / dx);
+        if (dx < 0)
+            angle = angle + M_PI;
+        else if (dx >= 0 && dy < 0)
+            angle = angle + 2 * M_PI;
+        double cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
 
-// void Path_Opti::CalculateStation(const   vector<double>& xs, const   vector<double>& ys) {
-//     double cum = 0.0;
-//     s_.clear();
-//     s_.push_back(cum);
-//     // cout << "here" << endl;
-//     // cout<<"xs.size():"<<xs.size()<<endl;
-//     // cout<<"ys.size():"<<ys.size()<<endl;
-//     for (unsigned int i = 1; i < xs.size(); i++) {
-//         double dx = xs.at(i) - xs.at(i - 1);
-//         double dy = ys.at(i) - ys.at(i - 1);
-//         cum +=   hypot(dx, dy);
-//         // cout<<"cun:"<<cum<<endl;
-//         s_.push_back(cum);
-//     }
-//     // cout << "****s_.back():" << s_.back() << endl;
-// }
+        Point temp_point;
+        temp_point.x         = sx_(s);
+        temp_point.y         = sy_(s);
+        temp_point.angle     = angle;
+        temp_point.curvature = cur;
+        if (flag == true)
+            temp_point.direction = MotionDirection::Forward;
+        else
+            temp_point.direction = MotionDirection::Backward;
+        ;
+        cubicspline_path.emplace_back(temp_point);
+    }
+}
+
+void Path_Opti::CalculateStation(const vector<double>& xs, const vector<double>& ys) {
+    double cum = 0.0;
+    s_.clear();
+    s_.push_back(cum);
+
+    for (unsigned int i = 1; i < xs.size(); i++) {
+        double dx = xs.at(i) - xs.at(i - 1);
+        double dy = ys.at(i) - ys.at(i - 1);
+        cum += hypot(dx, dy);
+        s_.push_back(cum);
+    }
+}
 
 /**
  *@brief: 三次样条插值函数实现

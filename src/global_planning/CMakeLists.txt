@@ -147,6 +147,7 @@ add_executable(${PROJECT_NAME}
   planner/pathplanner/hybirdastar/optimal_path.cpp
   planner/pathplanner/hybirdastar/r_s_curve.cpp
   planner/pathplanner/hybirdastar/r_s_curve_for_h.cpp
+  planner/pathplanner/spline/spline.cpp
   planner/speedplanner/global_speed_planning.cpp
   globalvariable.cpp
   show/c_rviz_path.cpp
