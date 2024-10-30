@@ -162,13 +162,13 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         return;
     }
     // 曲率检查
-    // for (int i = 0; i < global_path_.size(); i++) {
-    //     if (fabs(global_path_.at(i).curvature) > 0.09999) {
-    //         threadLogger_->error("规划库输出的轨迹曲率第 {}  个点超标，为 {}", i, global_path_.at(i).curvature);
-    //         error_type_ = ErrorType::POINT_UNREASONABLE;
-    //         return;
-    //     }
-    // }
+    for (int i = 0; i < global_path_.size(); i++) {
+        if (fabs(global_path_.at(i).curvature) > 0.15) {
+            threadLogger_->error("规划库输出的轨迹曲率第 {}  个点超标，为 {}", i, global_path_.at(i).curvature);
+            error_type_ = ErrorType::POINT_UNREASONABLE;
+            return;
+        }
+    }
 
 
     // // 计算加速度

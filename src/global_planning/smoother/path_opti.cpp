@@ -146,14 +146,13 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         CalculatePathAngle();
         auto collision_point  = collison_check.OptiPathCollisionCheck(new_path_); // 判断优化路径是否碰撞
         bool curvature_exceed = CurvatureCheck();
-        if (true == collision_point.empty() && false == curvature_exceed) // 若无碰撞且曲率不超标
+        if (true == collision_point.empty()) // 若无碰撞且曲率不超标
         {
             break;
         }
         else // 否则固定碰撞点，继续优化
         {
             UpdateFixPointSet(collision_point);
-            path_ = new_path_;
         }
     }
 

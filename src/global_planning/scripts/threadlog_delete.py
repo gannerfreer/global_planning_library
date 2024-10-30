@@ -83,3 +83,15 @@ with open('../planner/pathplanner/hybirdastar/r_s_curve_for_h.h', 'r') as file, 
         if 'threadLogger_' not in line:  
             tmpfile.write(line)  
 os.rename(tmpfile.name, '../planner/pathplanner/hybirdastar/r_s_curve_for_h.h') 
+
+with open('../smoother/path_opti.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../smoother/path_opti.cpp') 
+
+with open('../smoother/path_opti.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../smoother/path_opti.h') 

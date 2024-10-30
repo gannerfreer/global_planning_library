@@ -13,7 +13,7 @@
     "min_steering": -24,
     "max_curvature": 0.06,
     "min_curvature": 0.015,
-    "curvature_term": 0.01,
+    "curvature_term": 0.0,
     "switch_penalty": 10,
     "forward_penalty": 1,
     "max_speed_limit": 6.05,
