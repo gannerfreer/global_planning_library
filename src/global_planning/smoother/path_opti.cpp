@@ -168,12 +168,12 @@ bool Path_Opti::CurvatureCheck() {
     CalCurvature(new_path_);
     for (unsigned int i = 0; i < new_path_.size(); i++) {
         double curvature = new_path_.at(i).curvature;
-        if (curvature > 0.1) {
-            threadLogger_->info("i:{}  curvature:{}  优化过程中曲率超标", i, curvature);
+        if (fabs(curvature) > m_vehicle_param_.curvature_threshold) {
+            threadLogger_->info("i:{}  curvature:{}  优化过程中曲率超标,曲率阈值：{}", i, curvature, m_vehicle_param_.curvature_threshold);
             return true;
         }
     }
-    threadLogger_->info("本次优化曲率达标");
+    threadLogger_->info("本次优化曲率达标,曲率阈值：{}", m_vehicle_param_.curvature_threshold);
     return false;
 }
 void Path_Opti::CalCurvature(Path& path_) {
@@ -197,13 +197,16 @@ void Path_Opti::CalCurvature(Path& path_) {
                 if (temp < -1.0) {
                     temp = -1.0;
                 }
-                dphi  = acos(temp); // 通过向量积求出两向量之间夹角
-                kappa = dphi / norm_delta_xi;
+                dphi                 = acos(temp); // 通过向量积求出两向量之间夹角
+                double cross_product = delta_xi.x * delta_xip1.y - delta_xi.y * delta_xip1.x;
+                if (cross_product > 0)
+                    kappa = dphi / norm_delta_xi;
+                else
+                    kappa = -dphi / norm_delta_xi;
                 // threadLogger_->info("delta_xi.x :{} delta_xip1.x:{}  delta_xi.y :{}  delta_xip1.y:{}  d:{}  acos({})", delta_xi.x, delta_xip1.x, delta_xi.y, delta_xip1.y, d, (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d);
                 // threadLogger_->info("kappa :{} dphi:{}  norm_delta_xi:{} ", kappa, dphi, norm_delta_xi);
                 path_.at(i).curvature = kappa;
             }
-
             else {
                 if (i - 1 > 0) {
                     path_.at(i).curvature = path_.at(i - 1).curvature;

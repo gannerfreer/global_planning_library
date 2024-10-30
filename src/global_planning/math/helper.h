@@ -258,8 +258,12 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
                 if (temp < -1.0) {
                     temp = -1.0;
                 }
-                dphi  = acos(temp); // 通过向量积求出两向量之间夹角
-                kappa = dphi / norm_delta_xi;
+                dphi                 = acos(temp); // 通过向量积求出两向量之间夹角
+                double cross_product = delta_xi.x * delta_xip1.y - delta_xi.y * delta_xip1.x;
+                if (cross_product > 0)
+                    kappa = dphi / norm_delta_xi;
+                else
+                    kappa = -dphi / norm_delta_xi;
                 // threadLogger_->info("delta_xi.x :{} delta_xip1.x:{}  delta_xi.y :{}  delta_xip1.y:{}  d:{}  acos({})", delta_xi.x, delta_xip1.x, delta_xi.y, delta_xip1.y, d, (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d);
                 // threadLogger_->info("kappa :{} dphi:{}  norm_delta_xi:{} ", kappa, dphi, norm_delta_xi);
                 traj.at(i).curvature = kappa;

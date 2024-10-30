@@ -1378,17 +1378,19 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
     threadLogger_->info("nodes2D_map_.size():{} ", nodes2D_map_.size());
     while (!nodes2D_set_.empty()) {
         num++;
-        // if (num > 1500) {
-        //     threadLogger_->info("搜索超过1500轮,强制退出");
-        //     break;
-        // }
+        threadLogger_->info("nodes2D_set_.size():{}", nodes2D_set_.size());
+
+        if (num > 1500) {
+            threadLogger_->info("搜索超过1500轮,强制退出");
+            break;
+        }
         // threadLogger_->info("第{}轮,开始从node2D_set_中挑选最小代价点", num);.
         iPred = *nodes2D_set_.begin() & 0x00000000FFFFFFFF;
         // threadLogger_->info("iPred:{} ", iPred);
         nPred = nodes2D_map_[iPred];
-        // threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
+        threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
         if (nodes2D_map_[iPred].isClosed()) {
-            // threadLogger_->info("nodes2D_map_[iPred] is Closed");
+            threadLogger_->info("nodes2D_map_[iPred] is Closed");
             nodes2D_set_.erase(nodes2D_set_.begin());
             continue;
         }
@@ -1405,12 +1407,12 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
             for (int i = 0; i < Node2D::dir; ++i) {
                 nSucc = nPred.createSuccessor(i);
                 // threadLogger_->info("");
-                // threadLogger_->info("nSucc :{} {}", nSucc.getX(), nSucc.getY());
+                threadLogger_->info("nSucc :{} {}", nSucc.getX(), nSucc.getY());
                 iSucc = nSucc.getIdx();
                 // threadLogger_->info("iSucc :{}", iSucc);
                 IntCoordinate point(nSucc.getX(), nSucc.getY(), 0);
                 bool          flag_in_nodes2D = (nodes2D_map_.find(iSucc) != nodes2D_map_.end());
-                if (!IsBoundGrid(point) && (!flag_in_nodes2D || !nodes2D_map_[iSucc].isClosed())) { // 节点不是边界点且节点没有探索过，或者探索过，但是不是close的，就可以作为继承点
+                if (!IsBoundGrid(point) && (!flag_in_nodes2D || !nodes2D_map_[iSucc].isClosed())) { // 节点不是边界点，节点没有探索过，或者探索过，但是不是close的，就可以作为继承点
                     // threadLogger_->info("符合要求的点");
                     nSucc.open();
                     nSucc.discover();

@@ -127,7 +127,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         threadLogger_->error("CheckPathFracture fail");
         return;
     }
-    threadLogger_->info("CheckPathFracture");
+    threadLogger_->info("轨迹连续性校验通过");
 
     // // 超速检测
     std::ofstream file_out;
@@ -140,7 +140,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         threadLogger_->error("存在超速，检测失败");
         return;
     }
-    threadLogger_->info("OverSpeedCheck");
+    threadLogger_->info("超速校验通过");
 
 
     // 路径点顺序和direction校验
@@ -161,14 +161,23 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         error_type_ = ErrorType::POINT_UNREASONABLE;
         return;
     }
+    threadLogger_->info("轨迹构型校验通过");
     // 曲率检查
-    for (int i = 0; i < global_path_.size(); i++) {
-        if (fabs(global_path_.at(i).curvature) > vehicle_param_.curvature_threshold) {
-            threadLogger_->error("规划库输出的轨迹曲率第 {}  个点超标，为 {}", i, global_path_.at(i).curvature);
+    for (int i = 0; i < global_path_.size() - 2; i++) {
+        bool allExcessive = true;
+        for (int j = i; j < i + 3; j++) {
+            if (fabs(global_path_.at(i).curvature) <= vehicle_param_.curvature_threshold) {
+                allExcessive = false;
+                break;
+            }
+        }
+        if (allExcessive) {
+            threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，分别为 {}, {}, {}", global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
             error_type_ = ErrorType::POINT_UNREASONABLE;
             return;
         }
     }
+    threadLogger_->info("轨迹曲率校验通过,校验阈值：{}", vehicle_param_.curvature_threshold);
 
 
     // // 计算加速度
