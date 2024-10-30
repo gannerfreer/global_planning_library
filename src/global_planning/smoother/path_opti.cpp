@@ -77,7 +77,6 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     CuspPointExtension(collison_check);
 
     CalCurvature(path_);
-    CalCurvature(path_);
 
     Path         path_with_curvature;
     vector<Path> multipath;

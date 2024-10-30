@@ -263,9 +263,9 @@ _TarStartEnd ParseJson(char* str) {
             else
                 veh_start_end.veh_param.vonoroi_grid_dist = 0.1;
             if (val.HasMember("curvature_threshold"))
-                veh_start_end.veh_param.vonoroi_grid_dist = val["curvature_threshold"].GetFloat();
+                veh_start_end.veh_param.curvature_threshold = val["curvature_threshold"].GetFloat();
             else
-                veh_start_end.veh_param.vonoroi_grid_dist = 0.2;
+                veh_start_end.veh_param.curvature_threshold = 0.2;
         }
     }
 

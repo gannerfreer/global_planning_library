@@ -238,114 +238,154 @@ inline void CalDistance(vector<_TrajectoryPoint>& traj) {
     }
 }
 inline void CalCurv(vector<_TrajectoryPoint>& traj) {
-    vector<double> vec_x, vec_y, vec_angle;
-    int            delta_length        = 4;
-    int            halflengthmark      = 0;
-    double         distance_halflength = 0;
-    int            s                   = traj.size();
-    for (int i = 0; i < s; i++) {
-        vec_x.push_back(traj.at(i).x);
-        vec_y.push_back(traj.at(i).y);
-        vec_angle.push_back(traj.at(i).yaw);
-    }
-    // 计算前0.5m的点的位置halflengthmark
-    int j = 0;
-    while (j < s - 1) {
-        distance_halflength = distance_halflength + sqrt(pow(vec_x.at(j + 1) - vec_x.at(j), 2) + pow(vec_y.at(j + 1) - vec_y.at(j), 2));
-        if (distance_halflength >= delta_length / 2) {
-            halflengthmark = j + 1;
-            break;
+    Point  delta_xi;   // Δxi
+    Point  delta_xip1; // Δxi+1
+    double norm_delta_xi, norm_delta_xip1, d, dphi, kappa;
+    if (traj.size() > 2) {
+        for (int i = 1; i < traj.size() - 1; i++) {
+            if (traj.at(i).direction == traj.at(i + 1).direction) {
+                delta_xi.x      = traj.at(i).x - traj.at(i - 1).x;
+                delta_xi.y      = traj.at(i).y - traj.at(i - 1).y;
+                delta_xip1.x    = traj.at(i + 1).x - traj.at(i).x;
+                delta_xip1.y    = traj.at(i + 1).y - traj.at(i).y;
+                norm_delta_xi   = sqrt(pow(delta_xi.x, 2) + pow(delta_xi.y, 2));     // |Δxi|
+                norm_delta_xip1 = sqrt(pow(delta_xip1.x, 2) + pow(delta_xip1.y, 2)); // |Δxi+1|
+                d               = norm_delta_xi * norm_delta_xip1;
+                double temp     = (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d;
+                if (temp > 1.0) {
+                    temp = 1.0;
+                }
+                if (temp < -1.0) {
+                    temp = -1.0;
+                }
+                dphi  = acos(temp); // 通过向量积求出两向量之间夹角
+                kappa = dphi / norm_delta_xi;
+                // threadLogger_->info("delta_xi.x :{} delta_xip1.x:{}  delta_xi.y :{}  delta_xip1.y:{}  d:{}  acos({})", delta_xi.x, delta_xip1.x, delta_xi.y, delta_xip1.y, d, (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d);
+                // threadLogger_->info("kappa :{} dphi:{}  norm_delta_xi:{} ", kappa, dphi, norm_delta_xi);
+                traj.at(i).curvature = kappa;
+            }
+
+            else {
+                if (i - 1 > 0) {
+                    traj.at(i).curvature = traj.at(i - 1).curvature;
+                }
+                else {
+                    traj.at(i).curvature = 0;
+                }
+            }
         }
-        j++;
+        traj.front().curvature = traj.at(1).curvature;
+        traj.back().curvature  = traj.at(traj.size() - 2).curvature;
     }
 
-    // 计算前1.0m点的曲率
-    for (int i = 0; i <= halflengthmark; i++) {
-        double distance_front = 0, distance_back = 0;
-        int    k = i;
-        // 计算当前点距离第一个点的距离
-        while (k > 0) {
-            distance_back = distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
-            k--;
-        }
-        k = i;
-        while (k < s - 1) {
-            distance_front = distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
-            if (distance_front >= (delta_length - distance_back)) {
-                double anglew_front  = vec_angle.at(k + 1); // 当前点0.5后的点角度
-                double delta_anglew  = anglew_front - vec_angle.at(0);
-                delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI; // 角度插值转化，避免 - 180和180处出问题
-                traj.at(i).curvature = delta_anglew / delta_length;
-                break;
-            }
-            k++;
-        }
-    }
+    // vector<double> vec_x, vec_y, vec_angle;
+    // int            delta_length        = 4;
+    // int            halflengthmark      = 0;
+    // double         distance_halflength = 0;
+    // int            s                   = traj.size();
+    // for (int i = 0; i < s; i++) {
+    //     vec_x.push_back(traj.at(i).x);
+    //     vec_y.push_back(traj.at(i).y);
+    //     vec_angle.push_back(traj.at(i).yaw);
+    // }
+    // // 计算前0.5m的点的位置halflengthmark
+    // int j = 0;
+    // while (j < s - 1) {
+    //     distance_halflength = distance_halflength + sqrt(pow(vec_x.at(j + 1) - vec_x.at(j), 2) + pow(vec_y.at(j + 1) - vec_y.at(j), 2));
+    //     if (distance_halflength >= delta_length / 2) {
+    //         halflengthmark = j + 1;
+    //         break;
+    //     }
+    //     j++;
+    // }
 
-    // 计算末尾前0.5m点的位置
-    double distance_last_halflength = 0;
-    int    lasthalflengthmark       = 0;
-    j                               = s - 1;
-    while (j > 0) {
-        distance_last_halflength = distance_last_halflength + sqrt(pow(vec_x.at(j) - vec_x.at(j - 1), 2) + pow(vec_y.at(j) - vec_y.at(j - 1), 2));
-        if (distance_last_halflength >= (delta_length / 2)) {
-            lasthalflengthmark = j - 1;
-            break;
-        }
-        j--;
-    }
+    // // 计算前1.0m点的曲率
+    // for (int i = 0; i <= halflengthmark; i++) {
+    //     double distance_front = 0, distance_back = 0;
+    //     int    k = i;
+    //     // 计算当前点距离第一个点的距离
+    //     while (k > 0) {
+    //         distance_back = distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
+    //         k--;
+    //     }
+    //     k = i;
+    //     while (k < s - 1) {
+    //         distance_front = distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
+    //         if (distance_front >= (delta_length - distance_back)) {
+    //             double anglew_front  = vec_angle.at(k + 1); // 当前点0.5后的点角度
+    //             double delta_anglew  = anglew_front - vec_angle.at(0);
+    //             delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI; // 角度插值转化，避免 - 180和180处出问题
+    //             traj.at(i).curvature = delta_anglew / delta_length;
+    //             break;
+    //         }
+    //         k++;
+    //     }
+    // }
 
-    //%计算末尾0.5米曲率
-    for (int i = lasthalflengthmark; i <= s - 1; i++) {
-        double distance_back  = 0;
-        double distance_front = 0;
-        int    k              = i;
-        while (k < s - 1) {
-            distance_back = distance_back + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
-            k++;
-        }
-        k = i;
-        while (k > 0) {
-            distance_front = distance_front + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
-            if (distance_front >= (delta_length - distance_back)) {
-                double anglew_back   = vec_angle.at(k - 1);
-                double delta_anglew  = vec_angle.at(traj.size() - 1) - anglew_back;
-                delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI;
-                traj.at(i).curvature = delta_anglew / delta_length;
-                break;
-            }
-            k--;
-        }
-    }
+    // // 计算末尾前0.5m点的位置
+    // double distance_last_halflength = 0;
+    // int    lasthalflengthmark       = 0;
+    // j                               = s - 1;
+    // while (j > 0) {
+    //     distance_last_halflength = distance_last_halflength + sqrt(pow(vec_x.at(j) - vec_x.at(j - 1), 2) + pow(vec_y.at(j) - vec_y.at(j - 1), 2));
+    //     if (distance_last_halflength >= (delta_length / 2)) {
+    //         lasthalflengthmark = j - 1;
+    //         break;
+    //     }
+    //     j--;
+    // }
 
-    // 计算中间曲率
-    for (int i = halflengthmark + 1; i <= lasthalflengthmark - 1; i++) {
-        double distance_back  = 0;
-        double distance_front = 0;
-        double anglew_front   = 0;
-        double anglew_back    = 0;
-        int    k              = i;
-        while (k < s - 1) {
-            distance_front = distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
-            if (distance_front >= delta_length / 2) {
-                anglew_front = vec_angle.at(k + 1); // 当前点0.5后的点角度
-                break;
-            }
-            k++;
-        }
-        k = i;
-        while (k > 0) {
-            distance_back = distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
-            if (distance_back >= delta_length / 2) {
-                anglew_back = vec_angle.at(k - 1);
-                break;
-            }
-            k--;
-        }
-        double delta_anglew  = anglew_front - anglew_back;
-        delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI;
-        traj.at(i).curvature = delta_anglew / delta_length;
-    }
+    // //%计算末尾0.5米曲率
+    // for (int i = lasthalflengthmark; i <= s - 1; i++) {
+    //     double distance_back  = 0;
+    //     double distance_front = 0;
+    //     int    k              = i;
+    //     while (k < s - 1) {
+    //         distance_back = distance_back + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
+    //         k++;
+    //     }
+    //     k = i;
+    //     while (k > 0) {
+    //         distance_front = distance_front + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
+    //         if (distance_front >= (delta_length - distance_back)) {
+    //             double anglew_back   = vec_angle.at(k - 1);
+    //             double delta_anglew  = vec_angle.at(traj.size() - 1) - anglew_back;
+    //             delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI;
+    //             traj.at(i).curvature = delta_anglew / delta_length;
+    //             break;
+    //         }
+    //         k--;
+    //     }
+    // }
+
+    // // 计算中间曲率
+    // for (int i = halflengthmark + 1; i <= lasthalflengthmark - 1; i++) {
+    //     double distance_back  = 0;
+    //     double distance_front = 0;
+    //     double anglew_front   = 0;
+    //     double anglew_back    = 0;
+    //     int    k              = i;
+    //     while (k < s - 1) {
+    //         distance_front = distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
+    //         if (distance_front >= delta_length / 2) {
+    //             anglew_front = vec_angle.at(k + 1); // 当前点0.5后的点角度
+    //             break;
+    //         }
+    //         k++;
+    //     }
+    //     k = i;
+    //     while (k > 0) {
+    //         distance_back = distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
+    //         if (distance_back >= delta_length / 2) {
+    //             anglew_back = vec_angle.at(k - 1);
+    //             break;
+    //         }
+    //         k--;
+    //     }
+    //     double delta_anglew  = anglew_front - anglew_back;
+    //     delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI;
+    //     traj.at(i).curvature = delta_anglew / delta_length;
+    // }
 }
 // inline void CalAcc(vector<_TrajectoryPoint>& traj) {
 //     float last_acc;
