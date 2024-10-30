@@ -230,6 +230,7 @@ struct _VehicleParam {
     bool  hybrid_h_use_max;
     float vonoroi_grid_dist;
     float kVoronoiTerm;
+    float curvature_threshold;
 };
 
 // 调用全局规划时，需要传入的参数

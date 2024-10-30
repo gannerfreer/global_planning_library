@@ -276,6 +276,10 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
             if (val.HasMember("hybrid_h_use_max")) veh_start_end.veh_param.hybrid_h_use_max = val["hybrid_h_use_max"].GetBool();
             if (val.HasMember("kVoronoiTerm")) veh_start_end.veh_param.kVoronoiTerm = val["kVoronoiTerm"].GetFloat();
             if (val.HasMember("vonoroi_grid_dist")) veh_start_end.veh_param.vonoroi_grid_dist = val["vonoroi_grid_dist"].GetFloat();
+            if (val.HasMember("curvature_threshold"))
+                veh_start_end.veh_param.curvature_threshold = val["curvature_threshold"].GetFloat();
+            else
+                veh_start_end.veh_param.curvature_threshold = 0.2;
         }
         vehicle_param = veh_start_end.veh_param;
     }

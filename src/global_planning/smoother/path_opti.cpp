@@ -77,47 +77,47 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     CuspPointExtension(collison_check);
 
     CalCurvature(path_);
-    // CalCurvature(path_);
+    CalCurvature(path_);
 
-    // Path         path_with_curvature;
-    // vector<Path> multipath;
-    // Path         temp_path;
+    Path         path_with_curvature;
+    vector<Path> multipath;
+    Path         temp_path;
 
-    // for (int i = 0; i < path_.size() - 1; i++) {
-    //     if (path_.at(i).direction == path_.at(i + 1).direction) {
-    //         temp_path.push_back(path_.at(i));
-    //     }
-    //     else {
-    //         temp_path.push_back(path_.at(i));
-    //         multipath.push_back(temp_path);
-    //         temp_path.clear();
-    //     }
-    // }
-    // multipath.push_back(temp_path);
+    for (int i = 0; i < path_.size() - 1; i++) {
+        if (path_.at(i).direction == path_.at(i + 1).direction) {
+            temp_path.push_back(path_.at(i));
+        }
+        else {
+            temp_path.push_back(path_.at(i));
+            multipath.push_back(temp_path);
+            temp_path.clear();
+        }
+    }
+    multipath.push_back(temp_path);
 
 
-    // threadLogger_->info("三次样条插值环节，一共分出 {} 段路", multipath.size());
-    // Path final_path;
-    // for (int i = 0; i < multipath.size(); i++) {
-    //     temp_path.clear();
-    //     CalculateCubicSplineCurve(false, multipath.at(i), temp_path);
-    //     threadLogger_->info("待插值的点信息,数量：{}", multipath.at(i).size());
-    //     for (int j = 0; j < multipath.at(i).size(); j++) {
-    //         threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", multipath.at(i).at(j).x, multipath.at(i).at(j).y, multipath.at(i).at(j).angle / M_PI * 180, multipath.at(i).at(j).curvature, multipath.at(i).at(j).direction);
-    //     }
-    //     threadLogger_->info("插值后的点信息，数量：{}", temp_path.size());
-    //     for (int j = 0; j < temp_path.size(); j++) {
-    //         threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", temp_path.at(j).x, temp_path.at(j).y, temp_path.at(j).angle / M_PI * 180, temp_path.at(j).curvature, temp_path.at(j).direction);
-    //     }
+    threadLogger_->info("三次样条插值环节，一共分出 {} 段路", multipath.size());
+    Path final_path;
+    for (int i = 0; i < multipath.size(); i++) {
+        temp_path.clear();
+        CalculateCubicSplineCurve(false, multipath.at(i), temp_path);
+        threadLogger_->info("待插值的点信息,数量：{}", multipath.at(i).size());
+        for (int j = 0; j < multipath.at(i).size(); j++) {
+            threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", multipath.at(i).at(j).x, multipath.at(i).at(j).y, multipath.at(i).at(j).angle / M_PI * 180, multipath.at(i).at(j).curvature, multipath.at(i).at(j).direction);
+        }
+        threadLogger_->info("插值后的点信息，数量：{}", temp_path.size());
+        for (int j = 0; j < temp_path.size(); j++) {
+            threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", temp_path.at(j).x, temp_path.at(j).y, temp_path.at(j).angle / M_PI * 180, temp_path.at(j).curvature, temp_path.at(j).direction);
+        }
 
-    //     final_path.insert(final_path.end(), temp_path.begin(), temp_path.end());
-    // }
+        final_path.insert(final_path.end(), temp_path.begin(), temp_path.end());
+    }
 
-    // threadLogger_->info("执行三次样条插值后，每个轨迹点的信息，final_path.size():{}", final_path.size());
-    // for (int i = 0; i < final_path.size() - 1; i++) {
-    //     threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", final_path.at(i).x, final_path.at(i).y, final_path.at(i).angle / M_PI * 180, final_path.at(i).curvature, final_path.at(i).direction);
-    //     threadLogger_->info("相邻点间距 dis: {}", hypot(final_path.at(i).x - final_path.at(i + 1).x, final_path.at(i).y - final_path.at(i + 1).y));
-    // }
+    threadLogger_->info("执行三次样条插值后，每个轨迹点的信息，final_path.size():{}", final_path.size());
+    for (int i = 0; i < final_path.size() - 1; i++) {
+        threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", final_path.at(i).x, final_path.at(i).y, final_path.at(i).angle / M_PI * 180, final_path.at(i).curvature, final_path.at(i).direction);
+        threadLogger_->info("相邻点间距 dis: {}", hypot(final_path.at(i).x - final_path.at(i + 1).x, final_path.at(i).y - final_path.at(i + 1).y));
+    }
 
     threadLogger_->info("执行尖点延伸逻辑后，每个轨迹点的信息,path_.size():{}", path_.size());
     for (int i = 0; i < path_.size() - 1; i++) {
