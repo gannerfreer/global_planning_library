@@ -38,6 +38,15 @@ void CollisonCheck::InitBoundMap(const Bound road_bound) {
             iter_vec->second.push_back(*iter);
         }
     }
+    std::ofstream file_out;
+    file_out.open("collision_border.txt");
+    for (auto i : road_bound_map_) {
+        for (auto j : i.second) {
+            file_out << j.x << " " << j.y << endl;
+        }
+    }
+    file_out.close();
+
 
     cout << "InitBoundMap--road_bound_map_.size():" << road_bound_map_.size() << endl;
 }

@@ -220,7 +220,7 @@ inline bool doesTrajectorySelfIntersect(Path& path) {
         }
     }
     double percent = sum / 36.0;
-    if (percent < 0.9) {
+    if (percent < 0.6) {
         return false;
     }
     else {
