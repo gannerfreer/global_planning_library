@@ -124,12 +124,12 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         threadLogger_->info("相邻点间距 dis: {}", hypot(path_.at(i).x - path_.at(i + 1).x, path_.at(i).y - path_.at(i + 1).y));
     }
 
-    std::ofstream file_out;
-    file_out.open("youhuaqian.txt");
-    for (size_t index = 0; index < path_.size(); index++) {
-        file_out << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("youhuaqian.txt");
+    // for (size_t index = 0; index < path_.size(); index++) {
+    //     file_out << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << endl;
+    // }
+    // file_out.close();
 
     // 得到节点和固定点索引
     GetCuspIndex();     // 得到尖点索引查询表cuspLookup
@@ -158,11 +158,11 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
 
     InterpolatePath(opti_path); // 插值
     // std::ofstream file_out;
-    file_out.open("youhuahou.txt");
-    for (size_t index = 0; index < opti_path.size(); index++) {
-        file_out << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << endl;
-    }
-    file_out.close();
+    // file_out.open("youhuahou.txt");
+    // for (size_t index = 0; index < opti_path.size(); index++) {
+    //     file_out << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << endl;
+    // }
+    // file_out.close();
 }
 bool Path_Opti::CurvatureCheck() {
     CalCurvature(new_path_);

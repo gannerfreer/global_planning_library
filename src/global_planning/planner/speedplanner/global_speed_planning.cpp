@@ -1439,12 +1439,12 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
     else {
         threadLogger_->info("S弯限速未开启");
     }
-    std::ofstream file_out;
-    file_out.open("speed_limit0.txt");
-    for (size_t index = 0; index < trajectory_points.size(); index++) {
-        file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("speed_limit0.txt");
+    // for (size_t index = 0; index < trajectory_points.size(); index++) {
+    //     file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
+    // }
+    // file_out.close();
     // 曲率限速
     iter = trajectory_points.begin();
     for (; iter != trajectory_points.end(); iter++) {
@@ -1453,12 +1453,11 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
         }
     }
 
-    // std::ofstream file_out;
-    file_out.open("speed_limit1.txt");
-    for (size_t index = 0; index < trajectory_points.size(); index++) {
-        file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
-    }
-    file_out.close();
+    // file_out.open("speed_limit1.txt");
+    // for (size_t index = 0; index < trajectory_points.size(); index++) {
+    //     file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
+    // }
+    // file_out.close();
 }
 /**
  * @brief: 路径划分，将全局路径按照前进、后退切换的点划分为不同的片段，分别进行速度规划

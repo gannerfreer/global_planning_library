@@ -152,8 +152,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 1556.1160888671875
-        Min Value: -217.6690673828125
+        Max Value: -37.48828125
+        Min Value: -159.73556518554688
         Value: true
       Axis: Y
       Channel Name: intensity
@@ -182,7 +182,7 @@ Visualization Manager:
       Marker Topic: /point_expand
       Name: Marker
       Namespaces:
-        {}
+        my_namespace: true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -218,7 +218,7 @@ Visualization Manager:
       Marker Topic: /start
       Name: Marker
       Namespaces:
-        {}
+        my_namespace: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -226,7 +226,7 @@ Visualization Manager:
       Marker Topic: /end
       Name: Marker
       Namespaces:
-        {}
+        my_namespace: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -266,11 +266,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 2.1032555103302
+      Scale: 3.68662691116333
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: -500.972412109375
-      Y: 866.634765625
+      X: 91.34126281738281
+      Y: -70.81130981445312
     Saved: ~
 Window Geometry:
   Displays:

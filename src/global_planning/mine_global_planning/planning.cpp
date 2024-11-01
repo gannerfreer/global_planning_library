@@ -130,12 +130,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("轨迹连续性校验通过");
 
     // // 超速检测
-    std::ofstream file_out;
-    file_out.open("speed_limit2.txt");
-    for (size_t index = 0; index < global_path_.size(); index++) {
-        file_out << 0 << " " << global_path_.at(index).speed_limit << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("speed_limit2.txt");
+    // for (size_t index = 0; index < global_path_.size(); index++) {
+    //     file_out << 0 << " " << global_path_.at(index).speed_limit << endl;
+    // }
+    // file_out.close();
     if (!Helper::OverSpeedCheck(global_path_, vehicle_param_.wheel_base)) {
         threadLogger_->error("存在超速，检测失败");
         return;
@@ -526,12 +526,12 @@ bool Planning::NotFollowReferencelinePlanning() {
     if (task_type_ == TaskType::TEMP_MOVE_CAR) { // 临时挪车任务，先采用纯倒车的规划，再采用纯往前开的策略
         // 先倒车规划，不行正向规划
         threadLogger_->info("挪车");
-        if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_2, time_threshold)) {
-            // if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_2, time_threshold)) {
-            threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
-            error_type_ = ErrorType::POINT_UNREASONABLE;
-            return false;
-            // }
+        if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_1, time_threshold)) {
+            if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_2, time_threshold)) {
+                threadLogger_->error("Hybird A*无法规划出当前起点至终点的路径");
+                error_type_ = ErrorType::POINT_UNREASONABLE;
+                return false;
+            }
         }
         global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
         threadLogger_->info("临时挪车,路长:{}", global_path_.size());
@@ -642,6 +642,7 @@ bool Planning::FollowReferencelinePlanning() {
 
     if (success_pair.empty()) {
         error_type_ = ErrorType::ROAD_GRAPH_ERROR;
+
         return false;
     }
     else {
