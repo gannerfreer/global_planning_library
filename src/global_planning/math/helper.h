@@ -496,10 +496,10 @@ inline bool CheckPathFracture(vector<_TrajectoryPoint>& traj) {
 }
 
 
-inline bool CheckCurvature(vector<_TrajectoryPoint>& tra) {
-    float threshold = 0.15;
+inline bool CheckCurvature(vector<_TrajectoryPoint>& tra, float threshold) {
     for (int i = 0; i < tra.size(); i++) {
         if (fabs(tra.at(i).curvature) > threshold) {
+            cout << "曲率超标" << endl;
             return false;
         }
     }

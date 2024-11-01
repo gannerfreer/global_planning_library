@@ -33,9 +33,9 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     for (unsigned int i = 0; i < original_path.size() - 1; ++i) {
         double dis_square = pow(original_path.at(i).x - original_path.at(i + 1).x, 2) + pow(original_path.at(i).y - original_path.at(i + 1).y, 2);
 
-        if (dis_square > pow(1.5 * m_vehicle_param_.step_length, 2)) {
+        if (dis_square > pow(1.5 * m_vehicle_param_.hybridastar_step_length, 2)) {
             Path tem_path;
-            CubicInterpolate2Point(original_path.at(i), original_path.at(i + 1), m_vehicle_param_.step_length, tem_path);
+            CubicInterpolate2Point(original_path.at(i), original_path.at(i + 1), m_vehicle_param_.hybridastar_step_length, tem_path);
             path_.insert(path_.end(), tem_path.begin(), tem_path.end());
             path_.push_back(original_path.at(i + 1));
         }
@@ -385,8 +385,8 @@ void Path_Opti::SmoothPath() {
  */
 inline Vector2D Path_Opti::ErrorTerm(Vector2D xi, Vector2D xoi) {
     Vector2D gradient;
-    gradient.x = m_vehicle_param_.error_term * (xi.x - xoi.x);
-    gradient.y = m_vehicle_param_.error_term * (xi.y - xoi.y);
+    gradient.x = m_vehicle_param_.path_error_term * (xi.x - xoi.x);
+    gradient.y = m_vehicle_param_.path_error_term * (xi.y - xoi.y);
     return gradient;
 }
 
@@ -435,8 +435,8 @@ inline Vector2D Path_Opti::CurvatureTerm(Vector2D xim1, Vector2D xi, Vector2D xi
         k2.x = u * p1.x;
         k2.y = u * p1.y;
 
-        gradient.x = m_vehicle_param_.curvature_term * (0.25 * k0.x + 0.5 * k1.x + 0.25 * k2.x);
-        gradient.y = m_vehicle_param_.curvature_term * (0.25 * k0.y + 0.5 * k1.y + 0.25 * k2.y);
+        gradient.x = m_vehicle_param_.path_curvature_term * (0.25 * k0.x + 0.5 * k1.x + 0.25 * k2.x);
+        gradient.y = m_vehicle_param_.path_curvature_term * (0.25 * k0.y + 0.5 * k1.y + 0.25 * k2.y);
     }
     else {
         gradient.x = 0;
@@ -452,8 +452,8 @@ inline Vector2D Path_Opti::CurvatureTerm(Vector2D xim1, Vector2D xi, Vector2D xi
  */
 inline Vector2D Path_Opti::SmoothnessTerm(Vector2D xim2, Vector2D xim1, Vector2D xi, Vector2D xip1, Vector2D xip2) {
     Vector2D gradient;
-    gradient.x = m_vehicle_param_.smoothness_term * (xip2.x - 4 * xip1.x + 6 * xi.x - 4 * xim1.x + xim2.x);
-    gradient.y = m_vehicle_param_.smoothness_term * (xip2.y - 4 * xip1.y + 6 * xi.y - 4 * xim1.y + xim2.y);
+    gradient.x = m_vehicle_param_.path_smoothness_term * (xip2.x - 4 * xip1.x + 6 * xi.x - 4 * xim1.x + xim2.x);
+    gradient.y = m_vehicle_param_.path_smoothness_term * (xip2.y - 4 * xip1.y + 6 * xi.y - 4 * xim1.y + xim2.y);
     return gradient;
 }
 
@@ -501,7 +501,7 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
             float    PvorPtn_PedgDst = alpha * obsDst * pow(obsDst - vorObsDMax, 2) / (pow(vorObsDMax, 2) * (obsDst + alpha) * pow(edgDst + obsDst, 2));
 
             float PvorPtn_PobsDst = (alpha * edgDst * (obsDst - vorObsDMax) * ((edgDst + 2 * vorObsDMax + alpha) * obsDst + (vorObsDMax + 2 * alpha) * edgDst + alpha * vorObsDMax)) / (pow(vorObsDMax, 2) * pow(obsDst + alpha, 2) * pow(obsDst + edgDst, 2));
-            gradient              = m_vehicle_param_.kVoronoiTerm * PvorPtn_PobsDst * PobsDst_Pxi + PvorPtn_PedgDst * PedgDst_Pxi;
+            gradient              = m_vehicle_param_.path_voronoi_term * PvorPtn_PobsDst * PobsDst_Pxi + PvorPtn_PedgDst * PedgDst_Pxi;
 
             return gradient;
         }

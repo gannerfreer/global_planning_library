@@ -91,7 +91,8 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("global_path_.size():{}", global_path_.size());
 
     // 均匀碾压：对除了过磅、洗车和倒车之外的路段进行横向偏移
-    if (vehicle_param_.offset_enable == true) {
+    if (vehicle_param_.uniform_compaction_enable == true) {
+        threadLogger_->info("开启均匀碾压");
         if (!PathOffset()) {
             return;
         }
@@ -257,7 +258,7 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
             temp_point.z         = final_path.at(i).z;
             temp_point.yaw       = final_path.at(i).angle;
             temp_point.direction = final_path.at(i).direction;
-            temp_point.attribute = 4;
+            temp_point.attribute = PointAttribute::dump_road;
             temp_point.curvature = final_path.at(i).curvature;
             traj.emplace_back(temp_point);
         }
@@ -396,8 +397,9 @@ bool Planning::RandomOffsetWithoutCuravture() {
                 vector<float> vec_off_set;
                 for (m = start; m <= end; m = m + 1) {
                     a++;
-                    if (end - start > 250) {
+                    if (end - start > 21) {
                         off_set = CalculateOffSetWithoutCuravture(a, sum + 1, weight); //
+                        threadLogger_->info("索引：{}  off_set:{}", m, off_set);
                     }
                     else // 如果改段路太短，不进行偏移
                     {
@@ -463,23 +465,21 @@ bool Planning::RandomOffsetWithoutCuravture() {
         }
 
 
-    } while (!Helper::CheckCurvature(global_path_)); // 碰撞检测通过、曲率校验通过
+    } while (!Helper::CheckCurvature(global_path_, vehicle_param_.curvature_threshold)); // 碰撞检测通过、曲率校验通过
     threadLogger_->info("找到合适的权重：{}", weight);
 
     return true;
 }
 
 float Planning::CalculateOffSetWithoutCuravture(int index, int sum, float weight) {
-    float max_l = vehicle_param_.max_l;
-    float L     = max_l * weight; // 控制默认偏移量
-    L           = L * WeightFunction(index, sum);
+    float L = 0.5 * weight; // 控制默认偏移量
+    L       = L * WeightFunction(index, sum);
     return L;
 }
 
 
 float Planning::WeightFunction(int k, int sum) {
-    // int sita = vehicle_param_.sita;
-    int sita = 200;
+    int sita = 5;
     int x;
     if (k < sum / 2) {
         x = k;
@@ -487,8 +487,7 @@ float Planning::WeightFunction(int k, int sum) {
     else {
         x = sum - 1 - k;
     }
-    // return 1.0 / (1 + pow(vehicle_param_.base, (-(x - sita))));
-    return 1.0 / (1 + pow(1.1, (-(x - sita))));
+    return 1.0 / (1 + pow(2.85, (-(x - sita))));
 }
 
 
@@ -806,7 +805,7 @@ bool Planning::PathOffset() {
     }
     // 设置temp中，每个点的offset_flag信息，来确定此次规划任务需要偏移的路段，true表示需要偏移，false表示不需要偏移
     for (int i = 0; i < global_path_.size(); i++) {
-        if (global_path_.at(i).attribute == 6 || global_path_.at(i).attribute == 7) {
+        if (global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
             for (int j = i - 10; j < i + 10; j++) {
                 if (j >= 0 && j < global_path_.size()) {
                     global_path_.at(j).offset_flag = false; // 将过磅点和洗车点左右10m设置为无需偏移的路段
@@ -951,7 +950,7 @@ bool Planning::IsShortDistance() {
         temp_point.curvature   = 0;
         temp_point.speed       = 0;
         temp_point.distance    = 0;
-        temp_point.attribute   = 0;
+        temp_point.attribute   = PointAttribute::regular_road;
         temp_point.speed_limit = 0;
         temp_point.direction   = 1;
         global_path_.push_back(temp_point);
@@ -962,7 +961,7 @@ bool Planning::IsShortDistance() {
         temp_point.curvature   = 0;
         temp_point.speed       = 0;
         temp_point.distance    = 0;
-        temp_point.attribute   = 0;
+        temp_point.attribute   = PointAttribute::regular_road;
         temp_point.speed_limit = 0;
         temp_point.direction   = 1;
         global_path_.push_back(temp_point);

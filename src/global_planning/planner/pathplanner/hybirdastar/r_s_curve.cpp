@@ -94,15 +94,15 @@ bool RSCurve::LengthValid() {
                         ;
                 }
                 else if (i == s.size() - 2) {
-                    if (fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length) {
-                        // threadLogger_->info("fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length");
+                    if (fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.rs_min_path_length) {
+                        // threadLogger_->info("fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_. rs_min_path_length");
                         return false;
                     }
                 }
                 else
                     ;
-                if (sum < m_vehicle_prarm_.min_path_Length) {
-                    // threadLogger_->info("sum < m_vehicle_prarm_.min_path_Length");
+                if (sum < m_vehicle_prarm_.rs_min_path_length) {
+                    // threadLogger_->info("sum < m_vehicle_prarm_. rs_min_path_length");
                     return false;
                 }
                 else
@@ -177,7 +177,7 @@ bool RSCurve::ReedsSheppGeneration() {
  * @brief 对生成的最优RS路段进行插值
  */
 void RSCurve::Interpolate(Point start, Path& rs_path) {
-    //       cout<< "77777m_vehicle_prarm_.step_length =" << m_vehicle_prarm_.step_length << "\n";
+    //       cout<< "77777m_vehicle_prarm_. hybridastar_step_length =" << m_vehicle_prarm_. hybridastar_step_length << "\n";
     Point temp_point;
     temp_point.x     = 0;
     temp_point.y     = 0;
@@ -221,7 +221,7 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
         };
     }
     double total_length = opti_rs_path.length;
-    double step_size    = m_vehicle_prarm_.step_length / m_vehicle_prarm_.radious;
+    double step_size    = m_vehicle_prarm_.hybridastar_step_length / m_vehicle_prarm_.radious;
     Point  np;
     for (int i = 0; i < rspoint.size(); i++) {
         double s = 0;

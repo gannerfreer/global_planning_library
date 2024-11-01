@@ -847,7 +847,7 @@ void OptimalPath::PathIntegration() {
         threadLogger_->info("向前路径拼接");
         temp_point.angle = actual_start_.angle;
         cout << "start_offset_distance:" << m_vehicle_param_.start_offset_distance << endl;
-        for (double i = 0; i <= m_vehicle_param_.start_offset_distance + 1e-3; i += m_vehicle_param_.step_length) {
+        for (double i = 0; i <= m_vehicle_param_.start_offset_distance + 1e-3; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = actual_start_.x + i * cos(actual_start_.angle);
             temp_point.y         = actual_start_.y + i * sin(actual_start_.angle);
             temp_point.z         = 0;
@@ -878,7 +878,7 @@ void OptimalPath::PathIntegration() {
         }
         threadLogger_->info("向后路径拼接");
         temp_point.angle = actual_start_.angle;
-        for (double i = 0; i <= m_vehicle_param_.start_offset_distance + 1e-3; i += m_vehicle_param_.step_length) {
+        for (double i = 0; i <= m_vehicle_param_.start_offset_distance + 1e-3; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = actual_start_.x - i * cos(actual_start_.angle);
             temp_point.y         = actual_start_.y - i * sin(actual_start_.angle);
             temp_point.z         = 0;
@@ -912,7 +912,7 @@ void OptimalPath::PathIntegration() {
         Point temp_point;
         temp_point.angle = end_r_.angle;
         // cout << "temp_point.angle:" << temp_point.angle << endl;
-        for (double i = m_vehicle_param_.step_length; i <= m_vehicle_param_.end_offset_distance; i += m_vehicle_param_.step_length) {
+        for (double i = m_vehicle_param_.hybridastar_step_length; i <= m_vehicle_param_.end_offset_distance; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = end_r_.x + i * cos(end_r_.angle);
             temp_point.y         = end_r_.y + i * sin(end_r_.angle);
             temp_point.z         = 0;
@@ -929,7 +929,7 @@ void OptimalPath::PathIntegration() {
     {
         Point temp_point;
         temp_point.angle = end_f_.angle;
-        for (double i = m_vehicle_param_.step_length; i <= m_vehicle_param_.end_offset_distance; i += m_vehicle_param_.step_length) {
+        for (double i = m_vehicle_param_.hybridastar_step_length; i <= m_vehicle_param_.end_offset_distance; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = end_f_.x - i * cos(end_f_.angle);
             temp_point.y         = end_f_.y - i * sin(end_f_.angle);
             temp_point.z         = 0;
@@ -1008,7 +1008,7 @@ void OptimalPath::VehDynam(const Vertex3D& start, const MotionDirection directio
  */
 void OptimalPath::CalGValue(const Vertex3D& start_point, Vertex3D& end_point) {
     // 保证开始时优先直线搜索
-    double coeff = (pow(end_point.x - start_.x, 2) + pow(end_point.y - start_.y, 2) > m_vehicle_param_.linear_preferred_distance_square) ? 1 : 5;
+    double coeff = hypot(end_point.x - start_.x, end_point.y - start_.y) > m_vehicle_param_.linear_preferred_distance ? 1 : 5;
     end_point.g  = start_point.g + m_vehicle_param_.delta_dist * ((m_vehicle_param_.backward_penalty - 1) * end_point.direction + 1.0) + coeff * m_vehicle_param_.turnning_penalty * fabs(fmod(end_point.angle - start_point.angle + 3 * M_PI, 2 * M_PI) - M_PI) + m_vehicle_param_.switch_penalty * fabs(start_point.direction - end_point.direction);
 }
 

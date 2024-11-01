@@ -60,13 +60,6 @@ struct SparseSpeedPoint {
     float        speed; // 该点速度
 };
 
-/*
- * @brief 规划规则枚举
- */
-enum struct SpeedPlanRule : unsigned char {
-    Shortest_Time = 0, // 贴着最高速度进行规划，时间最短规则
-    Set_Time      = 1, // 贴着给定的时间进行规划，准点到达
-};
 
 class GlobalSpeedPlanning {
   public:
@@ -201,35 +194,32 @@ class GlobalSpeedPlanning {
     /* 最大速度、初始速度、最终速度 */
     float max_speed_, initial_speed_, final_speed_;
     //        /* 最大加速度 单位(m/s^2) */
-    //        const float  kMaxAcceleration;
+    //        const float  max_acceleration;
     //        /* 最小加速度 单位(m/s^2) */
-    //        const float  kMinAcceleration;
-    //        /* 速度增量   单位(m/s) */
-    //        const float  kDeltaSpeed;
+    //        const float  mix_acceleration;
+
     //        /* 误差项权重 */
-    //        const float  kErrorTerm;
+    //        const float  speed_error_term;
     //        /* 平滑项权重 */
-    //        const float  kSmoothnessTerm;
+    //        const float  speed_smooth_term;
     //        /* 离散点间隔数量 */
-    //        const float  kDiscreteNumber;
+    //        const float  speed_discrete_number;
     //        /* 倒车速度 */
     //        const float reverse_speed;
     /* 最大加速度 单位(m/s^2) */
-    float kMaxAcceleration;
+    float max_acceleration;
     /* 最小加速度 单位(m/s^2) */
-    float kMinAcceleration;
-    /* 速度增量   单位(m/s) */
-    float kDeltaSpeed;
+    float mix_acceleration;
+
     /* 误差项权重 */
-    float kErrorTerm;
+    float speed_error_term;
     /* 平滑项权重 */
-    float kSmoothnessTerm;
+    float speed_smooth_term;
     /* 离散点间隔数量 */
-    float kDiscreteNumber;
+    float speed_discrete_number;
     /* 倒车速度 */
     float reverse_speed;
-    /*插值间隔*/
-    float         delta_s;
+
     _VehicleParam vehicle_param;
 
   public:
@@ -239,7 +229,7 @@ class GlobalSpeedPlanning {
      * 0：最短时间策略；1：准点策略
      * @return true：规划成功；false：规划失败
      */
-    bool SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param, const int total_time = 0, const int departure_time = 0, unsigned char mode = 0);
+    bool SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param, const int total_time = 0, const int departure_time = 0);
 
 
     void ReplanPointMaxSpeed();

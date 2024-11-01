@@ -52,23 +52,33 @@ enum struct ErrorType : unsigned int {
 
 };
 
+enum struct PointAttribute : unsigned int {
+    regular_road,      // 常规道路
+    narrow_road,       // 会车道路
+    intersection_road, // 交叉路口
+    slope_road,        // 坡路
+    dump_road,         // 颠簸路
+    weight_point,      // 过磅
+    clean_point        // 洗车
+};
+
 struct _TrajectoryPoint {
-    double        x;         // x坐标(单位：m)
-    double        y;         // y坐标(单位：m)
-    double        z;         // z坐标(单位：m)
-    double        yaw;       // 朝向(单位：0~360deg)
-    double        curvature; // 轨迹的曲率(单位：rad/s)
-    double        speed;
-    double        distance;
-    unsigned char attribute; // 路点属性(根据具体场景定义)
-    double        speed_limit;
-    unsigned char direction; // 路点方向(0:前进，1:倒退)
-    double        acc;
-    bool          offset_flag;
-    double        t; // 到达改点的时间
+    double         x;         // x坐标(单位：m)
+    double         y;         // y坐标(单位：m)
+    double         z;         // z坐标(单位：m)
+    double         yaw;       // 朝向(单位：0~360deg)
+    double         curvature; // 轨迹的曲率(单位：rad/s)
+    double         speed;
+    double         distance;
+    PointAttribute attribute; // 路点属性(根据具体场景定义)
+    double         speed_limit;
+    unsigned char  direction; // 路点方向(0:前进，1:倒退)
+    double         acc;
+    bool           offset_flag;
+    double         t; // 到达改点的时间
 
     inline void Clear() {
-        x = y = z = yaw = curvature = speed = distance = attribute = speed_limit = direction = acc = t = 0;
+        x = y = z = yaw = curvature = speed = distance = speed_limit = direction = acc = t = 0;
     }
 };
 
@@ -115,10 +125,6 @@ struct _VehicleParam {
     double max_steering;
     // 车辆后轴最小转弯半径(用于RS曲线拟合)
     double radious;
-
-    // 混合A星+RS算法参数
-
-
     // 前轮转角离散数量(奇数)
     unsigned int angle_discrete_num;
     // 拓展步长
@@ -130,9 +136,9 @@ struct _VehicleParam {
     // RS拟合的距终点最大距离
     double max_fitting_radius;
     // RS单段路径最小距离
-    double min_path_Length;
+    double rs_min_path_length;
     // 路径平滑前路点距离
-    double step_length;
+    double hybridastar_step_length;
     // 前进惩罚
     double forward_penalty;
     // 倒退惩罚
@@ -144,44 +150,27 @@ struct _VehicleParam {
     // 倒车搜索范围（距起点距离）
     double backward_search_range;
     // 起始处线性搜索优先的范围
-    double       linear_preferred_distance_square;
-    unsigned int offset_enable;
-    unsigned int multi_section_speed_limit_enable;
-    float        light_regular_road_speed_limit;
-    float        light_bumpy_road_speed_limit;
-    float        light_slope_road_speed_limit;
-    float        light_narrow_road_speed_limit;
-    float        light_intersection_road_speed_limit;
-
-    float        heavy_regular_road_speed_limit;
-    float        heavy_bumpy_road_speed_limit;
-    float        heavy_slope_road_speed_limit;
-    float        heavy_narrow_road_speed_limit;
-    float        heavy_intersection_road_speed_limit;
-    unsigned int weather;
+    double       linear_preferred_distance;
+    bool         uniform_compaction_enable;
+    float        regular_road_speed_limit;
+    float        bumpy_road_speed_limit;
+    float        slope_road_speed_limit;
+    float        narrow_road_speed_limit;
+    float        intersection_road_speed_limit;
+    bool         weather;
     unsigned int task_type;
     unsigned int vehicle_code;
-    unsigned int s_curve_speed_limit;
-    unsigned int border_change_range;
-    unsigned int border_sample_inter;
-    float        max_l;
-    float        sita;
-    float        base;
 
-    // _________________
-    // 路径后处理算法参数（平滑+插值）
-    // 误差项权重
-    double error_term;
+    double path_error_term;
     // 曲率项权重
-    double curvature_term;
+    double path_curvature_term;
     // 平滑项权重
-    double smoothness_term;
+    double path_smoothness_term;
     // 最大曲率
     double max_kappa;
     // 最大优化迭代次数
     double max_iterations_opti;
-    // 插值距离
-    double delta_s;
+
     // 安全距离允许浮动偏差
     double safe_margin_error; // safe_margin_bound / 2;
 
@@ -191,46 +180,31 @@ struct _VehicleParam {
     double end_offset_distance   = 0.0;
     double start_offset_distance = 0.0;
     // 尖点延伸距离
-    unsigned int cusp_extension_distance;
-    // _________________
-    // 限速处理
-    float min_speed_limit; // 4
-    float mid_speed_limit; // 6
-    float max_speed_limit; // 8
+    float cusp_extension_distance;
 
-    // _________________
-    // 曲率划分
-    float min_curvature;
-    float max_curvature;
-
-    // 终点选择判断阈值
-
-
-    double lat_min_distance_struct;
 
     // ________________
     // 速度规划参数
     /* 最大加速度 单位(m/s^2) */
-    float kMaxAcceleration;
+    float max_acceleration;
     /* 最小加速度 单位(m/s^2) */
-    float kMinAcceleration;
-    /* 速度增量   单位(m/s) */
-    float kDeltaSpeed;
+    float mix_acceleration;
+
     /* 误差项权重 */
-    float kErrorTerm;
+    float speed_error_term;
     /* 平滑项权重 */
-    float kSmoothnessTerm;
+    float speed_smooth_term;
     /* 离散点间隔数量 */
-    float kDiscreteNumber;
+    float speed_discrete_number;
     /* 倒车速度 */
     float reverse_speed;
-    bool  is_light;
-    bool  hybrid_h_use_rs;
-    bool  hybrid_h_use_a_star;
-    bool  hybrid_h_use_max;
+    /* 维诺图*/
     float vonoroi_grid_dist;
-    float kVoronoiTerm;
+    float path_voronoi_term;
+    /*曲率校验阈值*/
     float curvature_threshold;
+    bool  is_day;
+    bool  is_light;
 };
 
 // 调用全局规划时，需要传入的参数

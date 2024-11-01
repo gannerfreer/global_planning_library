@@ -20,35 +20,24 @@ using namespace GlobalPlanning;
  *return
  */
 void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
-    kMaxAcceleration = m_veh_param.kMaxAcceleration;
-    kMinAcceleration = m_veh_param.kMinAcceleration;
-    kDeltaSpeed      = m_veh_param.kDeltaSpeed;
-    kErrorTerm       = m_veh_param.kErrorTerm;
-    kSmoothnessTerm  = m_veh_param.kSmoothnessTerm;
-    kDiscreteNumber  = m_veh_param.kDiscreteNumber;
-    reverse_speed    = m_veh_param.reverse_speed;
-    delta_s          = m_veh_param.delta_s;
+    max_acceleration      = m_veh_param.max_acceleration;
+    mix_acceleration      = m_veh_param.mix_acceleration;
+    speed_error_term      = m_veh_param.speed_error_term;
+    speed_smooth_term     = m_veh_param.speed_smooth_term;
+    speed_discrete_number = m_veh_param.speed_discrete_number;
+    reverse_speed         = m_veh_param.reverse_speed;
 
-    // kMaxAcceleration = 0.3;
-    // kMinAcceleration = -0.6;
-    // kDeltaSpeed = 5;
-    // kErrorTerm = 0.1;
-    // kSmoothnessTerm = 0.9;
-    // kDiscreteNumber = 5;
-    // reverse_speed = 1.0;
-    // delta_s = 0.1;
 
-    threadLogger_->info("kMaxAcceleration ={} ", kMaxAcceleration);
+    threadLogger_->info("max_acceleration ={} ", max_acceleration);
 
-    threadLogger_->info("kMinAcceleration ={} ", kMinAcceleration);
+    threadLogger_->info("mix_acceleration ={} ", mix_acceleration);
 
-    threadLogger_->info("kDeltaSpeed ={} ", kDeltaSpeed);
 
-    threadLogger_->info("kErrorTerm ={} ", kErrorTerm);
+    threadLogger_->info("speed_error_term ={} ", speed_error_term);
 
-    threadLogger_->info("kSmoothnessTerm ={} ", kSmoothnessTerm);
+    threadLogger_->info("speed_smooth_term ={} ", speed_smooth_term);
 
-    threadLogger_->info("kDiscreteNumber ={} ", kDiscreteNumber);
+    threadLogger_->info("speed_discrete_number ={} ", speed_discrete_number);
 
     threadLogger_->info("reverse_speed ={} ", reverse_speed);
     vehicle_param = m_veh_param;
@@ -59,16 +48,15 @@ void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
  * 0：最短时间策略；1：准点策略
  * @return true：规划成功；false：规划失败
  */
-bool GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param, const int total_time, const int departure_time, unsigned char mode) {
+bool GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param, const int total_time, const int departure_time) {
     InitSpeedParam(m_veh_param);
     trajectory_fragments.clear();
     key_points.clear();
     global_speeds.clear();
     opti_global_speeds.clear();
     final_trajectory_points.clear();
-    trajectory_points       = trajectory;
-    mode                    = 0;
-    SpeedPlanRule plan_rule = static_cast<SpeedPlanRule>(mode);
+    trajectory_points = trajectory;
+
 
     /*限速设置*/
     ReplanPointMaxSpeed();
@@ -80,90 +68,18 @@ bool GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
     if (!AdpKeyPoints()) return false;
     // 减速安全检查，调整关键点
     if (!KeyPointsDecelerationCheck()) return false;
-    if (SpeedPlanRule::Shortest_Time == plan_rule) {
-        threadLogger_->info(" ...Start the Shortest_Time mode speed planning...");
 
-        if (!PlanCase0(departure_time)) {
-            threadLogger_->error(" ...The Shortest_Time mode speed planning failed...");
+    if (!PlanCase0(departure_time)) {
+        threadLogger_->error(" ...The Shortest_Time mode speed planning failed...");
 
-            return false;
-        }
+        return false;
     }
-    if (SpeedPlanRule::Set_Time == plan_rule) {
-        threadLogger_->info(" ...Start the Set_Time mode speed planning...");
 
-        if (!PlanCase1(total_time, departure_time)) {
-            threadLogger_->error(" ...The Set_Time mode speed planning failed...");
-
-            return false;
-        }
-    }
 
     trajectory = final_trajectory_points;
     return true;
 }
 
-/**
- *@brief: 模式1 Set_Time 速度规划的主流程函数
- *@param  total_time：总时间需求;departure_time:出发时间
- *return  true: 规划成功；false：规划失败
- */
-bool GlobalSpeedPlanning::PlanCase1(const int total_time, const int departure_time) {
-    float sum_time = 0;
-    for (unsigned char i = 0; i < key_points.size(); i++) {
-        /* 得到梯形速度曲线 */
-        if (!TrapezoidalSpeedPlanning(i)) {
-            threadLogger_->error("...TrapezoidalSpeedPlanning failed in {} 端路径...", (float)i);
-
-            return false;
-        }
-        /* 对速度曲线进行平滑处理 */
-        // SpeedCurveSmooth(i);
-        opti_global_speeds.emplace_back(global_speeds.at(i));
-        /* 对速度曲线进行插值处理，使得每个路点匹配一个速度值 */
-        SpeedCurveInterpolation(i);
-    }
-    sum_time = GetCurrentTotalTime();
-    threadLogger_->info("...sum_time is :{}", sum_time);
-
-    if (sum_time > total_time) {
-        threadLogger_->error("...can not realize total_time ={} speed planning failed..", total_time);
-
-        return false;
-    }
-    float delta_time = total_time - sum_time;
-    while (fabs(sum_time - total_time) > 5) {
-        global_speeds.clear();
-        opti_global_speeds.clear();
-        float kDeltaSpeed_adap = kDeltaSpeed * (total_time - sum_time) / delta_time;
-        ReducedMaximumSpeedAve(kDeltaSpeed_adap); // 等比例降低最大速度，倒车工况速度不变
-        for (unsigned char i = 0; i < key_points.size(); i++) {
-            /* 得到梯形速度曲线 */
-            if (!TrapezoidalSpeedPlanning(i)) {
-                threadLogger_->error("...TrapezoidalSpeedPlanning failed in {} 端路径...", (float)i);
-
-                return false;
-            }
-            /* 对速度曲线进行平滑处理 */
-            SpeedCurveSmooth(i);
-            // opti_global_speeds.emplace_back(global_speeds.at(i));
-            /* 对速度曲线进行插值处理，使得每个路点匹配一个速度值 */
-            SpeedCurveInterpolation(i);
-        }
-        sum_time = GetCurrentTotalTime();
-        threadLogger_->info("...sum_time is :{}", sum_time);
-    }
-    AddTimeInformation(departure_time);
-    final_trajectory_points.clear();
-    for (unsigned char i = 0; i < key_points.size(); i++) {
-        if (1 == key_points.at(i).at(0).direction) // 倒车工况速度为负数
-        {
-            for (unsigned int j = 0; j < trajectory_fragments.at(i).size(); j++) trajectory_fragments.at(i).at(j).speed = -trajectory_fragments.at(i).at(j).speed;
-        }
-        final_trajectory_points.insert(final_trajectory_points.end(), trajectory_fragments.at(i).begin(), trajectory_fragments.at(i).end());
-    }
-    return true;
-}
 
 /**
  *@brief: 模式0 Shortest_Time 速度规划的主流程函
@@ -182,41 +98,18 @@ bool GlobalSpeedPlanning::PlanCase0(const int departure_time) {
 
             return false;
         }
-        // threadLogger_->info("速度信息如下(未平滑)");
-        // for (int m = global_speeds.at(i).size() - 20; m < global_speeds.at(i).size(); m++)
-        // {
-        //     threadLogger_->info("速度:{}", global_speeds.at(i).at(m).speed);
-        // }
+
 
         threadLogger_->info("begin SpeedCurveSmooth");
 
         /* 对速度曲线进行平滑处理 */
         SpeedCurveSmooth(i);
-        // threadLogger_->info("速度信息如下(平滑后)");
-        // for (int m = opti_global_speeds.at(i).size() - 20; m < opti_global_speeds.at(i).size(); m++)
-        // {
-        //     threadLogger_->info("速度:{}", opti_global_speeds.at(i).at(m).speed);
-        // }
+
 
         threadLogger_->info("begin SpeedCurveInterpolation");
 
-        // opti_global_speeds.emplace_back(global_speeds.at(i));
-        /* 对速度曲线进行插值处理，使得每个路点匹配一个速度值 */
-        SpeedCurveInterpolation(i);
-        // 在这里加入额外处理，将每一段轨迹的速度低于0.1
 
-        // for (int m = trajectory_fragments.at(i).size() - 1; m >= 0; m--) // 从后面往前遍历
-        // {
-        //     if (trajectory_fragments.at(i).at(m).speed < 0.1)
-        //     {
-        //         threadLogger_->info("调整速度分配，提升为0.1m/s,索引:{}",m);
-        //         trajectory_fragments.at(i).at(m).speed = 0.1;
-        //     }
-        //     // if (trajectory_fragments.at(i).at(m).speed > 0.2) // 在从后往前遍历的过程中，超过0.2就可以breakl了
-        //     // {
-        //     //     break;
-        //     // }
-        // }
+        SpeedCurveInterpolation(i);
     }
     AddTimeInformation(departure_time);
     final_trajectory_points.clear();
@@ -232,53 +125,6 @@ bool GlobalSpeedPlanning::PlanCase0(const int departure_time) {
     return true;
 }
 
-/*
- * @brief 按比例减小各段限速大小
- * @param [in] delta_speed：每次减小的量
- * @param [return]
- */
-void GlobalSpeedPlanning::ReducedMaximumSpeedAve(float delta_speed) {
-    float max_speed = 0;
-    for (unsigned int i = 0; i < key_points.size(); i++) {
-        for (unsigned int j = 0; j < key_points.at(i).size(); j++) {
-            if (key_points.at(i).at(j).speed_limit_left > max_speed) max_speed = key_points.at(i).at(j).speed_limit_left;
-            if (key_points.at(i).at(j).speed_limit_right > max_speed) max_speed = key_points.at(i).at(j).speed_limit_right;
-        }
-    }
-    for (unsigned int i = 0; i < key_points.size(); i++) {
-        if (0 == key_points.at(i).at(0).direction) {
-            for (unsigned int j = 0; j < key_points.at(i).size(); j++) {
-                float temp_speed1                        = key_points.at(i).at(j).speed_limit_left - key_points.at(i).at(j).speed_limit_left * delta_speed / max_speed;
-                float temp_speed2                        = key_points.at(i).at(j).speed_limit_right - key_points.at(i).at(j).speed_limit_right * delta_speed / max_speed;
-                key_points.at(i).at(j).speed_limit_left  = temp_speed1 > 0 ? temp_speed1 : 0;
-                key_points.at(i).at(j).speed_limit_right = temp_speed2 > 0 ? temp_speed2 : 0;
-            }
-        }
-    }
-}
-
-/*
- * @brief 减小速度最大的一段的限速
- * @param [in]
- * @param [return]
- */
-void GlobalSpeedPlanning::ReducedMaximumSpeed() {
-    float        max_speed = 0;
-    unsigned int id1, id2;
-    for (unsigned int i = 0; i < key_points.size(); i++) {
-        for (unsigned int j = 0; j < key_points.at(i).size() - 1; j++) {
-            if (key_points.at(i).at(j).speed_limit_right > max_speed) {
-                max_speed = key_points.at(i).at(j).speed_limit_right;
-                id1       = i;
-                id2       = j;
-            }
-        }
-    }
-    float temp_speed1                               = key_points.at(id1).at(id2).speed_limit_right - kDeltaSpeed;
-    float temp_speed2                               = key_points.at(id1).at(id2 + 1).speed_limit_left - kDeltaSpeed;
-    key_points.at(id1).at(id2).speed_limit_right    = temp_speed1 > 0 ? temp_speed1 : 0;
-    key_points.at(id1).at(id2 + 1).speed_limit_left = temp_speed2 > 0 ? temp_speed2 : 0;
-}
 
 /**
  * @brief: 梯形速度规划函数
@@ -380,7 +226,7 @@ bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
                 threadLogger_->info("减速检查");
 
                 float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线)
-                float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration);                              // v1_left加速到v1_right所需的最小欧式距离
+                float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * mix_acceleration);                              // v1_left加速到v1_right所需的最小欧式距离
 
                 if ((s_total + eps) < s_min) // 若减速距离不够，得将v1结合车辆最大减速度进行合理调整
                 {
@@ -390,7 +236,7 @@ bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
 
                     threadLogger_->info("s_min ={} ", s_min);
 
-                    key_points.at(i).at(j).speed_limit_right    = sqrt(pow(v2, 2) + 2 * (kMaxAcceleration - 0.1) * s_total);
+                    key_points.at(i).at(j).speed_limit_right    = sqrt(pow(v2, 2) + 2 * (max_acceleration - 0.1) * s_total);
                     key_points.at(i).at(j + 1).speed_limit_left = key_points.at(i).at(j).speed_limit_right;
                     threadLogger_->info("右限速调整为：{}", key_points.at(i).at(j).speed_limit_right);
 
@@ -416,348 +262,6 @@ bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
 
     return true;
 }
-/*
- * @brief 对不合理的key_points进行调整，主要是针对一些减速都无法达到末端速度要求的路段
- * @param [in]
- * @param [return]
- */
-// bool  GlobalSpeedPlanning::AdpKeyPoints()
-// {
-//     bool flag = true;
-//     threadLogger_->info("开始AdpKeyPoints ,路径段落个数:{}", key_points.size());
-//      vector< vector<KeyPoint>> temp_key_points;
-//      vector<KeyPoint> temp_point;
-//      vector<_TrajectoryPoint> temp_traj;
-//     temp_key_points = key_points;
-//     unsigned char index = 0;
-
-//     while (flag)
-//     {
-//         threadLogger_->info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-//         flag = false;
-//         key_points.clear();
-//         key_points = temp_key_points;
-//         temp_key_points.clear();
-//         for (int i = 0; i < key_points.size(); i++)
-//         {
-//             temp_traj.clear();
-//             threadLogger_->info("第{}段全局路径有{}个点", i + 1, trajectory_fragments.at(i).size());
-//             temp_traj = trajectory_fragments.at(i);
-//             temp_point.clear();
-//             if (key_points.at(i).size() < 2)
-//             {
-//                 return false;
-//             }
-//             else
-//             {
-//                 // 新的限速曲线平滑方式
-//                 /*该循环中，如限速关键点符合优化条件，在进行优化后，若对keypoint1优化了，需将其将其添加到关键点集中；
-//                  若只对keypoint2进行优化，则直接continue，下一次循环时，keypoint1因未保存，将自动删除*/
-//                 Deletekeypoints(key_points.at(i));
-//                 for (int j = 0; j < key_points.at(i).size() - 1; j++)
-//                 {
-//                     float v1_left, v1_right, v2_left, v2_right;
-//                     KeyPoint keypoint1, keypoint2;
-//                     keypoint1 = key_points.at(i).at(j);
-//                     keypoint2 = key_points.at(i).at(j + 1);
-//                     v1_left = keypoint1.speed_limit_left;
-//                     v1_right = keypoint1.speed_limit_right;
-//                     v2_left = keypoint2.speed_limit_left;
-//                     v2_right = keypoint2.speed_limit_right;
-//                     threadLogger_->info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-//                     threadLogger_->info("v1_index = {}", keypoint1.index);
-//                     threadLogger_->info("v1_left = {}", v1_left);
-//                     threadLogger_->info("v1_right = {}", v1_right);
-//                     threadLogger_->info("v2_index = {}", keypoint2.index);
-//                     threadLogger_->info("v2_left = {}", v2_left);
-//                     threadLogger_->info("v2_right  = {}", v2_right);
-
-//                     if (fabs(v1_right - v2_left) >= 0.01)
-//                     {
-//                         threadLogger_->info("左右速度不等");
-//                         if (v1_right - v2_left > 0.01)
-//                         {
-//                             key_points.at(i).at(j).speed_limit_right = v2_left;
-//                             temp_point.emplace_back(key_points.at(i).at(j));
-//                             flag = true;
-//                             continue;
-//                         }
-//                         else if (v2_left - v1_right > 0.01)
-//                         {
-//                             key_points.at(i).at(j + 1).speed_limit_left = v1_right;
-//                             flag = true;
-//                             continue;
-//                         }
-//                     }
-//                     /*case1 最小速度-中速-最大速度*/
-//                     if ((v1_left + eps) < v1_right && (v1_right + eps) < v2_right)
-//                     {
-//                         // 判断距离 若距离符合 将中速降低为最小速度
-//                         float s_total = temp_traj.at(keypoint2.index).distance -
-//                         temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线) float s_min =
-//                         (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration);                     //
-//                         v1_left加速到v1_right所需的最小欧式距离 threadLogger_->info("s_total = {}", s_total);
-//                         threadLogger_->info("s_min ={} ", s_min);
-//                         if ((s_total + eps) < s_min) // 若加速距离小于两关键点之间距离的一半
-//                         {
-//                             threadLogger_->info("~case1~");
-//                             if (j != 0)
-//                             {
-//                                 key_points.at(i).at(j + 1).speed_limit_left = v1_left; //
-//                                 每一次的赋值,都是为了在下一个循环中使用当前的修改 flag = true; continue;
-//                             }
-//                         }
-//                     }
-
-//                     /*case2 最小速度-最大速度-中速*/
-//                     else if ((v1_left + eps) < v2_right && (v2_right + eps) < v1_right)
-//                     {
-//                         float s_total = temp_traj.at(keypoint2.index).distance -
-//                         temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线) float s_min =
-//                         (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration);                     //
-//                         v1_left加速到v1_right所需的最小欧式距离
-
-//                         threadLogger_->info("s_total = {}", s_total);
-//                         threadLogger_->info("s_min = {}", s_min);
-//                         if ((s_total + eps) < s_min) // 若加速距离小于两关键点之间距离的一半
-//                         {
-//                             threadLogger_->info("~case2~");
-//                             key_points.at(i).at(j).speed_limit_right = v2_right;
-//                             key_points.at(i).at(j + 1).speed_limit_left = v2_right;
-//                             flag = true;
-//                             temp_point.emplace_back(key_points.at(i).at(j));
-
-//                             threadLogger_->info("key_points.at(i).at(j).index = {} ", key_points.at(i).at(j).index);
-//                             threadLogger_->info("key_points.at(i).at(j).left = {} ",
-//                             key_points.at(i).at(j).speed_limit_left);
-//                             threadLogger_->info("key_points.at(i).at(j).right = {} ",
-//                             key_points.at(i).at(j).speed_limit_right);
-
-//                             continue;
-//                         }
-//                     }
-//                     /*case3 中速-最大速度-最小速度*/
-//                     else if ((v2_right + eps) < v1_left && (v1_left + eps) < v1_right)
-//                     {
-//                         float s_total = temp_traj.at(keypoint2.index).distance -
-//                         temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线) float s_min =
-//                         (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration);                     //
-//                         v1_left加速到v1_right所需的最小欧式距离 threadLogger_->info("s_total = {}", s_total);
-//                         threadLogger_->info("s_min = {}", s_min);
-//                         if ((s_total + eps) < s_min) // 若加速距离小于两关键点之间距离的一半
-//                         {
-//                             threadLogger_->info("~case3~");
-//                             key_points.at(i).at(j + 1).speed_limit_left = v1_left;
-//                             flag = true;
-//                             continue;
-//                         }
-//                     }
-//                     /*case4 中速-最大速度-中速 最小速度-中速-最小速度 最小速度-最大速度-最小速度
-//                             两边速度相等 中间速度为较高速度*/
-//                     else if ((v2_right + eps) < v1_right && fabs(v1_left - v2_right) < eps && v1_left > eps)
-//                     {
-//                         float s_total = temp_traj.at(keypoint2.index).distance -
-//                         temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线) float s_min =
-//                         (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration);                     //
-//                         v1_left加速到v1_right所需的最小欧式距离 threadLogger_->info("s_total = {}", s_total);
-//                         threadLogger_->info("s_min = {}", s_min);
-//                         if ((s_total + eps) < s_min) // 若加速距离小于两关键点之间距离的一半
-//                         {
-//                             threadLogger_->info("~case4~");
-//                             // key_points.at(i).at(j).speed_limit_right = v2_right;
-//                             key_points.at(i).at(j + 1).speed_limit_left = v1_left;
-//                             // temp_point.emplace_back(key_points.at(i).at(j));
-//                             threadLogger_->info("key_points.at(i).at(j).index = {}", key_points.at(i).at(j).index);
-//                             threadLogger_->info("key_points.at(i).at(j).left = {} ",
-//                             key_points.at(i).at(j).speed_limit_left);
-//                             threadLogger_->info("key_points.at(i).at(j).right = {}",
-//                             key_points.at(i).at(j).speed_limit_right);
-
-//                             flag = true;
-//                             continue;
-//                         }
-//                     }
-
-//                     /*case5 最大速度-中速-最小速度*/
-//                     else if (v1_left > (v1_right + eps) && v1_right > (v2_right + eps))
-//                     {
-//                         float s_total = temp_traj.at(keypoint2.index).distance -
-//                         temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线) if ((v2_right - 0.0)
-//                         < eps)
-//                         {
-//                             float s_min = (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * kMinAcceleration); //
-//                             v1_left减速到v1_right所需的最小欧式距离 threadLogger_->info("s_total = {}", s_total);
-//                             threadLogger_->info("s_min = {}", s_min);
-//                             if (((s_total + eps) < s_min))
-//                             {
-//                                 threadLogger_->info("~case5 1~");
-//                                 key_points.at(i).at(j + 1).speed_limit_left = v1_left;
-//                                 threadLogger_->info("key_points.at(i).at(j).index ={} ",
-//                                 key_points.at(i).at(j).index); threadLogger_->info("key_points.at(i).at(j).left ={}
-//                                 ", key_points.at(i).at(j).speed_limit_left);
-//                                 threadLogger_->info("key_points.at(i).at(j).right ={} ",
-//                                 key_points.at(i).at(j).speed_limit_right);
-
-//                                 flag = true;
-//                                 continue;
-//                             }
-//                         }
-//                         else
-//                         {
-//                             float s_min = (pow(v2_right, 2) - pow(v1_left, 2)) / (2 * kMinAcceleration); //
-//                             v1_left减速到v1_right所需的最小欧式距离 threadLogger_->info("s_total ={} ", s_total);
-//                             threadLogger_->info("s_min = {}", s_min);
-//                             if (((s_total + eps) < s_min))
-//                             {
-//                                 threadLogger_->info("~case5 2~");
-//                                 key_points.at(i).at(j).speed_limit_right = v2_right;
-//                                 key_points.at(i).at(j + 1).speed_limit_left = v2_right;
-//                                 temp_point.emplace_back(key_points.at(i).at(j));
-//                                 threadLogger_->info("key_points.at(i).at(j).index = {} ",
-//                                 key_points.at(i).at(j).index); threadLogger_->info("key_points.at(i).at(j).left = {}
-//                                 ", key_points.at(i).at(j).speed_limit_left);
-//                                 threadLogger_->info("key_points.at(i).at(j).right = {} ",
-//                                 key_points.at(i).at(j).speed_limit_right);
-
-//                                 flag = true;
-//                                 continue;
-//                             }
-//                         }
-//                     }
-
-//                     /*case6 最大速度-最小速度-中速 中速-最小速度-最大速度
-//                             中速-最小速度-中速 最大速度-中速-最大速度 最大速度-最小速度 -最大速度
-//                             两边速度相等 中间速度为较小速度*/
-//                     else if ((v1_left > (v2_right + eps) && v2_right > (v1_right + eps)) ||
-//                              (v2_right > (v1_left + eps) && v1_left > (v1_right + eps)) ||
-//                              (v2_right > (v1_right + eps) && fabs(v2_right - v1_left) < eps))
-//                     {
-//                         // 此情况需要将当前关键点keypoint2 向两边进行延长
-//                         float s_total = temp_traj.at(keypoint2.index).distance -
-//                         temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线) float s_min =
-//                         (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMinAcceleration);                     //
-//                         v1_left减速到v1_right所需的最小欧式距离 threadLogger_->info("s_total = {} ", s_total);
-//                         threadLogger_->info("s_min = {}", s_min);
-//                         if ((s_total + eps) < s_min)
-//                         {
-//                             threadLogger_->info("~case6~");
-//                             float delta_front_distance, delta_back_distance;
-//                             delta_front_distance = delta_back_distance = 0.0;
-//                             if (j != 0 && j != key_points.at(i).size() - 2)
-//                             {
-//                                 delta_front_distance = keypoint1.distance - key_points.at(i).at(j - 1).distance;
-//                                 delta_back_distance = key_points.at(i).at(j + 2).distance - keypoint2.distance;
-//                                 threadLogger_->info("delta_front_distance = {}", delta_front_distance);
-//                                 threadLogger_->info("delta_back_distance = {}", delta_back_distance);
-//                                 if (delta_front_distance > (delta_back_distance + eps))
-//                                 {
-//                                     // keypoint1 前的距离比较长
-//                                     threadLogger_->info("key_points.at(i).at(j).index = {}",
-//                                     key_points.at(i).at(j).index); uint temp_index = floor(delta_front_distance /
-//                                     delta_s) / 40;
-//                                     // temp_index = 0;
-//                                     threadLogger_->info("front temp_index = {}", temp_index);
-//                                     key_points.at(i).at(j).index = key_points.at(i).at(j).index - temp_index;
-//                                     // key_points.at(i).at(j).distance -= temp_index * delta_s;
-//                                     key_points.at(i).at(j).distance =
-//                                     temp_traj.at(key_points.at(i).at(j).index).distance;
-//                                     threadLogger_->info("key_points.at(i).at(j).index = {}",
-//                                     key_points.at(i).at(j).index); threadLogger_->info("key_points.at(i).at(j).left =
-//                                     {}", key_points.at(i).at(j).speed_limit_left);
-//                                     threadLogger_->info("key_points.at(i).at(j).right = {}",
-//                                     key_points.at(i).at(j).speed_limit_right);
-//                                 }
-//                                 else
-//                                 {
-//                                     // keypoint2 后的距离比较长
-//                                     threadLogger_->info("key_points.at(i).at(j+1).index = {}", key_points.at(i).at(j
-//                                     + 1).index); uint temp_index = floor(delta_back_distance / delta_s) / 40;
-//                                     // temp_index = 0;
-//                                     threadLogger_->info("back temp_index = {}", temp_index);
-//                                     key_points.at(i).at(j + 1).index = key_points.at(i).at(j + 1).index + temp_index;
-//                                     if (key_points.at(i).at(j + 1).index >= (temp_traj.size() - 1))
-//                                     {
-//                                          int temp_index1 = temp_traj.size() - 1;
-//                                         key_points.at(i).at(j + 1).index = temp_index1;
-//                                         key_points.at(i).at(j + 1).distance = temp_traj.at(key_points.at(i).at(j +
-//                                         1).index).distance;
-
-//                                         // key_points.at(i).at(j + 1).distance += (temp_index1 -
-//                                         key_points.at(i).at(j + 1).index) * delta_s;
-//                                         // key_points.at(i).at(j + 1).index = temp_index1;
-//                                     }
-//                                     else
-//                                     {
-//                                         // key_points.at(i).at(j + 1).distance += temp_index * delta_s;
-//                                         key_points.at(i).at(j + 1).distance = temp_traj.at(key_points.at(i).at(j +
-//                                         1).index).distance;
-//                                     }
-
-//                                     threadLogger_->info("key_points.at(i).at(j+1).index = {} ", key_points.at(i).at(j
-//                                     + 1).index);
-//                                 }
-//                                 temp_point.emplace_back(key_points.at(i).at(j));
-//                                 flag = true;
-//                                 continue;
-//                             }
-//                         }
-//                     }
-//                     /*case9 终点处短距离内 不合理加速*/
-//                     else if (v2_left > (v1_left + eps) && v1_left > eps)
-//                     {
-//                         if (j == key_points.at(i).size() - 2)
-//                         {
-//                             // 当前为最后一个关键点 且v1_left 到 v2_right的距离较短
-//                             float s_total = temp_traj.at(keypoint2.index).distance -
-//                             temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线) float s_min =
-//                             (pow(v2_left, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration);                      //
-//                             v1_left减速到v1_right所需的最小欧式距离 threadLogger_->info("s_total = {} ", s_total);
-//                             threadLogger_->info("s_min = {}", s_min);
-//                             if (fabs(s_total / 4) + eps < s_min)
-//                             {
-//                                 threadLogger_->info("~case9~");
-//                                 key_points.at(i).at(j + 1).speed_limit_left = v1_left;
-//                                 flag = true;
-//                                 continue;
-//                             }
-//                         }
-//                     }
-//                     threadLogger_->info("key_points.at(i).at(j).index = {}", key_points.at(i).at(j).index);
-//                     threadLogger_->info("key_points.at(i).at(j).left = {}", key_points.at(i).at(j).speed_limit_left);
-//                     threadLogger_->info("key_points.at(i).at(j).right = {}",
-//                     key_points.at(i).at(j).speed_limit_right);
-
-//                     temp_point.emplace_back(key_points.at(i).at(j));
-//                 }
-//                 temp_point.emplace_back(key_points.at(i).back());
-//             }
-//             temp_key_points.emplace_back(temp_point);
-//         }
-//         index++;
-//         threadLogger_->info("index = {}", (int)index);
-//         if (index > 100)
-//             return true;
-//     }
-
-//     key_points.clear();
-//     key_points = temp_key_points;
-
-//     std::ofstream file_out;
-//     file_out.open("key_point_information.txt");
-//     for (size_t index = 0; index < key_points.size(); index++)
-//     {
-//         for (size_t jndex = 0; jndex < key_points.at(index).size(); jndex++)
-//         {
-//             file_out << key_points.at(index).at(jndex).index << " " <<
-//             key_points.at(index).at(jndex).speed_limit_left << " " <<
-//             key_points.at(index).at(jndex).speed_limit_right << endl;
-//         }
-//     }
-//     file_out.close();
-
-//     threadLogger_->info("Function() AdpKeyPoints ");
-//     return true;
-// }
 bool GlobalSpeedPlanning::AdpKeyPoints() {
     bool flag = true;
     threadLogger_->info("开始AdpKeyPoints[new] ,路径段落个数:{}", key_points.size());
@@ -834,7 +338,7 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                     if ((v1_left + eps) < v1_right && (v2_right + eps) < v1_right && v1_left <= (v2_right + eps)) {
                         // 判断距离 若距离符合 将中速降低为最小速度
                         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance;
-                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * kMinAcceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
+                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * max_acceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * mix_acceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
                         threadLogger_->info("s_total = {}", s_total);
 
                         threadLogger_->info("s_min ={} ", s_min);
@@ -857,7 +361,7 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                     if ((v1_left + eps) < v1_right && (v2_right + eps) < v1_right && v1_left > (v2_right + eps)) {
                         // 判断距离 若距离符合 将中速降低为最小速度
                         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance;
-                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * kMaxAcceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * kMinAcceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
+                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * max_acceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * mix_acceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
                         threadLogger_->info("s_total = {}", s_total);
 
                         threadLogger_->info("s_min ={} ", s_min);
@@ -971,7 +475,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         threadLogger_->info("...Case 1...");
 
         unsigned int i = 0;
-        for (i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) // 不从key_point1.index开始
+        for (i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) // 不从key_point1.index开始
         {
             temp_sparsepoint.index = i;
             temp_sparsepoint.speed = v1;
@@ -987,7 +491,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         threadLogger_->info("...Case 2...");
 
         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration);                              // 减速到v2所需的最小距离
+        float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * mix_acceleration);                              // 减速到v2所需的最小距离
         if (s_min - s_total > 0.001) {
             threadLogger_->error("keypoint1.index:{},keypoint2.index:{}", keypoint1.index, keypoint2.index);
 
@@ -1000,7 +504,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float s_temp, s_d;
             float s_1 = s_total - s_min; // 匀速截止的距离
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0);
                 if (s_temp <= s_1) {
                     temp_sparsepoint.index = i;
@@ -1010,7 +514,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 else {
                     s_d                    = s_temp - s_1; // 减速距离，从v1减速
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * kMinAcceleration * s_d); // 最小加速度为负
+                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * mix_acceleration * s_d); // 最小加速度为负
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
@@ -1025,14 +529,14 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         threadLogger_->info("...Case 3...");
 
         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min   = (pow(v1, 2) - pow(v0, 2)) / (2 * kMaxAcceleration);                              // 加速到v2所需的最小距离
+        float s_min   = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);                              // 加速到v2所需的最小距离
         float s_temp;
         float s_0 = temp_traj.at(keypoint1.index).distance;
-        for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
+        for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
             s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
             if (s_temp < s_min) {
                 temp_sparsepoint.index = i;
-                temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
+                temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_temp);
                 temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
             }
             else {
@@ -1042,7 +546,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             }
         }
         if (s_total < s_min) // 一直在加速
-            last_speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_total);
+            last_speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_total);
         else
             last_speed = v1;
         return true;
@@ -1058,14 +562,14 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         threadLogger_->info("keypoint2.index ={} ", keypoint2.index);
 
         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * kMinAcceleration);                              // 减速到v2所需的最小距离
+        float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * mix_acceleration);                              // 减速到v2所需的最小距离
         if (s_total < s_min) {
             threadLogger_->error("...Case 4: s_total ={}  s_min ={}  s_total < s_min...", s_total, s_min);
 
             return false;
         }
-        float s_acc = (pow(v1, 2) - pow(v0, 2)) / (2 * kMaxAcceleration);
-        float s_dec = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration);
+        float s_acc = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);
+        float s_dec = (pow(v2, 2) - pow(v1, 2)) / (2 * mix_acceleration);
         if (s_acc + s_dec < s_total) // 先加速到最大速度，再减速到v2
         {
             threadLogger_->info("先加速到最大速度，再减速到v2");
@@ -1074,14 +578,14 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float s_0 = temp_traj.at(keypoint1.index).distance;
             threadLogger_->error("...Case 4:s_0:{}", s_0);
 
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 threadLogger_->error("...Case 4:temp_traj.at(i).distance :{} ", temp_traj.at(i).distance);
 
                 if (s_temp < s_acc) // 加速
                 {
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
+                    temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_temp);
 
                     threadLogger_->error("...Case 4: temp_sparsepoint.speed :{} index:{} v0:{} s_temp:{}", temp_sparsepoint.speed, temp_sparsepoint.index, v0, s_temp);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
@@ -1096,7 +600,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 {
                     float s_d              = s_temp - (s_total - s_dec); // 减速距离
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * kMinAcceleration * s_d);
+                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * mix_acceleration * s_d);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
@@ -1107,23 +611,23 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         else if (s_acc + s_dec >= s_total) // 先加速，再减速，无匀速阶段
         {
             threadLogger_->info("先加速，再减速，无匀速阶段");
-            float s_as  = (2 * kMinAcceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (kMinAcceleration - kMaxAcceleration)); // 加速的距离
-            float v_max = sqrt((2 * kMinAcceleration * kMaxAcceleration * s_total + kMinAcceleration * pow(v0, 2) - kMaxAcceleration * pow(v2, 2)) / (kMinAcceleration - kMaxAcceleration));
+            float s_as  = (2 * mix_acceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (mix_acceleration - max_acceleration)); // 加速的距离
+            float v_max = sqrt((2 * mix_acceleration * max_acceleration * s_total + mix_acceleration * pow(v0, 2) - max_acceleration * pow(v2, 2)) / (mix_acceleration - max_acceleration));
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 if (s_temp < s_as)                             // 加速
                 {
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
+                    temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_temp);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
                 else // 减速
                 {
                     float s_d              = s_temp - s_as; // 减速距离
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v_max, 2) + 2 * kMinAcceleration * s_d);
+                    temp_sparsepoint.speed = sqrt(pow(v_max, 2) + 2 * mix_acceleration * s_d);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
@@ -1138,19 +642,19 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         threadLogger_->info("...Case 5...");
 
         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * kMaxAcceleration);                              // 加速到v2所需的最小距离
-        float s_acc   = (pow(v1, 2) - pow(v0, 2)) / (2 * kMaxAcceleration);
-        float s_dec   = (pow(v2, 2) - pow(v1, 2)) / (2 * kMinAcceleration);
+        float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * max_acceleration);                              // 加速到v2所需的最小距离
+        float s_acc   = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);
+        float s_dec   = (pow(v2, 2) - pow(v1, 2)) / (2 * mix_acceleration);
         if (s_acc + s_dec < s_total) // 先加速到最大速度，再减速到v2
         {
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 if (s_temp < s_acc)                            // 加速
                 {
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
+                    temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_temp);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
                 else if (s_temp < s_total - s_dec) // 匀速
@@ -1163,7 +667,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 {
                     float s_d              = s_temp - (s_total - s_dec); // 减速距离
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * kMinAcceleration * s_d);
+                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * mix_acceleration * s_d);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
@@ -1172,23 +676,23 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         }
         else if (s_acc + s_dec >= s_total && s_total > s_min) // 先加速，再减速，无匀速阶段
         {
-            float s_as  = (2 * kMinAcceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (kMinAcceleration - kMaxAcceleration)); // 加速的距离
-            float v_max = sqrt((2 * kMinAcceleration * kMaxAcceleration * s_total + kMinAcceleration * pow(v0, 2) - kMaxAcceleration * pow(v2, 2)) / (kMinAcceleration - kMaxAcceleration));
+            float s_as  = (2 * mix_acceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (mix_acceleration - max_acceleration)); // 加速的距离
+            float v_max = sqrt((2 * mix_acceleration * max_acceleration * s_total + mix_acceleration * pow(v0, 2) - max_acceleration * pow(v2, 2)) / (mix_acceleration - max_acceleration));
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 if (s_temp < s_as)                             // 加速
                 {
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
+                    temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_temp);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
                 else // 减速
                 {
                     float s_d              = s_temp - s_as; // 减速距离
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v_max, 2) + 2 * kMinAcceleration * s_d);
+                    temp_sparsepoint.speed = sqrt(pow(v_max, 2) + 2 * mix_acceleration * s_d);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
@@ -1199,13 +703,13 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         {
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += kDiscreteNumber) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
                 s_temp                 = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 temp_sparsepoint.index = i;
-                temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_temp);
+                temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_temp);
                 temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
             }
-            last_speed = sqrt(pow(v0, 2) + 2 * kMaxAcceleration * s_total);
+            last_speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_total);
             return true;
         }
     }
@@ -1213,23 +717,78 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
 
 
 void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
+    double regular_road_speed_limit      = 1;   // 常规路面限速
+    double narrow_road_speed_limit       = 1;   // 会车道路限速
+    double intersection_road_speed_limit = 1;   // 路口限速
+    double slope_road_speed_limit        = 1;   // 坡路限速
+    double bumpy_road_speed_limit        = 1;   // 颠簸路段限速
+    double reverse_speed                 = 1;   // 倒车限速
+    double a                             = 0.8; // a表示一级限速到二级限速之间的缩放比例
+    double b                             = 0.6; // b表示一级限速到三级限速之间的缩放比例
+    double c                             = 0.7; // c表示轻载到重载之间的缩放比例
+
+    if (vehicle_param.weather == true && vehicle_param.is_day == true) { // 晴天+白天【一级限速】
+        threadLogger_->info("晴天+白天【一级限速】");
+        regular_road_speed_limit      = vehicle_param.regular_road_speed_limit;
+        narrow_road_speed_limit       = vehicle_param.narrow_road_speed_limit;
+        intersection_road_speed_limit = vehicle_param.intersection_road_speed_limit;
+        slope_road_speed_limit        = vehicle_param.slope_road_speed_limit;
+        bumpy_road_speed_limit        = vehicle_param.bumpy_road_speed_limit;
+    }
+    else if ((vehicle_param.weather == true && vehicle_param.is_day == false) || (vehicle_param.weather == false && vehicle_param.is_day == true)) { // 晴天+晚上      雨天+白天 【二级限速】
+        threadLogger_->info("晴天+晚上      雨天+白天 【二级限速】");
+        regular_road_speed_limit      = a * vehicle_param.regular_road_speed_limit;
+        narrow_road_speed_limit       = a * vehicle_param.narrow_road_speed_limit;
+        intersection_road_speed_limit = a * vehicle_param.intersection_road_speed_limit;
+        slope_road_speed_limit        = a * vehicle_param.slope_road_speed_limit;
+        bumpy_road_speed_limit        = a * vehicle_param.bumpy_road_speed_limit;
+    }
+    else { // 雨天+晚上 【三级限速】
+        threadLogger_->info("雨天+晚上 【三级限速】");
+        regular_road_speed_limit      = b * vehicle_param.regular_road_speed_limit;
+        narrow_road_speed_limit       = b * vehicle_param.narrow_road_speed_limit;
+        intersection_road_speed_limit = b * vehicle_param.intersection_road_speed_limit;
+        slope_road_speed_limit        = b * vehicle_param.slope_road_speed_limit;
+        bumpy_road_speed_limit        = b * vehicle_param.bumpy_road_speed_limit;
+    }
+
+    if (vehicle_param.is_light == 0) {
+        threadLogger_->info("重载");
+        regular_road_speed_limit      = c * regular_road_speed_limit;
+        narrow_road_speed_limit       = c * narrow_road_speed_limit;
+        intersection_road_speed_limit = c * intersection_road_speed_limit;
+        slope_road_speed_limit        = c * slope_road_speed_limit;
+        bumpy_road_speed_limit        = c * bumpy_road_speed_limit;
+    }
+    reverse_speed = vehicle_param.reverse_speed;
+
     // 先通过direction属性，将前进后退轨迹进行区分(direction 0:前进 1:后退),后退轨迹限速均为1m/s
     vector<_TrajectoryPoint>::iterator iter = trajectory_points.begin();
-    // 三段式曲率限速
     for (; iter != trajectory_points.end(); iter++) {
         if (iter->direction == 0) {
-            // 此时，该点为前进路径上的点
-            if (fabs(iter->curvature) < vehicle_param.min_curvature) {
-                // 其绝对值<0.001(近似直线段) 限速5m/s-8.5m/s
-                iter->speed_limit = vehicle_param.max_speed_limit;
+            if (iter->attribute == PointAttribute::regular_road) // 正常路
+            {
+                iter->speed_limit = regular_road_speed_limit;
             }
-            else if (vehicle_param.min_curvature <= fabs(iter->curvature) && fabs(iter->curvature) < vehicle_param.max_curvature) {
-                // 其绝对值>0.01 <0.1 限速4m/s
-                iter->speed_limit = vehicle_param.mid_speed_limit;
+            else if (iter->attribute == PointAttribute::narrow_road) // 会车路
+            {
+                iter->speed_limit = narrow_road_speed_limit;
             }
-            else if (fabs(iter->curvature) >= vehicle_param.max_curvature) {
-                // 其绝对值>0.01 限速3m/s
-                iter->speed_limit = vehicle_param.min_speed_limit;
+            else if (iter->attribute == PointAttribute::intersection_road) // 路口
+            {
+                iter->speed_limit = intersection_road_speed_limit;
+            }
+            else if (iter->attribute == PointAttribute::slope_road) // 坡路
+            {
+                iter->speed_limit = slope_road_speed_limit;
+            }
+            else if (iter->attribute == PointAttribute::dump_road) // 颠簸路
+            {
+                iter->speed_limit = bumpy_road_speed_limit;
+            }
+            else // 未定义的路面属性
+            {
+                iter->speed_limit = 1;
             }
         }
         else {
@@ -1237,198 +796,34 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
             iter->speed_limit = vehicle_param.reverse_speed;
         }
     }
-    // 基于道路属性的限速
-    if (vehicle_param.multi_section_speed_limit_enable) {
-        threadLogger_->info("基于路况的分段速度规划开启");
 
-        iter         = trajectory_points.begin();
-        int tasktype = 1;
-        if (vehicle_param.weather == 1) // 晴天
-        {
-            // 添加任务类型和路况决定的限速，与上面曲率计算出来的限速相结合，取小原则
-            if (vehicle_param.is_light) {
-                for (; iter != trajectory_points.end(); iter++) {
-                    if (iter->direction == 0) {
-                        if (iter->attribute == 0) // 正常路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit) iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
-                        }
-                        else if (iter->attribute == 1) // 窄路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_narrow_road_speed_limit) iter->speed_limit = vehicle_param.light_narrow_road_speed_limit;
-                        }
-                        else if (iter->attribute == 2) // 路口
-                        {
-                            if (iter->speed_limit > vehicle_param.light_intersection_road_speed_limit) iter->speed_limit = vehicle_param.light_intersection_road_speed_limit;
-                        }
-                        else if (iter->attribute == 3) // 坡路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_slope_road_speed_limit) iter->speed_limit = vehicle_param.light_slope_road_speed_limit;
-                        }
-                        else if (iter->attribute == 4) // 颠簸路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_bumpy_road_speed_limit) iter->speed_limit = vehicle_param.light_bumpy_road_speed_limit;
-                        }
-                        else if (iter->attribute == 5) // 水泥路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit) iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
-                        }
-                        else {}
-                    }
-                    else {
-                        // 此时，该点为后退路径上的点,后退轨迹限速均为2m/s
-                        iter->speed_limit = vehicle_param.reverse_speed;
-                    }
-                }
-            }
-            else // 满载情况
-            {
-                for (; iter != trajectory_points.end(); iter++) {
-                    if (iter->direction == 0) {
-                        if (iter->attribute == 0) // 正常路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit) iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
-                        }
-                        else if (iter->attribute == 1) // 窄路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_narrow_road_speed_limit) iter->speed_limit = vehicle_param.heavy_narrow_road_speed_limit;
-                        }
-                        else if (iter->attribute == 2) // 路口
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_intersection_road_speed_limit) iter->speed_limit = vehicle_param.heavy_intersection_road_speed_limit;
-                        }
-                        else if (iter->attribute == 3) // 坡路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_slope_road_speed_limit) iter->speed_limit = vehicle_param.heavy_slope_road_speed_limit;
-                        }
-                        else if (iter->attribute == 4) // 颠簸路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_bumpy_road_speed_limit) iter->speed_limit = vehicle_param.heavy_bumpy_road_speed_limit;
-                        }
-                        else if (iter->attribute == 5) // 水泥路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit) iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
-                        }
-                        else {}
-                    }
-                    else {
-                        // 此时，该点为后退路径上的点,后退轨迹限速均为2m/s
-                        iter->speed_limit = vehicle_param.reverse_speed;
-                    }
-                }
-            }
-        }
-        else // 雨天、雪天
-        {
-            // 添加任务类型和路况决定的限速，与上面曲率计算出来的限速相结合，取小原则
-            if (vehicle_param.is_light)
-            // 空载情况
-            {
-                for (; iter != trajectory_points.end(); iter++) {
-                    if (iter->direction == 0) {
-                        if (iter->attribute == 0) // 正常路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit) iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
-                        }
-                        else if (iter->attribute == 1) // 窄路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_narrow_road_speed_limit) iter->speed_limit = vehicle_param.light_narrow_road_speed_limit;
-                        }
-                        else if (iter->attribute == 2) // 路口
-                        {
-                            if (iter->speed_limit > vehicle_param.light_intersection_road_speed_limit) iter->speed_limit = vehicle_param.light_intersection_road_speed_limit;
-                        }
-                        else if (iter->attribute == 3) // 坡路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_slope_road_speed_limit) iter->speed_limit = vehicle_param.light_slope_road_speed_limit;
-                        }
-                        else if (iter->attribute == 4) // 颠簸路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_bumpy_road_speed_limit) iter->speed_limit = vehicle_param.light_bumpy_road_speed_limit;
-                        }
-                        else if (iter->attribute == 5) // 水泥路
-                        {
-                            if (iter->speed_limit > vehicle_param.light_regular_road_speed_limit) iter->speed_limit = vehicle_param.light_regular_road_speed_limit;
-                        }
-                        else {}
-                    }
-                    else {
-                        // 此时，该点为后退路径上的点,后退轨迹限速均为2m/s
-                        iter->speed_limit = vehicle_param.reverse_speed;
-                    }
-                }
-            }
-            else // 满载情况
-            {
-                for (; iter != trajectory_points.end(); iter++) {
-                    if (iter->direction == 0) {
-                        if (iter->attribute == 0) // 正常路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit) iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
-                        }
-                        else if (iter->attribute == 1) // 窄路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_narrow_road_speed_limit) iter->speed_limit = vehicle_param.heavy_narrow_road_speed_limit;
-                        }
-                        else if (iter->attribute == 2) // 路口
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_intersection_road_speed_limit) iter->speed_limit = vehicle_param.heavy_intersection_road_speed_limit;
-                        }
-                        else if (iter->attribute == 3) // 坡路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_slope_road_speed_limit) iter->speed_limit = vehicle_param.heavy_slope_road_speed_limit;
-                        }
-                        else if (iter->attribute == 4) // 颠簸路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_bumpy_road_speed_limit) iter->speed_limit = vehicle_param.heavy_bumpy_road_speed_limit;
-                        }
-                        else if (iter->attribute == 5) // 水泥路
-                        {
-                            if (iter->speed_limit > vehicle_param.heavy_regular_road_speed_limit) iter->speed_limit = vehicle_param.heavy_regular_road_speed_limit;
-                        }
-                        else {}
-                    }
-                    else {
-                        // 此时，该点为后退路径上的点,后退轨迹限速均为2m/s
-                        iter->speed_limit = vehicle_param.reverse_speed;
-                    }
-                }
-            }
-        }
+    // 遍历整个trajectory_points，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
+    float         L_vehicle                = vehicle_param.wheel_base;
+    float         max_Steering_wheel_speed = 0.175;
+    float         temp_max_speed;
+    float         wheel_delta_angle, wheel_angle1, wheel_angle2;
+    float         sampling_distance = 1;
+    vector<float> vec_temp_max_speed; // 记录全局路径上基于曲率变化算出限速信息
+
+    for (int i = 0; i < trajectory_points.size() - 1; i++) //
+    {
+        wheel_angle1   = atan(L_vehicle * trajectory_points.at(i).curvature);
+        wheel_angle2   = atan(L_vehicle * trajectory_points.at(i + 1).curvature);
+        temp_max_speed = sampling_distance * max_Steering_wheel_speed / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速
+        if (temp_max_speed >= 10) temp_max_speed = 10;
+        vec_temp_max_speed.push_back(temp_max_speed);
     }
-    if (vehicle_param.s_curve_speed_limit) {
-        threadLogger_->info("S弯限速开启");
-        // 遍历整个trajectory_points，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
-        // vector<float> vec_exceeding_speed_index; // 存放整条路径中限速超标的点的索引
-        float         L_vehicle                = vehicle_param.wheel_base;
-        float         max_Steering_wheel_speed = 0.175;
-        float         temp_max_speed;
-        float         wheel_delta_angle, wheel_angle1, wheel_angle2;
-        float         sampling_distance = 1;
-        vector<float> vec_temp_max_speed; // 记录全局路径上基于曲率变化算出限速信息
-        threadLogger_->info("打印temp_max_speed信息");
 
-        for (int i = 0; i < trajectory_points.size() - 1; i++) //
-        {
-            wheel_angle1   = atan(L_vehicle * trajectory_points.at(i).curvature);
-            wheel_angle2   = atan(L_vehicle * trajectory_points.at(i + 1).curvature);
-            temp_max_speed = sampling_distance * max_Steering_wheel_speed / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速
-            if (temp_max_speed >= 10) temp_max_speed = 10;
-            vec_temp_max_speed.push_back(temp_max_speed);
-        }
-        threadLogger_->info("方向盘转速速度限制");
-
-        for (int i = 0; i < vec_temp_max_speed.size(); i++) {
-            if (vec_temp_max_speed.at(i) < trajectory_points.at(i).speed_limit) {
-                if (trajectory_points.at(i).direction == 0) {
-                    trajectory_points.at(i).speed_limit = vec_temp_max_speed.at(i);
-                    // 为了便于控制跟踪，将i附近的10(10m) 路径点限速也降低i为vec_temp_max_speed.at(i)
-                    for (int j = i - 5; j < i + 5; j++) {
-                        if (j >= 0 && j < vec_temp_max_speed.size()) {
-                            if (trajectory_points.at(j).direction == 0) {
-                                if (trajectory_points.at(j).speed_limit > vec_temp_max_speed.at(i)) {
-                                    trajectory_points.at(j).speed_limit = vec_temp_max_speed.at(i);
-                                }
+    for (int i = 0; i < vec_temp_max_speed.size(); i++) {
+        if (vec_temp_max_speed.at(i) < trajectory_points.at(i).speed_limit) {
+            if (trajectory_points.at(i).direction == 0) {
+                trajectory_points.at(i).speed_limit = vec_temp_max_speed.at(i);
+                // 为了便于控制跟踪，将i附近的10(10m) 路径点限速也降低i为vec_temp_max_speed.at(i)
+                for (int j = i - 5; j < i + 5; j++) {
+                    if (j >= 0 && j < vec_temp_max_speed.size()) {
+                        if (trajectory_points.at(j).direction == 0) {
+                            if (trajectory_points.at(j).speed_limit > vec_temp_max_speed.at(i)) {
+                                trajectory_points.at(j).speed_limit = vec_temp_max_speed.at(i);
                             }
                         }
                     }
@@ -1436,9 +831,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
             }
         }
     }
-    else {
-        threadLogger_->info("S弯限速未开启");
-    }
+
     // std::ofstream file_out;
     // file_out.open("speed_limit0.txt");
     // for (size_t index = 0; index < trajectory_points.size(); index++) {
@@ -1469,7 +862,7 @@ bool GlobalSpeedPlanning::SplitPath() {
     end_id   = 0;
     vector<_TrajectoryPoint> temp_traj;
     for (unsigned int i = 0; i < trajectory_points.size() - 1; i++) {
-        if (trajectory_points.at(i).direction != trajectory_points.at(i + 1).direction || trajectory_points.at(i).attribute == 6 || trajectory_points.at(i).attribute == 7) {
+        if (trajectory_points.at(i).direction != trajectory_points.at(i + 1).direction || trajectory_points.at(i).attribute == PointAttribute::weight_point || trajectory_points.at(i).attribute == PointAttribute::clean_point) {
             temp_traj.clear();
             end_id = i;
             temp_traj.insert(temp_traj.begin(), trajectory_points.begin() + start_id, trajectory_points.begin() + end_id + 1);
@@ -1579,8 +972,8 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(unsigned char num) {
             float v2 = temp_opti_global_speed.at(i + 1).speed;
             float vo = global_speeds.at(num).at(i).speed;
 
-            float gradient_error  = kErrorTerm * (vo - v1);
-            float gradient_smooth = kSmoothnessTerm * (v0 + v2 - 2 * v1);
+            float gradient_error  = speed_error_term * (vo - v1);
+            float gradient_smooth = speed_smooth_term * (v0 + v2 - 2 * v1);
 
 
             temp_opti_global_speed.at(i).speed += gradient_error + gradient_smooth;
@@ -1593,26 +986,6 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(unsigned char num) {
     threadLogger_->info("...SpeedCurveSmooth() finish...");
 }
 
-/**
- * @brief: 计算当前速度曲线总用时函数
- */
-float GlobalSpeedPlanning::GetCurrentTotalTime() {
-    float total_t = 0;
-    // 遍历稀疏速度曲线
-    for (unsigned char i = 0; i < opti_global_speeds.size(); i++) {
-        std::vector<SparseSpeedPoint> temp_opt_speeds = opti_global_speeds.at(i);
-        vector<_TrajectoryPoint>      temp_traj       = trajectory_fragments.at(i);
-        for (unsigned int j = 1; j < temp_opt_speeds.size(); j++) {
-            // 计算出相邻两个插值点之间的距离。
-            float delta_s = temp_traj.at(temp_opt_speeds.at(j).index).distance - temp_traj.at(temp_opt_speeds.at(j - 1).index).distance;
-            // 累加相邻两个插值点之间的时间，得到总用时间
-            float ave_speed = (temp_opt_speeds.at(j).speed + temp_opt_speeds.at(j - 1).speed) / 2;
-            ave_speed       = ave_speed > 0 ? ave_speed : 0.01;
-            total_t += delta_s / ave_speed;
-        }
-    }
-    return total_t;
-}
 
 /**
  * @brief: 速度曲线插值函数

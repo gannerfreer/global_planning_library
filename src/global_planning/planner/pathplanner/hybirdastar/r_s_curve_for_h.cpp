@@ -31,9 +31,6 @@ void RSCurve_H::Init(_VehicleParam& vehicleparam) {
  * @brief RS曲线规划类接口函数
  */
 bool RSCurve_H::PlanRSPath(const Point start, const Point end) {
-    //     cout << "6666m_vehicle_prarm_.radious = " << m_vehicle_prarm_.radious << "\n";
-    // threadLogger_->info("start:{},{},{}  end:{},{},{}", start.x, start.y, start.angle, end.x, end.y, end.angle);
-
     // opti_rs_path.length = DBL_MAX;
     opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, DBL_MAX);
     CoordinateTransformation(start, end, m_vehicle_prarm_.radious); // 坐标转换及归一化
@@ -87,15 +84,15 @@ void RSCurve_H::CoordinateTransformation(Point start, Point end, double kRadious
 //                         ;
 //                 }
 //                 else if (i == s.size() - 2) {
-//                     if (fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length) {
-//                         //threadLogger_->info("fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.min_path_Length");
+//                     if (fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_. rs_min_path_length) {
+//                         //threadLogger_->info("fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_. rs_min_path_length");
 //                         return false;
 //                     }
 //                 }
 //                 else
 //                     ;
-//                 if (sum < m_vehicle_prarm_.min_path_Length) {
-//                     //threadLogger_->info("sum < m_vehicle_prarm_.min_path_Length");
+//                 if (sum < m_vehicle_prarm_. rs_min_path_length) {
+//                     //threadLogger_->info("sum < m_vehicle_prarm_. rs_min_path_length");
 //                     return false;
 //                 }
 //                 else
