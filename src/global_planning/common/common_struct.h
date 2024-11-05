@@ -191,7 +191,7 @@ struct _VehicleParam {
     /* 最大加速度 单位(m/s^2) */
     float max_acceleration;
     /* 最小加速度 单位(m/s^2) */
-    float mix_acceleration;
+    float min_acceleration;
 
     /* 误差项权重 */
     float speed_error_term;

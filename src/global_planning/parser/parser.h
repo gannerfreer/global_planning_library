@@ -343,12 +343,12 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 max_acceleration ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("mix_acceleration")) {
-                veh_start_end.veh_param.mix_acceleration = val["mix_acceleration"].GetFloat();
+            if (val.HasMember("min_acceleration")) {
+                veh_start_end.veh_param.min_acceleration = val["min_acceleration"].GetFloat();
             }
             else {
-                veh_start_end.veh_param.mix_acceleration = -0.4;
-                cout << "无法找到车参 mix_acceleration ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.min_acceleration = -0.4;
+                cout << "无法找到车参 min_acceleration ，即将赋予默认值" << endl;
             }
 
             if (val.HasMember("reverse_speed")) {

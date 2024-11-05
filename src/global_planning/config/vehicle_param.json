@@ -32,7 +32,7 @@
     "veh_center_2_rear_bound": 0.5,
     "veh_center_2_rear_obstacle": 2.77,
     "max_acceleration": 0.3,
-    "mix_acceleration": -0.4,
+    "min_acceleration": -0.4,
     "reverse_speed": 1.0,
     "speed_error_term": 0.1,
     "speed_discrete_number": 5,

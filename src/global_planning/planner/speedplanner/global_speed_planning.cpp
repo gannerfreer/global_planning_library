@@ -21,7 +21,7 @@ using namespace GlobalPlanning;
  */
 void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
     max_acceleration      = m_veh_param.max_acceleration;
-    mix_acceleration      = m_veh_param.mix_acceleration;
+    min_acceleration      = m_veh_param.min_acceleration;
     speed_error_term      = m_veh_param.speed_error_term;
     speed_smooth_term     = m_veh_param.speed_smooth_term;
     speed_discrete_number = m_veh_param.speed_discrete_number;
@@ -30,7 +30,7 @@ void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
 
     threadLogger_->info("max_acceleration ={} ", max_acceleration);
 
-    threadLogger_->info("mix_acceleration ={} ", mix_acceleration);
+    threadLogger_->info("min_acceleration ={} ", min_acceleration);
 
 
     threadLogger_->info("speed_error_term ={} ", speed_error_term);
@@ -226,7 +226,7 @@ bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
                 threadLogger_->info("减速检查");
 
                 float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线)
-                float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * mix_acceleration);                              // v1_left加速到v1_right所需的最小欧式距离
+                float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * min_acceleration);                              // v1_left加速到v1_right所需的最小欧式距离
 
                 if ((s_total + eps) < s_min) // 若减速距离不够，得将v1结合车辆最大减速度进行合理调整
                 {
@@ -338,7 +338,7 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                     if ((v1_left + eps) < v1_right && (v2_right + eps) < v1_right && v1_left <= (v2_right + eps)) {
                         // 判断距离 若距离符合 将中速降低为最小速度
                         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance;
-                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * max_acceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * mix_acceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
+                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * max_acceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * min_acceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
                         threadLogger_->info("s_total = {}", s_total);
 
                         threadLogger_->info("s_min ={} ", s_min);
@@ -361,7 +361,7 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                     if ((v1_left + eps) < v1_right && (v2_right + eps) < v1_right && v1_left > (v2_right + eps)) {
                         // 判断距离 若距离符合 将中速降低为最小速度
                         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance;
-                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * max_acceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * mix_acceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
+                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * max_acceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * min_acceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
                         threadLogger_->info("s_total = {}", s_total);
 
                         threadLogger_->info("s_min ={} ", s_min);
@@ -491,7 +491,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         threadLogger_->info("...Case 2...");
 
         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * mix_acceleration);                              // 减速到v2所需的最小距离
+        float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * min_acceleration);                              // 减速到v2所需的最小距离
         if (s_min - s_total > 0.001) {
             threadLogger_->error("keypoint1.index:{},keypoint2.index:{}", keypoint1.index, keypoint2.index);
 
@@ -514,7 +514,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 else {
                     s_d                    = s_temp - s_1; // 减速距离，从v1减速
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * mix_acceleration * s_d); // 最小加速度为负
+                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * min_acceleration * s_d); // 最小加速度为负
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
@@ -562,14 +562,14 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         threadLogger_->info("keypoint2.index ={} ", keypoint2.index);
 
         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * mix_acceleration);                              // 减速到v2所需的最小距离
+        float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * min_acceleration);                              // 减速到v2所需的最小距离
         if (s_total < s_min) {
             threadLogger_->error("...Case 4: s_total ={}  s_min ={}  s_total < s_min...", s_total, s_min);
 
             return false;
         }
         float s_acc = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);
-        float s_dec = (pow(v2, 2) - pow(v1, 2)) / (2 * mix_acceleration);
+        float s_dec = (pow(v2, 2) - pow(v1, 2)) / (2 * min_acceleration);
         if (s_acc + s_dec < s_total) // 先加速到最大速度，再减速到v2
         {
             threadLogger_->info("先加速到最大速度，再减速到v2");
@@ -600,7 +600,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 {
                     float s_d              = s_temp - (s_total - s_dec); // 减速距离
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * mix_acceleration * s_d);
+                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * min_acceleration * s_d);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
@@ -611,8 +611,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         else if (s_acc + s_dec >= s_total) // 先加速，再减速，无匀速阶段
         {
             threadLogger_->info("先加速，再减速，无匀速阶段");
-            float s_as  = (2 * mix_acceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (mix_acceleration - max_acceleration)); // 加速的距离
-            float v_max = sqrt((2 * mix_acceleration * max_acceleration * s_total + mix_acceleration * pow(v0, 2) - max_acceleration * pow(v2, 2)) / (mix_acceleration - max_acceleration));
+            float s_as  = (2 * min_acceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (min_acceleration - max_acceleration)); // 加速的距离
+            float v_max = sqrt((2 * min_acceleration * max_acceleration * s_total + min_acceleration * pow(v0, 2) - max_acceleration * pow(v2, 2)) / (min_acceleration - max_acceleration));
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
@@ -627,7 +627,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 {
                     float s_d              = s_temp - s_as; // 减速距离
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v_max, 2) + 2 * mix_acceleration * s_d);
+                    temp_sparsepoint.speed = sqrt(pow(v_max, 2) + 2 * min_acceleration * s_d);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
@@ -644,7 +644,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
         float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * max_acceleration);                              // 加速到v2所需的最小距离
         float s_acc   = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);
-        float s_dec   = (pow(v2, 2) - pow(v1, 2)) / (2 * mix_acceleration);
+        float s_dec   = (pow(v2, 2) - pow(v1, 2)) / (2 * min_acceleration);
         if (s_acc + s_dec < s_total) // 先加速到最大速度，再减速到v2
         {
             float s_temp;
@@ -667,7 +667,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 {
                     float s_d              = s_temp - (s_total - s_dec); // 减速距离
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * mix_acceleration * s_d);
+                    temp_sparsepoint.speed = sqrt(pow(v1, 2) + 2 * min_acceleration * s_d);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
@@ -676,8 +676,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         }
         else if (s_acc + s_dec >= s_total && s_total > s_min) // 先加速，再减速，无匀速阶段
         {
-            float s_as  = (2 * mix_acceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (mix_acceleration - max_acceleration)); // 加速的距离
-            float v_max = sqrt((2 * mix_acceleration * max_acceleration * s_total + mix_acceleration * pow(v0, 2) - max_acceleration * pow(v2, 2)) / (mix_acceleration - max_acceleration));
+            float s_as  = (2 * min_acceleration * s_total - pow(v2, 2) + pow(v0, 2)) / (2 * (min_acceleration - max_acceleration)); // 加速的距离
+            float v_max = sqrt((2 * min_acceleration * max_acceleration * s_total + min_acceleration * pow(v0, 2) - max_acceleration * pow(v2, 2)) / (min_acceleration - max_acceleration));
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
@@ -692,7 +692,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 {
                     float s_d              = s_temp - s_as; // 减速距离
                     temp_sparsepoint.index = i;
-                    temp_sparsepoint.speed = sqrt(pow(v_max, 2) + 2 * mix_acceleration * s_d);
+                    temp_sparsepoint.speed = sqrt(pow(v_max, 2) + 2 * min_acceleration * s_d);
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
