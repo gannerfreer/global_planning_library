@@ -15,7 +15,7 @@
     "m_Veh_Param": {
         "delta_s": 0.1,
         "radious": 13,
-        "weather": 1,
+        "weather": true,
         "lat_term": 1,
         "lon_term": 0.8,
         "grid_dist": 1,

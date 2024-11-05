@@ -66,7 +66,6 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         path_.resize(slow);
     }
 
-    // path_ = original_path;
 
     // 如果有尖点，则尝试在尖点处补偿直线
     threadLogger_->info("1m插值后,删除重复点，每个路径点的信息");
@@ -78,50 +77,9 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
 
     CalCurvature(path_);
 
-    Path         path_with_curvature;
-    vector<Path> multipath;
-    Path         temp_path;
-
-    for (int i = 0; i < path_.size() - 1; i++) {
-        if (path_.at(i).direction == path_.at(i + 1).direction) {
-            temp_path.push_back(path_.at(i));
-        }
-        else {
-            temp_path.push_back(path_.at(i));
-            multipath.push_back(temp_path);
-            temp_path.clear();
-        }
-    }
-    multipath.push_back(temp_path);
-
-
-    threadLogger_->info("三次样条插值环节，一共分出 {} 段路", multipath.size());
-    Path final_path;
-    for (int i = 0; i < multipath.size(); i++) {
-        temp_path.clear();
-        CalculateCubicSplineCurve(false, multipath.at(i), temp_path);
-        threadLogger_->info("待插值的点信息,数量：{}", multipath.at(i).size());
-        for (int j = 0; j < multipath.at(i).size(); j++) {
-            threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", multipath.at(i).at(j).x, multipath.at(i).at(j).y, multipath.at(i).at(j).angle / M_PI * 180, multipath.at(i).at(j).curvature, multipath.at(i).at(j).direction);
-        }
-        threadLogger_->info("插值后的点信息，数量：{}", temp_path.size());
-        for (int j = 0; j < temp_path.size(); j++) {
-            threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", temp_path.at(j).x, temp_path.at(j).y, temp_path.at(j).angle / M_PI * 180, temp_path.at(j).curvature, temp_path.at(j).direction);
-        }
-
-        final_path.insert(final_path.end(), temp_path.begin(), temp_path.end());
-    }
-
-    threadLogger_->info("执行三次样条插值后，每个轨迹点的信息，final_path.size():{}", final_path.size());
-    for (int i = 0; i < final_path.size() - 1; i++) {
-        threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", final_path.at(i).x, final_path.at(i).y, final_path.at(i).angle / M_PI * 180, final_path.at(i).curvature, final_path.at(i).direction);
-        threadLogger_->info("相邻点间距 dis: {}", hypot(final_path.at(i).x - final_path.at(i + 1).x, final_path.at(i).y - final_path.at(i + 1).y));
-    }
-
     threadLogger_->info("执行尖点延伸逻辑后，每个轨迹点的信息,path_.size():{}", path_.size());
-    for (int i = 0; i < path_.size() - 1; i++) {
+    for (int i = 0; i < path_.size(); i++) {
         threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", path_.at(i).x, path_.at(i).y, path_.at(i).angle / M_PI * 180, path_.at(i).curvature, path_.at(i).direction);
-        threadLogger_->info("相邻点间距 dis: {}", hypot(path_.at(i).x - path_.at(i + 1).x, path_.at(i).y - path_.at(i + 1).y));
     }
 
     // std::ofstream file_out;
@@ -155,8 +113,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         }
     }
 
-
-    InterpolatePath(opti_path); // 插值
+    opti_path = new_path_;
     // std::ofstream file_out;
     // file_out.open("youhuahou.txt");
     // for (size_t index = 0; index < opti_path.size(); index++) {
@@ -570,7 +527,6 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
             threadLogger_->info("尖点后延伸");
 
             for (int k = num - 1; k >= 0; k--) {
-                //   cout << "k = " << k << "\n";
                 temp_point.angle     = path_.at(i).angle;
                 temp_point.x         = path_.at(i).x + flag_pos_neg * k * cos(temp_point.angle);
                 temp_point.y         = path_.at(i).y + flag_pos_neg * k * sin(temp_point.angle);
@@ -651,68 +607,6 @@ void Path_Opti::CalculatePathAngle() {
 //     opti_path.push_back(last_point);
 // }
 
-void Path_Opti::InterpolatePath(Path& opti_path) {
-    // 先对opti_path进行分段，根据其方向
-    // cout << "对路径进行分段" << endl;
-    unsigned int start = 0, end = 0;
-    vector<Path> vec_path;
-    Path         temp_path;
-    for (unsigned int i = 0; i < new_path_.size() - 1; i++) {
-        if (new_path_.at(i).direction != new_path_.at(i + 1).direction) {
-            end = i;
-            temp_path.assign(new_path_.begin() + start, new_path_.begin() + end + 1);
-            start = end + 1;
-            vec_path.push_back(temp_path);
-        }
-    }
-    temp_path.assign(new_path_.begin() + start, new_path_.end());
-    vec_path.push_back(temp_path);
-    // cout << "路径分段完毕" << endl;
-    // cout << "vec_path.size():" << vec_path.size() << endl;
-
-    // 对每个分段的点进行三次B样条拟合，插值间距0.1m
-    // vector<Path> vec_path_;
-    // temp_path.clear();
-    // Path copy_temp_path;
-    // bool flag = true;
-    // for (unsigned int i = 0; i < vec_path.size(); i++)
-    // {
-    //     if (vec_path.at(i).front().direction == 0) // 正向 here
-    //     {
-    //         flag = true;
-    //         // 调用三次B样条进行拟合
-    //         CalculateCubicSplineCurve(flag, vec_path.at(i), temp_path);
-    //         vec_path_.push_back(temp_path);
-    //         temp_path.clear();
-    //     }
-    //     else
-    //     {
-    //         flag = false;
-    //         // 先对整条路进行逆向，再调用三次B样条进行拟合，之后再进行逆向
-    //         reverse(vec_path.at(i).begin(), vec_path.at(i).end());
-    //         copy_temp_path = vec_path.at(i);
-    //         // reverse_copy(vec_path.at(i).begin(), vec_path.at(i).end(), copy_temp_path.begin());
-    //         CalculateCubicSplineCurve(flag, copy_temp_path, temp_path);
-    //         reverse(temp_path.begin(), temp_path.end());
-    //         vec_path_.push_back(temp_path);
-    //         temp_path.clear();
-    //     }
-    // }
-    // cout << "jjjj" << endl;
-
-    // 规范一下vec_path的angel，统一约束到【0，2π】
-    for (unsigned int i = 0; i < vec_path.size(); i++) {
-        for (unsigned int j = 0; j < vec_path.at(i).size(); j++) {
-            if (vec_path.at(i).at(j).angle < 0) {
-                vec_path.at(i).at(j).angle += 2 * M_PI;
-            }
-            opti_path.push_back(vec_path.at(i).at(j));
-        }
-    }
-
-
-    // cout << "插值结束" << endl;
-}
 
 void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path) {
     vector<double> x_set;

@@ -42,14 +42,17 @@ enum struct TaskType : unsigned int {
 };
 enum struct ErrorType : unsigned int {
     SUCCESS,
-    POINT_UNREASONABLE,    // 作业点不合理
-    ROAD_GRAPH_ERROR,      // 路网权重图存在问题
-    SPEED_PLANNING_FAIL,   // 速度规划失败
-    ALGORITHM_ERROR,       // 规划算法崩溃，拿出日志，并联系开发人员
-    OFFSET_FAIL,           // 均匀碾压失败
-    NO_MAP,                // 规划库无地图，可能是容器被重启了，需要重新加载地图
-    END_POINT_UNREASONABLE // 终点不合理
-
+    POINT_UNREASONABLE,                 // 作业点不合理
+    ROAD_GRAPH_ERROR,                   // 路网权重图存在问题
+    SPEED_PLANNING_FAIL,                // 速度规划失败
+    ALGORITHM_ERROR,                    // 规划算法try_catch捕获异常
+    OFFSET_FAIL,                        // 均匀碾压失败
+    NO_MAP,                             // 规划库无地图，可能是容器被重启了，需要重新加载地图
+    END_POINT_UNREASONABLE,             // 终点不合理
+    PATH_FRACTURE,                      // 地图中参考路径存在断裂或者角度跳变
+    OVERSPEED,                          // 规划库规划的轨迹超速
+    SEQUENCE_AND_DIRECTION_CHECK_ERROR, // 参考路径中的倒车路段direction错误
+    CURVATURE_EXCESSIVE                 // 参考路径中存在连续4个曲率超标点
 };
 
 enum struct PointAttribute : unsigned int {

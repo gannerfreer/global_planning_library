@@ -517,8 +517,8 @@ _TarStartEnd ParseJson(char* str) {
 // 将路点信息转换为json格式 返回给调用方
 string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
     cout << "enter VecWaypoint2json" << endl;
-    this_thread::sleep_for(chrono::milliseconds(100));
-    cout << "VecWaypoint2json..." << endl;
+    // this_thread::sleep_for(chrono::milliseconds(100));
+    // cout << "VecWaypoint2json..." << endl;
 
     if (plan_obj.error_type_ != ErrorType::SUCCESS) {
         cout << "即将返回特殊轨迹给后台" << endl;
@@ -532,9 +532,12 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
 
     cout << "开始写json" << endl;
     writer.StartObject();
+    cout << "执行完代码 writer.StartObject();" << endl;
 
     writer.Key("trajectory_info");
+    cout << "执行完代码 writer.Key(trajectory_info )" << endl;
     writer.StartArray();
+    cout << "执行完代码 writer.StartArray();" << endl;
     if (vec_wp.size() == 0) {
         writer.StartObject();
         writer.Key("x");
@@ -568,6 +571,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
         writer.Int(0);
         writer.EndObject();
     }
+    cout << "line574" << endl;
 
     for (size_t i = 0; i < vec_wp.size(); i++) {
         writer.StartObject();
@@ -602,29 +606,36 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
         writer.Int(vec_wp.at(i).direction);
         writer.EndObject();
     }
+    cout << "line609" << endl;
     writer.EndArray();
+    cout << "执行完代码 writer.EndArray();" << endl;
 
     writer.Key("vec_path");
+    cout << "执行完代码 writer.Key(vec_path);" << endl;
     writer.StartArray();
+    cout << "执行完代码 writer.StartArray();" << endl;
     if (plan_obj.road_sequence_.size() == 0) {
         writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.start_key_));
+        cout << "执行完代码 writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.start_key_))" << endl;
     }
     else {
         for (size_t j = 0; j < plan_obj.road_sequence_.size(); j++) {
             writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.road_sequence_.at(j)));
         }
+        cout << "执行完代码 writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.road_sequence_.at(j)));" << endl;
     }
 
     writer.EndArray();
+    cout << "执行完代码 writer.EndArray();" << endl;
 
     writer.Key("error_type");
     writer.Uint(static_cast<unsigned char>(plan_obj.error_type_));
-    // writer.Key("ID");
-    // writer.String(vehicle_code_.c_str(), vehicle_code_.size());
+    cout << "执行完代码  writer.Uint(static_cast<unsigned char>(plan_obj.error_type_));" << endl;
+
 
     writer.EndObject();
 
-    cout << "writer.EndObject()" << endl;
+    cout << "执行完代码 writer.EndObject();" << endl;
 
     GlobalVariable::getInstance()->SetGlobalStr(strbuf.GetString());
     auto         currentTime = chrono::system_clock::now();
@@ -637,8 +648,10 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
     string filePath = timeStr + "_" + plan_obj.vehicle_code_ + "_output.json";
 
     ofstream outputFile(filePath);
+    cout << "执行完代码 ofstream outputFile(filePath);;" << endl;
     // 将JSON数据写入文件
     outputFile << GlobalVariable::getInstance()->GetGlobalStr();
+    cout << "执行完代码 outputFile << GlobalVariable::getInstance()->GetGlobalStr();" << endl;
     // 关闭文件流
     outputFile.close();
 

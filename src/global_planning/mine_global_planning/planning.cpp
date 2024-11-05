@@ -57,9 +57,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     global_path_.clear();
     // 路径规划：作业点参考路径匹配及裁剪拼接
     if (!PathPlanning()) {
+        threadLogger_->info("PathPlanning 失败");
+        cout << "PathPlanning 失败" << endl;
         return;
     }
     threadLogger_->info("PathPlanning 成功");
+    cout << "PathPlanning 失败" << endl;
 
 
     // 只针对DISPATCH任务进行参考路径拼接
@@ -125,6 +128,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
     // 路径断裂检查,涉及相邻点间距和相邻点角度差
     if (!Helper::CheckPathFracture(global_path_)) {
+        error_type_ = ErrorType::PATH_FRACTURE;
         threadLogger_->error("CheckPathFracture fail");
         return;
     }
@@ -139,6 +143,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     // file_out.close();
     if (!Helper::OverSpeedCheck(global_path_, vehicle_param_.wheel_base)) {
         threadLogger_->error("存在超速，检测失败");
+        error_type_ = ErrorType::OVERSPEED;
         return;
     }
     threadLogger_->info("超速校验通过");
@@ -147,6 +152,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     // 路径点顺序和direction校验
     if (!Helper::SequenceAndDirectionCheck(global_path_)) {
         threadLogger_->error("路径点顺序或direction校验不通过");
+        error_type_ = ErrorType::SEQUENCE_AND_DIRECTION_CHECK_ERROR;
         return;
     }
 
@@ -174,7 +180,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         }
         if (allExcessive) {
             threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，分别为 {}, {}, {}", global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
-            error_type_ = ErrorType::POINT_UNREASONABLE;
+            error_type_ = ErrorType::CURVATURE_EXCESSIVE;
             return;
         }
     }
@@ -564,7 +570,6 @@ bool Planning::NotFollowReferencelinePlanning() {
         return false;
     }
     my_optimal_path_.DeleteVoronoiSpace(false);
-
     return true;
 }
 
@@ -614,16 +619,19 @@ bool Planning::FollowReferencelinePlanning() {
                             }
                             threadLogger_->info("索引  start:{},end:{}", start, end);
                             if (IsConnect(start, end)) {
-                                threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
+                                if (start >= 0 && start < sequence_mapping_.size() && end >= 0 && end < sequence_mapping_.size()) {
+                                    threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
+                                }
                                 success_pair.push_back(make_pair(start, end));
                                 // 如果找到的连通路径是顺向的就可以退出来，没必要继续扩大搜索了
                             }
                             else {
                                 threadLogger_->info("start:{},end:{}", start, end);
-                                threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
+                                if (start >= 0 && start < sequence_mapping_.size() && end >= 0 && end < sequence_mapping_.size()) {
+                                    threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
+                                }
+                                v_has_calculate_pair_.push_back(pair(start, end));
                             }
-
-                            v_has_calculate_pair_.push_back(pair(start, end));
                         }
                     }
                 }
@@ -724,7 +732,9 @@ bool Planning::FollowReferencelinePlanning() {
 }
 bool Planning::HasSearched(int start, int end) {
     for (auto pair : v_has_calculate_pair_) {
-        if (pair.first == start && pair.second == end) return true;
+        if (pair.first == start && pair.second == end) {
+            return true;
+        }
     }
     return false;
 }
@@ -744,31 +754,6 @@ bool Planning::IsConnect(int start, int end) {
 void Planning::StartEndPointProcess() {
     // 计算全局路径第一个点与起点的角度偏差
     threadLogger_->info("StartEndPointProcess 开始");
-
-
-    // float start_angle_diff;
-    // start_angle_diff = atan2(start_point_.y - global_path_.front().y, start_point_.x - global_path_.front().x);
-    // if (start_angle_diff < 0) {
-    //     start_angle_diff += 2 * M_PI; // 将终点与全局路径最后一个点的角度偏差规范[0,2π）
-    // }
-    // float first_angle_diff = fabs(start_angle_diff - global_path_.front().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI : fabs(start_angle_diff - global_path_.front().yaw) * 180 / M_PI;
-    // if ((first_angle_diff < 90 && global_path_.front().direction == 0) || (first_angle_diff > 90 && global_path_.front().direction == 1) || fabs(start_point_.x - global_path_.front().x) <= 0.3 && fabs(start_point_.y - global_path_.front().y) <= 0.3) {
-    //     global_path_.erase(global_path_.begin());
-    //     threadLogger_->info("全局路径第一个位于实际起点前面，或者太近，现予以去除");
-    // }
-    // else {}
-    // // 添加起点到全局路径
-    // _TrajectoryPoint first_point;
-    // first_point.x           = start_point_.x;
-    // first_point.y           = start_point_.y;
-    // first_point.z           = start_point_.z;
-    // first_point.yaw         = start_point_.yaw;
-    // first_point.speed_limit = 0;
-    // first_point.speed       = 0;
-    // first_point.curvature   = 0;
-    // first_point.distance    = 0;
-    // first_point.direction   = global_path_.front().direction;
-    // global_path_.insert(global_path_.begin(), first_point);
 
     // 将终点添加到全局路径中
     // 判断终点与全局路径最后一个点的角度偏差，基于角度偏差信息来判断是否 将其抛弃
