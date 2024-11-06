@@ -8,10 +8,12 @@ Description: This is a collection of helper functions that are used throughout t
 */
 #ifndef HELPER_H
 #define HELPER_H
+#include <filesystem>
+
 #include "../common/common_struct.h"
 #include "../globalvariable.h"
 #include "../mine_global_planning/planning.h"
-
+namespace fs = std::filesystem;
 namespace GlobalPlanning {
 
 namespace Parser {
@@ -421,7 +423,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "veh_start_end.veh_param.slope_road_speed_limit " << veh_start_end.veh_param.slope_road_speed_limit << endl;
             }
             else {
-                cout << "无法找到 slope_road_speed_limit" << endl;
+                cout << "无法找到车参 slope_road_speed_limit" << endl;
                 veh_start_end.veh_param.slope_road_speed_limit = 3.0;
             }
 
@@ -430,7 +432,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "veh_start_end.veh_param.intersection_road_speed_limit " << veh_start_end.veh_param.intersection_road_speed_limit << endl;
             }
             else {
-                cout << "无法找到 intersection_road_speed_limit" << endl;
+                cout << "无法找到车参 intersection_road_speed_limit" << endl;
                 veh_start_end.veh_param.intersection_road_speed_limit = 3.0;
             }
 
@@ -439,7 +441,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "veh_start_end.veh_param.bumpy_road_speed_limit " << veh_start_end.veh_param.bumpy_road_speed_limit << endl;
             }
             else {
-                cout << "无法找到 bumpy_road_speed_limit" << endl;
+                cout << "无法找到车参 bumpy_road_speed_limit" << endl;
                 veh_start_end.veh_param.bumpy_road_speed_limit = 3.0;
             }
 
@@ -448,7 +450,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "veh_start_end.veh_param.regular_road_speed_limit " << veh_start_end.veh_param.regular_road_speed_limit << endl;
             }
             else {
-                cout << "无法找到 regular_road_speed_limit" << endl;
+                cout << "无法找到车参 regular_road_speed_limit" << endl;
                 veh_start_end.veh_param.regular_road_speed_limit = 3.0;
             }
 
@@ -458,7 +460,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "veh_start_end.veh_param.vehicle_code " << veh_start_end.veh_param.vehicle_code << endl;
             }
             else {
-                cout << "无法找到 vehicle_code" << endl;
+                cout << "无法找到车参 vehicle_code" << endl;
                 veh_start_end.veh_param.vehicle_code = 9999;
             }
 
@@ -467,7 +469,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "veh_start_end.veh_param.uniform_compaction_enable " << veh_start_end.veh_param.uniform_compaction_enable << endl;
             }
             else {
-                cout << "无法找到 uniform_compaction_enable" << endl;
+                cout << "无法找到车参 uniform_compaction_enable" << endl;
                 veh_start_end.veh_param.uniform_compaction_enable = true;
             }
 
@@ -477,7 +479,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "veh_start_end.veh_param.weather " << veh_start_end.veh_param.weather << endl;
             }
             else {
-                cout << "无法找到 weather" << endl;
+                cout << "无法找到车参 weather" << endl;
                 veh_start_end.veh_param.weather = true;
             }
 
@@ -486,7 +488,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "veh_start_end.veh_param.start_offset_distance " << veh_start_end.veh_param.start_offset_distance << endl;
             }
             else {
-                cout << "无法找到 start_offset_distance" << endl;
+                cout << "无法找到车参 start_offset_distance" << endl;
                 veh_start_end.veh_param.start_offset_distance = 1.0;
             }
 
@@ -714,8 +716,17 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
     {
         unique_lock<shared_mutex> lock(GlobalVariable::getInstance()->record_file_write_lock);
         ofstream                  record;
-        record.open("../GlobalPlanning_record.txt", ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "规划库版本号:G_V1.0.1.20241101_RC" << endl;
+        std::string               folderPath = "record_file";
+        std::string               filePath   = folderPath + "/GlobalPlanning_record.txt";
+        if (!fs::exists(folderPath)) {
+            try {
+                fs::create_directory(folderPath);
+            } catch (const fs::filesystem_error& e) {
+                std::cerr << "Error creating directory: " << e.what() << std::endl;
+            }
+        }
+        record.open(filePath, ios_base::app);
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.2.20241106_beta" << endl;
         record.close();
     }
 

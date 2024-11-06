@@ -10,11 +10,14 @@
 #ifndef GLOBAL_PLANNING_INTERFACE_INTERFACE_H
 #define GLOBAL_PLANNING_INTERFACE_INTERFACE_H
 
+#include <filesystem>
 #include <iostream>
 #include <mutex>
 
 #include "globalvariable.h"
 #include "parser/parser.h"
+
+namespace fs = std::filesystem;
 
 extern "C" {
 char* GlobalPathPlanning(char* point_veh_start_end); // 全局轨迹规划
