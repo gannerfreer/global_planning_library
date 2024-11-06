@@ -13,12 +13,9 @@ using namespace curve;
  * @brief 获取dubins路径代价接口函数实现
  */
 bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::vector<Point>& path) {
-    std::cout << "start_pose.x = " << start_pose.GetX() << std::endl;
-    std::cout << "start_pose.y = " << start_pose.GetY() << std::endl;
-    std::cout << "start_pose.angle = " << start_pose.GetAngle() << std::endl;
-    std::cout << "end_pose.x = " << end_pose.GetX() << std::endl;
-    std::cout << "end_pose.y = " << end_pose.GetY() << std::endl;
-    std::cout << "end_pose.angle = " << end_pose.GetAngle() << std::endl;
+    std::cout << "采用Dubins曲线预校验 " << endl;
+    std::cout << "start_pose.x = " << start_pose.GetX() << "start_pose.y = " << start_pose.GetY() << "start_pose.angle = " << start_pose.GetAngle() << std::endl;
+    std::cout << "end_pose.x = " << end_pose.GetX() << "end_pose.y = " << end_pose.GetY() << "end_pose.angle = " << end_pose.GetAngle() << std::endl;
     float dx    = end_pose.GetX() - start_pose.GetX();
     float dy    = end_pose.GetY() - start_pose.GetY();
     float theta = mod(std ::atan2(dy, dx), twopi);
@@ -54,9 +51,9 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
     cp.emplace_back(0, 0, start_pose.GetAngle());
     cp.emplace_back(CalNextPoint(std::get<0>(opt_path), cp[0].GetX(), cp[0].GetY(), cp[0].GetAngle(), type[0]));
     cp.emplace_back(CalNextPoint(std::get<1>(opt_path), cp[1].GetX(), cp[1].GetY(), cp[1].GetAngle(), type[1]));
-    for (const auto pt : cp) {
-        std::cout << "x = " << pt.GetX() << "   y = " << pt.GetY() << "   theta = " << pt.GetAngle() << std::endl;
-    }
+    // for (const auto pt : cp) {
+    //     std::cout << "x = " << pt.GetX() << "   y = " << pt.GetY() << "   theta = " << pt.GetAngle() << std::endl;
+    // }
     // auto  hybridastar_step_length = min_length / 100;
 
     for (float v = 0; v < min_length; v += delta_s_ / radius_) {
@@ -82,7 +79,7 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
             }
         }
     }
-    cout << "path.size():" << path.size() << endl;
+    // cout << "path.size():" << path.size() << endl;
     return true;
 }
 /**

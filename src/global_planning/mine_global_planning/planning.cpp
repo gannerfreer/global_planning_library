@@ -62,12 +62,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         return;
     }
     threadLogger_->info("PathPlanning 成功");
-    cout << "PathPlanning 失败" << endl;
-
+    cout << "PathPlanning 成功" << endl;
 
     // 只针对DISPATCH任务进行参考路径拼接
     //  HybirdA*拟合：起点、终点需要拟合则拟合，否则跳过
     if (task_type_ == TaskType::DISPATCH) {
+        cout << "DISPATCH 任务，开启HybridA*" << endl;
         if (!HybirdAStarFitting()) {
             return;
         }
@@ -871,6 +871,7 @@ bool Planning::HybirdAStarFitting() {
     if (start_need_fitting) // 起点需要进行HybirdA*拟合
     {
         threadLogger_->info("起点需要HybirdA*拟合");
+        cout << "起点需要HybirdA*拟合" << endl;
         vector<_TrajectoryPoint> temp_traj;
         int                      search_index = 0;
         if (JudgeFittingDirection()) {

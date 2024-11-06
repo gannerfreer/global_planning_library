@@ -49,6 +49,7 @@
     "path_voronoi_term": 0.1,
     "vonoroi_grid_dist": 0.1,
     "curvature_threshold": 0.1,
-    "is_light": true
+    "is_light": true,
+    "is_day": true
   }
 }

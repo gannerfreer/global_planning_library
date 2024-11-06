@@ -209,7 +209,7 @@ inline bool doesTrajectorySelfIntersect(Path& path) {
         if (index < 0) index = 0;
         vec.at(floor(index)) = 1;
     }
-    cout << "成功的经过这里" << endl;
+    // cout << "成功的经过这里" << endl;
     int sum = 0;
     for (int i = 0; i < vec.size(); i++) {
         if (vec.at(i) == 1) {

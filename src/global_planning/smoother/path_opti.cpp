@@ -555,7 +555,7 @@ void Path_Opti::CalculatePathAngle() {
         double dy = (new_path_.at(i + 1).y - new_path_.at(i - 1).y);
 
         double angle = atan(dy / dx);
-        cout << "dx:" << dx << "dy:" << dy << "angle:" << angle << endl;
+        // cout << "dx:" << dx << "dy:" << dy << "angle:" << angle << endl;
         if (dx < 0)
             angle = angle + M_PI;
         else if (dx >= 0 && dy < 0)
@@ -711,7 +711,7 @@ void Path_Opti::CubicInterpolate2Point(const Point start_point, const Point end_
             tem_point.z         = 0;
             tem_point.angle     = theta_i_r;
             tem_point.direction = end_point.direction;
-            cout << tem_point.angle << endl;
+            // cout << tem_point.angle << endl;
             interpolate_path.push_back(tem_point);
 
             k++;

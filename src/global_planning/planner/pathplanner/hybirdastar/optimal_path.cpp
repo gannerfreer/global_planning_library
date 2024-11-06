@@ -229,13 +229,14 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     h_cost_map_.clear();
     nodes2D_map_.clear();
     threadLogger_->info("终点碰撞检测");
-    cout << "终点碰撞检测" << endl;
+    cout << "开启对终点的碰撞检测" << endl;
     // 终点区域碰撞判断
     if (true == collison_check_.IsVehicleCollision(end_)) {
         threadLogger_->info("终点碰撞检测不通过");
         cout << "终点碰撞检测不通过" << endl;
         return PlanResult::EndPoint_Infeasible;
     }
+    cout << "终点碰撞检测通过" << endl;
     if (true == collison_check_.IsVehicleCollision(actual_start_)) {
         threadLogger_->info("起点碰撞检测不通过");
 
@@ -846,7 +847,7 @@ void OptimalPath::PathIntegration() {
     if (plan_path_rule_ == PlanRule::Forward_All_Time) {
         threadLogger_->info("向前路径拼接");
         temp_point.angle = actual_start_.angle;
-        cout << "start_offset_distance:" << m_vehicle_param_.start_offset_distance << endl;
+        // cout << "start_offset_distance:" << m_vehicle_param_.start_offset_distance << endl;
         for (double i = 0; i <= m_vehicle_param_.start_offset_distance + 1e-3; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = actual_start_.x + i * cos(actual_start_.angle);
             temp_point.y         = actual_start_.y + i * sin(actual_start_.angle);
@@ -855,13 +856,13 @@ void OptimalPath::PathIntegration() {
             temp_path.emplace_back(temp_point);
         }
         temp_path.pop_back();
-        cout << "temp_path.size() " << temp_path.size() << endl;
+        // cout << "temp_path.size() " << temp_path.size() << endl;
         path_a_star_.insert(path_a_star_.begin(), temp_path.begin(), temp_path.end());
         path_a_star_.pop_back();
-        cout << "拼接起点" << endl;
-        for (int i = 0; i < path_a_star_.size(); i++) {
-            cout << path_a_star_.at(i).angle << endl;
-        }
+        // cout << "拼接起点" << endl;
+        // for (int i = 0; i < path_a_star_.size(); i++) {
+        //     cout << path_a_star_.at(i).angle << endl;
+        // }
     }
     if (plan_path_rule_ == PlanRule::Backward_To_End) {
         if (path_a_star_.size() >= 2) {
@@ -897,10 +898,10 @@ void OptimalPath::PathIntegration() {
     path_a_star_.insert(path_a_star_.end(), path_r_s_.begin(), path_r_s_.end());
     Path().swap(path_r_s_);
 
-    cout << "拼接RS" << endl;
-    for (int i = 0; i < path_a_star_.size(); i++) {
-        cout << path_a_star_.at(i).angle << endl;
-    }
+    // cout << "拼接RS" << endl;
+    // for (int i = 0; i < path_a_star_.size(); i++) {
+    //     cout << path_a_star_.at(i).angle << endl;
+    // }
     threadLogger_->info("拼接完RS路径");
     for (auto i : path_a_star_) {
         threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
@@ -917,7 +918,7 @@ void OptimalPath::PathIntegration() {
             temp_point.y         = end_r_.y + i * sin(end_r_.angle);
             temp_point.z         = 0;
             temp_point.direction = MotionDirection::Forward;
-            cout << "temp_point.angle" << temp_point.angle << endl;
+            // cout << "temp_point.angle" << temp_point.angle << endl;
             path_a_star_.push_back(temp_point);
         }
         threadLogger_->info("拼接完成终点的路径");

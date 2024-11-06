@@ -188,6 +188,14 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
         Value& val = doc["m_Veh_Param"];
         if (val.IsObject()) {
             // 车辆参数
+            if (val.HasMember("is_day")) {
+                veh_start_end.veh_param.is_day = val["is_day"].GetBool();
+            }
+            else {
+                veh_start_end.veh_param.is_day = true;
+                cout << "无法找到车参 is_day ，即将赋予默认值" << endl;
+            }
+
             if (val.HasMember("radious")) {
                 veh_start_end.veh_param.radious = val["radious"].GetDouble();
             }
@@ -307,7 +315,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.grid_angle = 1.0;
                 cout << "无法找到车参 grid_angle ，即将赋予默认值" << endl;
             }
-            cout << "line310" << endl;
             if (val.HasMember("hybridastar_step_length")) {
                 veh_start_end.veh_param.hybridastar_step_length = val["hybridastar_step_length"].GetDouble();
             }
@@ -331,7 +338,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.switch_penalty = 10;
                 cout << "无法找到车参 switch_penalty ，即将赋予默认值" << endl;
             }
-            cout << "line334" << endl;
             if (val.HasMember("forward_penalty")) {
                 veh_start_end.veh_param.forward_penalty = val["forward_penalty"].GetDouble();
             }
@@ -339,7 +345,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.forward_penalty = 1.0;
                 cout << "无法找到车参 forward_penalty ，即将赋予默认值" << endl;
             }
-            cout << "line342" << endl;
             if (val.HasMember("rs_min_path_length")) {
                 veh_start_end.veh_param.rs_min_path_length = val["rs_min_path_length"].GetDouble();
             }
@@ -347,7 +352,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.rs_min_path_length = 8.0;
                 cout << "无法找到车参 rs_min_path_length ，即将赋予默认值" << endl;
             }
-            cout << "line350" << endl;
             if (val.HasMember("end_offset_distance")) {
                 veh_start_end.veh_param.end_offset_distance = val["end_offset_distance"].GetDouble();
             }
@@ -355,7 +359,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.end_offset_distance = 1.0;
                 cout << "无法找到车参 end_offset_distance ，即将赋予默认值" << endl;
             }
-            cout << "line358" << endl;
             if (val.HasMember("path_smoothness_term")) {
                 veh_start_end.veh_param.path_smoothness_term = val["path_smoothness_term"].GetDouble();
             }
@@ -363,7 +366,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.path_smoothness_term = 0.1;
                 cout << "无法找到车参 path_smoothness_term ，即将赋予默认值" << endl;
             }
-            cout << "line366" << endl;
             if (val.HasMember("backward_penalty")) {
                 veh_start_end.veh_param.backward_penalty = val["backward_penalty"].GetDouble();
             }
