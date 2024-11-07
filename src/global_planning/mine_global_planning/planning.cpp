@@ -861,7 +861,7 @@ bool Planning::HybirdAStarFitting() {
     my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
     // 基于横纵向距离来判断是否进行hybirdA*拟合
     threadLogger_->info("Enter HybirdAStarFitting");
-    double lat_threshold = 0.7, lon_threshold = 3;
+    double lat_threshold = 0.3, lon_threshold = 0.8;
     bool   start_need_fitting = false, end_need_fitting = false;
     if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold || start_angle_diff_ > 8.0 / 180.0 * M_PI) { // 横向阈值大于0.7m,或者纵向阈值大于3m,就需要进行hybirdA*拟合
         start_need_fitting = true;
