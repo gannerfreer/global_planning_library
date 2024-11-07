@@ -46,23 +46,23 @@ vector<Point>            expand_point;
 
 
 void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
-    start_point.x   = msg->pose.pose.position.x;
-    start_point.y   = msg->pose.pose.position.y;
-    start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    // start_point.x   = -71.54773114690371 - x_o_;
-    // start_point.y   = 149.47194005363536 - y_o_;
-    // start_point.yaw = 264.23277017547065 / 180.0 * M_PI;
+    // start_point.x   = msg->pose.pose.position.x;
+    // start_point.y   = msg->pose.pose.position.y;
+    // start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
+    start_point.x   = 184.313556923775 - x_o_;
+    start_point.y   = 39.5050115715797 - y_o_;
+    start_point.yaw = 1.8318484111043687 / 180.0 * M_PI;
 
     is_receive_start = true;
 }
 
 void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-    end_point.x   = msg->pose.position.x;
-    end_point.y   = msg->pose.position.y;
-    end_point.yaw = tf::getYaw(msg->pose.orientation);
-    // end_point.x   = -88.91532681951114 - x_o_;
-    // end_point.y   = 170.85565377586437 - y_o_;
-    // end_point.yaw = 352.04217648009575 / 180.0 * M_PI;
+    // end_point.x   = msg->pose.position.x;
+    // end_point.y   = msg->pose.position.y;
+    // end_point.yaw = tf::getYaw(msg->pose.orientation);
+    end_point.x   = 267.5580942772906 - x_o_;
+    end_point.y   = 278.6874838005836 - y_o_;
+    end_point.yaw = 74.13897136482038 / 180.0 * M_PI;
 
     is_receive_end = true;
 }
@@ -194,8 +194,8 @@ int main(int argc, char** argv) {
             file_out.open("global_path.txt", ios::out);
             for (size_t i = 0; i < global_path.size(); i++) {
                 // file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << global_path.at(i).speed << " " << global_path.at(i).speed_limit << " " << global_path.at(i).curvature << " " << global_path.at(i).distance << " " << static_cast<int>(global_path.at(i).attribute) << " " << static_cast<int>(global_path.at(i).direction) << endl;
-                file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << " " << global_path.at(i).distance << endl;
-                // file_out << setprecision(11) << global_path.at(i).speed << " " << global_path.at(i).speed_limit << endl;
+                // file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << " " << global_path.at(i).distance << endl;
+                file_out << setprecision(11) << 0 << " " << global_path.at(i).curvature << endl;
             }
             file_out.close();
             std_msgs::Float64MultiArray speed_curve;

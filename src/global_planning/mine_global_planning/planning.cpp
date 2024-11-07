@@ -168,8 +168,14 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         error_type_ = ErrorType::POINT_UNREASONABLE;
         return;
     }
+
     threadLogger_->info("轨迹构型校验通过");
     // 曲率检查
+    cout << "输出轨迹点曲率" << endl;
+    for (int i = 0; i < global_path_.size(); i++) {
+        cout << global_path_.at(i).curvature << " ";
+    }
+    cout << endl;
     for (int i = 0; i < global_path_.size() - 2; i++) {
         bool allExcessive = true;
         for (int j = i; j < i + 3; j++) {
@@ -630,8 +636,8 @@ bool Planning::FollowReferencelinePlanning() {
                                 if (start >= 0 && start < sequence_mapping_.size() && end >= 0 && end < sequence_mapping_.size()) {
                                     threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
                                 }
-                                v_has_calculate_pair_.push_back(pair(start, end));
                             }
+                            v_has_calculate_pair_.push_back(pair(start, end));
                         }
                     }
                 }

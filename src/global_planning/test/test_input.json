@@ -1,16 +1,16 @@
 {
     "m_Start_Point": {
-        "x": -501.6280870269407,
-        "y": 1000.5229409413959,
-        "z": 0,
-        "yaw": 271.3504638671875
-    },
-    "m_End_Point": {
         "x": -85.7837270139,
         "y": -2.1692311526,
         "z": 0,
-        "yaw": 320.3636294442,
-        "endPointId": 5
+        "yaw": 320.3636294442
+    },
+    "m_End_Point": {
+        "x": -7.6661103523,
+        "y": -10.2993991333,
+        "z": 0,
+        "yaw": 25.0835202763,
+        "endPointId": 6
     },
     "m_Veh_Param": {
         "is_day": true,
@@ -63,9 +63,9 @@
         "uniform_compaction_enable": true,
         "veh_center_2_rear_obstacle": 2.77,
         "intersection_road_speed_limit": 2.06,
-        "vehicle_code": 1010
+        "vehicle_code": 1005
     },
     "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1853984245203079168"
+    "key": "ids:mine:dispatch:planPath:result:1854411472909185024"
 }
