@@ -12,11 +12,11 @@ speed_limit0 = data[:, 1]
 data = np.loadtxt('speed_limit1.txt')  
 speed_limit1 = data[:, 1]   
 data = np.loadtxt('global_path.txt')  
-curvature = data[:, 1]
+curvature = data[:, 2]
 # 绘制第一张图：速度  
 plt.figure(1)  # 创建一个新的图形窗口，编号为1  
 plt.plot(speed_limit0, label='speed_limit')  
-# plt.plot(speed_limit1, label='speed_limit2')  
+plt.plot(speed_limit1, label='speed_limit2')  
 plt.xlabel('index')  
 plt.ylabel('speed')  
 plt.title('speed_limit_graph')  

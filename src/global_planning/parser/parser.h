@@ -669,7 +669,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
     writer.StartArray();
     cout << "执行完代码 writer.StartArray();" << endl;
     if (plan_obj.road_sequence_.size() == 0) {
-        writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.start_key_));
+        writer.Uint(999);
         cout << "执行完代码 writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.start_key_))" << endl;
     }
     else {
@@ -726,7 +726,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.2.20241107_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.5.20241110_beta" << endl;
         record.close();
     }
 

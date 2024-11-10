@@ -792,7 +792,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
             }
         }
         else {
-            // 此时，该点为后退路径上的点,后退轨迹限速均为2m/s
+            // 此时，该点为后退路径上的点,后退轨迹限速均为1m/s
             iter->speed_limit = vehicle_param.reverse_speed;
         }
     }

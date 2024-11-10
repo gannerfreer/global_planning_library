@@ -44,12 +44,12 @@
     "slope_road_speed_limit": 3.07,
     "narrow_road_speed_limit": 3,
     "intersection_road_speed_limit": 2.06,
-    "weather": false,
+    "weather": true,
     "task_type": 2,
     "path_voronoi_term": 0.1,
     "vonoroi_grid_dist": 0.1,
     "curvature_threshold": 0.1,
-    "is_light": false,
-    "is_day": false
+    "is_light": true,
+    "is_day": true
   }
 }

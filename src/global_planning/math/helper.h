@@ -257,7 +257,8 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
                 if (temp < -1.0) {
                     temp = -1.0;
                 }
-                dphi                 = acos(temp); // 通过向量积求出两向量之间夹角
+                dphi = acos(temp); // 通过向量积求出两向量之间夹角
+                cout << "(" << traj.at(i - 1).x << "," << traj.at(i - 1).y << ")  ->(" << traj.at(i).x << "," << traj.at(i).y << ")之间的角度变化 ：" << dphi / M_PI * 180.0 << "两者之间距离：" << norm_delta_xi << endl;
                 double cross_product = delta_xi.x * delta_xip1.y - delta_xi.y * delta_xip1.x;
                 if (cross_product > 0)
                     kappa = dphi / norm_delta_xi;
@@ -267,7 +268,6 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
                 // threadLogger_->info("kappa :{} dphi:{}  norm_delta_xi:{} ", kappa, dphi, norm_delta_xi);
                 traj.at(i).curvature = kappa;
             }
-
             else {
                 if (i - 1 > 0) {
                     traj.at(i).curvature = traj.at(i - 1).curvature;

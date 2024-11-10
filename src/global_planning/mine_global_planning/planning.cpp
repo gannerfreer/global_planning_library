@@ -110,8 +110,13 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     // 计算累计s
     Helper::CalDistance(global_path_);
 
-    //
+
     // 计算路径点曲率
+    cout << "计算曲率前输出轨迹点曲率" << endl;
+    for (int i = 0; i < global_path_.size(); i++) {
+        cout << "(" << global_path_.at(i).x << "," << global_path_.at(i).y << ")   曲率：" << global_path_.at(i).curvature << endl;
+    }
+    cout << endl;
     Helper::CalCurv(global_path_);
 
 
@@ -171,9 +176,9 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
     threadLogger_->info("轨迹构型校验通过");
     // 曲率检查
-    cout << "输出轨迹点曲率" << endl;
+    cout << "轨迹点曲率" << endl;
     for (int i = 0; i < global_path_.size(); i++) {
-        cout << global_path_.at(i).curvature << " ";
+        cout << "(" << global_path_.at(i).x << "," << global_path_.at(i).y << ")   曲率：" << global_path_.at(i).curvature << endl;
     }
     cout << endl;
     for (int i = 0; i < global_path_.size() - 2; i++) {
@@ -785,6 +790,7 @@ void Planning::StartEndPointProcess() {
     last_point.curvature = 0;
     last_point.distance  = 0;
     last_point.direction = global_path_.back().direction;
+    last_point.attribute = global_path_.back().attribute;
     global_path_.push_back(last_point);
     threadLogger_->info("将规划终点作为最后一个点添加进global_path的末尾");
     threadLogger_->info("StartEndPointProcess 结束");
