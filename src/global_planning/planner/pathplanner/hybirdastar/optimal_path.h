@@ -16,6 +16,7 @@ Description: The header file for C++ class OptimalPath.
 #include "../../../math/helper.h"
 #include "../../../smoother/path_opti.h"
 // #include "../../../os/os.h" //包含所有所需标准头文件
+#include <ctime>
 #include <set>
 
 #include "../../../smoother/dynamicvoronoi.h"

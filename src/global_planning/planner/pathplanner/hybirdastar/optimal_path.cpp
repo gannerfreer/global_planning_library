@@ -1345,7 +1345,14 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
     float newG;
     threadLogger_->info("nodes2D_set_.size():{} ", nodes2D_set_.size());
     threadLogger_->info("nodes2D_map_.size():{} ", nodes2D_map_.size());
+    clock_t start_time = clock();
     while (!nodes2D_set_.empty()) {
+        clock_t current_time = clock();
+        double  elapsed_time = static_cast<double>(current_time - start_time) / CLOCKS_PER_SEC;
+
+        if (elapsed_time > 1.0) {
+            break;
+        }
         num++;
         threadLogger_->info("nodes2D_set_.size():{}", nodes2D_set_.size());
         threadLogger_->info("nodes2D_map_.size():{} ", nodes2D_map_.size());
