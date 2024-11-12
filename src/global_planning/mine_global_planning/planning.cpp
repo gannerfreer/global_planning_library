@@ -593,25 +593,35 @@ bool Planning::FollowReferencelinePlanning() {
     bool        searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
     double      end_search_radius = 1.0, start_search_radius = 0.5;
     vector<int> start_path_vec, end_path_vec;
+    cout << "开始进入起点、终点搜索环节" << endl;
     while (end_search_radius <= 1.0) {
+        cout << "end_search_radius:" << end_search_radius << endl;
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
             if (searched_flag == true) {
                 return false;
             }
             searched_flag = true;
             threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
+            cout << "终点搜索半径:" << end_search_radius << "  搜索到路径数量:  " << end_path_vec.size() << endl;
             threadLogger_->info("搜索到的路径ID信息如下");
+            cout << "搜索到的路径ID信息如下:" << endl;
             for (auto i : end_path_vec) {
                 threadLogger_->info(i);
+                cout << i << " ";
             }
+            cout << endl;
             start_search_radius = 0.5;
             while (start_search_radius <= 100) {
                 if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
                     threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius, start_path_vec.size());
                     threadLogger_->info("搜索到的路径ID信息如下");
+                    cout << "起点搜索半径：:" << start_search_radius << "  搜索到路径数量:  " << start_path_vec.size() << endl;
+                    cout << "搜索到的路径ID信息如下:" << endl;
                     for (auto i : start_path_vec) {
                         threadLogger_->info(i);
+                        cout << i << " ";
                     }
+                    cout << endl;
                     vector<int> start_path_vec_switch, end_path_vec_switch;
                     for (auto i : start_path_vec) {
                         start_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
@@ -632,6 +642,7 @@ bool Planning::FollowReferencelinePlanning() {
                             if (IsConnect(start, end)) {
                                 if (start >= 0 && start < sequence_mapping_.size() && end >= 0 && end < sequence_mapping_.size()) {
                                     threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
+                                    cout << "路径 " << sequence_mapping_.at(start) << " 与路径 " << sequence_mapping_.at(end) << " 联通" << endl;
                                 }
                                 success_pair.push_back(make_pair(start, end));
                                 // 如果找到的连通路径是顺向的就可以退出来，没必要继续扩大搜索了
@@ -640,6 +651,7 @@ bool Planning::FollowReferencelinePlanning() {
                                 threadLogger_->info("start:{},end:{}", start, end);
                                 if (start >= 0 && start < sequence_mapping_.size() && end >= 0 && end < sequence_mapping_.size()) {
                                     threadLogger_->info("路径{}与路径{}不联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
+                                    cout << "路径 " << sequence_mapping_.at(start) << " 与路径 " << sequence_mapping_.at(end) << " 不联通" << endl;
                                 }
                             }
                             v_has_calculate_pair_.push_back(pair(start, end));
@@ -648,13 +660,16 @@ bool Planning::FollowReferencelinePlanning() {
                 }
                 else {
                     threadLogger_->info("起点搜索半径{},无参考路径", start_search_radius);
+                    cout << "起点搜索半径" << start_search_radius << "无参考路径 " << endl;
                 }
                 start_search_radius += 0.5;
             }
         }
         else {
             threadLogger_->info("终点搜索,半径{}内无参考路径", end_search_radius);
+            cout << "终点搜索,半径" << start_search_radius << "内无参考路径 " << endl;
         }
+
         end_search_radius += 0.5;
     }
 
@@ -665,12 +680,15 @@ bool Planning::FollowReferencelinePlanning() {
     }
     else {
         threadLogger_->info("规划算法找到的成功路径对id如下：");
+        cout << "规划算法找到的成功路径对id如下：" << endl;
         for (int i = 0; i < success_pair.size(); i++) {
             threadLogger_->info("{},{}", sequence_mapping_.at(success_pair.at(i).first), sequence_mapping_.at(success_pair.at(i).second));
+            cout << sequence_mapping_.at(success_pair.at(i).first) << "  " << sequence_mapping_.at(success_pair.at(i).second) << endl;
         }
     }
 
     threadLogger_->info("从中挑选最优秀的一对");
+    cout << "从中挑选最优秀的一对" << endl;
     // 从success_pair中挑选最优的路径对
     int                               min = INT_MAX;
     pair<int, int>                    best_pair;
@@ -679,6 +697,7 @@ bool Planning::FollowReferencelinePlanning() {
         record.push_back(pair<pair<int, int>, int>(success_pair.at(i), 0));
     }
     threadLogger_->info("初始化recrod完毕");
+    cout << "初始化recrod完毕" << endl;
     float       cost1, cost2, cost3 = 0;
     _SingleTraj temp_start_traj, temp_end_traj;
     int         temp_start_key, temp_end_key;
@@ -704,9 +723,10 @@ bool Planning::FollowReferencelinePlanning() {
         cost3    = ReferencelineTotalDis(i.first, temp_start_index, temp_end_index);
         i.second = cost1 + cost2 + cost3;
         threadLogger_->info("路径对 {}--{}  cost1: {}  cost2: {}  cost3: {}  total_cost:{}", sequence_mapping_.at(i.first.first), sequence_mapping_.at(i.first.second), cost1, cost2, cost3, cost1 + cost2 + cost3);
+        cout << "路径对" << sequence_mapping_.at(i.first.first) << "--" << sequence_mapping_.at(i.first.second) << "  cost1:" << cost1 << " cost2:" << cost2 << " cost3:" << cost3 << endl;
     }
     threadLogger_->info("计算代价完毕");
-
+    cout << "计算代价完毕" << endl;
     float min_cost  = FLT_MAX;
     int   min_index = -1;
     for (int i = 0; i < record.size(); i++) {
@@ -716,15 +736,18 @@ bool Planning::FollowReferencelinePlanning() {
         }
     }
     threadLogger_->info("min_index:{}", min_index);
+    cout << "min_index:" << min_index << endl;
     best_pair.first  = record.at(min_index).first.first;
     best_pair.second = record.at(min_index).first.second;
     threadLogger_->info("找到的最优路径对：{} --{}", best_pair.first, best_pair.second);
+    cout << "找到的最优路径对 " << best_pair.first << "  " << best_pair.second << endl;
 
     dijkstra_.searchpath(best_pair.first, best_pair.second);
     road_sequence_ = dijkstra_.GetPath();
 
 
     threadLogger_->info("找到路径对{}-{}", sequence_mapping_.at(best_pair.first), sequence_mapping_.at(best_pair.second));
+    cout << "找到路径对" << sequence_mapping_.at(best_pair.first) << "   " << sequence_mapping_.at(best_pair.second) << endl;
     // 找到起点、终点对应的索引及其横纵向距离
 
 
@@ -736,6 +759,8 @@ bool Planning::FollowReferencelinePlanning() {
     Helper::CalNearestIndex(end_point_, temp_end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_, end_angle_diff_);
     threadLogger_->info("起点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", start_index_, start_lat_dis_, start_lon_dis_, start_angle_diff_ / M_PI * 180.0);
     threadLogger_->info("终点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", end_index_, end_lat_dis_, end_lon_dis_, end_angle_diff_ / M_PI * 180.0);
+    cout << "起点匹配上的路径索引" << start_index_ << " 横向距离" << start_lat_dis_ << " 纵向距离" << start_lon_dis_ << " 角度误差" << start_angle_diff_ / M_PI * 180.0 << endl;
+    cout << "终点匹配上的路径索引" << end_index_ << " 横向距离" << end_lat_dis_ << "  纵向距离" << end_lon_dis_ << " 角度误差" << end_angle_diff_ / M_PI * 180.0 << endl;
 
     // 路径裁剪拼接
     PathClipAndSplice();
