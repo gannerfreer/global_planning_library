@@ -31,6 +31,14 @@ class GlobalVariable // 单例类
     }
     static int BinarySearch(const vector<int>& input_vec, int target);
 
+    const void ClearData() {
+        map_border_.clear();
+        all_referencelines_.clear();
+        referenceline_relation_.clear();
+        referenceline_graph_.clear();
+        sequence_mapping_.clear(); // 序列映射关系
+    }
+
     const std::vector<_BorderPoint>& GetMapBorder() const {
         return map_border_;
     }

@@ -726,7 +726,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.5.20241110_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.6.20241112_beta" << endl;
         record.close();
     }
 
@@ -742,6 +742,9 @@ bool GetMap(char* parea) {
     }
     doc.GetAllocator();
 
+    // 清空所有的地图边界、参考路径、relation、
+
+    GlobalVariable::getInstance()->ClearData();
 
     // 解析border_points
     const Value&         borderPointsArray = doc["external_border"];
