@@ -522,7 +522,7 @@ bool Planning::PathPlanning() {
     end_point_.yaw   = end_point_.yaw / 180.0 * M_PI;
     threadLogger_->info(" task_type_: {}", (int)task_type_);
 
-    if (task_type_ == TaskType::TEMP_MOVE_CAR) {
+    if (task_type_ != TaskType::DISPATCH) {
         // 临时挪车不走参考路径
         threadLogger_->info("挪车、装载、卸载");
         if (!NotFollowReferencelinePlanning()) {

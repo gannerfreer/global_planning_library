@@ -102,14 +102,15 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         SmoothPath();
         CalculatePathAngle();
         auto collision_point  = collison_check.OptiPathCollisionCheck(new_path_); // 判断优化路径是否碰撞
-        bool curvature_exceed = CurvatureCheck();
-        if (true == collision_point.empty()) // 若无碰撞且曲率不超标
+        auto curvature_exceed = CurvatureCheck();
+        if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
         {
             break;
         }
-        else // 否则固定碰撞点，继续优化
+        else // 否则固定碰撞点和曲率超标点，继续优化
         {
             UpdateFixPointSet(collision_point);
+            UpdateFixPointSet(curvature_exceed);
         }
     }
 
@@ -121,17 +122,19 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     // }
     // file_out.close();
 }
-bool Path_Opti::CurvatureCheck() {
+vector<unsigned int> Path_Opti::CurvatureCheck() {
     CalCurvature(new_path_);
+    vector<unsigned int> curvature_exceed_point;
+    curvature_exceed_point.clear();
     for (unsigned int i = 0; i < new_path_.size(); i++) {
         double curvature = new_path_.at(i).curvature;
         if (fabs(curvature) > m_vehicle_param_.curvature_threshold) {
             threadLogger_->info("i:{}  curvature:{}  优化过程中曲率超标,曲率阈值：{}", i, curvature, m_vehicle_param_.curvature_threshold);
-            return true;
+            curvature_exceed_point.push_back(i);
         }
     }
     threadLogger_->info("本次优化曲率达标,曲率阈值：{}", m_vehicle_param_.curvature_threshold);
-    return false;
+    return curvature_exceed_point;
 }
 void Path_Opti::CalCurvature(Path& path_) {
     Point  delta_xi;   // Δxi
@@ -241,10 +244,10 @@ void Path_Opti::GetFixPointIndex() {
  *@param
  *return
  */
-void Path_Opti::UpdateFixPointSet(const vector<unsigned int> cllision_point) {
-    // 将所有碰撞点变为固定点
-    for (unsigned int i = 0; i < cllision_point.size(); i++) {
-        unsigned int index = cllision_point.at(i);
+void Path_Opti::UpdateFixPointSet(const vector<unsigned int> points) {
+    // 将所有碰撞点和曲率超标的点变为固定点
+    for (unsigned int i = 0; i < points.size(); i++) {
+        unsigned int index = points.at(i);
         fixpoint_set_.insert(index);
     }
 }

@@ -57,7 +57,7 @@ class Path_Opti {
      * false: 优化失败
      */
     void                            OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collisonCheck, _VehicleParam m_vehicle_param);
-    bool                            CurvatureCheck();
+    vector<unsigned int>            CurvatureCheck();
     void                            CalCurv(Path& traj);
     void                            CalCurvature(Path& new_path_);
     void                            CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
@@ -92,7 +92,7 @@ class Path_Opti {
      * @param[in] cllision_point 碰撞点索引集
      * @return 返回说明：
      */
-    void UpdateFixPointSet(const vector<unsigned int> cllision_point);
+    void UpdateFixPointSet(const vector<unsigned int> points);
     /**
      * @brief 路径优化核心函数
      * @return 返回说明：无
