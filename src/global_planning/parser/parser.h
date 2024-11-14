@@ -65,14 +65,6 @@ _TarStartEnd ParseJson(char* str) {
         if (val.IsObject()) {
             // 车辆参数
 
-            if (val.HasMember("is_day")) {
-                veh_start_end.veh_param.is_day = val["is_day"].GetBool();
-                cout << "veh_start_end.veh_param.is_day " << veh_start_end.veh_param.is_day << endl;
-            }
-            else {
-                veh_start_end.veh_param.is_day = true;
-                cout << "无法找到车参 is_day ，即将赋予默认值" << endl;
-            }
 
             if (val.HasMember("radious")) {
                 veh_start_end.veh_param.radious = val["radious"].GetDouble();
@@ -474,15 +466,6 @@ _TarStartEnd ParseJson(char* str) {
             }
 
 
-            if (val.HasMember("weather")) {
-                veh_start_end.veh_param.weather = val["weather"].GetBool();
-                cout << "veh_start_end.veh_param.weather " << veh_start_end.veh_param.weather << endl;
-            }
-            else {
-                cout << "无法找到车参 weather" << endl;
-                veh_start_end.veh_param.weather = true;
-            }
-
             if (val.HasMember("start_offset_distance")) {
                 veh_start_end.veh_param.start_offset_distance = val["start_offset_distance"].GetFloat();
                 cout << "veh_start_end.veh_param.start_offset_distance " << veh_start_end.veh_param.start_offset_distance << endl;
@@ -526,6 +509,23 @@ _TarStartEnd ParseJson(char* str) {
             else {
                 cout << "无法找到车参 curvature_threshold ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.curvature_threshold = 0.1;
+            }
+
+            if (val.HasMember("speed_limit_level")) {
+                veh_start_end.veh_param.speed_limit_level = static_cast<SpeedLimitLevel>(val["speed_limit_level"].GetUint());
+                cout << "veh_start_end.veh_param.speed_limit_level " << static_cast<int>(veh_start_end.veh_param.speed_limit_level) << endl;
+            }
+            else {
+                cout << "无法找到车参 speed_limit_level ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.speed_limit_level = SpeedLimitLevel::three;
+            }
+
+            if (val.HasMember("load_point_offset_distance")) {
+                veh_start_end.veh_param.load_point_offset_distance = val["load_point_offset_distance"].GetUint();
+            }
+            else {
+                cout << "无法找到车参 load_point_offset_distance ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.load_point_offset_distance = 8;
             }
         }
     }

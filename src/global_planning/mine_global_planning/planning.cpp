@@ -92,6 +92,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
 
     threadLogger_->info("global_path_.size():{}", global_path_.size());
+    Helper::CalCurv(global_path_);
+    threadLogger_->info("执行均匀碾压前路径点曲率");
+    for (auto i : global_path_) {
+        threadLogger_->info("{} {} {}", i.x, i.y, i.curvature);
+    }
+
 
     // 均匀碾压：对除了过磅、洗车和倒车之外的路段进行横向偏移
     if (vehicle_param_.uniform_compaction_enable == true) {
@@ -480,16 +486,15 @@ bool Planning::RandomOffsetWithoutCuravture() {
                 }
             }
         }
-
-
-    } while (!Helper::CheckCurvature(global_path_, vehicle_param_.curvature_threshold)); // 碰撞检测通过、曲率校验通过
+    } while (false); // 碰撞检测通过、曲率校验通过
+    // } while (!Helper::CheckCurvature(global_path_, vehicle_param_.curvature_threshold)); // 碰撞检测通过、曲率校验通过
     threadLogger_->info("找到合适的权重：{}", weight);
 
     return true;
 }
 
 float Planning::CalculateOffSetWithoutCuravture(int index, int sum, float weight) {
-    float L = 0.5 * weight; // 控制默认偏移量
+    float L = 0.2 * weight; // 控制默认偏移量
     L       = L * WeightFunction(index, sum);
     return L;
 }
@@ -517,7 +522,7 @@ bool Planning::PathPlanning() {
     end_point_.yaw   = end_point_.yaw / 180.0 * M_PI;
     threadLogger_->info(" task_type_: {}", (int)task_type_);
 
-    if (task_type_ != TaskType::DISPATCH) {
+    if (task_type_ == TaskType::TEMP_MOVE_CAR) {
         // 临时挪车不走参考路径
         threadLogger_->info("挪车、装载、卸载");
         if (!NotFollowReferencelinePlanning()) {
@@ -554,7 +559,8 @@ bool Planning::NotFollowReferencelinePlanning() {
     }
     else if (task_type_ == TaskType::LOAD) { // 装载任务，先纯倒车，纯倒车不行再往前开，再倒车
         threadLogger_->info("装载");
-        vehicle_param_.end_offset_distance = 8.0; // 装载任务，最后倒车进去的轨迹必须是一条8m的直线
+        vehicle_param_.end_offset_distance = vehicle_param_.load_point_offset_distance; // 装载任务，最后倒车进去的轨迹必须是一条8m的直线
+        threadLogger_->info("load_point_offset_distance:{}", vehicle_param_.end_offset_distance);
         if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_1, time_threshold)) {
             threadLogger_->info("纯倒车失败，换成先前进，再后退规则");
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, rule_id_3, time_threshold)) {
@@ -836,6 +842,11 @@ bool Planning::PathOffset() {
         }
         if (global_path_.at(i).direction == 1) {
             global_path_.at(i).offset_flag = false; // 将倒车的路段offset_flag也设置为false,即不需要进行偏移
+        }
+
+        // 曲率超标的部分也不偏移
+        if (global_path_.at(i).curvature > 0.07) {
+            global_path_.at(i).offset_flag = false;
         }
     }
 

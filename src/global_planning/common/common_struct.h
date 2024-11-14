@@ -32,13 +32,11 @@ namespace GlobalPlanning {
 const double eps = 1e-8;
 // 当前车辆任务类型
 enum struct TaskType : unsigned int {
-
     RESERVED      = 0,
     TEMP_MOVE_CAR = 1, // 临时挪车
     DISPATCH      = 2, // 常规调度
     LOAD          = 3, // 装载
     UNLOAD        = 4  // 卸载
-
 };
 enum struct ErrorType : unsigned int {
     SUCCESS,
@@ -63,6 +61,13 @@ enum struct PointAttribute : unsigned int {
     dump_road,         // 颠簸路
     weight_point,      // 过磅
     clean_point        // 洗车
+};
+
+enum struct SpeedLimitLevel : unsigned int {
+    reserve = 0,
+    one     = 1, // 一级限速
+    two     = 2, // 二级限速
+    three   = 3  // 三级限速
 };
 
 struct _TrajectoryPoint {
@@ -160,7 +165,6 @@ struct _VehicleParam {
     float        slope_road_speed_limit;
     float        narrow_road_speed_limit;
     float        intersection_road_speed_limit;
-    bool         weather;
     unsigned int task_type;
     unsigned int vehicle_code;
 
@@ -206,8 +210,10 @@ struct _VehicleParam {
     float path_voronoi_term;
     /*曲率校验阈值*/
     float curvature_threshold;
-    bool  is_day;
     bool  is_light;
+
+    SpeedLimitLevel speed_limit_level          = SpeedLimitLevel::three;
+    int             load_point_offset_distance = 8;
 };
 
 // 调用全局规划时，需要传入的参数

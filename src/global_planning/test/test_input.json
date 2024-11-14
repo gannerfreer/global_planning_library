@@ -13,9 +13,7 @@
         "endPointId": -1
     },
     "m_Veh_Param": {
-        "is_day": true,
         "radious": 13,
-        "weather": true,
         "is_light": true,
         "grid_dist": 1,
         "max_kappa": 0.07,
@@ -64,7 +62,8 @@
         "veh_center_2_rear_obstacle": 2.77,
         "intersection_road_speed_limit": 2.06,
         "offset_distance": 4,
-        "vehicle_code": 1006
+        "vehicle_code": 1006,
+        "speed_limit_level": 3
     },
     "task_type": 3,
     "Inner_Borders": [

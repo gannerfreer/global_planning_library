@@ -386,6 +386,11 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     utility::CTimeClock init_time;
     InitOpenClose();                                                                        // 初始化open集和close集
     long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time); // 开始时间精确到微秒
+    if (init_time_end > 1000000) {
+        threadLogger_->info("InitOpenClose()函数执行超时");
+        cout << "InitOpenClose()函数执行超时" << endl;
+        return PlanResult::Plan_Overtime;
+    }
     threadLogger_->info("InitOpenClose 耗时:{} ms", init_time_end * 0.001);
 
 
@@ -401,6 +406,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     while (!open_map_f_.empty()) {
         long long cal_time = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time); // 开始时间精确到微秒
         threadLogger_->info("open_map_f_.size():{}", open_map_f_.size());
+        cout << "open_map_f_.size():" << open_map_f_.size() << endl;
         if (cal_time > timeThreshold) // 若超过最大迭代次数则直接返回
         {
             threadLogger_->info("A star overtime!, timeThreshold:{} ms,AStarPath while循环已经被调用: {} 次", timeThreshold * 0.001, sum);

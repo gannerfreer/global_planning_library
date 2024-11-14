@@ -727,15 +727,39 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
     double b                             = 0.6; // b表示一级限速到三级限速之间的缩放比例
     double c                             = 0.7; // c表示轻载到重载之间的缩放比例
 
-    if (vehicle_param.weather == true && vehicle_param.is_day == true) { // 晴天+白天【一级限速】
-        threadLogger_->info("晴天+白天【一级限速】");
+    // if (vehicle_param.weather == true && vehicle_param.is_day == true) { // 晴天+白天【一级限速】
+    //     threadLogger_->info("晴天+白天【一级限速】");
+    //     regular_road_speed_limit      = vehicle_param.regular_road_speed_limit;
+    //     narrow_road_speed_limit       = vehicle_param.narrow_road_speed_limit;
+    //     intersection_road_speed_limit = vehicle_param.intersection_road_speed_limit;
+    //     slope_road_speed_limit        = vehicle_param.slope_road_speed_limit;
+    //     bumpy_road_speed_limit        = vehicle_param.bumpy_road_speed_limit;
+    // }
+    // else if ((vehicle_param.weather == true && vehicle_param.is_day == false) || (vehicle_param.weather == false && vehicle_param.is_day == true)) { // 晴天+晚上      雨天+白天 【二级限速】
+    //     threadLogger_->info("晴天+晚上      雨天+白天 【二级限速】");
+    //     regular_road_speed_limit      = a * vehicle_param.regular_road_speed_limit;
+    //     narrow_road_speed_limit       = a * vehicle_param.narrow_road_speed_limit;
+    //     intersection_road_speed_limit = a * vehicle_param.intersection_road_speed_limit;
+    //     slope_road_speed_limit        = a * vehicle_param.slope_road_speed_limit;
+    //     bumpy_road_speed_limit        = a * vehicle_param.bumpy_road_speed_limit;
+    // }
+    // else { // 雨天+晚上 【三级限速】
+    //     threadLogger_->info("雨天+晚上 【三级限速】");
+    //     regular_road_speed_limit      = b * vehicle_param.regular_road_speed_limit;
+    //     narrow_road_speed_limit       = b * vehicle_param.narrow_road_speed_limit;
+    //     intersection_road_speed_limit = b * vehicle_param.intersection_road_speed_limit;
+    //     slope_road_speed_limit        = b * vehicle_param.slope_road_speed_limit;
+    //     bumpy_road_speed_limit        = b * vehicle_param.bumpy_road_speed_limit;
+    // }
+    if (vehicle_param.speed_limit_level == SpeedLimitLevel::three) { // 晴天+白天【三级限速】
+        threadLogger_->info("晴天+白天【三级限速】");
         regular_road_speed_limit      = vehicle_param.regular_road_speed_limit;
         narrow_road_speed_limit       = vehicle_param.narrow_road_speed_limit;
         intersection_road_speed_limit = vehicle_param.intersection_road_speed_limit;
         slope_road_speed_limit        = vehicle_param.slope_road_speed_limit;
         bumpy_road_speed_limit        = vehicle_param.bumpy_road_speed_limit;
     }
-    else if ((vehicle_param.weather == true && vehicle_param.is_day == false) || (vehicle_param.weather == false && vehicle_param.is_day == true)) { // 晴天+晚上      雨天+白天 【二级限速】
+    else if (vehicle_param.speed_limit_level == SpeedLimitLevel::two) { // 晴天+晚上      雨天+白天 【二级限速】
         threadLogger_->info("晴天+晚上      雨天+白天 【二级限速】");
         regular_road_speed_limit      = a * vehicle_param.regular_road_speed_limit;
         narrow_road_speed_limit       = a * vehicle_param.narrow_road_speed_limit;
@@ -743,14 +767,15 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
         slope_road_speed_limit        = a * vehicle_param.slope_road_speed_limit;
         bumpy_road_speed_limit        = a * vehicle_param.bumpy_road_speed_limit;
     }
-    else { // 雨天+晚上 【三级限速】
-        threadLogger_->info("雨天+晚上 【三级限速】");
+    else { // 雨天+晚上 【一级限速】
+        threadLogger_->info("雨天+晚上 【一级限速】");
         regular_road_speed_limit      = b * vehicle_param.regular_road_speed_limit;
         narrow_road_speed_limit       = b * vehicle_param.narrow_road_speed_limit;
         intersection_road_speed_limit = b * vehicle_param.intersection_road_speed_limit;
         slope_road_speed_limit        = b * vehicle_param.slope_road_speed_limit;
         bumpy_road_speed_limit        = b * vehicle_param.bumpy_road_speed_limit;
     }
+
 
     if (vehicle_param.is_light == 0) {
         threadLogger_->info("重载");
