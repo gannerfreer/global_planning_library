@@ -212,8 +212,9 @@ struct _VehicleParam {
     float curvature_threshold;
     bool  is_light;
 
-    SpeedLimitLevel speed_limit_level          = SpeedLimitLevel::three;
-    int             load_point_offset_distance = 8;
+    SpeedLimitLevel speed_limit_level                = SpeedLimitLevel::three;
+    int             load_point_end_offset_distance   = 8;
+    int             load_point_start_offset_distance = 4;
 };
 
 // 调用全局规划时，需要传入的参数

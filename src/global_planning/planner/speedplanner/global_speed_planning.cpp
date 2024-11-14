@@ -112,6 +112,8 @@ bool GlobalSpeedPlanning::PlanCase0(const int departure_time) {
         SpeedCurveInterpolation(i);
     }
     AddTimeInformation(departure_time);
+
+
     final_trajectory_points.clear();
     for (unsigned char i = 0; i < key_points.size(); i++) {
         for (int j = 0; j < trajectory_fragments.at(i).size(); j++) {

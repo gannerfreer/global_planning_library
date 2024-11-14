@@ -258,7 +258,7 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
                     temp = -1.0;
                 }
                 dphi = acos(temp); // 通过向量积求出两向量之间夹角
-                cout << "(" << traj.at(i - 1).x << "," << traj.at(i - 1).y << ")  ->(" << traj.at(i).x << "," << traj.at(i).y << ")之间的角度变化 ：" << dphi / M_PI * 180.0 << "两者之间距离：" << norm_delta_xi << endl;
+                // cout << "(" << traj.at(i - 1).x << "," << traj.at(i - 1).y << ")  ->(" << traj.at(i).x << "," << traj.at(i).y << ")之间的角度变化 ：" << dphi / M_PI * 180.0 << "两者之间距离：" << norm_delta_xi << endl;
                 double cross_product = delta_xi.x * delta_xip1.y - delta_xi.y * delta_xip1.x;
                 if (cross_product > 0)
                     kappa = dphi / norm_delta_xi;
@@ -407,6 +407,26 @@ inline double mod(double x, double y) {
     int    c = floor(x / y);
     double d = x - c * y;
     return d;
+}
+
+
+// 计算加速度的函数
+inline void calculateAcceleration(const std::vector<_TrajectoryPoint>& v_points) {
+    if (v_points.size() < 2) {
+        std::cout << "至少需要两个点才能计算加速度" << std::endl;
+        return;
+    }
+
+    for (size_t i = 1; i < v_points.size(); ++i) {
+        const _TrajectoryPoint& prevPoint        = v_points[i - 1];
+        const _TrajectoryPoint& currentPoint     = v_points[i];
+        double                  distance         = hypot(prevPoint.x - currentPoint.x, prevPoint.y - currentPoint.y);
+        double                  speedSquaredDiff = currentPoint.speed * currentPoint.speed - prevPoint.speed * prevPoint.speed;
+
+        double acceleration = speedSquaredDiff / 2 * distance;
+
+        std::cout << "点(" << currentPoint.x << ", " << currentPoint.y << ") 的加速度为: " << acceleration << std::endl;
+    }
 }
 
 

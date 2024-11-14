@@ -58,15 +58,12 @@ _TarStartEnd ParseJson(char* str) {
             if (val.HasMember("yaw")) veh_start_end.end_point.yaw = val["yaw"].GetFloat();
         }
     }
-
     if (doc.HasMember("m_Veh_Param")) {
         cout << "解析 m_Veh_Param 中" << endl;
         Value& val = doc["m_Veh_Param"];
         if (val.IsObject()) {
             // 车辆参数
-
-
-            if (val.HasMember("radious")) {
+            if (val.HasMember("radious") && val["radious"].IsNumber()) {
                 veh_start_end.veh_param.radious = val["radious"].GetDouble();
                 cout << "veh_start_end.veh_param.radious " << veh_start_end.veh_param.radious << endl;
             }
@@ -75,7 +72,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 radious ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("wheel_base")) {
+            if (val.HasMember("wheel_base") && val["wheel_base"].IsNumber()) {
                 veh_start_end.veh_param.wheel_base = val["wheel_base"].GetDouble();
                 cout << "veh_start_end.veh_param.wheel_base " << veh_start_end.veh_param.wheel_base << endl;
             }
@@ -84,7 +81,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 wheel_base ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("max_steering")) {
+            if (val.HasMember("max_steering") && val["max_steering"].IsNumber()) {
                 veh_start_end.veh_param.max_steering = val["max_steering"].GetDouble() * M_PI / 180.0;
                 cout << "veh_start_end.veh_param.max_steering " << veh_start_end.veh_param.max_steering << endl;
             }
@@ -93,7 +90,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 max_steering ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("min_steering")) {
+            if (val.HasMember("min_steering") && val["min_steering"].IsNumber()) {
                 veh_start_end.veh_param.min_steering = val["min_steering"].GetDouble() * M_PI / 180.0;
                 cout << "veh_start_end.veh_param.min_steering " << veh_start_end.veh_param.min_steering << endl;
             }
@@ -102,7 +99,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 min_steering ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("safe_margin_bound")) {
+            if (val.HasMember("safe_margin_bound") && val["safe_margin_bound"].IsNumber()) {
                 veh_start_end.veh_param.safe_margin_bound = val["safe_margin_bound"].GetDouble();
                 cout << "veh_start_end.veh_param.safe_margin_bound " << veh_start_end.veh_param.safe_margin_bound << endl;
             }
@@ -111,7 +108,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 safe_margin_bound ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("veh_center_2_side")) {
+            if (val.HasMember("veh_center_2_side") && val["veh_center_2_side"].IsNumber()) {
                 veh_start_end.veh_param.veh_center_2_side = val["veh_center_2_side"].GetDouble();
                 cout << "veh_start_end.veh_param.veh_center_2_side " << veh_start_end.veh_param.veh_center_2_side << endl;
             }
@@ -120,7 +117,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 veh_center_2_side ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("veh_center_2_front")) {
+            if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
                 veh_start_end.veh_param.veh_center_2_front = val["veh_center_2_front"].GetDouble();
                 cout << "veh_start_end.veh_param.veh_center_2_front " << veh_start_end.veh_param.veh_center_2_front << endl;
             }
@@ -129,7 +126,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 veh_center_2_front ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("safe_margin_obstacle")) {
+            if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {
                 veh_start_end.veh_param.safe_margin_obstacle = val["safe_margin_obstacle"].GetDouble();
                 cout << "veh_start_end.veh_param.safe_margin_obstacle " << veh_start_end.veh_param.safe_margin_obstacle << endl;
             }
@@ -138,7 +135,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("veh_center_2_rear_bound")) {
+            if (val.HasMember("veh_center_2_rear_bound") && val["veh_center_2_rear_bound"].IsNumber()) {
                 veh_start_end.veh_param.veh_center_2_rear_bound = val["veh_center_2_rear_bound"].GetDouble();
                 cout << "veh_start_end.veh_param.veh_center_2_rear_bound " << veh_start_end.veh_param.veh_center_2_rear_bound << endl;
             }
@@ -147,7 +144,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("veh_center_2_rear_obstacle")) {
+            if (val.HasMember("veh_center_2_rear_obstacle") && val["veh_center_2_rear_obstacle"].IsNumber()) {
                 veh_start_end.veh_param.veh_center_2_rear_obstacle = val["veh_center_2_rear_obstacle"].GetDouble();
                 cout << "veh_start_end.veh_param.veh_center_2_rear_obstacle " << veh_start_end.veh_param.veh_center_2_rear_obstacle << endl;
             }
@@ -156,7 +153,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 veh_center_2_rear_obstacle ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("delta_dist")) {
+            if (val.HasMember("delta_dist") && val["delta_dist"].IsNumber()) {
                 veh_start_end.veh_param.delta_dist = val["delta_dist"].GetDouble();
                 cout << "veh_start_end.veh_param.delta_dist " << veh_start_end.veh_param.delta_dist << endl;
             }
@@ -165,7 +162,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 delta_dist ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("grid_dist")) {
+            if (val.HasMember("grid_dist") && val["grid_dist"].IsNumber()) {
                 veh_start_end.veh_param.grid_dist = val["grid_dist"].GetDouble();
                 cout << "veh_start_end.veh_param.grid_dist " << veh_start_end.veh_param.grid_dist << endl;
             }
@@ -174,7 +171,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 grid_dist ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("max_kappa")) {
+            if (val.HasMember("max_kappa") && val["max_kappa"].IsNumber()) {
                 veh_start_end.veh_param.max_kappa = val["max_kappa"].GetDouble();
                 cout << "veh_start_end.veh_param.max_kappa " << veh_start_end.veh_param.max_kappa << endl;
             }
@@ -183,7 +180,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 max_kappa ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("path_error_term")) {
+            if (val.HasMember("path_error_term") && val["path_error_term"].IsNumber()) {
                 veh_start_end.veh_param.path_error_term = val["path_error_term"].GetDouble();
                 cout << "veh_start_end.veh_param.path_error_term " << veh_start_end.veh_param.path_error_term << endl;
             }
@@ -192,7 +189,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 path_error_term ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("grid_angle")) {
+            if (val.HasMember("grid_angle") && val["grid_angle"].IsNumber()) {
                 veh_start_end.veh_param.grid_angle = val["grid_angle"].GetDouble() * M_PI / 180.0;
                 cout << "veh_start_end.veh_param.grid_angle " << veh_start_end.veh_param.grid_angle << endl;
             }
@@ -201,7 +198,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 grid_angle ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("hybridastar_step_length")) {
+            if (val.HasMember("hybridastar_step_length") && val["hybridastar_step_length"].IsNumber()) {
                 veh_start_end.veh_param.hybridastar_step_length = val["hybridastar_step_length"].GetDouble();
                 cout << "veh_start_end.veh_param.hybridastar_step_length " << veh_start_end.veh_param.hybridastar_step_length << endl;
             }
@@ -210,7 +207,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 hybridastar_step_length ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("path_curvature_term")) {
+            if (val.HasMember("path_curvature_term") && val["path_curvature_term"].IsNumber()) {
                 veh_start_end.veh_param.path_curvature_term = val["path_curvature_term"].GetDouble();
                 cout << "veh_start_end.veh_param.path_curvature_term " << veh_start_end.veh_param.path_curvature_term << endl;
             }
@@ -219,7 +216,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 path_curvature_term ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("switch_penalty")) {
+            if (val.HasMember("switch_penalty") && val["switch_penalty"].IsNumber()) {
                 veh_start_end.veh_param.switch_penalty = val["switch_penalty"].GetDouble();
                 cout << "veh_start_end.veh_param.switch_penalty " << veh_start_end.veh_param.switch_penalty << endl;
             }
@@ -228,7 +225,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 switch_penalty ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("forward_penalty")) {
+            if (val.HasMember("forward_penalty") && val["forward_penalty"].IsNumber()) {
                 veh_start_end.veh_param.forward_penalty = val["forward_penalty"].GetDouble();
                 cout << "veh_start_end.veh_param.forward_penalty " << veh_start_end.veh_param.forward_penalty << endl;
             }
@@ -237,7 +234,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 forward_penalty ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("rs_min_path_length")) {
+            if (val.HasMember("rs_min_path_length") && val["rs_min_path_length"].IsNumber()) {
                 veh_start_end.veh_param.rs_min_path_length = val["rs_min_path_length"].GetDouble();
                 cout << "veh_start_end.veh_param.rs_min_path_length " << veh_start_end.veh_param.rs_min_path_length << endl;
             }
@@ -246,7 +243,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 rs_min_path_length ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("end_offset_distance")) {
+            if (val.HasMember("end_offset_distance") && val["end_offset_distance"].IsNumber()) {
                 veh_start_end.veh_param.end_offset_distance = val["end_offset_distance"].GetDouble();
                 cout << "veh_start_end.veh_param.end_offset_distance " << veh_start_end.veh_param.end_offset_distance << endl;
             }
@@ -255,7 +252,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 end_offset_distance ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("path_smoothness_term")) {
+            if (val.HasMember("path_smoothness_term") && val["path_smoothness_term"].IsNumber()) {
                 veh_start_end.veh_param.path_smoothness_term = val["path_smoothness_term"].GetDouble();
                 cout << "veh_start_end.veh_param.path_smoothness_term " << veh_start_end.veh_param.path_smoothness_term << endl;
             }
@@ -264,7 +261,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 path_smoothness_term ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("backward_penalty")) {
+            if (val.HasMember("backward_penalty") && val["backward_penalty"].IsNumber()) {
                 veh_start_end.veh_param.backward_penalty = val["backward_penalty"].GetDouble();
                 cout << "veh_start_end.veh_param.backward_penalty " << veh_start_end.veh_param.backward_penalty << endl;
             }
@@ -273,7 +270,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 backward_penalty ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("turnning_penalty")) {
+            if (val.HasMember("turnning_penalty") && val["turnning_penalty"].IsNumber()) {
                 veh_start_end.veh_param.turnning_penalty = val["turnning_penalty"].GetDouble();
                 cout << "veh_start_end.veh_param.turnning_penalty " << veh_start_end.veh_param.turnning_penalty << endl;
             }
@@ -282,7 +279,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 turnning_penalty ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("angle_discrete_num")) {
+            if (val.HasMember("angle_discrete_num") && val["angle_discrete_num"].IsNumber()) {
                 veh_start_end.veh_param.angle_discrete_num = val["angle_discrete_num"].GetUint();
                 cout << "veh_start_end.veh_param.angle_discrete_num " << veh_start_end.veh_param.angle_discrete_num << endl;
             }
@@ -291,7 +288,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 angle_discrete_num ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("max_fitting_radius")) {
+            if (val.HasMember("max_fitting_radius") && val["max_fitting_radius"].IsNumber()) {
                 veh_start_end.veh_param.max_fitting_radius = val["max_fitting_radius"].GetDouble();
                 cout << "veh_start_end.veh_param.max_fitting_radius " << veh_start_end.veh_param.max_fitting_radius << endl;
             }
@@ -300,7 +297,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 max_fitting_radius ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("max_iterations_opti")) {
+            if (val.HasMember("max_iterations_opti") && val["max_iterations_opti"].IsNumber()) {
                 veh_start_end.veh_param.max_iterations_opti = val["max_iterations_opti"].GetDouble();
                 cout << "veh_start_end.veh_param.max_iterations_opti " << veh_start_end.veh_param.max_iterations_opti << endl;
             }
@@ -310,7 +307,7 @@ _TarStartEnd ParseJson(char* str) {
             }
 
 
-            if (val.HasMember("backward_search_range")) {
+            if (val.HasMember("backward_search_range") && val["backward_search_range"].IsNumber()) {
                 veh_start_end.veh_param.backward_search_range = val["backward_search_range"].GetDouble();
                 cout << "veh_start_end.veh_param.backward_search_range " << veh_start_end.veh_param.backward_search_range << endl;
             }
@@ -319,7 +316,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 backward_search_range ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("cusp_extension_distance")) {
+            if (val.HasMember("cusp_extension_distance") && val["cusp_extension_distance"].IsNumber()) {
                 veh_start_end.veh_param.cusp_extension_distance = val["cusp_extension_distance"].GetFloat();
                 cout << "veh_start_end.veh_param.cusp_extension_distance " << veh_start_end.veh_param.cusp_extension_distance << endl;
             }
@@ -328,7 +325,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 cusp_extension_distance ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("linear_preferred_distance")) {
+            if (val.HasMember("linear_preferred_distance") && val["linear_preferred_distance"].IsNumber()) {
                 veh_start_end.veh_param.linear_preferred_distance = val["linear_preferred_distance"].GetDouble();
                 cout << "veh_start_end.veh_param.linear_preferred_distance " << veh_start_end.veh_param.linear_preferred_distance << endl;
             }
@@ -337,7 +334,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 linear_preferred_distance ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("safe_margin_error")) {
+            if (val.HasMember("safe_margin_error") && val["safe_margin_error"].IsNumber()) {
                 veh_start_end.veh_param.safe_margin_error = val["safe_margin_error"].GetDouble();
                 cout << "veh_start_end.veh_param.safe_margin_error " << veh_start_end.veh_param.safe_margin_error << endl;
             }
@@ -346,7 +343,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 safe_margin_error ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("speed_error_term")) {
+            if (val.HasMember("speed_error_term") && val["speed_error_term"].IsNumber()) {
                 veh_start_end.veh_param.speed_error_term = val["speed_error_term"].GetFloat();
                 cout << "veh_start_end.veh_param.speed_error_term " << veh_start_end.veh_param.speed_error_term << endl;
             }
@@ -355,7 +352,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 speed_error_term ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("speed_discrete_number")) {
+            if (val.HasMember("speed_discrete_number") && val["speed_discrete_number"].IsNumber()) {
                 veh_start_end.veh_param.speed_discrete_number = val["speed_discrete_number"].GetFloat();
                 cout << "veh_start_end.veh_param.speed_discrete_number " << veh_start_end.veh_param.speed_discrete_number << endl;
             }
@@ -364,7 +361,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 speed_discrete_number ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("speed_smooth_term")) {
+            if (val.HasMember("speed_smooth_term") && val["speed_smooth_term"].IsNumber()) {
                 veh_start_end.veh_param.speed_smooth_term = val["speed_smooth_term"].GetFloat();
                 cout << "veh_start_end.veh_param.speed_smooth_term " << veh_start_end.veh_param.speed_smooth_term << endl;
             }
@@ -373,7 +370,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 speed_smooth_term ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("max_acceleration")) {
+            if (val.HasMember("max_acceleration") && val["max_acceleration"].IsNumber()) {
                 veh_start_end.veh_param.max_acceleration = val["max_acceleration"].GetFloat();
                 cout << "veh_start_end.veh_param.max_acceleration " << veh_start_end.veh_param.max_acceleration << endl;
             }
@@ -382,7 +379,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 max_acceleration ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("min_acceleration")) {
+            if (val.HasMember("min_acceleration") && val["min_acceleration"].IsNumber()) {
                 veh_start_end.veh_param.min_acceleration = val["min_acceleration"].GetFloat();
                 cout << "veh_start_end.veh_param.min_acceleration " << veh_start_end.veh_param.min_acceleration << endl;
             }
@@ -391,7 +388,7 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 min_acceleration ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("reverse_speed")) {
+            if (val.HasMember("reverse_speed") && val["reverse_speed"].IsNumber()) {
                 veh_start_end.veh_param.reverse_speed = val["reverse_speed"].GetFloat();
                 cout << "veh_start_end.veh_param.reverse_speed " << veh_start_end.veh_param.reverse_speed << endl;
             }
@@ -401,7 +398,7 @@ _TarStartEnd ParseJson(char* str) {
             }
 
 
-            if (val.HasMember("narrow_road_speed_limit")) {
+            if (val.HasMember("narrow_road_speed_limit") && val["narrow_road_speed_limit"].IsNumber()) {
                 veh_start_end.veh_param.narrow_road_speed_limit = val["narrow_road_speed_limit"].GetFloat();
                 cout << "veh_start_end.veh_param.narrow_road_speed_limit " << veh_start_end.veh_param.narrow_road_speed_limit << endl;
             }
@@ -410,7 +407,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.narrow_road_speed_limit = 3;
             }
 
-            if (val.HasMember("slope_road_speed_limit")) {
+            if (val.HasMember("slope_road_speed_limit") && val["slope_road_speed_limit"].IsNumber()) {
                 veh_start_end.veh_param.slope_road_speed_limit = val["slope_road_speed_limit"].GetFloat();
                 cout << "veh_start_end.veh_param.slope_road_speed_limit " << veh_start_end.veh_param.slope_road_speed_limit << endl;
             }
@@ -419,7 +416,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.slope_road_speed_limit = 3.0;
             }
 
-            if (val.HasMember("intersection_road_speed_limit")) {
+            if (val.HasMember("intersection_road_speed_limit") && val["intersection_road_speed_limit"].IsNumber()) {
                 veh_start_end.veh_param.intersection_road_speed_limit = val["intersection_road_speed_limit"].GetFloat();
                 cout << "veh_start_end.veh_param.intersection_road_speed_limit " << veh_start_end.veh_param.intersection_road_speed_limit << endl;
             }
@@ -428,7 +425,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.intersection_road_speed_limit = 3.0;
             }
 
-            if (val.HasMember("bumpy_road_speed_limit")) {
+            if (val.HasMember("bumpy_road_speed_limit") && val["bumpy_road_speed_limit"].IsNumber()) {
                 veh_start_end.veh_param.bumpy_road_speed_limit = val["bumpy_road_speed_limit"].GetFloat();
                 cout << "veh_start_end.veh_param.bumpy_road_speed_limit " << veh_start_end.veh_param.bumpy_road_speed_limit << endl;
             }
@@ -437,7 +434,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.bumpy_road_speed_limit = 3.0;
             }
 
-            if (val.HasMember("regular_road_speed_limit")) {
+            if (val.HasMember("regular_road_speed_limit") && val["regular_road_speed_limit"].IsNumber()) {
                 veh_start_end.veh_param.regular_road_speed_limit = val["regular_road_speed_limit"].GetFloat();
                 cout << "veh_start_end.veh_param.regular_road_speed_limit " << veh_start_end.veh_param.regular_road_speed_limit << endl;
             }
@@ -447,7 +444,7 @@ _TarStartEnd ParseJson(char* str) {
             }
 
 
-            if (val.HasMember("vehicle_code")) {
+            if (val.HasMember("vehicle_code") && val["vehicle_code"].IsNumber()) {
                 veh_start_end.veh_param.vehicle_code = val["vehicle_code"].GetUint();
                 cout << "veh_start_end.veh_param.vehicle_code " << veh_start_end.veh_param.vehicle_code << endl;
             }
@@ -456,7 +453,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.vehicle_code = 9999;
             }
 
-            if (val.HasMember("uniform_compaction_enable")) {
+            if (val.HasMember("uniform_compaction_enable") && val["uniform_compaction_enable"].IsBool()) {
                 veh_start_end.veh_param.uniform_compaction_enable = val["uniform_compaction_enable"].GetBool();
                 cout << "veh_start_end.veh_param.uniform_compaction_enable " << veh_start_end.veh_param.uniform_compaction_enable << endl;
             }
@@ -466,7 +463,7 @@ _TarStartEnd ParseJson(char* str) {
             }
 
 
-            if (val.HasMember("start_offset_distance")) {
+            if (val.HasMember("start_offset_distance") && val["start_offset_distance"].IsNumber()) {
                 veh_start_end.veh_param.start_offset_distance = val["start_offset_distance"].GetFloat();
                 cout << "veh_start_end.veh_param.start_offset_distance " << veh_start_end.veh_param.start_offset_distance << endl;
             }
@@ -475,7 +472,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.start_offset_distance = 1.0;
             }
 
-            if (val.HasMember("is_light")) {
+            if (val.HasMember("is_light") && val["is_light"].IsBool()) {
                 veh_start_end.veh_param.is_light = val["is_light"].GetBool();
                 cout << "veh_start_end.veh_param.is_light " << veh_start_end.veh_param.is_light << endl;
             }
@@ -484,7 +481,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.is_light = false;
             }
 
-            if (val.HasMember("path_voronoi_term")) {
+            if (val.HasMember("path_voronoi_term") && val["path_voronoi_term"].IsNumber()) {
                 veh_start_end.veh_param.path_voronoi_term = val["path_voronoi_term"].GetFloat();
                 cout << "veh_start_end.veh_param.path_voronoi_term " << veh_start_end.veh_param.path_voronoi_term << endl;
             }
@@ -493,7 +490,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.path_voronoi_term = 0.1;
             }
 
-            if (val.HasMember("vonoroi_grid_dist")) {
+            if (val.HasMember("vonoroi_grid_dist") && val["vonoroi_grid_dist"].IsNumber()) {
                 veh_start_end.veh_param.vonoroi_grid_dist = val["vonoroi_grid_dist"].GetFloat();
                 cout << "veh_start_end.veh_param.vonoroi_grid_dist " << veh_start_end.veh_param.vonoroi_grid_dist << endl;
             }
@@ -502,7 +499,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.vonoroi_grid_dist = 0.1;
             }
 
-            if (val.HasMember("curvature_threshold")) {
+            if (val.HasMember("curvature_threshold") && val["curvature_threshold"].IsNumber()) {
                 veh_start_end.veh_param.curvature_threshold = val["curvature_threshold"].GetFloat();
                 cout << "veh_start_end.veh_param.curvature_threshold " << veh_start_end.veh_param.curvature_threshold << endl;
             }
@@ -511,7 +508,7 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.curvature_threshold = 0.1;
             }
 
-            if (val.HasMember("speed_limit_level")) {
+            if (val.HasMember("speed_limit_level") && val["speed_limit_level"].IsNumber() && val["speed_limit_level"].GetUint() >= 1 && val["speed_limit_level"].GetUint() <= 3) {
                 veh_start_end.veh_param.speed_limit_level = static_cast<SpeedLimitLevel>(val["speed_limit_level"].GetUint());
                 cout << "veh_start_end.veh_param.speed_limit_level " << static_cast<int>(veh_start_end.veh_param.speed_limit_level) << endl;
             }
@@ -520,12 +517,20 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.speed_limit_level = SpeedLimitLevel::three;
             }
 
-            if (val.HasMember("load_point_offset_distance")) {
-                veh_start_end.veh_param.load_point_offset_distance = val["load_point_offset_distance"].GetUint();
+            if (val.HasMember("load_point_end_offset_distance") && val["load_point_end_offset_distance"].IsNumber()) {
+                veh_start_end.veh_param.load_point_end_offset_distance = val["load_point_end_offset_distance"].GetUint();
             }
             else {
-                cout << "无法找到车参 load_point_offset_distance ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.load_point_offset_distance = 8;
+                cout << "无法找到车参 load_point_end_offset_distance ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.load_point_end_offset_distance = 8;
+            }
+
+            if (val.HasMember("load_point_start_offset_distance") && val["load_point_start_offset_distance"].IsNumber()) {
+                veh_start_end.veh_param.load_point_start_offset_distance = val["load_point_start_offset_distance"].GetUint();
+            }
+            else {
+                cout << "无法找到车参 load_point_start_offset_distance ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.load_point_start_offset_distance = 3;
             }
         }
     }
@@ -636,7 +641,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
         writer.Double(vec_wp.at(i).y);
 
         writer.Key("z");
-        writer.Double(vec_wp.at(i).z);
+        writer.Double(0);
 
         writer.Key("yaw");
         writer.Double(vec_wp.at(i).yaw);
@@ -726,7 +731,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.7.20241113_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.8.20241114_beta" << endl;
         record.close();
     }
 

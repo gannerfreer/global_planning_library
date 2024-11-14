@@ -58,12 +58,14 @@
         "veh_center_2_rear_bound": 0.5,
         "regular_road_speed_limit": 6.08,
         "linear_preferred_distance": 3,
-        "uniform_compaction_enable": false,
+        "uniform_compaction_enable": true,
         "veh_center_2_rear_obstacle": 2.77,
         "intersection_road_speed_limit": 2.06,
         "offset_distance": 4,
         "vehicle_code": 1006,
-        "speed_limit_level": 3
+        "speed_limit_level": 3,
+        "load_point_start_offset_distance": 3,
+        "load_point_end_offset_distance": 8
     },
     "task_type": 3,
     "Inner_Borders": [

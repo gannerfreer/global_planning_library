@@ -406,7 +406,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     while (!open_map_f_.empty()) {
         long long cal_time = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time); // 开始时间精确到微秒
         threadLogger_->info("open_map_f_.size():{}", open_map_f_.size());
-        cout << "open_map_f_.size():" << open_map_f_.size() << endl;
+        // cout << "open_map_f_.size():" << open_map_f_.size() << endl;
         if (cal_time > timeThreshold) // 若超过最大迭代次数则直接返回
         {
             threadLogger_->info("A star overtime!, timeThreshold:{} ms,AStarPath while循环已经被调用: {} 次", timeThreshold * 0.001, sum);

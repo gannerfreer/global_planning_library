@@ -15,7 +15,7 @@
     "forward_penalty": 1,
     "rs_min_path_length": 8,
     "end_offset_distance": 1.0,
-    "start_offset_distance": 1.0,
+    "start_offset_distance": 8.0,
     "path_smoothness_term": 0.1,
     "backward_penalty": 5.5,
     "turnning_penalty": 2.468,
@@ -50,6 +50,6 @@
     "curvature_threshold": 0.1,
     "is_light": true,
     "speed_limit_level": 3,
-    "load_point_offset_distance": 7
+    "load_point_end_offset_distance": 7
   }
 }

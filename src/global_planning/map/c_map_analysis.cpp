@@ -593,12 +593,20 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.speed_limit_level = SpeedLimitLevel::three;
             }
 
-            if (val.HasMember("load_point_offset_distance")) {
-                veh_start_end.veh_param.load_point_offset_distance = val["load_point_offset_distance"].GetUint();
+            if (val.HasMember("load_point_end_offset_distance")) {
+                veh_start_end.veh_param.load_point_end_offset_distance = val["load_point_end_offset_distance"].GetUint();
             }
             else {
-                cout << "无法找到车参 load_point_offset_distance ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.load_point_offset_distance = 8;
+                cout << "无法找到车参 load_point_end_offset_distance ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.load_point_end_offset_distance = 8;
+            }
+
+            if (val.HasMember("load_point_start_offset_distance") && val["load_point_start_offset_distance"].IsNumber()) {
+                veh_start_end.veh_param.load_point_start_offset_distance = val["load_point_start_offset_distance"].GetUint();
+            }
+            else {
+                cout << "无法找到车参 load_point_start_offset_distance ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.load_point_start_offset_distance = 3;
             }
         }
     }
