@@ -120,6 +120,21 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     // 计算路径点曲率
 
     Helper::CalCurv(global_path_);
+    std::ofstream file_out;
+    file_out.open("pinghuaqian.txt");
+    for (size_t index = 0; index < global_path_.size(); index++) {
+        file_out << 0 << " " << global_path_.at(index).curvature << endl;
+    }
+    file_out.close();
+
+    // 对路径点曲率进行平滑滤波
+    Helper::SmoothFilter(global_path_);
+
+    file_out.open("pinghuahou.txt");
+    for (size_t index = 0; index < global_path_.size(); index++) {
+        file_out << 0 << " " << global_path_.at(index).curvature << endl;
+    }
+    file_out.close();
 
 
     // 角度转换

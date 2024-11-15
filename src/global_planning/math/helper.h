@@ -183,7 +183,7 @@ inline bool OverSpeedCheck(vector<_TrajectoryPoint>& traj, float L) {
             cout << "超速类型1" << endl;
             flag = true;
         }
-        if (traj.at(i).speed > sqrt(0.4 / traj.at(i).curvature)) {
+        if (traj.at(i).speed > sqrt(0.4 / traj.at(i).curvature) + eps) {
             cout << "超速类型2" << "index:" << i << "real_speed:" << traj.at(i).speed << "  ideal_speed_limit:" << sqrt(0.2 / traj.at(i).curvature) << endl;
             flag = true;
         }
@@ -279,6 +279,26 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
         }
         traj.front().curvature = traj.at(1).curvature;
         traj.back().curvature  = traj.at(traj.size() - 2).curvature;
+    }
+}
+
+inline void SmoothFilter(vector<_TrajectoryPoint>& traj) {
+    unsigned int iterations = 0;
+    // 最大遍历次数为30次
+    while (iterations++ < 100) {
+        // 遍历稀疏速度曲线，分别计算出目标函数中每一项的梯度值，采用梯度下降法对速度曲线优化。
+        for (unsigned int i = 1; i < traj.size() - 1; i++) {
+            float pre_curvature  = traj.at(i - 1).curvature;
+            float cur_curvature  = traj.at(i).curvature;
+            float next_curvature = traj.at(i + 1).curvature;
+            // float origin_curvature = traj.at(i).curvature;
+
+            // float gradient_error  = speed_error_term * (vo - v1);
+            float gradient_smooth = 0.01 * (pre_curvature + next_curvature - 2 * cur_curvature);
+
+
+            traj.at(i).curvature += gradient_smooth;
+        }
     }
 }
 

@@ -82,12 +82,12 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", path_.at(i).x, path_.at(i).y, path_.at(i).angle / M_PI * 180, path_.at(i).curvature, path_.at(i).direction);
     }
 
-    // std::ofstream file_out;
-    // file_out.open("youhuaqian.txt");
-    // for (size_t index = 0; index < path_.size(); index++) {
-    //     file_out << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << endl;
-    // }
-    // file_out.close();
+    std::ofstream file_out;
+    file_out.open("youhuaqian.txt");
+    for (size_t index = 0; index < path_.size(); index++) {
+        file_out << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
+    }
+    file_out.close();
 
     // 得到节点和固定点索引
     GetCuspIndex();     // 得到尖点索引查询表cuspLookup
@@ -116,11 +116,11 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
 
     opti_path = new_path_;
     // std::ofstream file_out;
-    // file_out.open("youhuahou.txt");
-    // for (size_t index = 0; index < opti_path.size(); index++) {
-    //     file_out << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << endl;
-    // }
-    // file_out.close();
+    file_out.open("youhuahou.txt");
+    for (size_t index = 0; index < opti_path.size(); index++) {
+        file_out << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
+    }
+    file_out.close();
 }
 vector<unsigned int> Path_Opti::CurvatureCheck() {
     CalCurvature(new_path_);
@@ -194,17 +194,17 @@ void Path_Opti::GetCuspIndex() {
             cusp_set_.insert(i - 1);
         }
     }
-    if (path_.size() > 10) {
-        // 将前5个路径点加入固定点
-        for (int i = 1; i < 4; i++) {
-            cusp_set_.insert(i);
-        }
+    // if (path_.size() > 10) {
+    //     // 将前5个路径点加入固定点
+    //     for (int i = 1; i < 4; i++) {
+    //         cusp_set_.insert(i);
+    //     }
 
-        // 将后5个路径点加入固定点
-        for (int i = path_.size() - 2; i >= path_.size() - 4; i--) {
-            cusp_set_.insert(i);
-        }
-    }
+    //     // 将后5个路径点加入固定点
+    //     for (int i = path_.size() - 2; i >= path_.size() - 4; i--) {
+    //         cusp_set_.insert(i);
+    //     }
+    // }
     //   cout << "cusp_set_.size() :" << cusp_set_.size() <<   endl;
 }
 
