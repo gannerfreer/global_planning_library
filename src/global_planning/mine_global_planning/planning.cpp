@@ -530,15 +530,32 @@ bool Planning::PathPlanning() {
     end_point_.yaw   = end_point_.yaw / 180.0 * M_PI;
     threadLogger_->info(" task_type_: {}", (int)task_type_);
 
-    if (task_type_ != TaskType::DISPATCH) {
+    if (task_type_ == TaskType::TEMP_MOVE_CAR) {
         // 临时挪车不走参考路径
-        threadLogger_->info("挪车、装载、卸载");
+        threadLogger_->info("挪车");
         if (!NotFollowReferencelinePlanning()) {
             return false;
         }
     }
     else {
-        threadLogger_->info("调度");
+        threadLogger_->info("调度、装载、卸载");
+        // 在这里判断装载和卸载任务终点是否位于参考路径上
+        double temp_end_lat_dis, temp_end_lon_dis = 0;
+        Helper::GetNearestReferencelines(end_point_, all_referencelines_, temp_end_lat_dis, temp_end_lon_dis);
+
+        // 不位于参考路径上
+        if (task_type_ != TaskType::DISPATCH) {
+            if (fabs(temp_end_lat_dis) > 10 || fabs(temp_end_lon_dis) > 10) {
+                // 满足这个条件，表明这个这次装卸载任务没有参考路径
+                threadLogger_->info("此次装卸载任务无参考路径");
+                if (!NotFollowReferencelinePlanning()) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+        }
         if (!FollowReferencelinePlanning()) {
             return false;
         }
@@ -775,6 +792,7 @@ bool Planning::FollowReferencelinePlanning() {
     threadLogger_->info("终点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", end_index_, end_lat_dis_, end_lon_dis_, end_angle_diff_ / M_PI * 180.0);
     cout << "起点匹配上的路径索引" << start_index_ << " 横向距离" << start_lat_dis_ << " 纵向距离" << start_lon_dis_ << " 角度误差" << start_angle_diff_ / M_PI * 180.0 << endl;
     cout << "终点匹配上的路径索引" << end_index_ << " 横向距离" << end_lat_dis_ << "  纵向距离" << end_lon_dis_ << " 角度误差" << end_angle_diff_ / M_PI * 180.0 << endl;
+
 
     // 路径裁剪拼接
     PathClipAndSplice();
