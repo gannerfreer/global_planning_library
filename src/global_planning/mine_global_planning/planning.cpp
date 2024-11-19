@@ -107,11 +107,6 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         }
     }
 
-    threadLogger_->info("在进入速度规划之前，打印一下轨迹点direction信息");
-    for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}  direction:{}    yaw:{}", i.x, i.y, i.direction, i.yaw / M_PI * 180);
-    }
-
 
     // 计算累计s
     Helper::CalDistance(global_path_);
@@ -120,6 +115,18 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     // 计算路径点曲率
 
     Helper::CalCurv(global_path_);
+
+    threadLogger_->info("执行均匀碾压后路径点曲率");
+    for (auto i : global_path_) {
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180);
+    }
+
+    threadLogger_->info("在进入速度规划之前，打印一下轨迹点direction信息");
+    for (auto i : global_path_) {
+        threadLogger_->info("x:{}  y:{}  direction:{}    yaw:{}", i.x, i.y, i.direction, i.yaw / M_PI * 180);
+    }
+
+
     std::ofstream file_out;
     file_out.open("pinghuaqian.txt");
     for (size_t index = 0; index < global_path_.size(); index++) {
@@ -207,7 +214,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
             }
         }
         if (allExcessive) {
-            threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，分别为 {}, {}, {}", global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
+            threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，索引大致位置为：{}   曲率分别为 {}, {}, {}", i, global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
             error_type_ = ErrorType::CURVATURE_EXCESSIVE;
             return;
         }
@@ -806,11 +813,14 @@ void Planning::StartEndPointProcess() {
         end_point_last_point_angle_diff += 2 * M_PI; // 将终点与全局路径最后一个点的角度偏差规范[0,2π）
     }
     float last_angle_diff = fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI : fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI;
-
+    threadLogger_->info("路径最后一个点direction：{}，角度差：{}", global_path_.back().direction, last_angle_diff);
     if ((last_angle_diff > 90 && global_path_.back().direction == 0) || (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3) || (last_angle_diff < 90 && global_path_.back().direction == 1)) {
+        threadLogger_->info("将路径最后一个点剔除");
         global_path_.pop_back();
     }
-    else {}
+    else {
+        threadLogger_->info("路径最后一个点无需剔除");
+    }
     _TrajectoryPoint last_point;
     last_point.x           = end_point_.x;
     last_point.y           = end_point_.y;
@@ -868,9 +878,10 @@ void Planning::PathClipAndSplice() {
         }
         else // 同一路段，支持短距离倒车
         {
+            threadLogger_->info("短距离倒车");
             global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + end_index_, all_referencelines_.at(temp_key).trajectory.begin() + start_index_ + 1);
             reverse(global_path_.begin(), global_path_.end());
-            for (auto point : global_path_) {
+            for (auto& point : global_path_) {
                 if (point.direction == 0) {
                     point.direction = 1; // 修改轨迹的direction
                 }
@@ -895,7 +906,6 @@ void Planning::PathClipAndSplice() {
             }
         }
     }
-
     threadLogger_->info("PathClipAndSplice---global_path_.size():{}", global_path_.size());
 }
 bool Planning::HybirdAStarFitting() {
@@ -1084,6 +1094,11 @@ float Planning::ReferencelineTotalDis(pair<int, int>& input_pair, int start_inde
         return total_length;
     }
     else {
-        return fabs(end_index - start_index);
+        if (start_index > end_index) { // 不允许倒车
+            return 100000;
+        }
+        else {
+            return end_index - start_index;
+        }
     }
 }

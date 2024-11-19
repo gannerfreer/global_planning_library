@@ -204,66 +204,123 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
         return false;
     }
 }
+// bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
+//     // 这个函数主要确保降速
+//     bool flag = true;
+//     threadLogger_->info("开始KeyPointsDecelerationCheck() ,路径段落个数:{}", key_points.size());
+
+//     float                    v1, v2;
+//     KeyPoint                 keypoint1, keypoint2;
+//     vector<_TrajectoryPoint> temp_traj;
+//     for (int i = 0; i < key_points.size(); i++) {
+//         temp_traj = trajectory_fragments.at(i);
+//         for (int j = 0; j < key_points.at(i).size() - 1; j++) {
+//             keypoint1 = key_points.at(i).at(j);
+//             keypoint2 = key_points.at(i).at(j + 1);
+//             v1        = keypoint1.speed_limit_right;
+//             v2        = keypoint2.speed_limit_right;
+//             threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j + 1, key_points.at(i).at(j).index, key_points.at(i).at(j).speed_limit_left, key_points.at(i).at(j).speed_limit_right);
+
+//             threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j + 2, key_points.at(i).at(j + 1).index, key_points.at(i).at(j + 1).speed_limit_left, key_points.at(i).at(j + 1).speed_limit_right);
+
+//             // 遍历的过程中，发现 v1>v2的情况就需要进行降速合理性检查，不符合要求就要调整，并重新执行for循环
+//             if (v1 > v2) {
+//                 threadLogger_->info("减速检查");
+
+//                 float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线)
+//                 float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * min_acceleration);                              // v1_left加速到v1_right所需的最小欧式距离
+
+//                 if ((s_total + eps) < s_min) // 若减速距离不够，得将v1结合车辆最大减速度进行合理调整
+//                 {
+//                     threadLogger_->warn("warnning ,减速距离不够");
+
+//                     threadLogger_->info("s_total = {}", s_total);
+
+//                     threadLogger_->info("s_min ={} ", s_min);
+
+//                     key_points.at(i).at(j).speed_limit_right    = sqrt(pow(v2, 2) + 2 * (max_acceleration - 0.1) * s_total);
+//                     key_points.at(i).at(j + 1).speed_limit_left = key_points.at(i).at(j).speed_limit_right;
+//                     threadLogger_->info("右限速调整为：{}", key_points.at(i).at(j).speed_limit_right);
+
+//                     flag = false;
+//                 }
+//                 else {
+//                     threadLogger_->info("s_total = {}", s_total);
+
+//                     threadLogger_->info("s_min ={} ", s_min);
+
+//                     threadLogger_->info("PASS ,减速距离达标");
+//                 }
+//             }
+//             if (flag == false) {
+//                 j = -1; // 从新开始遍历这个key_points
+//                 threadLogger_->info("重新开始一轮");
+
+//                 flag = true;
+//             }
+//         }
+//     }
+//     threadLogger_->info("结束KeyPointsDecelerationCheck() ,路径段落个数:{}", key_points.size());
+
+//     return true;
+// }
+
 bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
-    // 这个函数主要确保降速
     bool flag = true;
-    threadLogger_->info("开始KeyPointsDecelerationCheck() ,路径段落个数:{}", key_points.size());
+    threadLogger_->info("开始KeyPointsDecelerationCheck(),路径段落个数:{}", key_points.size());
 
     float                    v1, v2;
     KeyPoint                 keypoint1, keypoint2;
     vector<_TrajectoryPoint> temp_traj;
-    for (int i = 0; i < key_points.size(); i++) {
+
+    // 从后往前遍历路径段落
+    for (int i = key_points.size() - 1; i >= 0; i--) {
         temp_traj = trajectory_fragments.at(i);
-        for (int j = 0; j < key_points.at(i).size() - 1; j++) {
+        // 从后往前遍历当前路径段落的关键点
+        for (int j = key_points.at(i).size() - 1; j >= 1; j--) {
             keypoint1 = key_points.at(i).at(j);
-            keypoint2 = key_points.at(i).at(j + 1);
+            keypoint2 = key_points.at(i).at(j - 1);
             v1        = keypoint1.speed_limit_right;
             v2        = keypoint2.speed_limit_right;
-            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j + 1, key_points.at(i).at(j).index, key_points.at(i).at(j).speed_limit_left, key_points.at(i).at(j).speed_limit_right);
 
-            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j + 2, key_points.at(i).at(j + 1).index, key_points.at(i).at(j + 1).speed_limit_left, key_points.at(i).at(j + 1).speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j, keypoint1.index, keypoint1.speed_limit_left, keypoint1.speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j - 1, keypoint2.index, keypoint2.speed_limit_left, keypoint2.speed_limit_right);
 
-            // 遍历的过程中，发现 v1>v2的情况就需要进行降速合理性检查，不符合要求就要调整，并重新执行for循环
-            if (v1 > v2) {
+            if (v2 > v1) {
                 threadLogger_->info("减速检查");
 
-                float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度(可能为弧线)
-                float s_min   = (pow(v2, 2) - pow(v1, 2)) / (2 * min_acceleration);                              // v1_left加速到v1_right所需的最小欧式距离
+                float s_total = temp_traj.at(keypoint1.index).distance - temp_traj.at(keypoint2.index).distance; // 该路段的路径长度(可能为弧线)
+                float s_min   = (pow(v1, 2) - pow(v2, 2)) / (2 * min_acceleration);                              // v2减到v1所需的最小欧式距离
 
-                if ((s_total + eps) < s_min) // 若减速距离不够，得将v1结合车辆最大减速度进行合理调整
-                {
-                    threadLogger_->warn("warnning ,减速距离不够");
+                if ((s_total + eps) < s_min) {
+                    threadLogger_->warn("warnning,减速距离不够");
 
                     threadLogger_->info("s_total = {}", s_total);
 
                     threadLogger_->info("s_min ={} ", s_min);
 
-                    key_points.at(i).at(j).speed_limit_right    = sqrt(pow(v2, 2) + 2 * (max_acceleration - 0.1) * s_total);
-                    key_points.at(i).at(j + 1).speed_limit_left = key_points.at(i).at(j).speed_limit_right;
-                    threadLogger_->info("右限速调整为：{}", key_points.at(i).at(j).speed_limit_right);
+                    keypoint2.speed_limit_right = sqrt(pow(v1, 2) + 2 * (max_acceleration - 0.05) * s_total);
+                    keypoint1.speed_limit_left  = keypoint2.speed_limit_right;
+                    threadLogger_->info("右限速调整为：{}", keypoint2.speed_limit_right);
 
-                    flag = false;
+                    key_points.at(i).at(j)     = keypoint1;
+                    key_points.at(i).at(j - 1) = keypoint2;
                 }
                 else {
                     threadLogger_->info("s_total = {}", s_total);
 
                     threadLogger_->info("s_min ={} ", s_min);
 
-                    threadLogger_->info("PASS ,减速距离达标");
+                    threadLogger_->info("PASS,减速距离达标");
                 }
-            }
-            if (flag == false) {
-                j = -1; // 从新开始遍历这个key_points
-                threadLogger_->info("重新开始一轮");
-
-                flag = true;
             }
         }
     }
-    threadLogger_->info("结束KeyPointsDecelerationCheck() ,路径段落个数:{}", key_points.size());
+    threadLogger_->info("结束KeyPointsDecelerationCheck(),路径段落个数:{}", key_points.size());
 
     return true;
 }
+
 bool GlobalSpeedPlanning::AdpKeyPoints() {
     bool flag = true;
     threadLogger_->info("开始AdpKeyPoints[new] ,路径段落个数:{}", key_points.size());
@@ -578,11 +635,11 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
 
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            threadLogger_->error("...Case 4:s_0:{}", s_0);
+            threadLogger_->info("...Case 4:s_0:{}", s_0);
 
             for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
-                threadLogger_->error("...Case 4:temp_traj.at(i).distance :{} ", temp_traj.at(i).distance);
+                threadLogger_->info("...Case 4:temp_traj.at(i).distance :{} ", temp_traj.at(i).distance);
 
                 if (s_temp < s_acc) // 加速
                 {
@@ -832,7 +889,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
 
     // 遍历整个trajectory_points，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
     float         L_vehicle                = vehicle_param.wheel_base;
-    float         max_Steering_wheel_speed = 0.175 * 2;
+    float         max_Steering_wheel_speed = 0.175;
     float         temp_max_speed;
     float         wheel_delta_angle, wheel_angle1, wheel_angle2;
     float         sampling_distance = 1;
@@ -869,8 +926,8 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
     // 曲率限速
     iter = trajectory_points.begin();
     for (; iter != trajectory_points.end(); iter++) {
-        if (iter->speed_limit > sqrt(0.2 / fabs(iter->curvature))) {
-            iter->speed_limit = sqrt(0.2 / fabs(iter->curvature));
+        if (iter->speed_limit > sqrt(0.4 / fabs(iter->curvature))) {
+            iter->speed_limit = sqrt(0.4 / fabs(iter->curvature));
         }
     }
 

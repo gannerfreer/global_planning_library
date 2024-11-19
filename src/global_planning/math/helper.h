@@ -183,12 +183,12 @@ inline bool OverSpeedCheck(vector<_TrajectoryPoint>& traj, float L) {
             cout << "超速类型1" << endl;
             flag = true;
         }
-        if (traj.at(i).speed > sqrt(0.4 / traj.at(i).curvature) + eps) {
-            cout << "超速类型2" << "index:" << i << "real_speed:" << traj.at(i).speed << "  ideal_speed_limit:" << sqrt(0.2 / traj.at(i).curvature) << endl;
+        if (traj.at(i).speed > sqrt(0.5 / traj.at(i).curvature) + eps) {
+            cout << "超速类型2" << "index:" << i << "real_speed:" << traj.at(i).speed << "  ideal_speed_limit:" << sqrt(0.5 / traj.at(i).curvature) << endl;
             flag = true;
         }
-        if (traj.at(i).speed > 1.0 * 0.35 / (fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature)) + eps) + eps) {
-            cout << "超速类型3" << "index:" << i << "real_speed:" << traj.at(i).speed << "  ideal_speed_limit:" << 1.0 * 0.174 / (fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature)) + eps) << endl;
+        if (traj.at(i).speed > 1.0 * 0.175 * 1.5 / (fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature)) + eps) + eps) {
+            cout << "超速类型3" << "index:" << i << "real_speed:" << traj.at(i).speed << "  ideal_speed_limit:" << 1.0 * 0.175 * 1.5 / (fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature)) + eps) << endl;
             flag = true;
         }
     }
