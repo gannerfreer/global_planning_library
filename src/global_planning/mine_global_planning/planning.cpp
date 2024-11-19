@@ -936,6 +936,11 @@ bool Planning::HybirdAStarFitting() {
     bool   start_need_fitting = false, end_need_fitting = false;
     if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold || start_angle_diff_ > 8.0 / 180.0 * M_PI) { // 横向阈值大于0.7m,或者纵向阈值大于3m,就需要进行hybirdA*拟合
         start_need_fitting = true;
+        if (start_lat_dis_ > 10 || fabs(start_lon_dis_) > 10) {
+            // 说明这是个从卸载点（无参考路径情况下）或从装载点出发的任务，由于可能有乱石堆的存在，这种直线延伸距离需要额外自行配置
+            vehicle_param_.start_offset_distance = vehicle_param_.load_point_start_offset_distance;
+            threadLogger_->info("识别出从装载点或卸载点出发，直线延伸距离采用load_point_start_offset_distance参数，为{}", vehicle_param_.start_offset_distance);
+        }
     }
     // 终点不允许拟合
     if (end_lat_dis_ > lat_threshold || fabs(end_lon_dis_) > lon_threshold) {

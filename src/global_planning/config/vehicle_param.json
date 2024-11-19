@@ -50,6 +50,7 @@
     "curvature_threshold": 0.1,
     "is_light": true,
     "speed_limit_level": 3,
-    "load_point_end_offset_distance": 7
+    "load_point_end_offset_distance": 7,
+    "load_point_start_offset_distance": 4
   }
 }
