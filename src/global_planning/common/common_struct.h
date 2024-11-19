@@ -54,13 +54,13 @@ enum struct ErrorType : unsigned int {
 };
 
 enum struct PointAttribute : unsigned int {
-    regular_road,      // 常规道路
-    narrow_road,       // 会车道路
-    intersection_road, // 交叉路口
-    slope_road,        // 坡路
-    dump_road,         // 颠簸路
-    weight_point,      // 过磅
-    clean_point        // 洗车
+    regular_road      = 0, // 常规道路
+    narrow_road       = 1, // 会车道路
+    intersection_road = 2, // 交叉路口
+    slope_road        = 3, // 坡路
+    dump_road         = 4, // 颠簸路
+    weight_point      = 6, // 过磅
+    clean_point       = 7  // 洗车
 };
 
 enum struct SpeedLimitLevel : unsigned int {

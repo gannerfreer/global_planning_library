@@ -524,7 +524,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     RestoreData(path); // 数据恢复
     threadLogger_->info("RestoreData() Successfuly!");
     for (auto i : path) {
-        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
+        threadLogger_->info("x:{} y:{} angle:{} curvature:{} direction:{} ", i.x, i.y, i.angle / M_PI * 180.0, i.curvature, i.direction);
     }
 
 
@@ -661,7 +661,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
                         for (auto& i : path_r_s_) {
                             if (i.angle < 0) i.angle += 2 * M_PI;
-                            threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+                            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
                         }
                         return true;
                     }
@@ -680,7 +680,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
                         for (auto& i : path_r_s_) {
                             if (i.angle < 0) i.angle += 2 * M_PI;
-                            threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+                            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
                         }
                         fitting_direction_ = FittingDirection::Forword_Fitting;
                         return true;
@@ -834,7 +834,7 @@ void OptimalPath::TracePath(const Vertex3D final_point) {
 
     threadLogger_->info("运动学搜索出来的点坐标");
     for (auto i : path_a_star_) {
-        threadLogger_->info("{} {} {} {} ", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+        threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
     }
 }
 
@@ -898,7 +898,7 @@ void OptimalPath::PathIntegration() {
     }
     threadLogger_->info("拼接起点的路径的direction信息，只对Forward_All_TIme规则有效");
     for (auto i : path_a_star_) {
-        threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+        threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
     }
     // 拼接RS路径
     path_a_star_.insert(path_a_star_.end(), path_r_s_.begin(), path_r_s_.end());
@@ -910,7 +910,7 @@ void OptimalPath::PathIntegration() {
     // }
     threadLogger_->info("拼接完RS路径");
     for (auto i : path_a_star_) {
-        threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+        threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
     }
 
     // 拼接终点直线路径
@@ -929,7 +929,7 @@ void OptimalPath::PathIntegration() {
         }
         threadLogger_->info("拼接完成终点的路径");
         for (auto i : path_a_star_) {
-            threadLogger_->info("{} {} {} {}", i.x, i.y, i.direction, i.angle / M_PI * 180.0);
+            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
         }
     }
     else // 倒退直线拼接
@@ -945,7 +945,7 @@ void OptimalPath::PathIntegration() {
         }
         threadLogger_->info("拼接完成终点的路径");
         for (auto i : path_a_star_) {
-            threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180, i.direction);
+            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
         }
     }
 }
