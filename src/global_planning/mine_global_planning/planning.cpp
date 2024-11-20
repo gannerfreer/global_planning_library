@@ -313,8 +313,9 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
                 threadLogger_->info("检测到路径绕圈");
                 return false;
             }
+            threadLogger_->info("绕圈检测达标");
         }
-        threadLogger_->info("绕圈检测达标");
+      
         for (auto i : traj) {
             threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
         }

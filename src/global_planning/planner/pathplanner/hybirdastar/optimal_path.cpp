@@ -637,7 +637,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
 
         switch (fitting_direction_) {
             case FittingDirection::Backward_Fitting:
-
+                cout << "本次调用RS函数的起点坐标：" << temp_start_point.x << "  " << temp_start_point.y << "  " << temp_start_point.angle << "终点坐标" << end_f_.x << "  " << end_f_.y << "  " << end_f_.angle << endl;
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) && (MotionDirection::Backward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Backward_Fitting oneshot成功，一共oneshot了 {}  次 ", All);
@@ -716,8 +716,9 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
     unsigned long long time1 = 0, time2 = 0, time3 = 0;
 
     // 根据规划规则判定拓展规则
+
     start_d_ = (plan_path_rule_ == PlanRule::Backward_All_Time) ? Backward : Forward;
-    end_d_   = (plan_path_rule_ == PlanRule::NO_Backward_In_Start || plan_path_rule_ == PlanRule::Forward_All_Time || ((pow(current_point.x - start_.x, 2) + pow(current_point.y - start_.y, 2)) > (pow(m_vehicle_param_.backward_search_range, 2)))) ? Forward : Backward;
+    end_d_   = (plan_path_rule_ == PlanRule::Forward_All_Time || ((pow(current_point.x - start_.x, 2) + pow(current_point.y - start_.y, 2)) > (pow(m_vehicle_param_.backward_search_range, 2)))) ? Forward : Backward;
 
     // 计算转向角离散增量
     const double delta_angle = (m_vehicle_param_.max_steering - m_vehicle_param_.min_steering) / (m_vehicle_param_.angle_discrete_num - 1);

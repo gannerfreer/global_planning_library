@@ -58,6 +58,7 @@
         "any": "cpp",
         "regex": "cpp",
         "thread": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "bitset": "cpp"
     }
 }
