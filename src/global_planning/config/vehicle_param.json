@@ -34,9 +34,9 @@
     "max_acceleration": 0.3,
     "min_acceleration": -0.4,
     "reverse_speed": 1.0,
-    "speed_error_term": 0.1,
+    "speed_error_term": 0.0,
     "speed_discrete_number": 5,
-    "speed_smooth_term": 0.01,
+    "speed_smooth_term": 0.0,
     "linear_preferred_distance": 3,
     "uniform_compaction_enable": false,
     "regular_road_speed_limit": 8,
@@ -50,7 +50,8 @@
     "curvature_threshold": 0.1,
     "is_light": true,
     "speed_limit_level": 3,
-    "load_point_end_offset_distance": 7,
-    "load_point_start_offset_distance": 4
+    "load_point_end_offset_distance": 4,
+    "load_point_start_offset_distance": 4,
+    "curvature_smooth_opti_num": 24
   }
 }

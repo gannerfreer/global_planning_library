@@ -889,7 +889,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
 
     // 遍历整个trajectory_points，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
     float         L_vehicle                = vehicle_param.wheel_base;
-    float         max_Steering_wheel_speed = 0.175;
+    float         max_Steering_wheel_speed = 0.13962634015954636;
     float         temp_max_speed;
     float         wheel_delta_angle, wheel_angle1, wheel_angle2;
     float         sampling_distance = 1;

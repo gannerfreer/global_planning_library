@@ -608,6 +608,14 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 load_point_start_offset_distance ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.load_point_start_offset_distance = 3;
             }
+
+            if (val.HasMember("curvature_smooth_opti_num") && val["curvature_smooth_opti_num"].IsNumber()) {
+                veh_start_end.veh_param.curvature_smooth_opti_num = val["curvature_smooth_opti_num"].GetUint();
+            }
+            else {
+                cout << "无法找到车参 curvature_smooth_opti_num ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.curvature_smooth_opti_num = 25;
+            }
         }
     }
     vehicle_param = veh_start_end.veh_param;

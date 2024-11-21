@@ -135,7 +135,8 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     file_out.close();
 
     // 对路径点曲率进行平滑滤波
-    Helper::SmoothFilter(global_path_);
+    cout << "vehicle_param_.curvature_smooth_opti_num:" << vehicle_param_.curvature_smooth_opti_num << endl;
+    Helper::SmoothFilter(global_path_, vehicle_param_.curvature_smooth_opti_num);
 
     file_out.open("pinghuahou.txt");
     for (size_t index = 0; index < global_path_.size(); index++) {
@@ -222,9 +223,9 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("轨迹曲率校验通过,校验阈值：{}", vehicle_param_.curvature_threshold);
 
 
-    // // 计算加速度
-    // Helper::calculateAcceleration(global_path_);
-    // threadLogger_->info("CalAcc");
+    // 计算加速度
+    Helper::calculateAcceleration(global_path_);
+    threadLogger_->info("CalAcc");
 
     path = global_path_;
     threadLogger_->info("规划成功，即将返回轨迹 final_out global_Path.size():{}", global_path_.size());
@@ -315,7 +316,7 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
             }
             threadLogger_->info("绕圈检测达标");
         }
-      
+
         for (auto i : traj) {
             threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
         }

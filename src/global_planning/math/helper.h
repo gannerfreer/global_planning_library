@@ -314,10 +314,11 @@ inline void CalCurv(vector<_TrajectoryPoint>& traj) {
     }
 }
 
-inline void SmoothFilter(vector<_TrajectoryPoint>& traj) {
+inline void SmoothFilter(vector<_TrajectoryPoint>& traj, int opt_num) {
     unsigned int iterations = 0;
     // 最大遍历次数为30次
-    while (iterations++ < 100) {
+    if (opt_num > 50) opt_num = 50;
+    while (iterations++ < opt_num) {
         // 遍历稀疏速度曲线，分别计算出目标函数中每一项的梯度值，采用梯度下降法对速度曲线优化。
         for (unsigned int i = 1; i < traj.size() - 1; i++) {
             float pre_curvature  = traj.at(i - 1).curvature;
