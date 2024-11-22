@@ -229,6 +229,12 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     h_cost_map_.clear();
     nodes2D_map_.clear();
     threadLogger_->info("终点碰撞检测");
+
+    if (true == collison_check_.IsVehicleCollision(actual_start_)) {
+        threadLogger_->info("起点碰撞检测不通过");
+        return PlanResult::StartPoint_Infeasible;
+    }
+
     cout << "开启对终点的碰撞检测" << endl;
     // 终点区域碰撞判断
     if (true == collison_check_.IsVehicleCollision(end_)) {
@@ -237,16 +243,17 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
         return PlanResult::EndPoint_Infeasible;
     }
     cout << "终点碰撞检测通过" << endl;
-    if (true == collison_check_.IsVehicleCollision(actual_start_)) {
-        threadLogger_->info("起点碰撞检测不通过");
+    bool end_f_collison_flag = false, end_r_collison_flag = false;
+    end_r_collison_flag = collison_check_.IsVehicleCollision(end_r_);
+    end_f_collison_flag = collison_check_.IsVehicleCollision(end_f_);
 
-        return PlanResult::StartPoint_Infeasible;
-    }
-    if (plan_path_rule_ == PlanRule::Forward_All_Time && collison_check_.IsVehicleCollision(end_r_)) {
+
+    if (plan_path_rule_ == PlanRule::Forward_All_Time && end_r_collison_flag) {
         threadLogger_->info("PlanRule::Forward_All_Time ,but end_r_ 碰撞检测失败 ");
         return PlanResult::EndPoint_Infeasible;
     }
-    if ((plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Backward_To_End) && collison_check_.IsVehicleCollision(end_f_)) {
+
+    if ((plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Backward_To_End) && end_f_collison_flag) {
         threadLogger_->info("PlanRule::Backward_All_Time或Backward_To_End ,but end_f_ 碰撞检测失败 ");
         return PlanResult::EndPoint_Infeasible;
     }
@@ -254,20 +261,31 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
 
 
     if (plan_path_rule_ == PlanRule::Backward_To_End || plan_path_rule_ == PlanRule::Backward_All_Time) {
-        threadLogger_->info(" fitting_direction_ = FittingDirection::Backward_Fitting");
-
+        threadLogger_->info("plan_path_rule_ == PlanRule::Backward_To_End || plan_path_rule_ == PlanRule::Backward_All_Time---  Backward_Fitting");
         fitting_direction_ = FittingDirection::Backward_Fitting;
     }
     else if (plan_path_rule_ == PlanRule::Forward_All_Time) {
-        threadLogger_->info(" fitting_direction_ = FittingDirection::Forword_Fitting");
-
+        threadLogger_->info("plan_path_rule_ == PlanRule::Forward_All_Time---  Forword_Fitting");
         fitting_direction_ = FittingDirection::Forword_Fitting;
     }
-    else {
-        threadLogger_->info("  fitting_direction_ = FittingDirection::Both_Fitting");
-
-        fitting_direction_ = FittingDirection::Both_Fitting;
+    else if (plan_path_rule_ == PlanRule::Normal_Planning) {
+        if (end_r_collison_flag) {
+            fitting_direction_ = FittingDirection::Backward_Fitting;
+            threadLogger_->info("plan_path_rule_ == PlanRule::Normal_Planning---  由于终点后向点碰撞，只能采用Backward_Fitting");
+        }
+        else if (end_f_collison_flag) {
+            fitting_direction_ = FittingDirection::Forword_Fitting;
+            threadLogger_->info("plan_path_rule_ == PlanRule::Normal_Planning---  由于终点前向点碰撞，只能采用Forward_Fitting");
+        }
+        else {
+            fitting_direction_ = FittingDirection::Both_Fitting;
+            threadLogger_->info("plan_path_rule_ == PlanRule::Normal_Planning---  Both_Fitting");
+        }
     }
+    else {
+        threadLogger_->info(" 未投入实际使用的plan_path_rule");
+    }
+
 
     cout << "开始AStarPath" << endl;
     PlanResult result = AStarPath(final_path, time_threshold);

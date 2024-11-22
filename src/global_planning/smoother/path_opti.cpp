@@ -128,12 +128,11 @@ vector<unsigned int> Path_Opti::CurvatureCheck() {
     curvature_exceed_point.clear();
     for (unsigned int i = 0; i < new_path_.size(); i++) {
         double curvature = new_path_.at(i).curvature;
-        if (fabs(curvature) > m_vehicle_param_.curvature_threshold) {
-            threadLogger_->info("i:{}  curvature:{}  优化过程中曲率超标,曲率阈值：{}", i, curvature, m_vehicle_param_.curvature_threshold);
+        if (fabs(curvature) > m_vehicle_param_.curvature_threshold - 0.01) {
+            threadLogger_->info("i:{}  curvature:{}  优化过程中曲率超标,曲率阈值：{}", i, curvature, m_vehicle_param_.curvature_threshold - 0.01);
             curvature_exceed_point.push_back(i);
         }
     }
-    threadLogger_->info("本次优化曲率达标,曲率阈值：{}", m_vehicle_param_.curvature_threshold);
     return curvature_exceed_point;
 }
 void Path_Opti::CalCurvature(Path& path_) {
