@@ -22,7 +22,6 @@ Description: The header file for C++ class OptimalPath.
 #include "../../../smoother/dynamicvoronoi.h"
 #include "../../../time/StringHelper.h"
 #include "../../../time/TimeHelper.h"
-#include "../dubins/dubins.h"
 #include "node2d.h"
 #include "r_s_curve.h"
 #include "r_s_curve_for_h.h"
@@ -82,7 +81,7 @@ class OptimalPath {
      * @return 返回说明：
      * 返回规划结果
      */
-    PlanResult    SearchGlobalPath(const Point start, const Point end, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule plan_path_rule = PlanRule ::Normal_Planning);
+    PlanResult    SearchGlobalPath(const Point start, const Point end, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule& plan_path_rule);
     void          InitVoronoiAndBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders, const _VehicleParam& m_vehicle_param, bool enable_voronoi);
     void          DeleteVoronoiSpace(bool enable_voronoi);
     _VehicleParam m_vehicle_param_;
@@ -350,13 +349,14 @@ class OptimalPath {
     bool**                          binMap = nullptr;
     int                             width;
     int                             height;
-    bool                            use_voronoi = false;
+    bool                            use_voronoi            = false;
+    int                             start_offset_distance_ = 0; // 起点直线延长距离
+    int                             end_offset_distance_   = 1; // HybridA*终点直线延长距离
 
 
   private:
-    RSCurve       my_r_s_curve;
-    RSCurve_H     my_r_s_curve_h;
-    curve::Dubins dubins_;
+    RSCurve   my_r_s_curve;
+    RSCurve_H my_r_s_curve_h;
 
     double           voronoi_origin_x, voronoi_origin_y; // 记录voronoi图的原点
     Path_Opti        my_path_opti;
@@ -392,6 +392,7 @@ class OptimalPath {
 
     vector<int> box_index_;
     int         All;
+
 
 }; // end class optimal_path
 

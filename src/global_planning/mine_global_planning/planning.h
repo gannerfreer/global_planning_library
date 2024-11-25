@@ -40,7 +40,7 @@ class Planning {
     bool ApplyHibridAStar(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, int plan_rule_id);
 
 
-    bool ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, unsigned char rule_id);
+    bool ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id);
 
     /**
      * @brief
@@ -54,7 +54,7 @@ class Planning {
      * @return true 规划成功
      * @return false 失败
      */
-    bool ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, unsigned char plan_rule_id, long long time_threshold);
+    bool ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, const PlanRule& plan_rule_id, long long time_threshold);
 
     /**
      * @brief  去除轨迹中重复点

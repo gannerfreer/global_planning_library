@@ -346,13 +346,7 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.rs_min_path_length = 8.0;
                 cout << "无法找到车参 rs_min_path_length ，即将赋予默认值" << endl;
             }
-            if (val.HasMember("end_offset_distance")) {
-                veh_start_end.veh_param.end_offset_distance = val["end_offset_distance"].GetDouble();
-            }
-            else {
-                veh_start_end.veh_param.end_offset_distance = 1.0;
-                cout << "无法找到车参 end_offset_distance ，即将赋予默认值" << endl;
-            }
+
             if (val.HasMember("path_smoothness_term")) {
                 veh_start_end.veh_param.path_smoothness_term = val["path_smoothness_term"].GetDouble();
             }
@@ -400,13 +394,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 max_iterations_opti ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("backward_search_range")) {
-                veh_start_end.veh_param.backward_search_range = val["backward_search_range"].GetDouble();
-            }
-            else {
-                veh_start_end.veh_param.backward_search_range = 100;
-                cout << "无法找到车参 backward_search_range ，即将赋予默认值" << endl;
-            }
 
             if (val.HasMember("cusp_extension_distance")) {
                 veh_start_end.veh_param.cusp_extension_distance = val["cusp_extension_distance"].GetFloat();
@@ -536,14 +523,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.uniform_compaction_enable = true;
             }
 
-
-            if (val.HasMember("start_offset_distance")) {
-                veh_start_end.veh_param.start_offset_distance = val["start_offset_distance"].GetFloat();
-            }
-            else {
-                cout << "无法找到 start_offset_distance" << endl;
-                veh_start_end.veh_param.start_offset_distance = 1.0;
-            }
 
             if (val.HasMember("is_light")) {
                 veh_start_end.veh_param.is_light = val["is_light"].GetBool();

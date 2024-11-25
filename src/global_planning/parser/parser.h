@@ -243,14 +243,6 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 rs_min_path_length ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("end_offset_distance") && val["end_offset_distance"].IsNumber()) {
-                veh_start_end.veh_param.end_offset_distance = val["end_offset_distance"].GetDouble();
-                cout << "veh_start_end.veh_param.end_offset_distance " << veh_start_end.veh_param.end_offset_distance << endl;
-            }
-            else {
-                veh_start_end.veh_param.end_offset_distance = 1.0;
-                cout << "无法找到车参 end_offset_distance ，即将赋予默认值" << endl;
-            }
 
             if (val.HasMember("path_smoothness_term") && val["path_smoothness_term"].IsNumber()) {
                 veh_start_end.veh_param.path_smoothness_term = val["path_smoothness_term"].GetDouble();
@@ -307,16 +299,7 @@ _TarStartEnd ParseJson(char* str) {
             }
 
 
-            if (val.HasMember("backward_search_range") && val["backward_search_range"].IsNumber()) {
-                veh_start_end.veh_param.backward_search_range = val["backward_search_range"].GetDouble();
-                cout << "veh_start_end.veh_param.backward_search_range " << veh_start_end.veh_param.backward_search_range << endl;
-            }
-            else {
-                veh_start_end.veh_param.backward_search_range = 100;
-                cout << "无法找到车参 backward_search_range ，即将赋予默认值" << endl;
-            }
-
-            if (val.HasMember("cusp_extension_distance") && val["cusp_extension_distance"].IsNumber()) {
+                  if (val.HasMember("cusp_extension_distance") && val["cusp_extension_distance"].IsNumber()) {
                 veh_start_end.veh_param.cusp_extension_distance = val["cusp_extension_distance"].GetFloat();
                 cout << "veh_start_end.veh_param.cusp_extension_distance " << veh_start_end.veh_param.cusp_extension_distance << endl;
             }
@@ -462,15 +445,6 @@ _TarStartEnd ParseJson(char* str) {
                 veh_start_end.veh_param.uniform_compaction_enable = true;
             }
 
-
-            if (val.HasMember("start_offset_distance") && val["start_offset_distance"].IsNumber()) {
-                veh_start_end.veh_param.start_offset_distance = val["start_offset_distance"].GetFloat();
-                cout << "veh_start_end.veh_param.start_offset_distance " << veh_start_end.veh_param.start_offset_distance << endl;
-            }
-            else {
-                cout << "无法找到车参 start_offset_distance" << endl;
-                veh_start_end.veh_param.start_offset_distance = 1.0;
-            }
 
             if (val.HasMember("is_light") && val["is_light"].IsBool()) {
                 veh_start_end.veh_param.is_light = val["is_light"].GetBool();

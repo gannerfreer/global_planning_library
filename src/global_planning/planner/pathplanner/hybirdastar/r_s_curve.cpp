@@ -31,12 +31,7 @@ void RSCurve::Init(_VehicleParam& vehicleparam) {
  * @brief RS曲线规划类接口函数
  */
 bool RSCurve::PlanRSPath(const Point start, const Point end, Path& rs_path, PlanRule plan_rule) {
-    //    ////cout << "6666m_vehicle_prarm_.radious = " << m_vehicle_prarm_.radious << "\n";
-    // threadLogger_->info("start:{},{},{}  end:{},{},{}", start.x, start.y, start.angle, end.x, end.y, end.angle);
     rs_plan_rule = plan_rule;
-    if (rs_plan_rule == PlanRule::Forward_All_Time) {
-        rs_plan_rule = PlanRule::Forward_To_End;
-    }
     // opti_rs_path.length = DBL_MAX;
     opti_rs_path.set(reeds_shepp_path_type_v.at(0), 0, 0, 0, 0, 0, DBL_MAX);
     a_star_direction = start.direction;
@@ -383,7 +378,7 @@ void RSCurve::CSC() {
     double x = new_end.x, y = new_end.y, phi = new_end.angle;
 
 
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Forward_To_End == rs_plan_rule || PlanRule::Forward_All_Time == rs_plan_rule) && LpSpLp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Forward_All_Time == rs_plan_rule) && LpSpLp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(14), t, u, v, 0, 0, L);
         Lmin = L;
     }
@@ -392,13 +387,13 @@ void RSCurve::CSC() {
 
     if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_All_Time == rs_plan_rule) && LpSpLp(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
-        // cout << "RS内部，Backward_To_End: CSC line392" << endl;
+        // cout << "RS内部，Start_Front_End_Back: CSC line392" << endl;
         opti_rs_path.set(reeds_shepp_path_type_v.at(14), -t, -u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Forward_To_End == rs_plan_rule || PlanRule::Forward_All_Time == rs_plan_rule) && LpSpLp(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Forward_All_Time == rs_plan_rule) && LpSpLp(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(15), t, u, v, 0, 0, L);
         Lmin = L;
@@ -407,13 +402,13 @@ void RSCurve::CSC() {
         ;
     if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_All_Time == rs_plan_rule) && LpSpLp(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
     {
-        // cout << "RS内部，Backward_To_End: CSC line407" << endl;
+        // cout << "RS内部，Start_Front_End_Back: CSC line407" << endl;
         opti_rs_path.set(reeds_shepp_path_type_v.at(15), -t, -u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Forward_To_End == rs_plan_rule || PlanRule::Forward_All_Time == rs_plan_rule) && LpSpRp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Forward_All_Time == rs_plan_rule) && LpSpRp(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(12), t, u, v, 0, 0, L);
         Lmin = L;
     }
@@ -421,14 +416,14 @@ void RSCurve::CSC() {
         ;
     if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_All_Time == rs_plan_rule) && LpSpRp(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
-        // cout << "RS内部，Backward_To_End: CSC line421" << endl;
+        // cout << "RS内部，Start_Front_End_Back: CSC line421" << endl;
 
         opti_rs_path.set(reeds_shepp_path_type_v.at(12), -t, -u, -v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Forward_To_End == rs_plan_rule || PlanRule::Forward_All_Time == rs_plan_rule) && LpSpRp(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Forward_All_Time == rs_plan_rule) && LpSpRp(x, -y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(13), t, u, v, 0, 0, L);
         Lmin = L;
@@ -437,7 +432,7 @@ void RSCurve::CSC() {
         ;
     if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_All_Time == rs_plan_rule) && LpSpRp(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
     {
-        // cout << "RS内部，Backward_To_End: CSC line437" << endl;
+        // cout << "RS内部，Start_Front_End_Back: CSC line437" << endl;
         opti_rs_path.set(reeds_shepp_path_type_v.at(13), -t, -u, -v, 0, 0, L);
     }
     else
@@ -542,41 +537,35 @@ void RSCurve::CCC() {
     else
         ;
 
-    // if (PlanRule::Forward_To_End != rs_plan_rule && PlanRule::Backward_All_Time != rs_plan_rule && LpRnLn(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
-    //     opti_rs_path.set(reeds_shepp_path_type_v.at(0), t, -u, -v, 0, 0, L);
-    //     Lmin = L;
-    // }
-    // else
-    //     ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRnLn(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRnLn(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), t, -u, -v, 0, 0, L);
         Lmin = L;
-        // cout << "RS内部，Backward_To_End: CCC line549 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCC line549 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 CCC LpRnLn line557" << endl;
     }
 
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLn(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRnLn(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), -t, u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRnLn(x, -y, -phi, t, u, v)) // reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRnLn(x, -y, -phi, t, u, v)) // reflect
     {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(1), t, -u, -v, 0, 0, L);
             Lmin = L;
         }
-        // cout << "RS内部，Backward_To_End: CCC line566  Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCC line566  Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败CCC LpRnLn  line575" << endl;
     }
 
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRnLn(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRnLn(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(1), -t, u, v, 0, 0, L);
         Lmin = L;
@@ -584,32 +573,32 @@ void RSCurve::CCC() {
     else
         ;
     // backwards
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRpLn(x, y, phi, t, u, v)) {
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRpLn(x, y, phi, t, u, v)) {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v))) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(0), t, u, -v, 0, 0, L);
             Lmin = L;
         }
-        // cout << "RS内部，Backward_To_End: CCC line582 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCC line582 Lmin:" << Lmin << endl;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRpLn(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRpLn(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(0), -t, -u, v, 0, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRpLn(x, -y, -phi, t, u, v)) // reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRpLn(x, -y, -phi, t, u, v)) // reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(1), t, u, -v, 0, 0, L);
         Lmin = L;
-        // cout << "RS内部，Backward_To_End: CCC line598 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCC line598 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败  CCC LpRpLn line609" << endl;
     }
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRpLn(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRpLn(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(1), -t, -u, v, 0, 0, L);
     }
@@ -675,32 +664,32 @@ void RSCurve::CCCC() {
     else
         ;
     double x = new_end.x, y = new_end.y, phi = new_end.angle;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRupLumRm(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) {
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRupLumRm(x, y, phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) {
         opti_rs_path.set(reeds_shepp_path_type_v.at(2), t, u, -u, -v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRupLumRm(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRupLumRm(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(2), -t, -u, u, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRupLumRm(x, -y, -phi, t, u, v)) // reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRupLumRm(x, -y, -phi, t, u, v)) // reflect
     {
         if (Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(3), t, u, -u, -v, 0, L);
             Lmin = L;
         }
 
-        // cout << "RS内部，Backward_To_End: CCCC line688 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCCC line688 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 CCCC  LpRupLumRm line702" << endl;
     } // 这段代码被注释过，严一峰将其打开
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRupLumRm(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip + reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRupLumRm(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + 2. * fabs(u) + fabs(v))) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(3), -t, -u, u, v, 0, L);
         Lmin = L;
@@ -835,35 +824,35 @@ void RSCurve::CCSC() {
     else
         ;
     double x = new_end.x, y = new_end.y, phi = new_end.angle;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRmSmLm(x, y, phi, t, u, v)) {
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRmSmLm(x, y, phi, t, u, v)) {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(4), t, -0.5 * M_PI, -u, -v, 0, L);
             Lmin = L;
         }
-        // cout << "RS内部，Backward_To_End: CCSC line831 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCSC line831 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 line847" << endl;
     }
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLm(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRmSmLm(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(4), -t, 0.5 * M_PI, u, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRmSmLm(x, -y, -phi, t, u, v)) // reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRmSmLm(x, -y, -phi, t, u, v)) // reflect
     {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(5), t, -0.5 * M_PI, -u, -v, 0, L);
             Lmin = L;
         }
-        // cout << "RS内部，Backward_To_End: CCSC line847 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCSC line847 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 line865" << endl;
     }
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLm(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRmSmLm(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(5), -t, 0.5 * M_PI, u, v, 0, L);
         Lmin = L;
@@ -871,36 +860,36 @@ void RSCurve::CCSC() {
     else
         ;
 
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRmSmRm(x, y, phi, t, u, v)) {
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRmSmRm(x, y, phi, t, u, v)) {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(8), t, -0.5 * M_PI, -u, -v, 0, L);
             Lmin = L;
         }
-        // cout << "RS内部，Backward_To_End: CCSC line863 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCSC line863 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 line883" << endl;
     }
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRm(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRmSmRm(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(8), -t, 0.5 * M_PI, u, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRmSmRm(x, -y, -phi, t, u, v)) // reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRmSmRm(x, -y, -phi, t, u, v)) // reflect
     {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(9), t, -0.5 * M_PI, -u, -v, 0, L);
             Lmin = L;
         }
 
-        // cout << "RS内部，Backward_To_End: CCSC line879 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCSC line879 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 line902" << endl;
     }
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRm(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRmSmRm(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(9), -t, 0.5 * M_PI, u, v, 0, L);
         Lmin = L;
@@ -909,36 +898,36 @@ void RSCurve::CCSC() {
         ;
 
     // backwards
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRmSmLmBack(x, y, phi, t, u, v)) {
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRmSmLmBack(x, y, phi, t, u, v)) {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(6), t, u, 0.5 * M_PI, -v, 0, L);
             Lmin = L;
         }
-        // cout << "RS内部，Backward_To_End: CCSC line896 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCSC line896 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 line921" << endl;
     }
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLmBack(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRmSmLmBack(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(6), -t, -u, -0.5 * M_PI, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRmSmLmBack(x, -y, -phi, t, u, v)) // reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRmSmLmBack(x, -y, -phi, t, u, v)) // reflect
     {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(7), t, u, 0.5 * M_PI, -v, 0, L);
             Lmin = L;
         }
 
-        // cout << "RS内部，Backward_To_End: CCSC line912 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCSC line912 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 line940" << endl;
     }
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmLmBack(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRmSmLmBack(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(7), -t, -u, -0.5 * M_PI, v, 0, L);
         Lmin = L;
@@ -946,36 +935,36 @@ void RSCurve::CCSC() {
     else
         ;
 
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRmSmRmBack(x, y, phi, t, u, v)) {
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRmSmRmBack(x, y, phi, t, u, v)) {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(11), t, u, 0.5 * M_PI, -v, 0, L);
             Lmin = L;
         }
 
-        // cout << "RS内部，Backward_To_End: CCSC line928 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCSC line928 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 line959" << endl;
     }
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRmBack(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRmSmRmBack(-x, y, -phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(11), -t, -u, -0.5 * M_PI, v, 0, L);
         Lmin = L;
     }
     else
         ;
-    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Backward_To_End == rs_plan_rule) && LpRmSmRmBack(x, -y, -phi, t, u, v)) // reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Front_End_Back == rs_plan_rule) && LpRmSmRmBack(x, -y, -phi, t, u, v)) // reflect
     {
         if (Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) {
             opti_rs_path.set(reeds_shepp_path_type_v.at(10), t, u, 0.5 * M_PI, -v, 0, L);
             Lmin = L;
         }
-        // cout << "RS内部，Backward_To_End: CCSC line944 Lmin:" << Lmin << endl;
+        // cout << "RS内部，Start_Front_End_Back: CCSC line944 Lmin:" << Lmin << endl;
     }
     else {
         // cout << "构型失败 line977" << endl;
     }
-    if (PlanRule::Normal_Planning == rs_plan_rule && LpRmSmRmBack(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
+    if ((PlanRule::Normal_Planning == rs_plan_rule || PlanRule::Start_Back_End_Front == rs_plan_rule) && LpRmSmRmBack(-x, -y, phi, t, u, v) && Lmin > (L = fabs(t) + fabs(u) + fabs(v) + 0.5 * M_PI)) // timeflip + reflect
     {
         opti_rs_path.set(reeds_shepp_path_type_v.at(10), -t, -u, -0.5 * M_PI, v, 0, L);
     }

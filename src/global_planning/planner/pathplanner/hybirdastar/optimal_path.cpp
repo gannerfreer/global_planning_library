@@ -201,15 +201,14 @@ void OptimalPath::DeleteVoronoiSpace(bool enable_voronoi) {
  *@param
  *return
  */
-PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule plan_path_rule) {
+PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule& plan_path_rule) {
     m_vehicle_param_ = m_vehicle_param;
     my_r_s_curve.Init(m_vehicle_param_);
     my_r_s_curve_h.Init(m_vehicle_param_);
 
     my_r_s_curve.threadLogger_   = threadLogger_;
     my_r_s_curve_h.threadLogger_ = threadLogger_;
-    // dubins_.SetParam(m_vehicle_param_.radious, end, plan_path_rule);
-    plan_path_rule_ = plan_path_rule;
+    plan_path_rule_              = plan_path_rule;
 
     utility::CTimeLog timelog("SearchGlobalPath");
     InitData(start, end);
@@ -224,11 +223,9 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     threadLogger_->info("GenerateBoundSet");
     timelog.AddLog("GenerateBoundSet");
 
-
     nodes2D_set_.clear();
     h_cost_map_.clear();
     nodes2D_map_.clear();
-    threadLogger_->info("终点碰撞检测");
 
     if (true == collison_check_.IsVehicleCollision(actual_start_)) {
         threadLogger_->info("起点碰撞检测不通过");
@@ -248,24 +245,24 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     end_f_collison_flag = collison_check_.IsVehicleCollision(end_f_);
 
 
-    if (plan_path_rule_ == PlanRule::Forward_All_Time && end_r_collison_flag) {
-        threadLogger_->info("PlanRule::Forward_All_Time ,but end_r_ 碰撞检测失败 ");
+    if ((plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front) && end_r_collison_flag) {
+        threadLogger_->info("PlanRule::Forward_All_Time||PlanRule::Start_Back_End_Front  ,but end_r_ 碰撞检测失败 ");
         return PlanResult::EndPoint_Infeasible;
     }
 
-    if ((plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Backward_To_End) && end_f_collison_flag) {
-        threadLogger_->info("PlanRule::Backward_All_Time或Backward_To_End ,but end_f_ 碰撞检测失败 ");
+    if ((plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Start_Front_End_Back) && end_f_collison_flag) {
+        threadLogger_->info("PlanRule::Backward_All_Time||plan_path_rule_ == PlanRule::Start_Front_End_Back ,but end_f_ 碰撞检测失败 ");
         return PlanResult::EndPoint_Infeasible;
     }
     timelog.AddLog("IsVehicleCollision");
 
 
-    if (plan_path_rule_ == PlanRule::Backward_To_End || plan_path_rule_ == PlanRule::Backward_All_Time) {
-        threadLogger_->info("plan_path_rule_ == PlanRule::Backward_To_End || plan_path_rule_ == PlanRule::Backward_All_Time---  Backward_Fitting");
+    if (plan_path_rule_ == PlanRule::Start_Front_End_Back || plan_path_rule_ == PlanRule::Backward_All_Time) {
+        threadLogger_->info("plan_path_rule_ == PlanRule::Start_Front_End_Back || plan_path_rule_ == PlanRule::Backward_All_Time---  Backward_Fitting");
         fitting_direction_ = FittingDirection::Backward_Fitting;
     }
-    else if (plan_path_rule_ == PlanRule::Forward_All_Time) {
-        threadLogger_->info("plan_path_rule_ == PlanRule::Forward_All_Time---  Forword_Fitting");
+    else if (plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front) {
+        threadLogger_->info("plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front---  Forword_Fitting");
         fitting_direction_ = FittingDirection::Forword_Fitting;
     }
     else if (plan_path_rule_ == PlanRule::Normal_Planning) {
@@ -315,19 +312,6 @@ void OptimalPath::InitData(Point start, Point end) {
     end_.y -= midpoint_.y;
     threadLogger_->info("midpoint_.x:{}  midpoint_.y:{}", midpoint_.x, midpoint_.y);
 
-    // threadLogger_->info("start_:{} {}", m_vehicle_param_.end_offset_distance);
-    // threadLogger_->info("end_", m_vehicle_param_.end_offset_distance);
-    threadLogger_->info("终点进行{}米的延伸", m_vehicle_param_.end_offset_distance);
-
-    // 计算终点前直线补偿点位置
-    end_f_.angle = end_.angle;
-    end_f_.x     = end_.x + m_vehicle_param_.end_offset_distance * cos(end_.angle);
-    end_f_.y     = end_.y + m_vehicle_param_.end_offset_distance * sin(end_.angle);
-
-    // 计算终点后直线补偿点位置
-    end_r_.angle = end_.angle;
-    end_r_.x     = end_.x - m_vehicle_param_.end_offset_distance * cos(end_.angle);
-    end_r_.y     = end_.y - m_vehicle_param_.end_offset_distance * sin(end_.angle);
 
     // 计算平移后地图边界点
     offset_road_bound_.clear();
@@ -342,7 +326,6 @@ void OptimalPath::InitData(Point start, Point end) {
             temp_bound_2.push_back(temp_point);
         }
         threadLogger_->info("外边界大小：{}", temp_bound_2.size());
-
         offset_road_bound_.push_back(temp_bound_2);
     }
     // std::ofstream file_out;
@@ -369,19 +352,29 @@ void OptimalPath::InitData(Point start, Point end) {
         threadLogger_->info("内边界大小：{}", temp_bound_2.size());
         offset_obstacle_bound_.push_back(temp_bound_2);
     }
+
+    // 计算终点前直线补偿点位置
+    threadLogger_->info("终点默认偏移距离 { }米", end_offset_distance_);
+    end_f_.angle = end_.angle;
+    end_f_.x     = end_.x + end_offset_distance_ * cos(end_.angle);
+    end_f_.y     = end_.y + end_offset_distance_ * sin(end_.angle);
+
+    // 计算终点后直线补偿点位置
+    end_r_.angle = end_.angle;
+    end_r_.x     = end_.x - end_offset_distance_ * cos(end_.angle);
+    end_r_.y     = end_.y - end_offset_distance_ * sin(end_.angle);
+
     actual_start_ = start_;
-    if (plan_path_rule_ == PlanRule::Forward_All_Time) {
-        threadLogger_->info("起点进行{}米的延伸", m_vehicle_param_.start_offset_distance);
-        actual_start_ = start_;
-        start_.x      = start_.x + m_vehicle_param_.start_offset_distance * cos(start_.angle);
-        start_.y      = start_.y + m_vehicle_param_.start_offset_distance * sin(start_.angle);
+    if (plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Front_End_Back) {
+        threadLogger_->info("起点向前进行{}米的延伸", start_offset_distance_);
+        start_.x = start_.x + start_offset_distance_ * cos(start_.angle);
+        start_.y = start_.y + start_offset_distance_ * sin(start_.angle);
     }
 
-    if (plan_path_rule_ == PlanRule::Backward_All_Time) {
-        threadLogger_->info("纯倒车，起点向后进行{}米的延伸", m_vehicle_param_.start_offset_distance);
-        actual_start_ = start_;
-        start_.x      = start_.x - m_vehicle_param_.start_offset_distance * cos(start_.angle);
-        start_.y      = start_.y - m_vehicle_param_.start_offset_distance * sin(start_.angle);
+    if (plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front) {
+        threadLogger_->info("起点向后进行{}米的延伸", start_offset_distance_);
+        start_.x = start_.x - start_offset_distance_ * cos(start_.angle);
+        start_.y = start_.y - start_offset_distance_ * sin(start_.angle);
     }
 }
 
@@ -684,7 +677,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         return true;
                     }
                     else {
-                        threadLogger_->info("RS曲线规划成功，但碰撞检测失败");
+                        // threadLogger_->info("RS曲线规划成功，但碰撞检测失败");
                     }
                 }
                 else {
@@ -734,10 +727,18 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
     unsigned long long time1 = 0, time2 = 0, time3 = 0;
 
     // 根据规划规则判定拓展规则
-
-    start_d_ = (plan_path_rule_ == PlanRule::Backward_All_Time) ? Backward : Forward;
-    end_d_   = (plan_path_rule_ == PlanRule::Forward_All_Time || ((pow(current_point.x - start_.x, 2) + pow(current_point.y - start_.y, 2)) > (pow(m_vehicle_param_.backward_search_range, 2)))) ? Forward : Backward;
-
+    if (plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Front_End_Back) {
+        start_d_ = Forward;
+        end_d_   = Forward;
+    }
+    else if (plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front) {
+        start_d_ = Backward;
+        end_d_   = Backward;
+    }
+    else {
+        start_d_ = Forward;
+        end_d_   = Backward;
+    }
     // 计算转向角离散增量
     const double delta_angle = (m_vehicle_param_.max_steering - m_vehicle_param_.min_steering) / (m_vehicle_param_.angle_discrete_num - 1);
     for (unsigned int i = 0; i < m_vehicle_param_.angle_discrete_num; ++i) {
@@ -776,9 +777,7 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
                         // open_multimap_f_中找到该点并替换
                         auto iter = open_map_f_.find(f);
                         if (iter != open_map_f_.end()) {
-                            // static int num = 0;
                             while (iter->second.id != end_point.id && fabs(iter->second.f - f) < 1e-6) {
-                                // ++num;
                                 ++iter;
                             }
                             // std::threadLogger_->info( "num =" << num << std::endl;
@@ -803,19 +802,12 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
             }
             time3 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs__);
         }
-        // threadLogger_->info("line561");
     }
-    // threadLogger_->info("line561");
-    // 在每个离散转向角处进行节点扩展
 
-    // auto end_time = ros::Time::now();
 
     time_dy       = time1;
     time_collsion = time2;
     time_other    = time3;
-    // ros::Duration time_difference = end_time - start_time;
-    // double time_difference_seconds = time_difference.toSec();
-    // time_expand_another = time_difference_seconds * 1000000;
 }
 
 /**
@@ -866,14 +858,12 @@ void OptimalPath::PathIntegration() {
     /*拼接起点直线路径*/
     Point temp_point;
     Path  temp_path;
+    threadLogger_->info("PathIntegration--PlanRule:{}  本次HybridA*起点直线延长:{}  终点直线延长:{}", static_cast<int>(plan_path_rule_), start_offset_distance_, end_offset_distance_);
 
-    threadLogger_->info("PathIntegration--start_offset_distance:{}", m_vehicle_param_.start_offset_distance);
-
-    if (plan_path_rule_ == PlanRule::Forward_All_Time) {
-        threadLogger_->info("向前路径拼接");
+    if (plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Front_End_Back) {
+        threadLogger_->info("Forward_All_Time or  Start_Front_End_Back  起点向前直线延长{} m", start_offset_distance_);
         temp_point.angle = actual_start_.angle;
-        // cout << "start_offset_distance:" << m_vehicle_param_.start_offset_distance << endl;
-        for (double i = 0; i <= m_vehicle_param_.start_offset_distance + 1e-3; i += m_vehicle_param_.hybridastar_step_length) {
+        for (double i = 0; i <= start_offset_distance_ + 1e-3; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = actual_start_.x + i * cos(actual_start_.angle);
             temp_point.y         = actual_start_.y + i * sin(actual_start_.angle);
             temp_point.z         = 0;
@@ -881,30 +871,22 @@ void OptimalPath::PathIntegration() {
             temp_path.emplace_back(temp_point);
         }
         temp_path.pop_back();
-        // cout << "temp_path.size() " << temp_path.size() << endl;
         path_a_star_.insert(path_a_star_.begin(), temp_path.begin(), temp_path.end());
         path_a_star_.pop_back();
-        // cout << "拼接起点" << endl;
-        // for (int i = 0; i < path_a_star_.size(); i++) {
-        //     cout << path_a_star_.at(i).angle << endl;
-        // }
     }
-    if (plan_path_rule_ == PlanRule::Backward_To_End) {
+
+    if (plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front) {
         if (path_a_star_.size() >= 2) {
             if (path_a_star_.at(0).direction == 0 && path_a_star_.at(1).direction == 1) {
                 path_a_star_.at(0).direction = MotionDirection::Backward;
             }
         }
-    }
-
-
-    if (plan_path_rule_ == PlanRule::Backward_All_Time) {
         if (path_a_star_.at(0).direction == 0) {
             path_a_star_.at(0).direction = MotionDirection::Backward;
         }
-        threadLogger_->info("向后路径拼接");
+        threadLogger_->info("Backward_All_Time or Start_Back_End_Front  起点向后直线延长{} m", start_offset_distance_);
         temp_point.angle = actual_start_.angle;
-        for (double i = 0; i <= m_vehicle_param_.start_offset_distance + 1e-3; i += m_vehicle_param_.hybridastar_step_length) {
+        for (double i = 0; i <= start_offset_distance_ + 1e-3; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = actual_start_.x - i * cos(actual_start_.angle);
             temp_point.y         = actual_start_.y - i * sin(actual_start_.angle);
             temp_point.z         = 0;
@@ -915,7 +897,7 @@ void OptimalPath::PathIntegration() {
         path_a_star_.insert(path_a_star_.begin(), temp_path.begin(), temp_path.end());
         path_a_star_.pop_back();
     }
-    threadLogger_->info("拼接起点的路径的direction信息，只对Forward_All_TIme规则有效");
+    threadLogger_->info("拼接起点的路径");
     for (auto i : path_a_star_) {
         threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
     }
@@ -923,10 +905,6 @@ void OptimalPath::PathIntegration() {
     path_a_star_.insert(path_a_star_.end(), path_r_s_.begin(), path_r_s_.end());
     Path().swap(path_r_s_);
 
-    // cout << "拼接RS" << endl;
-    // for (int i = 0; i < path_a_star_.size(); i++) {
-    //     cout << path_a_star_.at(i).angle << endl;
-    // }
     threadLogger_->info("拼接完RS路径");
     for (auto i : path_a_star_) {
         threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
@@ -938,7 +916,7 @@ void OptimalPath::PathIntegration() {
         Point temp_point;
         temp_point.angle = end_r_.angle;
         // cout << "temp_point.angle:" << temp_point.angle << endl;
-        for (double i = m_vehicle_param_.hybridastar_step_length; i <= m_vehicle_param_.end_offset_distance; i += m_vehicle_param_.hybridastar_step_length) {
+        for (double i = m_vehicle_param_.hybridastar_step_length; i <= end_offset_distance_; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = end_r_.x + i * cos(end_r_.angle);
             temp_point.y         = end_r_.y + i * sin(end_r_.angle);
             temp_point.z         = 0;
@@ -955,7 +933,7 @@ void OptimalPath::PathIntegration() {
     {
         Point temp_point;
         temp_point.angle = end_f_.angle;
-        for (double i = m_vehicle_param_.hybridastar_step_length; i <= m_vehicle_param_.end_offset_distance; i += m_vehicle_param_.hybridastar_step_length) {
+        for (double i = m_vehicle_param_.hybridastar_step_length; i <= end_offset_distance_; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = end_f_.x - i * cos(end_f_.angle);
             temp_point.y         = end_f_.y - i * sin(end_f_.angle);
             temp_point.z         = 0;

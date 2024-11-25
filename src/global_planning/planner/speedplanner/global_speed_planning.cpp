@@ -931,7 +931,10 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
         }
     }
 
-    file_out.open("speed_limit1.txt");
+    threadLogger_->info("限速设置--在这里打印路径点限速信息");
+    for (size_t index = 0; index < trajectory_points.size(); index++) {
+        threadLogger_->info("index:{}  speed_limit:{}", index + 1, trajectory_points.at(index).speed_limit);
+    }
     for (size_t index = 0; index < trajectory_points.size(); index++) {
         file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
     }
@@ -969,6 +972,7 @@ bool GlobalSpeedPlanning::SplitPath() {
         trajectory_fragments.erase(trajectory_fragments.begin());
     }
     threadLogger_->info("SplitPath 成功");
+
     return true;
 }
 
@@ -983,6 +987,8 @@ bool GlobalSpeedPlanning::GetKeypoint() {
         for (unsigned int i = 0; i < trajectory_fragments.size(); i++) {
             temp_traj.clear();
             temp_traj = trajectory_fragments.at(i);
+
+
             // 如果是倒车，暂时按照最简单的加速、匀速、加速的模式进行速度规划，全段最大速度提前设定为
             if (1 == temp_traj.at(1).direction) { // 判断第一个点的原因在于分段时会存在重合点
                 temp_keypoints.clear();

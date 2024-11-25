@@ -155,8 +155,7 @@ struct _VehicleParam {
     double turnning_penalty;
     // 方向切换惩罚
     double switch_penalty;
-    // 倒车搜索范围（距起点距离）
-    double backward_search_range;
+
     // 起始处线性搜索优先的范围
     double       linear_preferred_distance;
     bool         uniform_compaction_enable;
@@ -181,16 +180,10 @@ struct _VehicleParam {
     // 安全距离允许浮动偏差
     double safe_margin_error; // safe_margin_bound / 2;
 
-    // _________________
-    // 特殊处理参数
-    // 终点添加直线段距离
-    double end_offset_distance   = 0.0;
-    double start_offset_distance = 0.0;
     // 尖点延伸距离
     float cusp_extension_distance;
 
 
-    // ________________
     // 速度规划参数
     /* 最大加速度 单位(m/s^2) */
     float max_acceleration;
@@ -256,24 +249,13 @@ typedef struct {
 } Point_3d;
 #endif
 
-typedef struct {
-    double d_Max_Acc;
-    double d_Min_Acc;
-    double d_Max_Deceleration;
-} tar_Speed, *ptar_Speed;
+
 enum struct PlanRule : int {
-    Normal_Planning = 0, // 正常规划,无特殊限制
-    // START_BACK_END_IN   = 1, // 起点倒退，终点前进
-    // START_BACK_END_BACK = 2, // 起点倒退，终点倒退
-    // START_IN_END_IN     = 3, // 起点前进，终点前进
-    // START_IN_END_BACK   = 4, // 起点前进，终点倒退
-    NO_Backward_In_Start = 1, // 不能倒车起步
-    Backward_To_End      = 2, // 必须倒车进入终点，且前进后退只切换一次
-    Forward_To_End       = 3, // RS曲线必须前进拟合到终点
-    Backward_All_Time    = 4, // 只后退
-    Forward_All_Time     = 5, // 只前进
-    Entry_loading_point  = 6, // 进入装载点
-    U_Turn               = 7  // U行转弯(掉头)
+    Normal_Planning      = 0, // 正常规划,无特殊限制
+    Start_Back_End_Front = 1, // 起点倒退，然后前进到终点
+    Start_Front_End_Back = 2, // 起点前进，然后倒车到终点
+    Backward_All_Time    = 3, // 只后退
+    Forward_All_Time     = 4, // 只前进
 };
 enum MotionDirection {
     Forward  = 0, // 前进
