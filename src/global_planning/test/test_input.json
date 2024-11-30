@@ -1,16 +1,16 @@
 {
     "m_Start_Point": {
-        "x": -17.303853314636587,
-        "y": 77.41364597441738,
-        "z": 11.84891414642334,
-        "yaw": 279.7680969238281
+        "x": 626.8382964552,
+        "y": -827.7047895463,
+        "z": 0,
+        "yaw": 115.6508778412
     },
     "m_End_Point": {
-        "x": -7.3474954448,
-        "y": 41.019857293,
+        "x": 666.0367020145,
+        "y": -837.0782651604,
         "z": 0,
-        "yaw": 307.4835326711,
-        "endPointId": 6
+        "yaw": 181.5687524972,
+        "endPointId": 11
     },
     "m_Veh_Param": {
         "radious": 13,
@@ -41,30 +41,91 @@
         "angle_discrete_num": 3,
         "max_fitting_radius": 100,
         "rs_min_path_length": 8,
-        "veh_center_2_front": 6.8,
+        "veh_center_2_front": 7.3,
         "curvature_threshold": 0.1,
+        "end_offset_distance": 1,
         "max_iterations_opti": 100,
         "path_curvature_term": 0,
         "path_smoothness_term": 0.01,
         "safe_margin_obstacle": 2,
-        "speed_discrete_number": 1,
-        "bumpy_road_speed_limit": 2.55,
-        "slope_road_speed_limit": 3.07,
+        "backward_search_range": 100,
+        "speed_discrete_number": 5,
+        "start_offset_distance": 1,
+        "bumpy_road_speed_limit": 8,
+        "slope_road_speed_limit": 8,
         "cusp_extension_distance": 3,
         "hybridastar_step_length": 1,
-        "narrow_road_speed_limit": 3,
-        "veh_center_2_rear_bound": 1.33,
-        "regular_road_speed_limit": 6.08,
-        "curvature_smooth_opti_num": 25,
+        "narrow_road_speed_limit": 8,
+        "veh_center_2_rear_bound": 0.5,
+        "regular_road_speed_limit": 8,
         "linear_preferred_distance": 3,
-        "uniform_compaction_enable": false,
+        "uniform_compaction_enable": true,
         "veh_center_2_rear_obstacle": 2.77,
-        "intersection_road_speed_limit": 2.06,
+        "intersection_road_speed_limit": 8,
         "load_point_end_offset_distance": 4,
         "load_point_start_offset_distance": 4,
         "vehicle_code": 1001
     },
     "task_type": 2,
-    "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1860509445452263424"
+    "Inner_Borders": [
+        {
+            "zone_id": 3,
+            "inner_borders": [
+                {
+                    "point_num": 8,
+                    "border_points": [
+                        {
+                            "x": 658.7537264480175,
+                            "y": -845.183707307021,
+                            "z": 0,
+                            "type": 0
+                        },
+                        {
+                            "x": 659.1343907848275,
+                            "y": -841.7346502383889,
+                            "z": 0,
+                            "type": 0
+                        },
+                        {
+                            "x": 666.5066501181415,
+                            "y": -846.0393793033088,
+                            "z": 0,
+                            "type": 0
+                        },
+                        {
+                            "x": 666.8873144549515,
+                            "y": -842.5903222346767,
+                            "z": 0,
+                            "type": 0
+                        },
+                        {
+                            "x": 658.9440586164225,
+                            "y": -843.459178772705,
+                            "z": 0,
+                            "type": 0
+                        },
+                        {
+                            "x": 662.6301882830794,
+                            "y": -845.6115433051649,
+                            "z": 0,
+                            "type": 0
+                        },
+                        {
+                            "x": 663.0108526198894,
+                            "y": -842.1624862365328,
+                            "z": 0,
+                            "type": 0
+                        },
+                        {
+                            "x": 666.6969822865465,
+                            "y": -844.3148507689928,
+                            "z": 0,
+                            "type": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "key": "ids:mine:dispatch:planPath:result:1862829929506844672"
 }

@@ -249,7 +249,7 @@ inline bool doesTrajectorySelfIntersect(Path& path) {
         }
     }
     double percent = sum / 36.0;
-    if (percent < 0.6) {
+    if (percent < 0.8) {
         cout << "路径未构成圈" << endl;
         return false;
     }
@@ -415,7 +415,7 @@ inline bool CheckPathFracture(vector<_TrajectoryPoint>& traj) {
         dis        = hypot(traj.at(i).x - traj.at(i + 1).x, traj.at(i).y - traj.at(i + 1).y);
         angle_diff = fabs(traj.at(i + 1).yaw - traj.at(i).yaw) > 180.0 ? 360 - fabs(traj.at(i + 1).yaw - traj.at(i).yaw) : fabs(traj.at(i + 1).yaw - traj.at(i).yaw);
         if (angle_diff > 10) { // 角度偏差不允许超过20度
-            cout << "轨迹连续性检测，角度有跳变，跳变" << angle_diff << " 度,索引：" << i + 1 << endl;
+            cout << "轨迹连续性检测，角度有跳变，跳变" << angle_diff << " 度,索引：" << i + 1 << "坐标：(" << traj.at(i).x << "," << traj.at(i).y << ")  和   (" << traj.at(i + 1).x << "," << traj.at(i + 1).y << ")" << endl;
             return false;
         }
 

@@ -924,17 +924,18 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
 
 
     // 曲率限速
-    iter = trajectory_points.begin();
-    for (; iter != trajectory_points.end(); iter++) {
-        if (iter->speed_limit > sqrt(0.4 / fabs(iter->curvature))) {
-            iter->speed_limit = sqrt(0.4 / fabs(iter->curvature));
-        }
-    }
+    // iter = trajectory_points.begin();
+    // for (; iter != trajectory_points.end(); iter++) {
+    //     if (iter->speed_limit > sqrt(0.4 / fabs(iter->curvature))) {
+    //         iter->speed_limit = sqrt(0.4 / fabs(iter->curvature));
+    //     }
+    // }
 
     threadLogger_->info("限速设置--在这里打印路径点限速信息");
     for (size_t index = 0; index < trajectory_points.size(); index++) {
         threadLogger_->info("index:{}  speed_limit:{}", index + 1, trajectory_points.at(index).speed_limit);
     }
+    file_out.open("speed_limit1.txt");
     for (size_t index = 0; index < trajectory_points.size(); index++) {
         file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
     }

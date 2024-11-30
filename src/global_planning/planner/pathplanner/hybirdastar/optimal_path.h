@@ -351,7 +351,7 @@ class OptimalPath {
     int                             height;
     bool                            use_voronoi            = false;
     int                             start_offset_distance_ = 0; // 起点直线延长距离
-    int                             end_offset_distance_   = 1; // HybridA*终点直线延长距离
+    int                             end_offset_distance_   = 0; // HybridA*终点直线延长距离
 
 
   private:

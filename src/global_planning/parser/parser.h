@@ -299,7 +299,7 @@ _TarStartEnd ParseJson(char* str) {
             }
 
 
-                  if (val.HasMember("cusp_extension_distance") && val["cusp_extension_distance"].IsNumber()) {
+            if (val.HasMember("cusp_extension_distance") && val["cusp_extension_distance"].IsNumber()) {
                 veh_start_end.veh_param.cusp_extension_distance = val["cusp_extension_distance"].GetFloat();
                 cout << "veh_start_end.veh_param.cusp_extension_distance " << veh_start_end.veh_param.cusp_extension_distance << endl;
             }
@@ -713,7 +713,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.9.20241122_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.9.20241127_beta" << endl;
         record.close();
     }
 

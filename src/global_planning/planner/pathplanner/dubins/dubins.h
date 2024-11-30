@@ -123,7 +123,7 @@ class Dubins {
      * 返回说明：　点信息
      */
     Point CalNextPoint(float v, float x, float y, float theta, DubinsPathSegmentType type);
-
+    bool  DubinsPathSelfIntersectCheck(std::vector<Point>& path);
 
   private:
     const DubinsPathSegmentType dubins_path_type_[6][3] = {

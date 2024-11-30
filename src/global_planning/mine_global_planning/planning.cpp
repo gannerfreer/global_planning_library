@@ -49,8 +49,6 @@ bool Planning::ReadAllMapFile() {
 
 #endif
 }
-
-
 void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("Enter GlobalPathPlanningIntface");
     path.clear();
@@ -300,27 +298,25 @@ bool Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_poi
             temp_point.curvature = final_path.at(i).curvature;
             traj.emplace_back(temp_point);
         }
-
-        threadLogger_->info("开始绕圈检测");
         // 绕圈检查，检查原理：判断角度是否产生0~2M_PI的变化
-        if (Helper::doesTrajectorySelfIntersect(final_path)) {
-            threadLogger_->info("检测到路径绕圈");
-            return false;
-        }
-        threadLogger_->info("绕圈检测达标");
-
-        threadLogger_->info("开始段数检测");
-        int count = 0;
-        for (int i = 0; i < final_path.size() - 1; i++) {
-            if (final_path.at(i).direction != final_path.at(i + 1).direction) {
-                count++;
+        if (plan_rule_id != PlanRule::Normal_Planning) {
+            if (Helper::doesTrajectorySelfIntersect(final_path)) {
+                threadLogger_->info("检测到路径绕圈");
+                return false;
             }
+            threadLogger_->info("绕圈检测达标");
+            int count = 0;
+            for (int i = 0; i < final_path.size() - 1; i++) {
+                if (final_path.at(i).direction != final_path.at(i + 1).direction) {
+                    count++;
+                }
+            }
+            if (count > 1) {
+                threadLogger_->error("路径段数大于2段，不予输出");
+                return false;
+            }
+            threadLogger_->info("段数检测达标");
         }
-        if (count > 1) {
-            threadLogger_->error("路径段数大于2段，不予输出");
-            return false;
-        }
-        threadLogger_->info("段数检测达标");
         return true;
     }
     else {
@@ -586,19 +582,11 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("装载");
         int load_point_end_offset_distance = vehicle_param_.load_point_end_offset_distance;
         while (load_point_end_offset_distance >= 1) {
-            my_optimal_path_.end_offset_distance_ = load_point_end_offset_distance;
+            my_optimal_path_.start_offset_distance_ = 1;
+            my_optimal_path_.end_offset_distance_   = load_point_end_offset_distance;
             threadLogger_->info("当前装载任务，终点直线延长:    {} m", my_optimal_path_.end_offset_distance_);
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Backward_All_Time, time_threshold)) {
-                threadLogger_->info("纯倒车失败，换成先前进，再后退规则");
-                if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Start_Front_End_Back, time_threshold)) {
-                    threadLogger_->error("装载任务，PlanRule::Start_Front_End_Back规则，装载点直线延伸 {} m，Hybird A*无法规划出当前起点至终点的路径", load_point_end_offset_distance);
-                }
-                else {
-                    global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
-                    threadLogger_->info("装载,路长:{}", global_path_.size());
-                    success_flag = true;
-                    break;
-                }
+                threadLogger_->error("装载任务，PlanRule::Backward_All_Time，装载点直线延伸 {} m，Hybird A*无法规划出当前起点至终点的路径", load_point_end_offset_distance);
             }
             else {
                 global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
@@ -609,15 +597,29 @@ bool Planning::NotFollowReferencelinePlanning() {
             load_point_end_offset_distance--;
         }
         if (success_flag == false) {
-            error_type_ = ErrorType::POINT_UNREASONABLE;
-            return false;
+            threadLogger_->info("更换规则，采用Start_Front_End_Back规划方式");
+            my_optimal_path_.start_offset_distance_ = 1;
+            my_optimal_path_.end_offset_distance_   = vehicle_param_.load_point_end_offset_distance;
+            if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Start_Front_End_Back, time_threshold)) {
+                threadLogger_->error("装载任务，PlanRule::Start_Front_End_Back规则，装载点直线延伸 {} m，Hybird A*无法规划出当前起点至终点的路径", vehicle_param_.load_point_end_offset_distance);
+            }
+            else {
+                global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
+                threadLogger_->info("装载,路长:{}", global_path_.size());
+                success_flag = true;
+            }
+            if (success_flag == false) {
+                error_type_ = ErrorType::POINT_UNREASONABLE;
+                return false;
+            }
         }
     }
     else if (task_type_ == TaskType::UNLOAD) { // 卸载任务，先前进，后倒退进入卸载点
         threadLogger_->info("卸载");
         int unload_point_end_offset_distance = vehicle_param_.load_point_end_offset_distance;
         while (unload_point_end_offset_distance >= 1) {
-            my_optimal_path_.end_offset_distance_ = unload_point_end_offset_distance;
+            my_optimal_path_.start_offset_distance_ = 1;
+            my_optimal_path_.end_offset_distance_   = unload_point_end_offset_distance;
             threadLogger_->info("终点直线延长:    {} m", my_optimal_path_.end_offset_distance_);
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Start_Front_End_Back, time_threshold)) {
                 threadLogger_->error("卸载任务，PlanRule::Start_Front_End_Back，卸载点直线延伸 {} m，Hybird A*无法规划出当前起点至终点的路径", unload_point_end_offset_distance);
@@ -986,6 +988,7 @@ bool Planning::HybirdAStarFitting() {
             int start_point_offset_distance = vehicle_param_.load_point_start_offset_distance;
             while (start_point_offset_distance >= 1) {
                 my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
+                my_optimal_path_.end_offset_distance_   = 1;
                 threadLogger_->info("识别出从装载点或卸载点出发，当前起点直线距离 {}，这种情况下此采用Forward_Fitting规则 ", start_point_offset_distance);
                 cout << "识别出从装载点或卸载点出发，当前起点直线距离" << start_point_offset_distance << " 这种情况下此采用Forward_Fitting规则" << endl;
                 vector<_TrajectoryPoint> temp_traj;
@@ -1009,10 +1012,12 @@ bool Planning::HybirdAStarFitting() {
         else {
             threadLogger_->info("常规调度任务，起点需要HybirdA*拟合");
             cout << "常规调度任务，起点需要HybirdA*拟合" << endl;
+            my_optimal_path_.start_offset_distance_ = 1;
+            my_optimal_path_.end_offset_distance_   = 1;
             vector<_TrajectoryPoint> temp_traj;
             int                      search_index = 0;
             if (JudgeFittingDirection()) {
-                threadLogger_->info("参考路径位于车头前方，这种情况下采用 Forward_All_Time 规则进行规划");
+                threadLogger_->info("参考路径位于车头前方,或可以向前掉头开往对向参考路径，这种情况下采用 Forward_All_Time 规则进行规划");
                 if (!ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time)) {
                     threadLogger_->error("常规调度任务，起点hybirdA*采用Forward_All_Time拟合失败，即将调整拟合规则为 Start_Back_End_Front");
                     if (!ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front)) {
@@ -1114,8 +1119,7 @@ bool Planning::IsShortDistance() {
 }
 
 bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag) {
-    threadLogger_->info("start_pose:{},{},{}", start_pose.x, start_pose.y, start_pose.yaw);
-    threadLogger_->info("end_pose:{},{},{}", end_pose.x, end_pose.y, end_pose.yaw);
+    threadLogger_->info("PoseVerificationInterface--start_pose:{},{},{}     end_pose:{} ,{},{}", start_pose.x, start_pose.y, start_pose.yaw, end_pose.x, end_pose.y, end_pose.yaw);
     curve::Point dubins_start, dubins_end;
     if (flag == 0) {
         auto x = start_pose.x + 1.0 * std::cos(start_pose.yaw);

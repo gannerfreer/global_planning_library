@@ -68,17 +68,22 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
             pt = CalNextPoint(v - std::get<0>(opt_path) - std::get<1>(opt_path), cp[2].GetX(), cp[2].GetY(), cp[2].GetAngle(), type[2]);
         }
         pt = pt * radius_ + start_pose;
-        pt.SetAngle(mod(pt.GetAngle(), twopi));
+        pt.SetAngle(mod(pt.GetAngle(), 360.0));
         path.emplace_back(pt);
     }
 
-    for (int i = 0; i < 3; i++) {
-        if (type[i] == DubinsPathSegmentType::L || type[i] == DubinsPathSegmentType::R) {
-            if ((i == 0 && std::get<0>(opt_path) > M_PI) || (i == 1 && std::get<1>(opt_path) > M_PI) || (i == 2 && std::get<2>(opt_path) > M_PI)) {
-                return false;
-            }
-        }
+    if (DubinsPathSelfIntersectCheck(path)) {
+        cout << "路径绕圈，不合理" << endl;
+        return false;
     }
+
+    // for (int i = 0; i < 3; i++) {
+    //     if (type[i] == DubinsPathSegmentType::L || type[i] == DubinsPathSegmentType::R) {
+    //         if ((i == 0 && std::get<0>(opt_path) > M_PI) || (i == 1 && std::get<1>(opt_path) > M_PI) || (i == 2 && std::get<2>(opt_path) > M_PI)) {
+    //             return false;
+    //         }
+    //     }
+    // }
     // cout << "path.size():" << path.size() << endl;
     return true;
 }
@@ -196,4 +201,33 @@ Point Dubins ::CalNextPoint(float v, float x, float y, float theta, DubinsPathSe
             break;
     }
     return Point(x_value, y_value, theta_value * 180 / M_PI);
+}
+bool Dubins::DubinsPathSelfIntersectCheck(std::vector<Point>& path) {
+    // 通过判断yaw的变化了分析是否画圈
+    // 判断方法，设置36个if else，36个标志位，如果超过24个标志为被置为true，即被判定为绕圈
+    cout << "进入检测绕圈函数" << endl;
+    vector<int> vec(36, 0);
+    int         index = 0;
+    for (int i = 0; i < path.size(); i++) {
+        index = floor(path.at(i).GetAngle() / 10.0);
+        if (index > 35) index = 35;
+        if (index < 0) index = 0;
+        vec.at(floor(index)) = 1;
+    }
+    // cout << "成功的经过这里" << endl;
+    int sum = 0;
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec.at(i) == 1) {
+            sum++;
+        }
+    }
+    double percent = sum / 36.0;
+    if (percent < 0.8) {
+        cout << "路径未构成圈" << endl;
+        return false;
+    }
+    else {
+        cout << "路径构成圈圈" << endl;
+        return true;
+    }
 }

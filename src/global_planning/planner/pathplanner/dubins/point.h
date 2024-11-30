@@ -21,7 +21,7 @@ class Point {
     }
     /// 右乘标量k
     inline Point operator*(const float k) const {
-        return Point(x * k, y * k);
+        return Point(x * k, y * k, angle);
     }
     /// 除以标量k
     inline Point operator/(const float k) const {
@@ -29,7 +29,7 @@ class Point {
     }
     /// 两点相加
     inline Point operator+(const Point& point) const {
-        return Point(x + point.x, y + point.y);
+        return Point(x + point.x, y + point.y, angle + point.angle);
     }
     /// 两点相减
     inline Point operator-(const Point& point) const {

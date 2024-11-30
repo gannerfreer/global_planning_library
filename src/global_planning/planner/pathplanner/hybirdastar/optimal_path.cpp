@@ -220,7 +220,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     timelog.AddLog("InitBoundMap");
 
     GenerateBoundSet();
-    threadLogger_->info("GenerateBoundSet");
+    threadLogger_->info("GenerateBoundSet 执行完毕");
     timelog.AddLog("GenerateBoundSet");
 
     nodes2D_set_.clear();
@@ -354,7 +354,7 @@ void OptimalPath::InitData(Point start, Point end) {
     }
 
     // 计算终点前直线补偿点位置
-    threadLogger_->info("终点默认偏移距离 { }米", end_offset_distance_);
+    threadLogger_->info("终点偏移距离 { }米", end_offset_distance_);
     end_f_.angle = end_.angle;
     end_f_.x     = end_.x + end_offset_distance_ * cos(end_.angle);
     end_f_.y     = end_.y + end_offset_distance_ * sin(end_.angle);
@@ -366,13 +366,13 @@ void OptimalPath::InitData(Point start, Point end) {
 
     actual_start_ = start_;
     if (plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Front_End_Back) {
-        threadLogger_->info("起点向前进行{}米的延伸", start_offset_distance_);
+        threadLogger_->info("规划规则：{} 起点向前进行{}米的延伸", static_cast<int>(plan_path_rule_), start_offset_distance_);
         start_.x = start_.x + start_offset_distance_ * cos(start_.angle);
         start_.y = start_.y + start_offset_distance_ * sin(start_.angle);
     }
 
     if (plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front) {
-        threadLogger_->info("起点向后进行{}米的延伸", start_offset_distance_);
+        threadLogger_->info("规划规则：{} 起点向后进行{}米的延伸", static_cast<int>(plan_path_rule_), start_offset_distance_);
         start_.x = start_.x - start_offset_distance_ * cos(start_.angle);
         start_.y = start_.y - start_offset_distance_ * sin(start_.angle);
     }
@@ -421,7 +421,6 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         if (cal_time > timeThreshold) // 若超过最大迭代次数则直接返回
         {
             threadLogger_->info("A star overtime!, timeThreshold:{} ms,AStarPath while循环已经被调用: {} 次", timeThreshold * 0.001, sum);
-
             threadLogger_->info("拓展总用时: {} ms", 0.001 * expand_time);
             threadLogger_->info("拓展-运动学搜索用时: {} ms", 0.001 * expand_time_dynamic);
             threadLogger_->info("拓展-碰撞检测用时: {} ms", 0.001 * expand_time_collision);
@@ -652,12 +651,11 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) && (MotionDirection::Backward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Backward_Fitting oneshot成功，一共oneshot了 {}  次 ", All);
-
+                        // 对RS曲线规划结果进行角度规划统一到[0,2*M_PI)
                         for (auto& i : path_r_s_) {
                             if (i.angle < 0) i.angle += 2 * M_PI;
                             threadLogger_->info("{} {} {} {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
                         }
-
                         return true;
                     }
                 }
@@ -666,18 +664,15 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 }
                 break;
             case FittingDirection::Forword_Fitting:
-
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) && (MotionDirection::Forward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
+                        // 对RS曲线规划结果进行角度规划统一到[0,2*M_PI)
                         for (auto& i : path_r_s_) {
                             if (i.angle < 0) i.angle += 2 * M_PI;
                             threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
                         }
                         return true;
-                    }
-                    else {
-                        // threadLogger_->info("RS曲线规划成功，但碰撞检测失败");
                     }
                 }
                 else {
@@ -685,7 +680,6 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                 }
                 break;
             case FittingDirection::Both_Fitting:
-
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) && (MotionDirection::Forward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
@@ -897,7 +891,7 @@ void OptimalPath::PathIntegration() {
         path_a_star_.insert(path_a_star_.begin(), temp_path.begin(), temp_path.end());
         path_a_star_.pop_back();
     }
-    threadLogger_->info("拼接起点的路径");
+    threadLogger_->info("拼接完起点的路径，信息如下");
     for (auto i : path_a_star_) {
         threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
     }
@@ -1042,7 +1036,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     temp_end_point.angle = end_.angle;
 
     if (!my_r_s_curve_h.PlanRSPath(temp_start_point, temp_end_point)) {
-        threadLogger_->info("采用RS曲线进行估算h值失败");
+        // threadLogger_->info("采用RS曲线进行估算h值失败");
     }
     rs_h = my_r_s_curve_h.opti_rs_path.length * m_vehicle_param_.radious;
     utility::CTimeClock init_time;
