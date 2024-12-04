@@ -39,8 +39,8 @@ bool                         is_receive_end   = false;
 // const double y_o_ = -22.3275; // 园区偏移参数
 
 
-const double x_o_ = 60716.5889301116;  // 园区偏移参数
-const double y_o_ = 3828434.981835444; // 园区偏移参数
+const double x_o_ = -94.5797527827; // 园区偏移参数
+const double y_o_ = 173.608354053;  // 园区偏移参数
 
 vector<_TrajectoryPoint> global_path, road_nodes;
 vector<Point>            expand_point;

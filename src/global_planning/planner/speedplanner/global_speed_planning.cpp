@@ -397,7 +397,7 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                     if ((v1_left + eps) < v1_right && (v2_right + eps) < v1_right && v1_left <= (v2_right + eps)) {
                         // 判断距离 若距离符合 将中速降低为最小速度
                         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance;
-                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * max_acceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * min_acceleration) + 10; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
+                        float s_min   = (pow(v1_right, 2) - pow(v1_left, 2)) / (2 * max_acceleration) + (pow(v2_right, 2) - pow(v1_right, 2)) / (2 * min_acceleration) + 2; // v1_left加速到v1_right，然后再由v1_right减速到v2_right所需要的极限距离
                         threadLogger_->info("s_total = {}", s_total);
 
                         threadLogger_->info("s_min ={} ", s_min);
