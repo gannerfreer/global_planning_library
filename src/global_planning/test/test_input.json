@@ -1,16 +1,16 @@
 {
     "m_Start_Point": {
-        "x": 20.339580350135023,
-        "y": 13.448552510865705,
-        "z": 12.448107719421387,
-        "yaw": 85.8619613647461
+        "x": 20.49458344918306,
+        "y": 13.325303505473169,
+        "z": 12.523530006408691,
+        "yaw": 87.41670227050781
     },
     "m_End_Point": {
-        "x": -61.3177484053,
-        "y": 123.9878344578,
+        "x": -0.9644984312,
+        "y": 37.9230161812,
         "z": 0,
-        "yaw": 88.6622933548,
-        "endPointId": 2
+        "yaw": 137.2997952581,
+        "endPointId": 976
     },
     "m_Veh_Param": {
         "radious": 13,
@@ -27,7 +27,7 @@
         "forward_penalty": 1,
         "path_error_term": 0,
         "backward_penalty": 5.5,
-        "max_acceleration": 0.3,
+        "max_acceleration": 0.4,
         "min_acceleration": -0.4,
         "speed_error_term": 0.1,
         "turnning_penalty": 2.468,
@@ -66,5 +66,5 @@
     },
     "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1864213003373162496"
+    "key": "ids:mine:dispatch:planPath:result:1866405219105550336"
 }

@@ -36,19 +36,19 @@
     "speed_smooth_term": 0.0,
     "linear_preferred_distance": 3,
     "uniform_compaction_enable": false,
-    "regular_road_speed_limit": 2.5,
-    "bumpy_road_speed_limit": 2.5,
-    "slope_road_speed_limit": 2.5,
-    "narrow_road_speed_limit": 2.5,
-    "intersection_road_speed_limit": 2.5,
+    "regular_road_speed_limit": 8,
+    "bumpy_road_speed_limit": 8,
+    "slope_road_speed_limit": 8,
+    "narrow_road_speed_limit": 8,
+    "intersection_road_speed_limit": 8,
     "task_type": 2,
     "path_voronoi_term": 0.1,
     "vonoroi_grid_dist": 0.1,
     "curvature_threshold": 0.1,
     "is_light": true,
-    "speed_limit_level": 1,
+    "speed_limit_level": 3,
     "load_point_end_offset_distance": 4,
     "load_point_start_offset_distance": 4,
-    "curvature_smooth_opti_num": 50
+    "curvature_smooth_opti_num": 75
   }
 }

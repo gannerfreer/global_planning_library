@@ -166,7 +166,7 @@ inline bool GetReferencelinesWithRadiusAndAngle(_SinglePoint point, const map<in
                 index       = i;
             }
         }
-        if (nearest_dis < radius && (fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 < 90 || fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 > 270)) {
+        if (nearest_dis < radius && (fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 < 3 || fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 > 357)) {
             cout << "tell me the angle:" << point.yaw << "  " << pair.second.trajectory.at(index).yaw << endl;
             vec.push_back(pair.first);
             cout << "index:" << index << endl;
@@ -411,6 +411,7 @@ inline bool SequenceAndDirectionCheck(std::vector<_TrajectoryPoint>& traj) {
 
 inline bool CheckPathFracture(vector<_TrajectoryPoint>& traj) {
     double dis = 0.0, angle_diff = 0.0;
+    cout << "开始进行轨迹断裂校验，一共 " << traj.size() << " 个点" << endl;
     for (int i = 0; i < traj.size() - 1; i++) {
         dis        = hypot(traj.at(i).x - traj.at(i + 1).x, traj.at(i).y - traj.at(i + 1).y);
         angle_diff = fabs(traj.at(i + 1).yaw - traj.at(i).yaw) > 180.0 ? 360 - fabs(traj.at(i + 1).yaw - traj.at(i).yaw) : fabs(traj.at(i + 1).yaw - traj.at(i).yaw);

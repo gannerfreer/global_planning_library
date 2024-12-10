@@ -652,10 +652,10 @@ bool Planning::FollowReferencelinePlanning() {
     vector<pair<int, int>> success_pair;
     v_has_calculate_pair_.clear();
     bool        searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
-    double      end_search_radius = 1.0, start_search_radius = 0.5;
+    double      end_search_radius = 0.2, start_search_radius = 0.5;
     vector<int> start_path_vec, end_path_vec;
     cout << "开始进入起点、终点搜索环节" << endl;
-    while (end_search_radius <= 1.0) {
+    while (end_search_radius <= 0.2) {
         cout << "end_search_radius:" << end_search_radius << endl;
         if (Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec)) {
             if (searched_flag == true) {
