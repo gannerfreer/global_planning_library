@@ -249,6 +249,7 @@ inline bool doesTrajectorySelfIntersect(Path& path) {
         }
     }
     double percent = sum / 36.0;
+    cout << "percent" << percent << endl;
     if (percent < 0.8) {
         cout << "路径未构成圈" << endl;
         return false;
