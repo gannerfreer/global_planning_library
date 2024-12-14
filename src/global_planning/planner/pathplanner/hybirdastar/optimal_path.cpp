@@ -235,7 +235,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     cout << "开启对终点的碰撞检测" << endl;
     // 终点区域碰撞判断
     if (true == collison_check_.IsVehicleCollision(end_)) {
-        threadLogger_->info("终点碰撞检测不通过");
+        threadLogger_->info("终点碰撞检测不通过 {} {}  {}", end_.x + midpoint_.x, end_.y + midpoint_.y, end_.angle / M_PI * 180.0);
         cout << "终点碰撞检测不通过" << endl;
         return PlanResult::EndPoint_Infeasible;
     }

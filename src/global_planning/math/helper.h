@@ -166,7 +166,7 @@ inline bool GetReferencelinesWithRadiusAndAngle(_SinglePoint point, const map<in
                 index       = i;
             }
         }
-        if (nearest_dis < radius && (fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 < 3 || fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 > 357)) {
+        if (nearest_dis < radius && (fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 < 10 || fabs(point.yaw - pair.second.trajectory.at(index).yaw) / M_PI * 180.0 > 350)) {
             cout << "tell me the angle:" << point.yaw << "  " << pair.second.trajectory.at(index).yaw << endl;
             vec.push_back(pair.first);
             cout << "index:" << index << endl;

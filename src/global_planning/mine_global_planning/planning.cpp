@@ -335,7 +335,7 @@ bool Planning::RandomOffsetWithoutCuravture() {
     mt19937       gen(rd());
 
     // 定义您想要生成的浮点数的集合
-    vector<float> weights = {-1.0, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1.0};
+    vector<float> weights = {-1.0, 0, 1.0};
 
     // 使用uniform_int_distribution从集合中随机选择一个索引
     uniform_int_distribution<size_t> dis(0, weights.size() - 1);
@@ -346,6 +346,7 @@ bool Planning::RandomOffsetWithoutCuravture() {
     temp_path = global_path_copy;
     // 从集合中随机选择一个权重
     weight = weights[dis(gen)];
+    threadLogger_->info("weight：{}", weight);
     vector<pair<int, int>> reverse_section, forward_section;
 
     int  start = 0, end = 0;
@@ -652,7 +653,7 @@ bool Planning::FollowReferencelinePlanning() {
     vector<pair<int, int>> success_pair;
     v_has_calculate_pair_.clear();
     bool        searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
-    double      end_search_radius = 0.2, start_search_radius = 0.5;
+    double      end_search_radius = 1.0, start_search_radius = 0.5;
     vector<int> start_path_vec, end_path_vec;
     cout << "开始进入起点、终点搜索环节" << endl;
     cout << "end_search_radius:" << end_search_radius << endl;

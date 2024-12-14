@@ -747,6 +747,7 @@ bool GetMap(char* parea) {
         }
     }
     GlobalVariable::getInstance()->SetMapBorder(v_bp);
+    cout << "解析border_points完毕,边界点数量：" << v_bp.size() << endl;
 
     // 解析reference_trajs
     const Value&          trajsArray = doc["reference_trajs"];
