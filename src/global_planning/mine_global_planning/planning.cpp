@@ -70,18 +70,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
             return;
         }
     }
-    threadLogger_->info("在执行完HybridAStarFitting之后，打印一下轨迹点direction信息");
-    for (auto i : global_path_) {
-        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
-    }
+
     if (IsShortDistance()) {
         path = global_path_;
         return;
     }
-    threadLogger_->info("在执行RemoveAfterSamePoint之前，打印一下轨迹点direction信息");
-    for (auto i : global_path_) {
-        threadLogger_->info("{} {} {}", i.x, i.y, i.direction);
-    }
+
     Helper::RemoveAfterSamePoint(global_path_);
 
     threadLogger_->info("StartEndPointProcess global_path_.size():{}", global_path_.size());
@@ -653,7 +647,7 @@ bool Planning::FollowReferencelinePlanning() {
     vector<pair<int, int>> success_pair;
     v_has_calculate_pair_.clear();
     bool        searched_flag = false, is_found = false; // 用于跟踪是否找到了成功的路径对
-    double      end_search_radius = 1.0, start_search_radius = 0.5;
+    double      end_search_radius = 0.2, start_search_radius = 0.5;
     vector<int> start_path_vec, end_path_vec;
     cout << "开始进入起点、终点搜索环节" << endl;
     cout << "end_search_radius:" << end_search_radius << endl;

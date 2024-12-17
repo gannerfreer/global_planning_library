@@ -921,10 +921,10 @@ void OptimalPath::PathIntegration() {
             // cout << "temp_point.angle" << temp_point.angle << endl;
             path_a_star_.push_back(temp_point);
         }
-        threadLogger_->info("拼接完成终点的路径");
-        for (auto i : path_a_star_) {
-            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
-        }
+        // threadLogger_->info("拼接完成终点的路径");
+        // for (auto i : path_a_star_) {
+        //     threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+        // }
     }
     else // 倒退直线拼接
     {
@@ -937,10 +937,16 @@ void OptimalPath::PathIntegration() {
             temp_point.direction = MotionDirection::Backward;
             path_a_star_.push_back(temp_point);
         }
-        threadLogger_->info("拼接完成终点的路径");
-        for (auto i : path_a_star_) {
-            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
-        }
+        // threadLogger_->info("拼接完成终点的路径");
+        // for (auto i : path_a_star_) {
+        //     threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+        // }
+    }
+
+    CalCurv(path_a_star_);
+    threadLogger_->info("拼接完成终点的路径");
+    for (auto i : path_a_star_) {
+        threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}  curvature:{}", i.x, i.y, i.angle / M_PI * 180.0, i.direction, i.curvature);
     }
 }
 

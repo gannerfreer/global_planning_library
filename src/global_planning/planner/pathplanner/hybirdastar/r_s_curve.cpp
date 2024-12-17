@@ -219,7 +219,7 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
         };
     }
     double total_length = opti_rs_path.length;
-    double step_size    = m_vehicle_prarm_.hybridastar_step_length / m_vehicle_prarm_.radious;
+    double step_size    = m_vehicle_prarm_.delta_dist / m_vehicle_prarm_.radious;
     Point  np;
     for (int i = 0; i < rspoint.size(); i++) {
         double s = 0;
