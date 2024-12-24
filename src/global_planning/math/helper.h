@@ -250,7 +250,7 @@ inline bool doesTrajectorySelfIntersect(Path& path) {
     }
     double percent = sum / 36.0;
     cout << "percent" << percent << endl;
-    if (percent < 0.8) {
+    if (percent < 0.7) {
         cout << "路径未构成圈" << endl;
         return false;
     }
@@ -482,6 +482,10 @@ inline void calculateAcceleration(const std::vector<_TrajectoryPoint>& v_points)
 
         std::cout << "点(" << currentPoint.x << ", " << currentPoint.y << ") 的加速度为: " << acceleration << std::endl;
     }
+}
+
+static inline float clamp(float n, float lower, float upper) {
+    return std::max(lower, std::min(n, upper));
 }
 
 

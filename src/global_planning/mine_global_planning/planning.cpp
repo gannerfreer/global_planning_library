@@ -896,7 +896,7 @@ bool Planning::PathOffset() {
         }
 
         // 曲率超标的部分也不偏移
-        if (global_path_.at(i).curvature > 0.07) {
+        if (fabs(global_path_.at(i).curvature) > 0.07) {
             global_path_.at(i).offset_flag = false;
         }
     }

@@ -97,7 +97,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     unsigned int max_opti_num = 10;
 
 
-    while (opti_num++ < max_opti_num) {
+    while (opti_num++ < path_.size() + 1) {
         threadLogger_->info("第 {} 次优化,fixpoint_set_.size():{}", opti_num, fixpoint_set_.size());
         SmoothPath();
         CalculatePathAngle();
@@ -115,6 +115,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     }
 
     opti_path = new_path_;
+
     // std::ofstream file_out;
     file_out.open("youhuahou.txt");
     for (size_t index = 0; index < opti_path.size(); index++) {
@@ -126,11 +127,13 @@ vector<unsigned int> Path_Opti::CurvatureCheck() {
     CalCurvature(new_path_);
     vector<unsigned int> curvature_exceed_point;
     curvature_exceed_point.clear();
-    for (unsigned int i = 0; i < new_path_.size(); i++) {
+    for (unsigned int i = 1; i < new_path_.size() - 1; i++) {
         double curvature = new_path_.at(i).curvature;
-        if (fabs(curvature) > m_vehicle_param_.curvature_threshold - 0.01) {
-            threadLogger_->info("i:{}  curvature:{}  优化过程中曲率超标,曲率阈值：{}", i, curvature, m_vehicle_param_.curvature_threshold - 0.01);
+        if (fabs(curvature) > m_vehicle_param_.curvature_threshold) {
+            threadLogger_->info("第 {} 个点曲率超标，此点将被列为anchor点", i);
             curvature_exceed_point.push_back(i);
+            curvature_exceed_point.push_back(i - 1);
+            curvature_exceed_point.push_back(i + 1);
         }
     }
     return curvature_exceed_point;
@@ -193,18 +196,6 @@ void Path_Opti::GetCuspIndex() {
             cusp_set_.insert(i - 1);
         }
     }
-    // if (path_.size() > 10) {
-    //     // 将前5个路径点加入固定点
-    //     for (int i = 1; i < 4; i++) {
-    //         cusp_set_.insert(i);
-    //     }
-
-    //     // 将后5个路径点加入固定点
-    //     for (int i = path_.size() - 2; i >= path_.size() - 4; i--) {
-    //         cusp_set_.insert(i);
-    //     }
-    // }
-    //   cout << "cusp_set_.size() :" << cusp_set_.size() <<   endl;
 }
 
 /**
@@ -217,7 +208,6 @@ void Path_Opti::GetFixPointIndex() {
     for (auto it = cusp_set_.begin(); it != cusp_set_.end(); ++it) {
         fixpoint_set_.insert(*it - 1);
         fixpoint_set_.insert(*it);
-
         // for(unsigned int index = *it; index < path_.size()-1; index++)
         // {
         //     if(fabs(path_.at(index+1)angle - path_.at(index).angle) < 1e-3)
@@ -232,6 +222,8 @@ void Path_Opti::GetFixPointIndex() {
 
         fixpoint_set_.insert(*it + 1);
     }
+    fixpoint_set_.insert(0);
+    fixpoint_set_.insert(path_.size() - 1);
     threadLogger_->info("打印锚点信息");
     for (auto i : fixpoint_set_) {
         threadLogger_->info("{}", i);
@@ -276,10 +268,12 @@ void Path_Opti::SmoothPath() {
 
     // 梯度下降法迭代优化
     while (iterations++ < m_vehicle_param_.max_iterations_opti) {
+        // cout << "梯度下降，第 " << iterations << " 轮" << endl;
         for (unsigned int i = 2; i < new_path_.size() - 2; i++) {
             if (IsCusp(i) || IsFixPoint(i)) {
                 continue;
             }
+
 
             // 优化路径的当前点前两点、当前点、当前点后两点及原路径当前点
             xim2.x = new_path_.at(i - 2).x;
@@ -295,13 +289,16 @@ void Path_Opti::SmoothPath() {
             xoi.x  = path_.at(i).x;
             xoi.y  = path_.at(i).y;
 
+
             // 与原路径偏差项
             gradient_error_term = ErrorTerm(xi, xoi);
             new_path_.at(i).x -= coeff.at(i) * gradient_error_term.x;
             new_path_.at(i).y -= coeff.at(i) * gradient_error_term.y;
 
+
             // 曲率项
             gradient_curvature_term = CurvatureTerm(xim1, xi, xip1);
+            // gradient_curvature_term = CurvatureTerm(xim2, xim1, xi, xip1, xip2);
             new_path_.at(i).x -= coeff.at(i) * gradient_curvature_term.x;
             new_path_.at(i).y -= coeff.at(i) * gradient_curvature_term.y;
 
@@ -356,6 +353,125 @@ inline Vector2D Path_Opti::ErrorTerm(Vector2D xi, Vector2D xoi) {
  * Dolgov D, Thrun S, Montemerlo M, et al. Practical search techniques in path planning for
  * autonomous driving[J]. Ann Arbor, 2008, 1001(48105): 18-80.
  */
+// inline Vector2D Path_Opti::CurvatureTerm(Vector2D x_im2, Vector2D x_im1, Vector2D x_i, Vector2D x_ip1, Vector2D x_ip2) {
+//     // Vector2D gradient;
+//     // Vector2D delta_xi;   // Δxi
+//     // Vector2D delta_xip1; // Δxi+1
+//     // double   norm_delta_xi, norm_delta_xip1, d, dphi, kappa;
+//     // delta_xi.x      = xi.x - xim1.x;
+//     // delta_xi.y      = xi.y - xim1.y;
+//     // delta_xip1.x    = xip1.x - xi.x;
+//     // delta_xip1.y    = xip1.y - xi.y;
+//     // norm_delta_xi   = sqrt(pow(delta_xi.x, 2) + pow(delta_xi.y, 2));     // |Δxi|
+//     // norm_delta_xip1 = sqrt(pow(delta_xip1.x, 2) + pow(delta_xip1.y, 2)); // |Δxi+1|
+//     // d               = norm_delta_xi * norm_delta_xip1;
+//     // dphi            = acos((delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d); // 通过向量积求出两向量之间夹角
+//     // kappa           = dphi / norm_delta_xi;
+
+//     // if (kappa >= m_vehicle_param_.max_kappa) {
+//     //     double pdphi_pcosdphi = -1 / sqrt(1 - pow(cos(dphi), 2));
+//     //     double u              = pdphi_pcosdphi / norm_delta_xi;
+//     //     double s              = dphi / pow(norm_delta_xi, 2);
+
+//     //     Vector2D m_delta_xip1; // -Δxi+1
+//     //     m_delta_xip1.x = -delta_xip1.x;
+//     //     m_delta_xip1.y = -delta_xip1.y;
+//     //     Vector2D oc1   = OrthogonalComplements(delta_xi, m_delta_xip1);
+//     //     Vector2D oc2   = OrthogonalComplements(m_delta_xip1, delta_xi);
+
+//     //     Vector2D p1, p2, k0, k1, k2;
+//     //     p1.x = oc1.x / d;
+//     //     p1.y = oc1.y / d;
+//     //     p2.x = oc2.x / d;
+//     //     p2.y = oc2.y / d;
+//     //     k1.x = u * (-p1.x - p2.x) - s * delta_xi.x / norm_delta_xi;
+//     //     k1.y = u * (-p1.y - p2.y) - s * delta_xi.y / norm_delta_xi;
+//     //     k0.x = u * p2.x + s * delta_xi.x / norm_delta_xi;
+//     //     k0.y = u * p2.y + s * delta_xi.y / norm_delta_xi;
+//     //     k2.x = u * p1.x;
+//     //     k2.y = u * p1.y;
+
+//     //     gradient.x = m_vehicle_param_.path_curvature_term * (0.25 * k0.x + 0.5 * k1.x + 0.25 * k2.x);
+//     //     gradient.y = m_vehicle_param_.path_curvature_term * (0.25 * k0.y + 0.5 * k1.y + 0.25 * k2.y);
+//     // }
+//     // else {
+//     //     gradient.x = 0;
+//     //     gradient.y = 0;
+//     // }
+//     // return gradient;
+
+//     Vector2D gradient;
+//     // the vectors between the nodes
+//     Vector2D delta_x_im1 = x_im1 - x_im2;
+//     Vector2D delta_x_i   = x_i - x_im1;
+//     Vector2D delta_x_ip1 = x_ip1 - x_i;
+//     Vector2D delta_x_ip2 = x_ip2 - x_ip1;
+//     // cout << "delta_x_im1" << delta_x_im1.x << " " << delta_x_im1.y << endl;
+//     // cout << "delta_x_i" << delta_x_i.x << " " << delta_x_i.y << endl;
+//     // cout << "delta_x_ip1" << delta_x_ip1.x << " " << delta_x_ip1.y << endl;
+//     // cout << "delta_x_ip2" << delta_x_ip2.x << " " << delta_x_ip2.y << endl;
+
+//     // ensure that the absolute values are not null
+//     if (delta_x_im1.length() > 0 && delta_x_i.length() > 0 && delta_x_ip1.length() > 0 && delta_x_ip2.length() > 0) {
+//         // the angular change at the node
+//         auto compute_kappa = [](const Vector2D& delta_x_0, const Vector2D& delta_x_1, float& delta_phi, float& kappa) {
+//             delta_phi = std::acos(Helper::clamp(delta_x_0.dot(delta_x_1) / (delta_x_0.length() * delta_x_1.length()), -1, 1));
+//             kappa     = delta_phi / delta_x_0.length();
+//         };
+//         float delta_phi_im1, kappa_im1;
+//         compute_kappa(delta_x_im1, delta_x_i, delta_phi_im1, kappa_im1);
+//         float delta_phi_i, kappa_i;
+//         compute_kappa(delta_x_i, delta_x_ip1, delta_phi_i, kappa_i);
+//         float delta_phi_ip1, kappa_ip1;
+//         compute_kappa(delta_x_ip1, delta_x_ip2, delta_phi_ip1, kappa_ip1);
+
+//         // if the curvature is smaller then the maximum do nothing
+//         if (kappa_i <= m_vehicle_param_.max_kappa) {
+//             Vector2D zeros;
+//             return zeros;
+//         }
+//         else {
+//             auto compute_d_delta_phi = [](const float delta_phi) { return -1. / std::sqrt(1. - std::pow(std::cos(delta_phi), 2)); };
+
+//             const float&    d_delta_phi_im1     = compute_d_delta_phi(delta_phi_im1);
+//             const Vector2D& d_cos_delta_phi_im1 = delta_x_im1.ort(delta_x_i) / (delta_x_im1.length() * delta_x_i.length());
+//             const Vector2D& d_kappa_im1         = 1. / delta_x_im1.length() * d_delta_phi_im1 * d_cos_delta_phi_im1;
+//             const Vector2D& kim1                = 2. * (kappa_im1 - m_vehicle_param_.max_kappa) * d_kappa_im1;
+
+//             const float&    d_delta_phi_i     = compute_d_delta_phi(delta_phi_i);
+//             const Vector2D& d_cos_delta_phi_i = delta_x_ip1.ort(delta_x_i) / (delta_x_ip1.length() * delta_x_i.length()) - delta_x_i.ort(delta_x_ip1) / (delta_x_i.length() * delta_x_ip1.length());
+//             const Vector2D& d_kappa_i         = 1. / delta_x_i.length() * d_delta_phi_i * d_cos_delta_phi_i - delta_phi_i / std::pow(delta_x_i.length(), 3) * delta_x_i;
+//             const Vector2D& ki                = 2. * (kappa_i - m_vehicle_param_.max_kappa) * d_kappa_i;
+
+//             const float&    d_delta_phi_ip1     = compute_d_delta_phi(delta_phi_ip1);
+//             const Vector2D& d_cos_delta_phi_ip1 = -delta_x_ip2.ort(delta_x_ip1) / (delta_x_ip2.length() * delta_x_ip1.length());
+//             const Vector2D& d_kappa_ip1         = 1. / delta_x_ip1.length() * d_delta_phi_ip1 * d_cos_delta_phi_ip1 + delta_phi_ip1 / std::pow(delta_x_ip1.length(), 3) * delta_x_ip1;
+//             const Vector2D& kip1                = 2. * (kappa_ip1 - m_vehicle_param_.max_kappa) * d_kappa_ip1;
+
+//             // calculate the gradient
+//             gradient = m_vehicle_param_.path_curvature_term * (0.25 * kim1 + 0.5 * ki + 0.25 * kip1);
+
+//             if (std::isnan(gradient.getX()) || std::isnan(gradient.getY())) {
+//                 std::cout << "nan values in curvature term" << std::endl;
+//                 Vector2D zeros;
+//                 return zeros;
+//             }
+//             // return gradient of 0
+//             else {
+//                 return gradient;
+//             }
+//         }
+//     }
+//     // return gradient of 0
+//     else {
+//         std::cout << "abs values not larger than 0-----delta_x_im1.length(): " << delta_x_im1.length() << " delta_x_i.length():" << delta_x_i.length() << " delta_x_ip1.length():" << delta_x_ip1.length() << " delta_x_ip2.length():" << delta_x_ip2.length() << std::endl;
+//         Vector2D zeros;
+//         zeros.x = 0;
+//         zeros.y = 0;
+//         return zeros;
+//     }
+// }
+
 inline Vector2D Path_Opti::CurvatureTerm(Vector2D xim1, Vector2D xi, Vector2D xip1) {
     Vector2D gradient;
     Vector2D delta_xi;   // Δxi
@@ -403,6 +519,7 @@ inline Vector2D Path_Opti::CurvatureTerm(Vector2D xim1, Vector2D xi, Vector2D xi
     }
     return gradient;
 }
+
 
 /**
  *@brief: 求解平滑项梯度

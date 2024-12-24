@@ -173,8 +173,8 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
         for (unsigned int i = 0; i < temp_keypoint.size() - 1; i++) {
             keypoint1 = temp_keypoint.at(i);
             keypoint2 = temp_keypoint.at(i + 1);
-            //           threadLogger_->info("...keypoint1.index= "<<keypoint1.index<<"..."<<endl;
-            //           threadLogger_->info("...keypoint2.index= "<<keypoint2.index<<"..."<<endl;
+            threadLogger_->info("...keypoint1.index={} ", keypoint1.index);
+            threadLogger_->info("...keypoint2.index= {}", keypoint2.index);
             keypoint1.speed_limit_left = last_speed;
             if (!PlanForSingleSegment(num, keypoint1, keypoint2, temp_sparsespeedpoints, last_speed)) {
                 threadLogger_->error("...Plan for the segment {} failed...", (float)num);
@@ -283,8 +283,8 @@ bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
             v1        = keypoint1.speed_limit_right;
             v2        = keypoint2.speed_limit_right;
 
-            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j, keypoint1.index, keypoint1.speed_limit_left, keypoint1.speed_limit_right);
-            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j - 1, keypoint2.index, keypoint2.speed_limit_left, keypoint2.speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j, keypoint1.index + 1, keypoint1.speed_limit_left, keypoint1.speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j - 1, keypoint2.index + 1, keypoint2.speed_limit_left, keypoint2.speed_limit_right);
 
             if (v2 > v1) {
                 threadLogger_->info("减速检查");
@@ -365,13 +365,13 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                     v2_right  = keypoint2.speed_limit_right;
                     threadLogger_->info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
-                    threadLogger_->info("v1_index = {}", keypoint1.index);
+                    threadLogger_->info("v1_index = {}", keypoint1.index + 1);
 
                     threadLogger_->info("v1_left = {}", v1_left);
 
                     threadLogger_->info("v1_right = {}", v1_right);
 
-                    threadLogger_->info("v2_index = {}", keypoint2.index);
+                    threadLogger_->info("v2_index = {}", keypoint2.index + 1);
 
                     threadLogger_->info("v2_left = {}", v2_left);
 
@@ -889,7 +889,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
 
     // 遍历整个trajectory_points，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
     float         L_vehicle                = vehicle_param.wheel_base;
-    float         max_Steering_wheel_speed = 0.13962634015954636;
+    float         max_Steering_wheel_speed = 0.174;
     float         temp_max_speed;
     float         wheel_delta_angle, wheel_angle1, wheel_angle2;
     float         sampling_distance = 1;
@@ -922,6 +922,12 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
         }
     }
 
+    file_out.open("speed_limit1.txt");
+    for (size_t index = 0; index < trajectory_points.size(); index++) {
+        file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
+    }
+    file_out.close();
+
 
     // 曲率限速
     iter = trajectory_points.begin();
@@ -935,7 +941,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
     for (size_t index = 0; index < trajectory_points.size(); index++) {
         threadLogger_->info("index:{}  speed_limit:{}", index + 1, trajectory_points.at(index).speed_limit);
     }
-    file_out.open("speed_limit1.txt");
+    file_out.open("speed_limit2.txt");
     for (size_t index = 0; index < trajectory_points.size(); index++) {
         file_out << 0 << " " << trajectory_points.at(index).speed_limit << endl;
     }
@@ -1034,7 +1040,7 @@ bool GlobalSpeedPlanning::GetKeypoint() {
         threadLogger_->info("第{}段有{}关键点", (float)(i + 1), key_points.at(i).size());
 
         for (int j = 0; j < key_points.at(i).size(); j++) {
-            threadLogger_->info("第{}段的第{}个关键点的索引{},左限速{},右限速{}", (float)(i + 1), j + 1, key_points.at(i).at(j).index, key_points.at(i).at(j).speed_limit_left, key_points.at(i).at(j).speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引{},左限速{},右限速{}", (float)(i + 1), j + 1, key_points.at(i).at(j).index + 1, key_points.at(i).at(j).speed_limit_left, key_points.at(i).at(j).speed_limit_right);
         }
     }
 

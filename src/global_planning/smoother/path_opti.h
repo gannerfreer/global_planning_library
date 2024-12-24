@@ -114,6 +114,7 @@ class Path_Opti {
      * @return 返回说明：
      * 返回梯度求解结果
      */
+    // inline Vector2D CurvatureTerm(Vector2D x_im2, Vector2D x_im1, Vector2D x_i, Vector2D x_ip1, Vector2D x_ip2);
     inline Vector2D CurvatureTerm(Vector2D xim1, Vector2D xi, Vector2D xip1);
     /**
      * @brief 平滑项梯度求解函数

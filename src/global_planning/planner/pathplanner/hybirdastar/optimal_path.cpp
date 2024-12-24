@@ -508,6 +508,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
     // 平滑前打印路径曲率
     CalCurv(path_a_star_);
+
     threadLogger_->info("平滑前路径点信息 ");
     for (auto i : path_a_star_) {
         threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} ", i.x, i.y, i.angle / M_PI * 180.0, i.curvature, i.direction);
@@ -659,11 +660,11 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         return true;
                     }
                     else {
-                        threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，但碰撞检测失败");
+                        // threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，但碰撞检测失败");
                     }
                 }
                 else {
-                    threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
+                    // threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Forword_Fitting:
