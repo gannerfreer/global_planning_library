@@ -1,9 +1,9 @@
 {
     "m_Start_Point": {
-        "x": -1033.722803044016,
-        "y": -616.1663907849999,
-        "z": 437.3874206542969,
-        "yaw": 295.91357421875
+        "x": -931.3662327918967,
+        "y": -726.9297163839776,
+        "z": 438.8817443847656,
+        "yaw": 332.48394775390625
     },
     "m_End_Point": {
         "x": -495.07723087,
@@ -25,7 +25,7 @@
         "reverse_speed": 1,
         "switch_penalty": 10,
         "forward_penalty": 1,
-        "path_error_term": 0,
+        "path_error_term": 0.0,
         "backward_penalty": 5.5,
         "max_acceleration": 0.3,
         "min_acceleration": -0.4,
@@ -38,14 +38,14 @@
         "speed_smooth_term": 0.01,
         "veh_center_2_side": 2.2,
         "vonoroi_grid_dist": 0.1,
-        "angle_discrete_num": 3,
+        "angle_discrete_num": 7,
         "max_fitting_radius": 100,
         "rs_min_path_length": 0.5,
         "veh_center_2_front": 7.1,
         "curvature_threshold": 0.118,
         "max_iterations_opti": 100,
-        "path_curvature_term": 0,
-        "path_smoothness_term": 0.01,
+        "path_curvature_term": 0.1,
+        "path_smoothness_term": 0.1,
         "safe_margin_obstacle": 2,
         "speed_discrete_number": 1,
         "bumpy_road_speed_limit": 1.5,
@@ -62,9 +62,9 @@
         "intersection_road_speed_limit": 2,
         "load_point_end_offset_distance": 4,
         "load_point_start_offset_distance": 4,
-        "vehicle_code": 1001
+        "vehicle_code": 1002
     },
     "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1870760015556030464"
+    "key": "ids:mine:dispatch:planPath:result:1871390441149042688"
 }

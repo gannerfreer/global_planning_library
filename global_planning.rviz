@@ -43,7 +43,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.15000000596046448
-      Cell Size: 10
+      Cell Size: 100
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -138,7 +138,7 @@ Visualization Manager:
       Marker Topic: /path_global
       Name: Marker
       Namespaces:
-        {}
+        my_namespace: true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -152,8 +152,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 850.7229614257812
-        Min Value: -21.861934661865234
+        Max Value: 74.9240493774414
+        Min Value: -84
         Value: true
       Axis: Y
       Channel Name: intensity
@@ -178,13 +178,13 @@ Visualization Manager:
       Use rainbow: true
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /point_expand
       Name: Marker
       Namespaces:
         {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -218,7 +218,7 @@ Visualization Manager:
       Marker Topic: /start
       Name: Marker
       Namespaces:
-        {}
+        my_namespace: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -226,7 +226,7 @@ Visualization Manager:
       Marker Topic: /end
       Name: Marker
       Namespaces:
-        {}
+        my_namespace: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -266,11 +266,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 16.086572647094727
+      Scale: 28.37728500366211
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: -641.4860229492188
-      Y: 860.4713745117188
+      X: 130.7433624267578
+      Y: -77.13558197021484
     Saved: ~
 Window Geometry:
   Displays:

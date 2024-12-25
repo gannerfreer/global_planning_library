@@ -557,7 +557,7 @@ bool Planning::PathPlanning() {
 // 非调度规划任务
 bool Planning::NotFollowReferencelinePlanning() {
     my_optimal_path_.threadLogger_ = threadLogger_;
-    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
+    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, true);
     vector<_TrajectoryPoint> temp_traj;
     long long                time_threshold = 2 * 1000 * 1000;
     PlanRule                 rule_id_1 = PlanRule::Forward_All_Time, rule_id_2 = PlanRule::Backward_All_Time, rule_id_3 = PlanRule::Start_Front_End_Back;
@@ -636,7 +636,7 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("未定义的任务");
         return false;
     }
-    my_optimal_path_.DeleteVoronoiSpace(false);
+    my_optimal_path_.DeleteVoronoiSpace(true);
     return true;
 }
 

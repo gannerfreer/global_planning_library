@@ -103,6 +103,8 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         CalculatePathAngle();
         auto collision_point  = collison_check.OptiPathCollisionCheck(new_path_); // 判断优化路径是否碰撞
         auto curvature_exceed = CurvatureCheck();
+        threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
+
         if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
         {
             break;
@@ -271,6 +273,7 @@ void Path_Opti::SmoothPath() {
         // cout << "梯度下降，第 " << iterations << " 轮" << endl;
         for (unsigned int i = 2; i < new_path_.size() - 2; i++) {
             if (IsCusp(i) || IsFixPoint(i)) {
+                // cout << "点" << i << "属于anchor点，予以跳过" << endl;
                 continue;
             }
 
@@ -320,12 +323,14 @@ void Path_Opti::SmoothPath() {
                     in_y_range = true;
                 }
                 if (use_voronoi && in_x_range && in_y_range) {
-                    cout << "计算voronoiterm" << endl;
+                    // cout << "计算voronoiterm" << endl;
+                    threadLogger_->info("第 {} 轮，准备计算第{}个点- ({},{})的Voronoi值", iterations, i, floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist));
                     gradient_vonoroi_term = VoronoiTerm(xi);
+                    threadLogger_->info("Voronoi值结果为：({},{})", gradient_vonoroi_term.x, gradient_vonoroi_term.y);
                     // cout << "算出的梯度为：" << gradient_vonoroi_term.getX() << " " << gradient_vonoroi_term.getY() << endl;
                     if (!isnan(gradient_vonoroi_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_vonoroi_term.x;
                     if (!isnan(gradient_vonoroi_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_vonoroi_term.y;
-                    cout << "delta_x:" << coeff.at(i) * gradient_vonoroi_term.x << " delta_y:" << coeff.at(i) * gradient_vonoroi_term.y << endl;
+                    // cout << "delta_x:" << coeff.at(i) * gradient_vonoroi_term.x << " delta_y:" << coeff.at(i) * gradient_vonoroi_term.y << endl;
                 }
                 else {
                     // cout << "跳过voronoiterm" << endl;
@@ -561,15 +566,18 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
                                                                                    //  obsDist =  voronoiDiagram.getDistance(node->getX(),node->getY())
                                                                                    //  调试输出
 
-    cout << "节点{" << index_x << "," << index_y << "}距离最近障碍物的距离 obsDst: " << obsDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
-    edgDst = hypot(edgVct.getX(), edgVct.getY());
-    cout << "节点{" << index_x << "," << index_y << "}距离最近voronoi边的距离 edgDst: " << edgDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
+    // cout << "节点{" << index_x << "," << index_y << "}距离最近障碍物的距离 obsDst: " << obsDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
+    threadLogger_->info("坐标({},{})最近的障碍物距离为：{}", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), obsDst * m_vehicle_param_.vonoroi_grid_dist);
+
+    // edgDst = hypot(edgVct.getX(), edgVct.getY());
+    // cout << "节点{" << index_x << "," << index_y << "}距离最近voronoi边的距离 edgDst: " << edgDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
+    threadLogger_->info("坐标({},{})最近的voronoi边距离为：{}", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), edgDst * m_vehicle_param_.vonoroi_grid_dist);
 
     if (obsDst < vorObsDMax) {
         // calculate the distance to the closest GVD edge from the current node
         //  the node is away from the optimal free space area
         if (edgDst > 0) {
-            cout << "edgDst>0" << endl;
+            // cout << "edgDst>0" << endl;
             // float PobsDst_Pxi; // todo = obsVct / obsDst;
             // float PedgDst_Pxi; // todo = edgVct / edgDst;
             Vector2D PobsDst_Pxi     = obsVct / obsDst;

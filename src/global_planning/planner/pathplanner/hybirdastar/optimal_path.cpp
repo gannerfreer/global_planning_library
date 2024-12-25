@@ -391,7 +391,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     my_path_opti.voronoi_origin_x = voronoi_origin_x - midpoint_.x;
     my_path_opti.voronoi_origin_y = voronoi_origin_y - midpoint_.y;
     my_path_opti.threadLogger_    = threadLogger_;
-    threadLogger_->info("给路径平滑赋予voronoi图结束");
+    threadLogger_->info("给路径平滑赋予voronoi图结束，Voronoi图原点坐标：({},{})", my_path_opti.voronoi_origin_x, my_path_opti.voronoi_origin_y);
 
 
     utility::CTimeClock init_time;
@@ -507,7 +507,8 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     utility::CTimeClock start_time_opti;
 
     // 平滑前打印路径曲率
-    CalCurv(path_a_star_);
+    Helper::CalCurv(path_a_star_);
+    // CalCurv(path_a_star_);
 
     threadLogger_->info("平滑前路径点信息 ");
     for (auto i : path_a_star_) {
@@ -660,14 +661,15 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         return true;
                     }
                     else {
-                        // threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，但碰撞检测失败");
+                        threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，但碰撞检测失败");
                     }
                 }
                 else {
-                    // threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
+                    threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Forword_Fitting:
+                threadLogger_->info("本次调用RS函数的起点坐标：({},{},{}),终点坐标:({},{},{})", temp_start_point.x, temp_start_point.y, temp_start_point.angle, end_r_.x, end_r_.y, end_r_.angle);
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) && (MotionDirection::Forward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
@@ -678,9 +680,12 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         }
                         return true;
                     }
+                    else {
+                        threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，路径点个数为{}个，但碰撞检测失败", path_r_s_.size());
+                    }
                 }
                 else {
-                    // threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
+                    threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Both_Fitting:
@@ -790,7 +795,7 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
                 {
                     // open集中存入该点
                     CalHValue(end_point);
-                    end_point.f             = 0.5 * end_point.g + 0.5 * end_point.h;
+                    end_point.f             = end_point.g + end_point.h;
                     open_map_[end_point.id] = end_point;
                     open_map_f_.insert(make_pair(end_point.f, end_point));
                 }
@@ -944,7 +949,8 @@ void OptimalPath::PathIntegration() {
         // }
     }
 
-    CalCurv(path_a_star_);
+    // CalCurv(path_a_star_);
+    Helper::CalCurv(path_a_star_);
     threadLogger_->info("拼接完成终点的路径");
     for (auto i : path_a_star_) {
         threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}  curvature:{}", i.x, i.y, i.angle / M_PI * 180.0, i.direction, i.curvature);
