@@ -169,7 +169,8 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
             threadLogger_->info("initializeMap结束");
             voronoiDiagram->update();
             threadLogger_->info("update结束");
-            // voronoiDiagram->CollectVoronoiEdgePoints();
+            voronoiDiagram->prune();
+            voronoiDiagram->CollectVoronoiEdgePoints();
             threadLogger_->info("CollectVoronoiEdgePoints结束");
             voronoiDiagram->visualize("../voronoi_graph.ppm");
             use_voronoi = true;
@@ -1585,24 +1586,4 @@ void OptimalPath::GenerateBoundSet() {
     //         }
     //     }
     // }
-}
-
-void OptimalPath::CalCurv(Path& temp_path) {
-    for (int i = 1; i < temp_path.size() - 1; ++i) {
-        double curvature          = computeCurvature(temp_path.at(i - 1), temp_path.at(i), temp_path.at(i + 1));
-        temp_path.at(i).curvature = curvature;
-    }
-    temp_path.front().curvature = temp_path.at(1).curvature;
-    temp_path.back().curvature  = temp_path.at(temp_path.size() - 2).curvature;
-}
-double OptimalPath::computeCurvature(const Point& p1, const Point& p2, const Point& p3) {
-    double x1 = p1.x;
-    double x2 = p2.x;
-    double x3 = p3.x;
-    double y1 = p1.y;
-    double y2 = p2.y;
-    double y3 = p3.y;
-
-    double curvature = (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / pow((pow(x1 - x2, 2) + pow(y1 - y2, 2)) * (pow(x2 - x3, 2) + pow(y2 - y3, 2)) * (pow(x3 - x1, 2) + pow(y3 - y1, 2)), 0.5);
-    return curvature;
 }

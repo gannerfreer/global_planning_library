@@ -64,7 +64,7 @@ class Path_Opti {
     void                            CalculateStation(const std::vector<double>& xs, const std::vector<double>& ys);
     DynamicVoronoi*                 voronoiDiagram;
     float                           obsDMax    = 2;
-    float                           vorObsDMax = 282;
+    float                           vorObsDMax = 50;
     float                           alpha      = 0.1;
     bool                            use_voronoi;
     float                           voronoi_origin_x, voronoi_origin_y;

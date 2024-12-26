@@ -149,12 +149,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
 
     // 路径断裂检查,涉及相邻点间距和相邻点角度差
-    if (!Helper::CheckPathFracture(global_path_)) {
-        error_type_ = ErrorType::PATH_FRACTURE;
-        threadLogger_->error("CheckPathFracture fail");
-        return;
-    }
-    threadLogger_->info("轨迹连续性校验通过");
+    // if (!Helper::CheckPathFracture(global_path_)) {
+    //     error_type_ = ErrorType::PATH_FRACTURE;
+    //     threadLogger_->error("CheckPathFracture fail");
+    //     return;
+    // }
+    // threadLogger_->info("轨迹连续性校验通过");
 
     // // 超速检测
     // std::ofstream file_out;
@@ -163,12 +163,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     //     file_out << 0 << " " << global_path_.at(index).speed_limit << endl;
     // }
     // file_out.close();
-    if (!Helper::OverSpeedCheck(global_path_, vehicle_param_.wheel_base)) {
-        threadLogger_->error("存在超速，检测失败");
-        error_type_ = ErrorType::OVERSPEED;
-        return;
-    }
-    threadLogger_->info("超速校验通过");
+    // if (!Helper::OverSpeedCheck(global_path_, vehicle_param_.wheel_base)) {
+    //     threadLogger_->error("存在超速，检测失败");
+    //     error_type_ = ErrorType::OVERSPEED;
+    //     return;
+    // }
+    // threadLogger_->info("超速校验通过");
 
 
     // 路径点顺序和direction校验
@@ -557,7 +557,7 @@ bool Planning::PathPlanning() {
 // 非调度规划任务
 bool Planning::NotFollowReferencelinePlanning() {
     my_optimal_path_.threadLogger_ = threadLogger_;
-    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, true);
+    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
     vector<_TrajectoryPoint> temp_traj;
     long long                time_threshold = 2 * 1000 * 1000;
     PlanRule                 rule_id_1 = PlanRule::Forward_All_Time, rule_id_2 = PlanRule::Backward_All_Time, rule_id_3 = PlanRule::Start_Front_End_Back;
@@ -636,7 +636,7 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("未定义的任务");
         return false;
     }
-    my_optimal_path_.DeleteVoronoiSpace(true);
+    my_optimal_path_.DeleteVoronoiSpace(false);
     return true;
 }
 

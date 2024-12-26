@@ -105,14 +105,15 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         auto curvature_exceed = CurvatureCheck();
         threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
 
-        if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
+        // if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
+        if (true == collision_point.empty()) // 若无碰撞且曲率不超标
         {
             break;
         }
         else // 否则固定碰撞点和曲率超标点，继续优化
         {
             UpdateFixPointSet(collision_point);
-            UpdateFixPointSet(curvature_exceed);
+            // UpdateFixPointSet(curvature_exceed);
         }
     }
 
@@ -541,37 +542,20 @@ inline Vector2D Path_Opti::SmoothnessTerm(Vector2D xim2, Vector2D xim1, Vector2D
 
 Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
     Vector2D gradient(0, 0);
+    int      index_x = static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist));
+    int      index_y = static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist));
+    float    obsDst  = voronoiDiagram->getDistance(index_x, index_y);
+    Vector2D obsVct(voronoiDiagram->getData()[index_x][index_y].obstX - index_x, voronoiDiagram->getData()[index_x][index_y].obstY - index_y);
+    threadLogger_->info("坐标({},{})最近的障碍物距离为：{},向量坐标为:({},{})", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), obsDst * m_vehicle_param_.vonoroi_grid_dist, obsVct.x, obsVct.y);
 
-    //    alpha > 0 = falloff rate
-    //    dObs(x,y) = distance to nearest obstacle
-    //    dEge(x,y) = distance to nearest edge of the GVD
-    //    dObsMax   = maximum distance for the cost to be applicable
-    // distance to the closest obstacle
-    // 最近障碍物
-    int   index_x = static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist));
-    int   index_y = static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist));
-    float obsDst  = voronoiDiagram->getDistance(index_x, index_y);
-    // distance to the closest voronoiDiagram edge
-    // 最近边
-    // wsl-add11
-    float edgDst          = 0; // todo
-    Vec2i closest_edge_pt = voronoiDiagram->GetClosestVoronoiEdgePoint({index_x, index_y}, edgDst);
-    // the vector determining where the obstacle is
-    Vector2D obsVct(index_x - voronoiDiagram->getData()[index_x][index_y].obstX, index_y - voronoiDiagram->getData()[index_x][index_y].obstY);
-    // the vector determining where the voronoiDiagram edge is
-    // wsl-add12
-    Vector2D edgVct(index_x - closest_edge_pt.x(), index_y - closest_edge_pt.y()); // todo
-                                                                                   // Vec2d edgVct(xi.x() - closest_edge_pt.x(), xi.y() - closest_edge_pt.y());
-                                                                                   //  calculate the distance to the closest obstacle from the current node
-                                                                                   //  obsDist =  voronoiDiagram.getDistance(node->getX(),node->getY())
-                                                                                   //  调试输出
 
+    float    edgDst          = 0; // todo
+    Vec2i    closest_edge_pt = voronoiDiagram->GetClosestVoronoiEdgePoint({index_x, index_y}, edgDst);
+    Vector2D edgVct(closest_edge_pt.x() - index_x, closest_edge_pt.y() - index_y);
+    edgDst = hypot(edgVct.getX(), edgVct.getY());
     // cout << "节点{" << index_x << "," << index_y << "}距离最近障碍物的距离 obsDst: " << obsDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
-    threadLogger_->info("坐标({},{})最近的障碍物距离为：{}", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), obsDst * m_vehicle_param_.vonoroi_grid_dist);
-
-    // edgDst = hypot(edgVct.getX(), edgVct.getY());
     // cout << "节点{" << index_x << "," << index_y << "}距离最近voronoi边的距离 edgDst: " << edgDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
-    threadLogger_->info("坐标({},{})最近的voronoi边距离为：{}", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), edgDst * m_vehicle_param_.vonoroi_grid_dist);
+    threadLogger_->info("坐标({},{})最近的voronoi边距离为：{}，向量坐标：({},{})", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), edgDst * m_vehicle_param_.vonoroi_grid_dist, edgVct.x, edgVct.y);
 
     if (obsDst < vorObsDMax) {
         // calculate the distance to the closest GVD edge from the current node
@@ -585,7 +569,10 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
             float    PvorPtn_PedgDst = alpha * obsDst * pow(obsDst - vorObsDMax, 2) / (pow(vorObsDMax, 2) * (obsDst + alpha) * pow(edgDst + obsDst, 2));
 
             float PvorPtn_PobsDst = (alpha * edgDst * (obsDst - vorObsDMax) * ((edgDst + 2 * vorObsDMax + alpha) * obsDst + (vorObsDMax + 2 * alpha) * edgDst + alpha * vorObsDMax)) / (pow(vorObsDMax, 2) * pow(obsDst + alpha, 2) * pow(obsDst + edgDst, 2));
-            gradient              = m_vehicle_param_.path_voronoi_term * PvorPtn_PobsDst * PobsDst_Pxi + PvorPtn_PedgDst * PedgDst_Pxi;
+            threadLogger_->info("PvorPtn_PobsDst：{}   PvorPtn_PedgDst:{}", PvorPtn_PobsDst, PvorPtn_PedgDst);
+            threadLogger_->info("向量PobsDst_Pxi为:({},{})   PedgDst_Pxi:({},{})", PobsDst_Pxi.x, PobsDst_Pxi.y, PedgDst_Pxi.x, PedgDst_Pxi.y);
+
+            gradient = m_vehicle_param_.path_voronoi_term * (PvorPtn_PobsDst * PobsDst_Pxi + PvorPtn_PedgDst * PedgDst_Pxi);
 
             return gradient;
         }

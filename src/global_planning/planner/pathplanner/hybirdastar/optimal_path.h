@@ -272,8 +272,6 @@ class OptimalPath {
         return hash;
     }
 
-    void   CalCurv(Path& temp_path);
-    double computeCurvature(const Point& p1, const Point& p2, const Point& p3);
 
   public:
     /**
