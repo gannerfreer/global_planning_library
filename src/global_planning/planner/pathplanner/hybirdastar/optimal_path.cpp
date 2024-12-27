@@ -91,10 +91,14 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
             voronoi_origin_y = DBL_MAX;
         }
         else {
-            int up_bound_x   = static_cast<int>(floor(max_x / m_vehicle_param.vonoroi_grid_dist));
-            int down_bound_x = static_cast<int>(floor(min_x / m_vehicle_param.vonoroi_grid_dist));
-            int up_bound_y   = static_cast<int>(floor(max_y / m_vehicle_param.vonoroi_grid_dist));
-            int down_bound_y = static_cast<int>(floor(min_y / m_vehicle_param.vonoroi_grid_dist));
+            max_x += 2;
+            min_x -= 2;
+            max_y += 2;
+            min_y -= 2; // 对Voronoi图在原有基础上膨胀2m
+            int up_bound_x   = static_cast<int>(floor((max_x) / m_vehicle_param.vonoroi_grid_dist));
+            int down_bound_x = static_cast<int>(floor((min_x) / m_vehicle_param.vonoroi_grid_dist));
+            int up_bound_y   = static_cast<int>(floor((max_y) / m_vehicle_param.vonoroi_grid_dist));
+            int down_bound_y = static_cast<int>(floor((min_y) / m_vehicle_param.vonoroi_grid_dist));
             width            = up_bound_x - down_bound_x + 1;
             height           = up_bound_y - down_bound_y + 1;
             voronoi_origin_x = min_x;
@@ -1067,7 +1071,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
         temp_point.x = current2D.getX();
         temp_point.y = current2D.getY();
         if (IsBoundGrid(temp_point)) {
-            // threadLogger_->info("该节点为障碍物节点,坐标为{} {}", temp_point.x, temp_point.y);
+            threadLogger_->info("该节点为障碍物节点,坐标为{} {}", temp_point.x, temp_point.y);
 
             a_start_h = numeric_limits<double>::max();
         }
@@ -1076,10 +1080,10 @@ void OptimalPath::CalHValue(Vertex3D& point) {
             a_start_h = AStarSearch2D(goal2D, current2D, total);
         }
         long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time); // 开始时间精确到微秒
-        // threadLogger_->info("本次A*搜素{}轮，耗时:{} ms,点坐标：{} {}", total, init_time_end * 0.001, temp_point.x, temp_point.y);
+        threadLogger_->info("本次A*搜素{}轮，耗时:{} ms,点坐标：{} {}", total, init_time_end * 0.001, temp_point.x, temp_point.y);
     }
     else {
-        // threadLogger_->info("该节点可通过增量式A*直接查询");
+        threadLogger_->info("该节点可通过增量式A*直接查询");
         a_start_h = iter->second.getG();
     }
 
@@ -1375,19 +1379,18 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
         //     threadLogger_->info("搜索超过3000轮,强制退出");
         //     break;
         // }
-        // threadLogger_->info("第{}轮,开始从node2D_set_中挑选最小代价点", num);.
+        // threadLogger_->info("第{}轮,开始从node2D_set_中挑选最小代价点", num);
         iPred = *nodes2D_set_.begin() & 0x00000000FFFFFFFF;
         // threadLogger_->info("iPred:{} ", iPred);
         nPred = nodes2D_map_[iPred];
         // threadLogger_->info("nPred:{} {} ", nPred.getX(), nPred.getY());
         if (nodes2D_map_[iPred].isClosed()) {
-            threadLogger_->info("nodes2D_map_[iPred] is Closed");
+            // threadLogger_->info("nodes2D_map_[iPred] is Closed");
             nodes2D_set_.erase(nodes2D_set_.begin());
             continue;
         }
 
         if (nodes2D_map_[iPred].isOpen()) {
-            // threadLogger_->info("nodes2D_map_[iPred] is Open");
             nodes2D_set_.erase(nodes2D_set_.begin());
             nodes2D_map_[iPred].close();
             nodes2D_map_[iPred].discover();
@@ -1430,18 +1433,18 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
                         // threadLogger_->info("{} {}该点是边界点", point.x, point.y);
                     }
                     else {
-                        // threadLogger_->info("该点已经被探索过，但已经进close");
+                        // threadLogger_->info("{} {}该点已经被探索过，但已经进close", point.x, point.y);
                     }
                 }
             }
             if (nPred == goal) {
-                // threadLogger_->info("nPred is goal");
+                threadLogger_->info("nPred is goal");
                 return nPred.getG();
             }
         }
     }
-    cout << "出现了不可能出现的错误" << endl;
-    threadLogger_->info("出现了不可能出现的错误");
+    cout << "目标点不可达" << endl;
+    threadLogger_->info("目标点不可达");
     return numeric_limits<double>::max();
 }
 
