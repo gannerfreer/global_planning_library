@@ -202,8 +202,7 @@ class GlobalSpeedPlanning {
     //        const float  speed_error_term;
     //        /* 平滑项权重 */
     //        const float  speed_smooth_term;
-    //        /* 离散点间隔数量 */
-    //        const float  speed_discrete_number;
+
     //        /* 倒车速度 */
     //        const float reverse_speed;
     /* 最大加速度 单位(m/s^2) */
@@ -215,8 +214,7 @@ class GlobalSpeedPlanning {
     float speed_error_term;
     /* 平滑项权重 */
     float speed_smooth_term;
-    /* 离散点间隔数量 */
-    float speed_discrete_number;
+
     /* 倒车速度 */
     float reverse_speed;
 

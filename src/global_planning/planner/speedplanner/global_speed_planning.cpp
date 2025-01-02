@@ -20,12 +20,11 @@ using namespace GlobalPlanning;
  *return
  */
 void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
-    max_acceleration      = m_veh_param.max_acceleration;
-    min_acceleration      = m_veh_param.min_acceleration;
-    speed_error_term      = m_veh_param.speed_error_term;
-    speed_smooth_term     = m_veh_param.speed_smooth_term;
-    speed_discrete_number = m_veh_param.speed_discrete_number;
-    reverse_speed         = m_veh_param.reverse_speed;
+    max_acceleration  = m_veh_param.max_acceleration;
+    min_acceleration  = m_veh_param.min_acceleration;
+    speed_error_term  = m_veh_param.speed_error_term;
+    speed_smooth_term = m_veh_param.speed_smooth_term;
+    reverse_speed     = m_veh_param.reverse_speed;
 
 
     threadLogger_->info("max_acceleration ={} ", max_acceleration);
@@ -36,8 +35,6 @@ void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
     threadLogger_->info("speed_error_term ={} ", speed_error_term);
 
     threadLogger_->info("speed_smooth_term ={} ", speed_smooth_term);
-
-    threadLogger_->info("speed_discrete_number ={} ", speed_discrete_number);
 
     threadLogger_->info("reverse_speed ={} ", reverse_speed);
     vehicle_param = m_veh_param;
@@ -534,7 +531,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         threadLogger_->info("...Case 1...");
 
         unsigned int i = 0;
-        for (i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) // 不从key_point1.index开始
+        for (i = keypoint1.index; i < keypoint2.index; i += 1) // 不从key_point1.index开始
         {
             temp_sparsepoint.index = i;
             temp_sparsepoint.speed = v1;
@@ -563,7 +560,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float s_temp, s_d;
             float s_1 = s_total - s_min; // 匀速截止的距离
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += 1) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0);
                 if (s_temp <= s_1) {
                     temp_sparsepoint.index = i;
@@ -591,7 +588,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         float s_min   = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);                              // 加速到v2所需的最小距离
         float s_temp;
         float s_0 = temp_traj.at(keypoint1.index).distance;
-        for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
+        for (unsigned int i = keypoint1.index; i < keypoint2.index; i += 1) {
             s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
             if (s_temp < s_min) {
                 temp_sparsepoint.index = i;
@@ -637,7 +634,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float s_0 = temp_traj.at(keypoint1.index).distance;
             threadLogger_->info("...Case 4:s_0:{}", s_0);
 
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += 1) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 threadLogger_->info("...Case 4:temp_traj.at(i).distance :{} ", temp_traj.at(i).distance);
 
@@ -674,7 +671,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float v_max = sqrt((2 * min_acceleration * max_acceleration * s_total + min_acceleration * pow(v0, 2) - max_acceleration * pow(v2, 2)) / (min_acceleration - max_acceleration));
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += 1) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 if (s_temp < s_as)                             // 加速
                 {
@@ -708,7 +705,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         {
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += 1) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 if (s_temp < s_acc)                            // 加速
                 {
@@ -739,7 +736,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             float v_max = sqrt((2 * min_acceleration * max_acceleration * s_total + min_acceleration * pow(v0, 2) - max_acceleration * pow(v2, 2)) / (min_acceleration - max_acceleration));
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += 1) {
                 s_temp = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 if (s_temp < s_as)                             // 加速
                 {
@@ -762,7 +759,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         {
             float s_temp;
             float s_0 = temp_traj.at(keypoint1.index).distance;
-            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += speed_discrete_number) {
+            for (unsigned int i = keypoint1.index; i < keypoint2.index; i += 1) {
                 s_temp                 = fabs(temp_traj.at(i).distance - s_0); // 距起点的距离
                 temp_sparsepoint.index = i;
                 temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_temp);

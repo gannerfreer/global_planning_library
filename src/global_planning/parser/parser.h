@@ -234,15 +234,6 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 forward_penalty ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("rs_min_path_length") && val["rs_min_path_length"].IsNumber()) {
-                veh_start_end.veh_param.rs_min_path_length = val["rs_min_path_length"].GetDouble();
-                cout << "veh_start_end.veh_param.rs_min_path_length " << veh_start_end.veh_param.rs_min_path_length << endl;
-            }
-            else {
-                veh_start_end.veh_param.rs_min_path_length = 8.0;
-                cout << "无法找到车参 rs_min_path_length ，即将赋予默认值" << endl;
-            }
-
 
             if (val.HasMember("path_smoothness_term") && val["path_smoothness_term"].IsNumber()) {
                 veh_start_end.veh_param.path_smoothness_term = val["path_smoothness_term"].GetDouble();
@@ -335,14 +326,6 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 speed_error_term ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("speed_discrete_number") && val["speed_discrete_number"].IsNumber()) {
-                veh_start_end.veh_param.speed_discrete_number = val["speed_discrete_number"].GetFloat();
-                cout << "veh_start_end.veh_param.speed_discrete_number " << veh_start_end.veh_param.speed_discrete_number << endl;
-            }
-            else {
-                veh_start_end.veh_param.speed_discrete_number = 5;
-                cout << "无法找到车参 speed_discrete_number ，即将赋予默认值" << endl;
-            }
 
             if (val.HasMember("speed_smooth_term") && val["speed_smooth_term"].IsNumber()) {
                 veh_start_end.veh_param.speed_smooth_term = val["speed_smooth_term"].GetFloat();
@@ -713,7 +696,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.3.9.20241220_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.4.0.20250102_beta" << endl;
         record.close();
     }
 

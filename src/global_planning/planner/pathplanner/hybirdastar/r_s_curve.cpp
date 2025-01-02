@@ -90,16 +90,16 @@ bool RSCurve::LengthValid() {
                         ;
                 }
                 else if (i == s.size() - 2) {
-                    if (fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_.rs_min_path_length) {
-                        // threadLogger_->info("fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < m_vehicle_prarm_. rs_min_path_length");
+                    if (fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < 0.5) {
+                        // threadLogger_->info("fabs(s.at(s.size() - 1)) * m_vehicle_prarm_.radious < 0.5");
                         // cout << "LengthValid i==s.size()-2  单段太短，验证失败" << endl;
                         return false;
                     }
                 }
                 else
                     ;
-                if (sum < m_vehicle_prarm_.rs_min_path_length) {
-                    // threadLogger_->info("sum < m_vehicle_prarm_. rs_min_path_length");
+                if (sum < 0.5) {
+                    // threadLogger_->info("sum < 0.5");
                     // cout << "LengthValid sum总长太短，验证失败" << endl;
                     return false;
                 }

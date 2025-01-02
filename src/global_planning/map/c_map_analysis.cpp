@@ -339,13 +339,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.forward_penalty = 1.0;
                 cout << "无法找到车参 forward_penalty ，即将赋予默认值" << endl;
             }
-            if (val.HasMember("rs_min_path_length")) {
-                veh_start_end.veh_param.rs_min_path_length = val["rs_min_path_length"].GetDouble();
-            }
-            else {
-                veh_start_end.veh_param.rs_min_path_length = 8.0;
-                cout << "无法找到车参 rs_min_path_length ，即将赋予默认值" << endl;
-            }
 
             if (val.HasMember("path_smoothness_term")) {
                 veh_start_end.veh_param.path_smoothness_term = val["path_smoothness_term"].GetDouble();
@@ -425,14 +418,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
             else {
                 veh_start_end.veh_param.speed_error_term = 0.1;
                 cout << "无法找到车参 speed_error_term ，即将赋予默认值" << endl;
-            }
-
-            if (val.HasMember("speed_discrete_number")) {
-                veh_start_end.veh_param.speed_discrete_number = val["speed_discrete_number"].GetFloat();
-            }
-            else {
-                veh_start_end.veh_param.speed_discrete_number = 5;
-                cout << "无法找到车参 speed_discrete_number ，即将赋予默认值" << endl;
             }
 
             if (val.HasMember("speed_smooth_term")) {

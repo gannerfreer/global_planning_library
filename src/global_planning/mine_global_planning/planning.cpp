@@ -184,21 +184,21 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         cout << "(" << global_path_.at(i).x << "," << global_path_.at(i).y << ")   曲率：" << global_path_.at(i).curvature << endl;
     }
     cout << endl;
-    // for (int i = 0; i < global_path_.size() - 2; i++) {
-    //     bool allExcessive = true;
-    //     for (int j = i; j < i + 3; j++) {
-    //         if (fabs(global_path_.at(j).curvature) <= vehicle_param_.curvature_threshold) {
-    //             allExcessive = false;
-    //             break;
-    //         }
-    //     }
-    //     if (allExcessive) {
-    //         threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，索引大致位置为：{}   曲率分别为 {}, {}, {}", i, global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
-    //         error_type_ = ErrorType::CURVATURE_EXCESSIVE;
-    //         return;
-    //     }
-    // }
-    // threadLogger_->info("轨迹曲率校验通过,校验阈值：{}", vehicle_param_.curvature_threshold);
+    for (int i = 0; i < global_path_.size() - 2; i++) {
+        bool allExcessive = true;
+        for (int j = i; j < i + 3; j++) {
+            if (fabs(global_path_.at(j).curvature) <= vehicle_param_.curvature_threshold) {
+                allExcessive = false;
+                break;
+            }
+        }
+        if (allExcessive) {
+            threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，索引大致位置为：{}   曲率分别为 {}, {}, {}", i, global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
+            error_type_ = ErrorType::CURVATURE_EXCESSIVE;
+            return;
+        }
+    }
+    threadLogger_->info("轨迹曲率校验通过,校验阈值：{}", vehicle_param_.curvature_threshold);
 
 
     // 计算加速度
@@ -556,7 +556,7 @@ bool Planning::PathPlanning() {
 // 非调度规划任务
 bool Planning::NotFollowReferencelinePlanning() {
     my_optimal_path_.threadLogger_ = threadLogger_;
-    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, true);
+    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
     vector<_TrajectoryPoint> temp_traj;
     long long                time_threshold = 2 * 1000 * 1000;
     PlanRule                 rule_id_1 = PlanRule::Forward_All_Time, rule_id_2 = PlanRule::Backward_All_Time, rule_id_3 = PlanRule::Start_Front_End_Back;
@@ -635,7 +635,7 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("未定义的任务");
         return false;
     }
-    my_optimal_path_.DeleteVoronoiSpace(true);
+    my_optimal_path_.DeleteVoronoiSpace(false);
     return true;
 }
 
@@ -950,7 +950,7 @@ void Planning::PathClipAndSplice() {
 bool Planning::HybirdAStarFitting() {
     //  初始化HybrdiA*算法地图边界及voronoi图
     my_optimal_path_.threadLogger_ = threadLogger_;
-    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, true);
+    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
     // 基于横纵向距离来判断是否进行hybirdA*拟合
     threadLogger_->info("Enter HybirdAStarFitting");
     double lat_threshold = 0.3, lon_threshold = 0.8;
@@ -1034,7 +1034,7 @@ bool Planning::HybirdAStarFitting() {
         }
     }
 
-    my_optimal_path_.DeleteVoronoiSpace(true);
+    my_optimal_path_.DeleteVoronoiSpace(false);
     threadLogger_->info("HybirdAStarFitting结束");
     return true;
 }

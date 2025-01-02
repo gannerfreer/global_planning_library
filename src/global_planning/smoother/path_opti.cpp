@@ -105,8 +105,8 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         auto curvature_exceed = CurvatureCheck();
         threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
 
-        // if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
-        if (true == collision_point.empty()) // 若无碰撞且曲率不超标
+        if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
+        // if (true == collision_point.empty()) // 若无碰撞且曲率不超标.
         {
             break;
         }
@@ -296,21 +296,21 @@ void Path_Opti::SmoothPath() {
 
             // 与原路径偏差项
             gradient_error_term = ErrorTerm(xi, xoi);
-            new_path_.at(i).x -= coeff.at(i) * gradient_error_term.x;
-            new_path_.at(i).y -= coeff.at(i) * gradient_error_term.y;
+            if (!isnan(gradient_error_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_error_term.x;
+            if (!isnan(gradient_error_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_error_term.y;
 
 
             // 曲率项
             gradient_curvature_term = CurvatureTerm(xim1, xi, xip1);
             // gradient_curvature_term = CurvatureTerm(xim2, xim1, xi, xip1, xip2);
-            new_path_.at(i).x -= coeff.at(i) * gradient_curvature_term.x;
-            new_path_.at(i).y -= coeff.at(i) * gradient_curvature_term.y;
+            if (!isnan(gradient_curvature_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_curvature_term.x;
+            if (!isnan(gradient_curvature_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_curvature_term.y;
 
 
             // 平滑项
             gradient_smoothness_term = SmoothnessTerm(xim2, xim1, xi, xip1, xip2);
-            new_path_.at(i).x -= coeff.at(i) * gradient_smoothness_term.x;
-            new_path_.at(i).y -= coeff.at(i) * gradient_smoothness_term.y;
+            if (!isnan(gradient_smoothness_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_smoothness_term.x;
+            if (!isnan(gradient_smoothness_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_smoothness_term.y;
 
             // Vonoroi项
             // 需要满足两个条件才会利用voronoi项进行平滑，1、需要使用voronoi图，2、当前传入的路径坐标xi位于voronoi图范围内
@@ -875,114 +875,4 @@ inline bool Path_Opti::IsFixPoint(unsigned int m) {
         return false;
     else
         return true;
-}
-
-void Path_Opti::CalCurv(Path& traj) {
-    vector<double> vec_x, vec_y, vec_angle;
-    int            delta_length = 4, halflengthmark = 0;
-    double         distance_halflength = 0;
-    int            s                   = traj.size();
-    for (int i = 0; i < s; i++) {
-        vec_x.push_back(traj.at(i).x);
-        vec_y.push_back(traj.at(i).y);
-        vec_angle.push_back(traj.at(i).angle);
-    }
-    // 计算前2m的点的位置halflengthmark
-    int j = 0;
-    while (j < s - 1) {
-        distance_halflength = distance_halflength + hypot(vec_x.at(j + 1) - vec_x.at(j), vec_y.at(j + 1) - vec_y.at(j));
-        if (distance_halflength >= delta_length / 2) {
-            halflengthmark = j + 1;
-            break;
-        }
-        j++;
-    }
-
-    // 计算前1.0m点的曲率
-    for (int i = 0; i <= halflengthmark; i++) {
-        double distance_front = 0, distance_back = 0;
-        int    k = i;
-        // 计算当前点距离第一个点的距离
-        while (k > 0) {
-            distance_back = distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
-            k--;
-        }
-        k = i;
-        while (k < s - 1) {
-            distance_front = distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
-            if (distance_front >= (delta_length - distance_back)) {
-                double anglew_front  = vec_angle.at(k + 1); // 当前点0.5后的点角度
-                double delta_anglew  = anglew_front - vec_angle.at(0);
-                delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI; // 角度插值转化，避免 - 180和180处出问题
-                traj.at(i).curvature = delta_anglew / delta_length;
-                break;
-            }
-            k++;
-        }
-    }
-
-    // 计算末尾前0.5m点的位置
-    double distance_last_halflength = 0;
-    int    lasthalflengthmark       = 0;
-    j                               = s - 1;
-    while (j > 0) {
-        distance_last_halflength = distance_last_halflength + sqrt(pow(vec_x.at(j) - vec_x.at(j - 1), 2) + pow(vec_y.at(j) - vec_y.at(j - 1), 2));
-        if (distance_last_halflength >= (delta_length / 2)) {
-            lasthalflengthmark = j - 1;
-            break;
-        }
-        j--;
-    }
-
-    //%计算末尾0.5米曲率
-    for (int i = lasthalflengthmark; i <= s - 1; i++) {
-        double distance_back  = 0;
-        double distance_front = 0;
-        int    k              = i;
-        while (k < s - 1) {
-            distance_back = distance_back + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
-            k++;
-        }
-        k = i;
-        while (k > 0) {
-            distance_front = distance_front + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
-            if (distance_front >= (delta_length - distance_back)) {
-                double anglew_back   = vec_angle.at(k - 1);
-                double delta_anglew  = vec_angle.at(traj.size() - 1) - anglew_back;
-                delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI;
-                traj.at(i).curvature = delta_anglew / delta_length;
-                break;
-            }
-            k--;
-        }
-    }
-
-    // 计算中间曲率
-    for (int i = halflengthmark + 1; i <= lasthalflengthmark - 1; i++) {
-        double distance_back  = 0;
-        double distance_front = 0;
-        double anglew_front   = 0;
-        double anglew_back    = 0;
-        int    k              = i;
-        while (k < s - 1) {
-            distance_front = distance_front + sqrt(pow(vec_x.at(k + 1) - vec_x.at(k), 2) + pow(vec_y.at(k + 1) - vec_y.at(k), 2));
-            if (distance_front >= delta_length / 2) {
-                anglew_front = vec_angle.at(k + 1); // 当前点0.5后的点角度
-                break;
-            }
-            k++;
-        }
-        k = i;
-        while (k > 0) {
-            distance_back = distance_back + sqrt(pow(vec_x.at(k) - vec_x.at(k - 1), 2) + pow(vec_y.at(k) - vec_y.at(k - 1), 2));
-            if (distance_back >= delta_length / 2) {
-                anglew_back = vec_angle.at(k - 1);
-                break;
-            }
-            k--;
-        }
-        double delta_anglew  = anglew_front - anglew_back;
-        delta_anglew         = fmod((delta_anglew + 3 * M_PI), (2 * M_PI)) - M_PI;
-        traj.at(i).curvature = delta_anglew / delta_length;
-    }
 }

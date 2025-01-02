@@ -143,8 +143,7 @@ struct _VehicleParam {
     double grid_angle;
     // RS拟合的距终点最大距离
     double max_fitting_radius;
-    // RS单段路径最小距离
-    double rs_min_path_length;
+
     // 路径平滑前路点距离
     double hybridastar_step_length;
     // 前进惩罚
@@ -194,8 +193,6 @@ struct _VehicleParam {
     float speed_error_term;
     /* 平滑项权重 */
     float speed_smooth_term;
-    /* 离散点间隔数量 */
-    float speed_discrete_number;
     /* 倒车速度 */
     float reverse_speed;
     /* 维诺图*/
