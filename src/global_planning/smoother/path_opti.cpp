@@ -113,7 +113,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         else // 否则固定碰撞点和曲率超标点，继续优化
         {
             UpdateFixPointSet(collision_point);
-            // UpdateFixPointSet(curvature_exceed);
+            UpdateFixPointSet(curvature_exceed);
         }
     }
 

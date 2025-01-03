@@ -779,9 +779,9 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
     double slope_road_speed_limit        = 1;   // 坡路限速
     double bumpy_road_speed_limit        = 1;   // 颠簸路段限速
     double reverse_speed                 = 1;   // 倒车限速
-    double a                             = 0.8; // a表示一级限速到二级限速之间的缩放比例
-    double b                             = 0.6; // b表示一级限速到三级限速之间的缩放比例
-    double c                             = 0.7; // c表示轻载到重载之间的缩放比例
+    double a                             = 0.9; // a表示一级限速到二级限速之间的缩放比例
+    double b                             = 0.85; // b表示一级限速到三级限速之间的缩放比例
+    double c                             = 0.9; // c表示轻载到重载之间的缩放比例
 
     // if (vehicle_param.weather == true && vehicle_param.is_day == true) { // 晴天+白天【一级限速】
     //     threadLogger_->info("晴天+白天【一级限速】");

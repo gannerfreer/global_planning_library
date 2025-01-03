@@ -19,7 +19,6 @@
 
 // #include "global_speed_planning_test.h"
 
-#include <hiredis/hiredis.h>
 
 #include "../third_lib/rapidjson/document.h"
 #include "../third_lib/rapidjson/filereadstream.h"

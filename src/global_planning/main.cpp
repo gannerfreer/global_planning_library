@@ -23,24 +23,10 @@ bool                         is_receive_start = false;
 bool                         is_receive_end   = false;
 
 
-// const double x_o_ = -321737.4857;     // 舒兰偏移参数
-// const double y_o_ = 534463.584699999; // 舒兰偏移参数
-
-// const double x_o_ = -299; // 鲁南偏移参数
-// const double y_o_ = 920;  // 鲁南偏移参数
-
-// const double x_o_ = -299; // 鲁南偏移参数
-// const double y_o_ = 920;  // 鲁南偏移参数
-
-// const double x_o_ = 193.55615432;    // 实验偏移参数
-// const double y_o_ = 1075.6719204094; // 实验偏移参数
-
-// const double x_o_ = -122.591; // 园区偏移参数
-// const double y_o_ = -22.3275; // 园区偏移参数
 
 
-const double x_o_ = -122; // 园区偏移参数
-const double y_o_ = -22;  // 园区偏移参数
+const double x_o_ = -569.8220117314; // 园区偏移参数
+const double y_o_ = -853.9187251804;  // 园区偏移参数
 
 vector<_TrajectoryPoint> global_path, road_nodes;
 vector<Point>            expand_point;
