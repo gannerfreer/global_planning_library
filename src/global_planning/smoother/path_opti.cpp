@@ -178,9 +178,9 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     // }
 
     // std::ofstream file_out;
-    file_out.open("youhuaqian.txt");
+    file_out.open("path_smooth_before.txt");
     for (size_t index = 0; index < path_.size(); index++) {
-        file_out << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
+        file_out <<setprecision(4)<< path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
     }
     file_out.close();
 
@@ -215,9 +215,9 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     opti_path = new_path_;
 
     // std::ofstream file_out;
-    file_out.open("youhuahou.txt");
+    file_out.open("path_smooth_after.txt");
     for (size_t index = 0; index < opti_path.size(); index++) {
-        file_out << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
+        file_out <<setprecision(4)<< opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
     }
     file_out.close();
 }

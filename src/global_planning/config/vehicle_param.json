@@ -18,7 +18,7 @@
     "turnning_penalty": 2.468,
     "safe_margin_bound": 0.0,
     "safe_margin_error": 0.0,
-    "veh_center_2_side": 2.2,
+    "veh_center_2_side": 1.9,
     "angle_discrete_num": 3,
     "max_fitting_radius": 50,
     "veh_center_2_front": 7.1,

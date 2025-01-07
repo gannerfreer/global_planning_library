@@ -147,6 +147,8 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     }
     Helper::RemoveAfterSamePoint(global_path_);
 
+    // 再次重新计算曲率
+    // Helper::CalCurv(global_path_);
 
     // 路径断裂检查,涉及相邻点间距和相邻点角度差
     if (!Helper::CheckPathFracture(global_path_)) {
@@ -177,6 +179,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         error_type_ = ErrorType::SEQUENCE_AND_DIRECTION_CHECK_ERROR;
         return;
     }
+
 
     // // 曲率检查
     // cout << "轨迹点曲率" << endl;
