@@ -681,7 +681,10 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         // 对RS曲线规划结果进行角度规划统一到[0,2*M_PI)
                         for (auto& i : path_r_s_) {
                             if (i.angle < 0) i.angle += 2 * M_PI;
-                            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
+                        }
+                        for (int i = 0; i < path_r_s_.size() - 1; i++) {
+                            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", path_r_s_.at(i).x, path_r_s_.at(i).y, path_r_s_.at(i).angle / M_PI * 180.0, path_r_s_.at(i).direction);
+                            threadLogger_->info("delta_s:{}", hypot(path_r_s_.at(i).x-path_r_s_.at(i+1).x,path_r_s_.at(i).y-path_r_s_.at(i+1).y));
                         }
                         return true;
                     }

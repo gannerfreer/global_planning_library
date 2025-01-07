@@ -24,38 +24,134 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
 
     m_vehicle_param_ = m_vehicle_param;
 
-    if (original_path.size() < 5) {
-        return;
-    }
+    // if (original_path.size() < 5) {
+    //     return;
+    // }
 
-    threadLogger_->info("平滑内部--相邻点进行一米的插值");
-    // 将传入路径插值成间距step_length的路点
-    for (unsigned int i = 0; i < original_path.size() - 1; ++i) {
-        double dis_square = pow(original_path.at(i).x - original_path.at(i + 1).x, 2) + pow(original_path.at(i).y - original_path.at(i + 1).y, 2);
+    // threadLogger_->info("平滑内部--相邻点进行一米的插值");
+    // // 将传入路径插值成间距step_length的路点
+    // for (unsigned int i = 0; i < original_path.size() - 1; ++i) {
+    //     double dis_square = pow(original_path.at(i).x - original_path.at(i + 1).x, 2) + pow(original_path.at(i).y - original_path.at(i + 1).y, 2);
 
-        if (dis_square > pow(1.5 * m_vehicle_param_.hybridastar_step_length, 2)) {
-            Path tem_path;
-            CubicInterpolate2Point(original_path.at(i), original_path.at(i + 1), m_vehicle_param_.hybridastar_step_length, tem_path);
-            path_.insert(path_.end(), tem_path.begin(), tem_path.end());
-            path_.push_back(original_path.at(i + 1));
-        }
-        else {
-            path_.push_back(original_path.at(i));
-        }
+    //     if (dis_square > pow(1.5 * m_vehicle_param_.hybridastar_step_length, 2)) {
+    //         Path tem_path;
+    //         CubicInterpolate2Point(original_path.at(i), original_path.at(i + 1), m_vehicle_param_.hybridastar_step_length, tem_path);
+    //         path_.insert(path_.end(), tem_path.begin(), tem_path.end());
+    //         path_.push_back(original_path.at(i + 1));
+    //     }
+    //     else {
+    //         path_.push_back(original_path.at(i));
+    //     }
+    // }
+    // path_.push_back(original_path.back());
+    // // 如果有尖点，则尝试在尖点处补偿直线
+    // threadLogger_->info("1m插值后，未删除重复点，每个路径点的信息");
+    // for (auto i : path_) {
+    //     threadLogger_->info("x:{}  y:{}  angle:{}  direction:{}", i.x, i.y, i.angle / M_PI * 180, i.direction);
+    // }
+    // // 需要对点进行去重,去掉后面的重复点
+    // if (path_.size() > 2) {
+    //     // 应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
+    //     int slow = 0, fast = 0;
+    //     while (fast < path_.size()) {
+    //         if (slow == 0 || hypot(path_.at(fast).x - path_.at(slow - 1).x, path_.at(fast).y - path_.at(slow - 1).y) > 0.1) {
+    //             path_.at(slow) = path_.at(fast);
+    //             slow++;
+    //         }
+    //         fast++;
+    //     }
+
+    //     // 保留不重复的部分
+    //     path_.resize(slow);
+    // }
+    path_ = original_path;
+    std::ofstream file_out;
+    file_out.open("hybridA*_trajectory.txt");
+    for (size_t index = 0; index < path_.size(); index++) {
+        file_out << path_.at(index).x << " " << path_.at(index).y << " " << static_cast<int>(path_.at(index).direction) << endl;
     }
-    path_.push_back(original_path.back());
-    // 如果有尖点，则尝试在尖点处补偿直线
-    threadLogger_->info("1m插值后，未删除重复点，每个路径点的信息");
+    file_out.close();
+    CuspPointExtension(collison_check);
+    file_out.open("hybridA*_trajectory2.txt");
+    for (size_t index = 0; index < path_.size(); index++) {
+        file_out << path_.at(index).x << " " << path_.at(index).y << " " << static_cast<int>(path_.at(index).direction) << endl;
+    }
+    file_out.close();
+    threadLogger_->info("尖点直线延伸后");
     for (auto i : path_) {
-        threadLogger_->info("x:{}  y:{}  angle:{}  direction:{}", i.x, i.y, i.angle / M_PI * 180, i.direction);
+        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
     }
 
-    // 需要对点进行去重,去掉后面的重复点
+
+    threadLogger_->info("尖点直线延伸结束");
+    original_path = path_;
+    path_.clear();
+    Path temp_input_path, temp_output_path;
+    int  start_index = 0, end_index = 0;
+    bool forward_or_backward = false; // forward:true，backward:false
+    threadLogger_->info("original_path.size()：{}", original_path.size());
+    for (int i = 0; i < original_path.size() - 1; i++) {
+        if (original_path.at(i).direction != original_path.at(i + 1).direction) {
+            if (original_path.at(i).direction == MotionDirection::Forward) {
+                forward_or_backward = true;
+            }
+            else {
+                forward_or_backward = false;
+            }
+            end_index = i;
+            threadLogger_->info("start_index:{} end_index：{}", start_index, end_index);
+
+            temp_input_path.insert(temp_input_path.end(), original_path.begin() + start_index, original_path.begin() + end_index + 1);
+            threadLogger_->info("temp_input_path信息");
+            for (auto i : temp_input_path) {
+                threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+            }
+            threadLogger_->info("line86");
+
+            CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
+            threadLogger_->info("line89");
+            path_.insert(path_.end(), temp_output_path.begin(), temp_output_path.end());
+            threadLogger_->info("temp_output_path信息");
+            for (auto i : temp_output_path) {
+                threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+            }
+            threadLogger_->info("line91");
+
+            temp_output_path.clear();
+            start_index = i + 1;
+            temp_input_path.clear();
+        }
+        threadLogger_->info("line97");
+    }
+    if (original_path.at(start_index).direction == MotionDirection::Forward) {
+        forward_or_backward = true;
+    }
+    else {
+        forward_or_backward = false;
+    }
+    threadLogger_->info("start_index:{} end_index：{}", start_index, end_index);
+    temp_input_path.insert(temp_input_path.end(), original_path.begin() + start_index, original_path.end());
+    threadLogger_->info("temp_input_path信息");
+    for (auto i : temp_input_path) {
+        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+    }
+    CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
+    path_.insert(path_.end(), temp_output_path.begin(), temp_output_path.end());
+    threadLogger_->info("temp_output_path信息");
+    for (auto i : temp_output_path) {
+        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+    }
+    // 去前面的重复点
+    threadLogger_->info("1m插值后,每个路径点的信息");
+    for (auto i : path_) {
+        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+    }
     if (path_.size() > 2) {
+        std::reverse(path_.begin(), path_.end());
         // 应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
         int slow = 0, fast = 0;
         while (fast < path_.size()) {
-            if (slow == 0 || hypot(path_.at(fast).x - path_.at(slow - 1).x, path_.at(fast).y - path_.at(slow - 1).y) > 0.1) {
+            if (slow == 0 || hypot(path_.at(fast).x - path_.at(slow - 1).x, path_.at(fast).y - path_.at(slow - 1).y) > 0.4) {
                 path_.at(slow) = path_.at(fast);
                 slow++;
             }
@@ -64,25 +160,24 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
 
         // 保留不重复的部分
         path_.resize(slow);
+
+        // 再次反转以恢复原始顺序
+        std::reverse(path_.begin(), path_.end());
     }
 
 
-    // 如果有尖点，则尝试在尖点处补偿直线
     threadLogger_->info("1m插值后,删除重复点，每个路径点的信息");
     for (auto i : path_) {
-        threadLogger_->info("x:{}  y:{}  angle:{}  direction:{}", i.x, i.y, i.angle / M_PI * 180, i.direction);
+        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
     }
+    // CalCurvature(path_);
 
-    CuspPointExtension(collison_check);
+    // threadLogger_->info("执行尖点延伸逻辑后，每个轨迹点的信息,path_.size():{}", path_.size());
+    // for (int i = 0; i < path_.size(); i++) {
+    //     threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", path_.at(i).x, path_.at(i).y, path_.at(i).angle / M_PI * 180, path_.at(i).curvature, path_.at(i).direction);
+    // }
 
-    CalCurvature(path_);
-
-    threadLogger_->info("执行尖点延伸逻辑后，每个轨迹点的信息,path_.size():{}", path_.size());
-    for (int i = 0; i < path_.size(); i++) {
-        threadLogger_->info("x:{}  y:{}  angle:{}  curvature:{}  direction:{}", path_.at(i).x, path_.at(i).y, path_.at(i).angle / M_PI * 180, path_.at(i).curvature, path_.at(i).direction);
-    }
-
-    std::ofstream file_out;
+    // std::ofstream file_out;
     file_out.open("youhuaqian.txt");
     for (size_t index = 0; index < path_.size(); index++) {
         file_out << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
@@ -133,7 +228,7 @@ vector<unsigned int> Path_Opti::CurvatureCheck() {
     for (unsigned int i = 1; i < new_path_.size() - 1; i++) {
         double curvature = new_path_.at(i).curvature;
         if (fabs(curvature) > m_vehicle_param_.curvature_threshold) {
-            threadLogger_->info("第 {} 个点曲率超标，此点将被列为anchor点", i);
+            threadLogger_->info("第 {} 个点曲率超标，点坐标为({},{}),曲率为{},此点将被列为anchor点", i, new_path_.at(i).x, new_path_.at(i).y, new_path_.at(i).curvature);
             curvature_exceed_point.push_back(i);
             curvature_exceed_point.push_back(i - 1);
             curvature_exceed_point.push_back(i + 1);
@@ -737,19 +832,24 @@ void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& c
     sy_.set_points(s_, y_set);
     kDeltaS = 1;
 
-    float epsilon = 0.0001; // 容差值
-    for (double s = 0.0; s <= s_.back(); s += kDeltaS) {
+    float  epsilon = 0.0001; // 容差值
+    double s       = 0.0;
+    for (s = 0.0; s <= s_.back(); s += kDeltaS) {
         double dx = sx_.deriv(1, s);
         double dy = sy_.deriv(1, s);
 
         double ddx = sx_.deriv(2, s);
         double ddy = sy_.deriv(2, s);
 
-        float angle = atan(dy / dx);
-        if (dx < 0)
-            angle = angle + M_PI;
-        else if (dx >= 0 && dy < 0)
-            angle = angle + 2 * M_PI;
+        // float angle = atan(dy / dx);
+        // if (dx < 0)
+        //     angle = angle + M_PI;
+        // else if (dx >= 0 && dy < 0)
+        //     angle = angle + 2 * M_PI;
+        float angle = atan2(dy, dx);
+        if (angle < 0) {
+            angle += 2 * M_PI;
+        }
         double cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
 
         Point temp_point;
@@ -761,8 +861,35 @@ void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& c
             temp_point.direction = MotionDirection::Forward;
         else
             temp_point.direction = MotionDirection::Backward;
-        ;
         cubicspline_path.emplace_back(temp_point);
+    }
+    s        = s_.back();
+    float dx = sx_.deriv(1, s);
+    float dy = sy_.deriv(1, s);
+
+    float ddx   = sx_.deriv(2, s);
+    float ddy   = sy_.deriv(2, s);
+    float angle = atan2(dy, dx);
+    if (angle < 0) {
+        angle += 2 * M_PI;
+    }
+    float cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
+    Point temp_point;
+    temp_point.x         = sx_(s);
+    temp_point.y         = sy_(s);
+    temp_point.angle     = angle;
+    temp_point.curvature = cur;
+    if (flag == true)
+        temp_point.direction = MotionDirection::Forward;
+    else
+        temp_point.direction = MotionDirection::Backward;
+    cubicspline_path.emplace_back(temp_point);
+
+    if (flag == false) {
+        for (auto& i : cubicspline_path) {
+            i.angle += M_PI;
+            if (i.angle > 2 * M_PI) i.angle -= 2 * M_PI;
+        }
     }
 }
 

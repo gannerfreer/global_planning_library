@@ -32,24 +32,27 @@ vector<_TrajectoryPoint> global_path, road_nodes;
 vector<Point>            expand_point;
 
 
+
+
+
 void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
-    start_point.x   = msg->pose.pose.position.x;
-    start_point.y   = msg->pose.pose.position.y;
-    start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    // start_point.x   = -3.4497451782226562 - x_o_;
-    // start_point.y   = -106.21765899658203 - y_o_;
-    // start_point.yaw = 11.458324497839747 / 180.0 * M_PI;
+    // start_point.x   = msg->pose.pose.position.x;
+    // start_point.y   = msg->pose.pose.position.y;
+    // start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
+    start_point.x   = -1145.900278760568 - x_o_;
+    start_point.y   = -202.62124062394764 - y_o_;
+    start_point.yaw = 282.1407775878906 / 180.0 * M_PI;
 
     is_receive_start = true;
 }
 
 void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-    end_point.x   = msg->pose.position.x;
-    end_point.y   = msg->pose.position.y;
-    end_point.yaw = tf::getYaw(msg->pose.orientation);
-    // end_point.x   = 11.819793701171875 - x_o_;
-    // end_point.y   = -89.60730743408203 - y_o_;
-    // end_point.yaw = 127.4428194967321 / 180.0 * M_PI;
+    // end_point.x   = msg->pose.position.x;
+    // end_point.y   = msg->pose.position.y;
+    // end_point.yaw = tf::getYaw(msg->pose.orientation);
+    end_point.x   = -494.6124815884- x_o_;
+    end_point.y   = -1008.5951538165 - y_o_;
+    end_point.yaw = 324.7294095836 / 180.0 * M_PI;
 
     is_receive_end = true;
 }
