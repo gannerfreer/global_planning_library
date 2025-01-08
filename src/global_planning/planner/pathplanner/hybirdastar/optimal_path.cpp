@@ -30,7 +30,7 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
         temp_Coordinate.x = map_border.at(index).x;
         temp_Coordinate.y = map_border.at(index).y;
         temp_Coordinate.z = map_border.at(index).z;
-        if (hypot(start_point.x - temp_Coordinate.x, start_point.y - temp_Coordinate.y) < 400) {
+        if (hypot(start_point.x - temp_Coordinate.x, start_point.y - temp_Coordinate.y) < 50) {
             v_road_outer_bound_.emplace_back(temp_Coordinate);
         }
     }

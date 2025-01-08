@@ -222,16 +222,14 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
     // double step_size    = m_vehicle_prarm_.hybridastar_step_length / m_vehicle_prarm_.radious;
     double step_size    = 0.1 / m_vehicle_prarm_.radious;
     Point  np;
-    threadLogger_->info("rspoint.size()={}", rspoint.size());
+    
     for (int i = 0; i < rspoint.size(); i++) {
         double s = 0;
-        threadLogger_->info("rspoint.at({}).length ={}  ", i, rspoint.at(i).length);
         if (i == rspoint.size() - 1 || (rspoint.at(i).length > 0 && rspoint.at(i + 1).length > 0) || (rspoint.at(i).length < 0 && rspoint.at(i + 1).length < 0)) {
             while (s < fabs(rspoint.at(i).length)) {
                 double sign_s = (rspoint.at(i).length > 0) ? s : (-s);
                 CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
-                threadLogger_->info("上面 rspoint.at({}).x:{}  rspoint.at({}).y:{}", i, rspoint.at(i).x, i, rspoint.at(i).y);
-                threadLogger_->info("上面 i={}  s={}  x：{}  y:{}  ", i, s, np.x, np.y);
+              
                 np.x     = np.x * m_vehicle_prarm_.radious + start.x;
                 np.y     = np.y * m_vehicle_prarm_.radious + start.y;
                 np.angle = Mod2pi(np.angle);
@@ -248,8 +246,7 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
             while (s < fabs(rspoint.at(i).length) + step_size) {
                 double sign_s = (rspoint.at(i).length > 0) ? s : (-s);
                 CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
-                threadLogger_->info("下面 rspoint.at({}).x:{}  rspoint.at({}).y:{}", i, rspoint.at(i).x, i, rspoint.at(i).y);
-                threadLogger_->info("下面 i={}  s={}  x：{}  y:{} ", i, s, np.x, np.y);
+                
                 np.x     = np.x * m_vehicle_prarm_.radious + start.x;
                 np.y     = np.y * m_vehicle_prarm_.radious + start.y;
                 np.angle = Mod2pi(np.angle);

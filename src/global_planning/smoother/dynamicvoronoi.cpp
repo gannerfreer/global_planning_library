@@ -249,10 +249,12 @@ void DynamicVoronoi::update(bool updateRealDist) {
 }
 
 float DynamicVoronoi::getDistance(int x, int y) {
-    if ((x > 0) && (x < sizeX) && (y > 0) && (y < sizeY))
+    if ((x > 0) && (x < sizeX) && (y > 0) && (y < sizeY)) {
         return data[x][y].dist;
-    else
+    }
+    else {
         return -INFINITY;
+    }
 }
 
 bool DynamicVoronoi::isVoronoi(int x, int y) {

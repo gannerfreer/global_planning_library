@@ -71,7 +71,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         file_out << path_.at(index).x << " " << path_.at(index).y << " " << static_cast<int>(path_.at(index).direction) << endl;
     }
     file_out.close();
-    CuspPointExtension(collison_check);
+    // CuspPointExtension(collison_check);
     file_out.open("hybridA*_trajectory2.txt");
     for (size_t index = 0; index < path_.size(); index++) {
         file_out << path_.at(index).x << " " << path_.at(index).y << " " << static_cast<int>(path_.at(index).direction) << endl;
@@ -107,8 +107,13 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
                 threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
             }
             threadLogger_->info("line86");
+            if (temp_input_path.size() > 2) {
+                CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
+            }
+            else {
+                temp_output_path = temp_input_path;
+            }
 
-            CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
             threadLogger_->info("line89");
             path_.insert(path_.end(), temp_output_path.begin(), temp_output_path.end());
             threadLogger_->info("temp_output_path信息");
@@ -135,41 +140,46 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     for (auto i : temp_input_path) {
         threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
     }
-    CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
+    if (temp_input_path.size() > 2) {
+        CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
+    }
+    else {
+        temp_output_path = temp_input_path;
+    }
     path_.insert(path_.end(), temp_output_path.begin(), temp_output_path.end());
     threadLogger_->info("temp_output_path信息");
     for (auto i : temp_output_path) {
         threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
     }
     // 去前面的重复点
-    threadLogger_->info("1m插值后,每个路径点的信息");
-    for (auto i : path_) {
-        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
-    }
-    if (path_.size() > 2) {
-        std::reverse(path_.begin(), path_.end());
-        // 应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
-        int slow = 0, fast = 0;
-        while (fast < path_.size()) {
-            if (slow == 0 || hypot(path_.at(fast).x - path_.at(slow - 1).x, path_.at(fast).y - path_.at(slow - 1).y) > 0.4) {
-                path_.at(slow) = path_.at(fast);
-                slow++;
-            }
-            fast++;
-        }
+    // threadLogger_->info("1m插值后,每个路径点的信息");
+    // for (auto i : path_) {
+    //     threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+    // }
+    // if (path_.size() > 2) {
+    //     std::reverse(path_.begin(), path_.end());
+    //     // 应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
+    //     int slow = 0, fast = 0;
+    //     while (fast < path_.size()) {
+    //         if (slow == 0 || hypot(path_.at(fast).x - path_.at(slow - 1).x, path_.at(fast).y - path_.at(slow - 1).y) > 0.4) {
+    //             path_.at(slow) = path_.at(fast);
+    //             slow++;
+    //         }
+    //         fast++;
+    //     }
 
-        // 保留不重复的部分
-        path_.resize(slow);
+    //     // 保留不重复的部分
+    //     path_.resize(slow);
 
-        // 再次反转以恢复原始顺序
-        std::reverse(path_.begin(), path_.end());
-    }
+    //     // 再次反转以恢复原始顺序
+    //     std::reverse(path_.begin(), path_.end());
+    // }
 
 
-    threadLogger_->info("1m插值后,删除重复点，每个路径点的信息");
-    for (auto i : path_) {
-        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
-    }
+    // threadLogger_->info("1m插值后,删除重复点，每个路径点的信息");
+    // for (auto i : path_) {
+    //     threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+    // }
     // CalCurvature(path_);
 
     // threadLogger_->info("执行尖点延伸逻辑后，每个轨迹点的信息,path_.size():{}", path_.size());
@@ -180,7 +190,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     // std::ofstream file_out;
     file_out.open("path_smooth_before.txt");
     for (size_t index = 0; index < path_.size(); index++) {
-        file_out <<setprecision(4)<< path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
+        file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
     }
     file_out.close();
 
@@ -217,7 +227,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     // std::ofstream file_out;
     file_out.open("path_smooth_after.txt");
     for (size_t index = 0; index < opti_path.size(); index++) {
-        file_out <<setprecision(4)<< opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
+        file_out << setprecision(4) << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
     }
     file_out.close();
 }
@@ -338,6 +348,10 @@ void Path_Opti::UpdateFixPointSet(const vector<unsigned int> points) {
     for (unsigned int i = 0; i < points.size(); i++) {
         unsigned int index = points.at(i);
         fixpoint_set_.insert(index);
+    }
+    threadLogger_->info("打印更新后的锚点信息");
+    for(auto i:fixpoint_set_){
+threadLogger_->info("{}",i);
     }
 }
 
@@ -639,18 +653,22 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
     Vector2D gradient(0, 0);
     int      index_x = static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist));
     int      index_y = static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist));
-    float    obsDst  = voronoiDiagram->getDistance(index_x, index_y);
+    std::cout << "line642" << std::endl;
+    float obsDst = voronoiDiagram->getDistance(index_x, index_y) * m_vehicle_param_.vonoroi_grid_dist;
+    std::cout << "line644" << std::endl;
     Vector2D obsVct(voronoiDiagram->getData()[index_x][index_y].obstX - index_x, voronoiDiagram->getData()[index_x][index_y].obstY - index_y);
-    threadLogger_->info("坐标({},{})最近的障碍物距离为：{},向量坐标为:({},{})", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), obsDst * m_vehicle_param_.vonoroi_grid_dist, obsVct.x, obsVct.y);
+    std::cout << "line646" << std::endl;
+    threadLogger_->info("坐标({},{})最近的障碍物距离为：{},向量坐标为:({},{})", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), obsDst, obsVct.x, obsVct.y);
 
 
     float    edgDst          = 0; // todo
     Vec2i    closest_edge_pt = voronoiDiagram->GetClosestVoronoiEdgePoint({index_x, index_y}, edgDst);
     Vector2D edgVct(closest_edge_pt.x() - index_x, closest_edge_pt.y() - index_y);
-    edgDst = hypot(edgVct.getX(), edgVct.getY());
+    edgDst = hypot(edgVct.getX(), edgVct.getY()) * m_vehicle_param_.vonoroi_grid_dist;
+
     // cout << "节点{" << index_x << "," << index_y << "}距离最近障碍物的距离 obsDst: " << obsDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
     // cout << "节点{" << index_x << "," << index_y << "}距离最近voronoi边的距离 edgDst: " << edgDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
-    threadLogger_->info("坐标({},{})最近的voronoi边距离为：{}，向量坐标：({},{})", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), edgDst * m_vehicle_param_.vonoroi_grid_dist, edgVct.x, edgVct.y);
+    threadLogger_->info("坐标({},{})最近的voronoi边距离为：{}，向量坐标：({},{})", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), edgDst, edgVct.x, edgVct.y);
 
     if (obsDst < vorObsDMax) {
         // calculate the distance to the closest GVD edge from the current node
@@ -659,8 +677,8 @@ Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
             // cout << "edgDst>0" << endl;
             // float PobsDst_Pxi; // todo = obsVct / obsDst;
             // float PedgDst_Pxi; // todo = edgVct / edgDst;
-            Vector2D PobsDst_Pxi     = obsVct / obsDst;
-            Vector2D PedgDst_Pxi     = edgVct / edgDst;
+            Vector2D PobsDst_Pxi     = obsVct / obsDst * m_vehicle_param_.vonoroi_grid_dist;
+            Vector2D PedgDst_Pxi     = edgVct / edgDst * m_vehicle_param_.vonoroi_grid_dist;
             float    PvorPtn_PedgDst = alpha * obsDst * pow(obsDst - vorObsDMax, 2) / (pow(vorObsDMax, 2) * (obsDst + alpha) * pow(edgDst + obsDst, 2));
 
             float PvorPtn_PobsDst = (alpha * edgDst * (obsDst - vorObsDMax) * ((edgDst + 2 * vorObsDMax + alpha) * obsDst + (vorObsDMax + 2 * alpha) * edgDst + alpha * vorObsDMax)) / (pow(vorObsDMax, 2) * pow(obsDst + alpha, 2) * pow(obsDst + edgDst, 2));
@@ -711,7 +729,7 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
             // 尖点前直线延伸，最大延伸距离为cusp_extension_distance
             threadLogger_->info("尖点延伸距离：{}", m_vehicle_param_.cusp_extension_distance);
             threadLogger_->info("尖点前延伸");
-            for (int j = 2; j <= m_vehicle_param_.cusp_extension_distance + 1; j++) {
+            for (int j = 3; j <= m_vehicle_param_.cusp_extension_distance + 1; j++) {
                 //   cout<<" J = " << j <<   endl;
                 temp_point.angle     = path_.at(i).angle;
                 temp_point.x         = path_.at(i).x + flag_pos_neg * j * cos(temp_point.angle);

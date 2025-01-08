@@ -119,22 +119,22 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     }
 
 
-    std::ofstream file_out;
-    file_out.open("pinghuaqian.txt");
-    for (size_t index = 0; index < global_path_.size(); index++) {
-        file_out << 0 << " " << global_path_.at(index).curvature << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("pinghuaqian.txt");
+    // for (size_t index = 0; index < global_path_.size(); index++) {
+    //     file_out << 0 << " " << global_path_.at(index).curvature << endl;
+    // }
+    // file_out.close();
 
-    // 对路径点曲率进行平滑滤波
-    cout << "vehicle_param_.curvature_smooth_opti_num:" << vehicle_param_.curvature_smooth_opti_num << endl;
-    Helper::SmoothFilter(global_path_, vehicle_param_.curvature_smooth_opti_num);
+    // // 对路径点曲率进行平滑滤波
+    // cout << "vehicle_param_.curvature_smooth_opti_num:" << vehicle_param_.curvature_smooth_opti_num << endl;
+    // Helper::SmoothFilter(global_path_, vehicle_param_.curvature_smooth_opti_num);
 
-    file_out.open("pinghuahou.txt");
-    for (size_t index = 0; index < global_path_.size(); index++) {
-        file_out << 0 << " " << global_path_.at(index).curvature << endl;
-    }
-    file_out.close();
+    // file_out.open("pinghuahou.txt");
+    // for (size_t index = 0; index < global_path_.size(); index++) {
+    //     file_out << 0 << " " << global_path_.at(index).curvature << endl;
+    // }
+    // file_out.close();
 
 
     // 角度转换
@@ -159,7 +159,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("轨迹连续性校验通过");
 
     // 超速检测
-    // std::ofstream file_out;
+    std::ofstream file_out;
     file_out.open("speed_limit2.txt");
     for (size_t index = 0; index < global_path_.size(); index++) {
         file_out << 0 << " " << global_path_.at(index).speed_limit << endl;

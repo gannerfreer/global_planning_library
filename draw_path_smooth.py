@@ -25,8 +25,8 @@ def read_data(file_name):
 
 
 def main():
-    file_name1 = "youhuaqian.txt"
-    file_name2 = "youhuahou.txt"
+    file_name1 = "path_smooth_before.txt"
+    file_name2 = "path_smooth_after.txt"
     # 读取第一个文件的数据
     x1, y1, yaw1, direction1, curvature1 = read_data(file_name1)
     # 读取第二个文件的数据
