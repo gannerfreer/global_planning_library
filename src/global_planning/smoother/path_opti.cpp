@@ -66,13 +66,13 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     // }
     path_ = original_path;
     std::ofstream file_out;
-    file_out.open("hybridA*_trajectory.txt");
+    file_out.open("cusp_path_before.txt");
     for (size_t index = 0; index < path_.size(); index++) {
         file_out << path_.at(index).x << " " << path_.at(index).y << " " << static_cast<int>(path_.at(index).direction) << endl;
     }
     file_out.close();
-    // CuspPointExtension(collison_check);
-    file_out.open("hybridA*_trajectory2.txt");
+    CuspPointExtension(collison_check);
+    file_out.open("cusp_path_after.txt");
     for (size_t index = 0; index < path_.size(); index++) {
         file_out << path_.at(index).x << " " << path_.at(index).y << " " << static_cast<int>(path_.at(index).direction) << endl;
     }
@@ -176,11 +176,11 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     // }
 
 
-    // threadLogger_->info("1m插值后,删除重复点，每个路径点的信息");
-    // for (auto i : path_) {
-    //     threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
-    // }
-    // CalCurvature(path_);
+    threadLogger_->info("插值后路径点信息（待平滑）");
+    for (auto i : path_) {
+        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+    }
+    CalCurvature(path_);
 
     // threadLogger_->info("执行尖点延伸逻辑后，每个轨迹点的信息,path_.size():{}", path_.size());
     // for (int i = 0; i < path_.size(); i++) {
@@ -350,8 +350,8 @@ void Path_Opti::UpdateFixPointSet(const vector<unsigned int> points) {
         fixpoint_set_.insert(index);
     }
     threadLogger_->info("打印更新后的锚点信息");
-    for(auto i:fixpoint_set_){
-threadLogger_->info("{}",i);
+    for (auto i : fixpoint_set_) {
+        threadLogger_->info("{}", i);
     }
 }
 
@@ -715,26 +715,27 @@ inline Vector2D Path_Opti::OrthogonalComplements(Vector2D a, Vector2D b) {
  */
 void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
     Path temp_path;
-    temp_path.push_back(path_.at(0));
-    for (unsigned int i = 1; i < path_.size(); i++) {
+    for (unsigned int i = 0; i < path_.size() - 1; i++) {
         // 如果方向不变，则直接存储
-        if (path_.at(i).direction == path_.at(i - 1).direction) {
+        if (path_.at(i).direction == path_.at(i + 1).direction) {
             temp_path.push_back(path_.at(i));
         }
         else {
-            double       flag_pos_neg = (path_.at(i).direction == Forward) ? -1.0 : 1.0;
+            double       flag_pos_neg = (path_.at(i).direction == Forward) ? 1.0 : -1.0;
             unsigned int num          = 0;
             Point        temp_point;
 
             // 尖点前直线延伸，最大延伸距离为cusp_extension_distance
             threadLogger_->info("尖点延伸距离：{}", m_vehicle_param_.cusp_extension_distance);
-            threadLogger_->info("尖点前延伸");
-            for (int j = 3; j <= m_vehicle_param_.cusp_extension_distance + 1; j++) {
+            threadLogger_->info("尖点向前延伸");
+
+            // float average_angle = CalAverageAngle(path_.at(i).angle, path_.at(i + 1).angle);
+            for (int j = 1; j <= m_vehicle_param_.cusp_extension_distance+1; j++) {
                 //   cout<<" J = " << j <<   endl;
                 temp_point.angle     = path_.at(i).angle;
                 temp_point.x         = path_.at(i).x + flag_pos_neg * j * cos(temp_point.angle);
                 temp_point.y         = path_.at(i).y + flag_pos_neg * j * sin(temp_point.angle);
-                temp_point.direction = (path_.at(i).direction == Forward) ? Backward : Forward;
+                temp_point.direction = (path_.at(i).direction == Forward) ? Forward : Backward;
                 threadLogger_->info("延伸的点坐标({},{},{})", temp_point.x, temp_point.y, temp_point.direction);
 
                 num = j - 1;
@@ -753,16 +754,17 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
             // 尖点后直线延伸
             threadLogger_->info("尖点后延伸");
 
-            for (int k = num - 1; k >= 0; k--) {
+            for (int k = num; k >= 0; k--) {
                 temp_point.angle     = path_.at(i).angle;
                 temp_point.x         = path_.at(i).x + flag_pos_neg * k * cos(temp_point.angle);
                 temp_point.y         = path_.at(i).y + flag_pos_neg * k * sin(temp_point.angle);
-                temp_point.direction = path_.at(i).direction;
+                temp_point.direction = (path_.at(i).direction == Forward) ? Backward : Forward;
                 temp_path.push_back(temp_point);
                 threadLogger_->info("延伸的点坐标({},{},{})", temp_point.x, temp_point.y, temp_point.direction);
             }
         }
     }
+    temp_path.push_back(path_.back());
     path_ = temp_path;
 }
 
@@ -1020,4 +1022,33 @@ inline bool Path_Opti::IsFixPoint(unsigned int m) {
         return false;
     else
         return true;
+}
+
+float CalAverageAngle(float angle_A, float angle_B) {
+    float average_angle = 0;
+    float angle_diff  = fabs(angle_A - angle_B) > M_PI ? 2 * M_PI - fabs(angle_A - angle_B) : fabs(angle_A - angle_B);
+    float new_angle_1 = 0, new_angle_2 = 0;
+    new_angle_1 = angle_A + angle_diff / 2.0;
+    if (new_angle_1 > 2 * M_PI) new_angle_1 -= 2 * M_PI;
+    if (new_angle_1 < 0) new_angle_1 += 2 * M_PI;
+    new_angle_2 = angle_B + angle_diff / 2.0;
+    if (new_angle_2 > 2 * M_PI) new_angle_2 -= 2 * M_PI;
+    if (new_angle_2 < 0) new_angle_2 += 2 * M_PI;
+    Vector2D new_angle_1_v, new_angle_2_v;
+    new_angle_1_v.x = cos(new_angle_1);
+    new_angle_1_v.y = sin(new_angle_1);
+    new_angle_2_v.x = cos(new_angle_2);
+    new_angle_2_v.y = sin(new_angle_2);
+    Vector2D angle_A_v, angle_b_v;
+    angle_A_v.x   = cos(angle_A);
+    angle_A_v.y   = sin(angle_A);
+    angle_b_v.x   = cos(angle_B);
+    angle_b_v.y   = sin(angle_B);
+    float result1 = angle_A_v.CrossProd(new_angle_1_v);
+    float resule2 = angle_b_v.CrossProd(new_angle_1_v);
+    float result3 = angle_A_v.CrossProd(new_angle_2_v);
+    float resule4 = angle_b_v.CrossProd(new_angle_2_v);
+    average_angle = result1 * resule2 > 0 ? atan2(new_angle_2_v.y, new_angle_2_v.x) : atan2(new_angle_1_v.y, new_angle_1_v.x);
+    if (average_angle < 0) average_angle += 2 * M_PI;
+    return average_angle;
 }

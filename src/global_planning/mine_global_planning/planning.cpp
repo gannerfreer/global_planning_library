@@ -181,27 +181,27 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     }
 
 
-    // // 曲率检查
-    // cout << "轨迹点曲率" << endl;
-    // for (int i = 0; i < global_path_.size(); i++) {
-    //     cout << "(" << global_path_.at(i).x << "," << global_path_.at(i).y << ")   曲率：" << global_path_.at(i).curvature << endl;
-    // }
-    // cout << endl;
-    // for (int i = 0; i < global_path_.size() - 2; i++) {
-    //     bool allExcessive = true;
-    //     for (int j = i; j < i + 3; j++) {
-    //         if (fabs(global_path_.at(j).curvature) <= vehicle_param_.curvature_threshold) {
-    //             allExcessive = false;
-    //             break;
-    //         }
-    //     }
-    //     if (allExcessive) {
-    //         threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，索引大致位置为：{}   曲率分别为 {}, {}, {}", i, global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
-    //         error_type_ = ErrorType::CURVATURE_EXCESSIVE;
-    //         return;
-    //     }
-    // }
-    // threadLogger_->info("轨迹曲率校验通过,校验阈值：{}", vehicle_param_.curvature_threshold);
+    // 曲率检查
+    cout << "轨迹点曲率" << endl;
+    for (int i = 0; i < global_path_.size(); i++) {
+        cout << "(" << global_path_.at(i).x << "," << global_path_.at(i).y << ")   曲率：" << global_path_.at(i).curvature << endl;
+    }
+    cout << endl;
+    for (int i = 0; i < global_path_.size() - 2; i++) {
+        bool allExcessive = true;
+        for (int j = i; j < i + 3; j++) {
+            if (fabs(global_path_.at(j).curvature) <= vehicle_param_.curvature_threshold) {
+                allExcessive = false;
+                break;
+            }
+        }
+        if (allExcessive) {
+            threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，索引大致位置为：{}   曲率分别为 {}, {}, {}", i, global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
+            error_type_ = ErrorType::CURVATURE_EXCESSIVE;
+            return;
+        }
+    }
+    threadLogger_->info("轨迹曲率校验通过,校验阈值：{}", vehicle_param_.curvature_threshold);
 
 
     // 计算加速度
