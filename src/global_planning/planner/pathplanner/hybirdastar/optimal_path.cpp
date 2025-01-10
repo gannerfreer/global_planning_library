@@ -178,6 +178,7 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
             threadLogger_->info("CollectVoronoiEdgePoints结束");
             voronoiDiagram->visualize("../voronoi_graph.ppm");
             use_voronoi = true;
+            obsMax      = m_vehicle_param.obsMax;
             threadLogger_->info("visualize结束");
         }
         threadLogger_->info("voronoi栅格地图长{}宽{}", height, width);
@@ -393,6 +394,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     threadLogger_->info("开始给路径平滑赋予voronoi图");
     my_path_opti.voronoiDiagram   = voronoiDiagram;
     my_path_opti.use_voronoi      = use_voronoi;
+    my_path_opti.vorObsDMax       = obsMax;
     my_path_opti.voronoi_origin_x = voronoi_origin_x - midpoint_.x;
     my_path_opti.voronoi_origin_y = voronoi_origin_y - midpoint_.y;
     my_path_opti.threadLogger_    = threadLogger_;
@@ -515,11 +517,10 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     Helper::CalCurv(path_a_star_);
     // CalCurv(path_a_star_);
 
-    threadLogger_->info("平滑前路径点信息 ");
+    threadLogger_->info("HybridA_star规划出的原始路径（无尖点延伸）,曲率通过三点式原理计算得来");
     for (auto i : path_a_star_) {
         threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} ", i.x, i.y, i.angle / M_PI * 180.0, i.curvature, i.direction);
     }
-
 
     // 路径优化，得到最终的path
     my_path_opti.OptimizePath(path_a_star_, path, collison_check_, m_vehicle_param_);
@@ -684,7 +685,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         }
                         for (int i = 0; i < path_r_s_.size() - 1; i++) {
                             threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", path_r_s_.at(i).x, path_r_s_.at(i).y, path_r_s_.at(i).angle / M_PI * 180.0, path_r_s_.at(i).direction);
-                            threadLogger_->info("delta_s:{}", hypot(path_r_s_.at(i).x-path_r_s_.at(i+1).x,path_r_s_.at(i).y-path_r_s_.at(i+1).y));
+                            threadLogger_->info("delta_s:{}", hypot(path_r_s_.at(i).x - path_r_s_.at(i + 1).x, path_r_s_.at(i).y - path_r_s_.at(i + 1).y));
                         }
                         return true;
                     }
@@ -1075,7 +1076,6 @@ void OptimalPath::CalHValue(Vertex3D& point) {
         temp_point.y = current2D.getY();
         if (IsBoundGrid(temp_point)) {
             threadLogger_->info("该节点为障碍物节点,坐标为{} {}", temp_point.x, temp_point.y);
-
             a_start_h = numeric_limits<double>::max();
         }
         else {

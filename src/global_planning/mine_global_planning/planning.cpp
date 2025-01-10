@@ -148,7 +148,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     Helper::RemoveAfterSamePoint(global_path_);
 
     // 再次重新计算曲率
-    // Helper::CalCurv(global_path_);
+    Helper::CalCurv(global_path_);
 
     // 路径断裂检查,涉及相邻点间距和相邻点角度差
     if (!Helper::CheckPathFracture(global_path_)) {
@@ -159,12 +159,6 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("轨迹连续性校验通过");
 
     // 超速检测
-    std::ofstream file_out;
-    file_out.open("speed_limit2.txt");
-    for (size_t index = 0; index < global_path_.size(); index++) {
-        file_out << 0 << " " << global_path_.at(index).speed_limit << endl;
-    }
-    file_out.close();
     if (!Helper::OverSpeedCheck(global_path_, vehicle_param_.wheel_base)) {
         threadLogger_->error("存在超速，检测失败");
         error_type_ = ErrorType::OVERSPEED;
@@ -180,13 +174,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         return;
     }
 
-
     // 曲率检查
-    cout << "轨迹点曲率" << endl;
-    for (int i = 0; i < global_path_.size(); i++) {
-        cout << "(" << global_path_.at(i).x << "," << global_path_.at(i).y << ")   曲率：" << global_path_.at(i).curvature << endl;
-    }
-    cout << endl;
     for (int i = 0; i < global_path_.size() - 2; i++) {
         bool allExcessive = true;
         for (int j = i; j < i + 3; j++) {
@@ -559,6 +547,7 @@ bool Planning::PathPlanning() {
 // 非调度规划任务
 bool Planning::NotFollowReferencelinePlanning() {
     my_optimal_path_.threadLogger_ = threadLogger_;
+
     my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
     vector<_TrajectoryPoint> temp_traj;
     long long                time_threshold = 2 * 1000 * 1000;

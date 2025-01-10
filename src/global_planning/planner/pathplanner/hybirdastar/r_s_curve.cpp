@@ -220,55 +220,54 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
     }
     double total_length = opti_rs_path.length;
     // double step_size    = m_vehicle_prarm_.hybridastar_step_length / m_vehicle_prarm_.radious;
-    double step_size    = 0.1 / m_vehicle_prarm_.radious;
+    double step_size = 0.4 / m_vehicle_prarm_.radious;
     Point  np;
-    
+    threadLogger_->info("rspoint.size():{}", rspoint.size());
     for (int i = 0; i < rspoint.size(); i++) {
-        double s = 0;
-        if (i == rspoint.size() - 1 || (rspoint.at(i).length > 0 && rspoint.at(i + 1).length > 0) || (rspoint.at(i).length < 0 && rspoint.at(i + 1).length < 0)) {
-            while (s < fabs(rspoint.at(i).length)) {
-                double sign_s = (rspoint.at(i).length > 0) ? s : (-s);
-                CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
-              
-                np.x     = np.x * m_vehicle_prarm_.radious + start.x;
-                np.y     = np.y * m_vehicle_prarm_.radious + start.y;
-                np.angle = Mod2pi(np.angle);
-                if (0.0 == s) {
-                    directions = (rspoint.at(i).length > 0) ? Forward : Backward;
-                }
-                np.direction = directions;
-                rs_path.push_back(np);
-
-                s += step_size;
-            }
+        double s = step_size;
+        if (i == 0) {
+            s = 0; // 第一段第一个点需要放入rs_path,其余皆从s=step_size开始放
         }
-        else {
-            while (s < fabs(rspoint.at(i).length) + step_size) {
-                double sign_s = (rspoint.at(i).length > 0) ? s : (-s);
-                CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
-                
-                np.x     = np.x * m_vehicle_prarm_.radious + start.x;
-                np.y     = np.y * m_vehicle_prarm_.radious + start.y;
-                np.angle = Mod2pi(np.angle);
-                if (0.0 == s) {
-                    directions = (rspoint.at(i).length > 0) ? Forward : Backward;
-                }
-                np.direction = directions;
-                rs_path.push_back(np);
-
-                s += step_size;
+        double sign_s = 0;
+        while (s < fabs(rspoint.at(i).length)) {
+            sign_s = (rspoint.at(i).length > 0) ? s : (-s);
+            CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
+            np.x     = np.x * m_vehicle_prarm_.radious + start.x;
+            np.y     = np.y * m_vehicle_prarm_.radious + start.y;
+            np.angle = Mod2pi(np.angle);
+            if (0.0 == s) {
+                directions = (rspoint.at(i).length > 0) ? Forward : Backward;
             }
+            np.direction = directions;
+            rs_path.push_back(np);
+            s += step_size;
         }
+        // 严格放入每段RS路径上最后一个点
+        sign_s = rspoint.at(i).length;
+        CalNextPoint(sign_s, rspoint.at(i).x, rspoint.at(i).y, rspoint.at(i).theta, rspoint.at(i).types, np, directions);
+        np.x         = np.x * m_vehicle_prarm_.radious + start.x;
+        np.y         = np.y * m_vehicle_prarm_.radious + start.y;
+        np.angle     = Mod2pi(np.angle);
+        np.direction = directions; // directions维持之前原样
+        rs_path.push_back(np);
     }
-    CalNextPoint(rspoint.at(rspoint.size() - 1).length, rspoint.at(rspoint.size() - 1).x, rspoint.at(rspoint.size() - 1).y, rspoint.at(rspoint.size() - 1).theta, rspoint.at(rspoint.size() - 1).types, np, directions);
-    np.x         = np.x * m_vehicle_prarm_.radious + start.x;
-    np.y         = np.y * m_vehicle_prarm_.radious + start.y;
-    np.angle     = Mod2pi(np.angle);
-    np.direction = directions;
-    rs_path.push_back(np);
-
-    if (sqrt(pow(rs_path.at(rs_path.size() - 1).x - rs_path.at(rs_path.size() - 2).x, 2) + pow(rs_path.at(rs_path.size() - 1).x - rs_path.at(rs_path.size() - 2).x, 2)) < 0.6) {
-        auto iter1 = rs_path.erase(rs_path.end() - 2);
+    // 为避免出现过于稠密的点，需要进行去重，去掉前面的点,去重间隔为step_size/2.0
+    if (rs_path.size() > 2) {
+        // 反转轨迹
+        std::reverse(rs_path.begin(), rs_path.end());
+        // 应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
+        int slow = 0, fast = 0;
+        while (fast < rs_path.size()) {
+            if (slow == 0 || hypot(rs_path.at(fast).x - rs_path.at(slow - 1).x, rs_path.at(fast).y - rs_path.at(slow - 1).y) > step_size * m_vehicle_prarm_.radious / 2.0) {
+                rs_path.at(slow) = rs_path.at(fast);
+                slow++;
+            }
+            fast++;
+        }
+        // 保留不重复的部分
+        rs_path.resize(slow);
+        // 再次反转以恢复原始顺序
+        std::reverse(rs_path.begin(), rs_path.end());
     }
 }
 

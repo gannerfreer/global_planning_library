@@ -464,7 +464,7 @@ inline bool CheckPathFracture(vector<_TrajectoryPoint>& traj) {
     for (int i = 0; i < traj.size() - 1; i++) {
         dis        = hypot(traj.at(i).x - traj.at(i + 1).x, traj.at(i).y - traj.at(i + 1).y);
         angle_diff = fabs(traj.at(i + 1).yaw - traj.at(i).yaw) > 180.0 ? 360 - fabs(traj.at(i + 1).yaw - traj.at(i).yaw) : fabs(traj.at(i + 1).yaw - traj.at(i).yaw);
-        if (angle_diff > 10) { // 角度偏差不允许超过20度
+        if (angle_diff > 20) { // 角度偏差不允许超过20度
             cout << "轨迹连续性检测，角度有跳变，跳变" << angle_diff << " 度,索引：" << i + 1 << "坐标：(" << traj.at(i).x << "," << traj.at(i).y << ")  和   (" << traj.at(i + 1).x << "," << traj.at(i + 1).y << ")" << endl;
             return false;
         }
@@ -535,6 +535,8 @@ inline void calculateAcceleration(const std::vector<_TrajectoryPoint>& v_points)
 static inline float clamp(float n, float lower, float upper) {
     return std::max(lower, std::min(n, upper));
 }
+
+
 
 
 } // namespace Helper

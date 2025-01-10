@@ -573,12 +573,14 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.load_point_start_offset_distance = 3;
             }
 
-            if (val.HasMember("curvature_smooth_opti_num") && val["curvature_smooth_opti_num"].IsNumber()) {
-                veh_start_end.veh_param.curvature_smooth_opti_num = val["curvature_smooth_opti_num"].GetUint();
+          
+           
+            if (val.HasMember("obsMax") && val["obsMax"].IsNumber()) {
+                veh_start_end.veh_param.obsMax = val["obsMax"].GetFloat();
             }
             else {
-                cout << "无法找到车参 curvature_smooth_opti_num ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.curvature_smooth_opti_num = 25;
+                cout << "无法找到车参 obsMax ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.obsMax = 2.5;
             }
         }
     }
