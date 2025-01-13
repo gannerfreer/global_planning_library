@@ -60,7 +60,8 @@ enum struct PointAttribute : unsigned int {
     slope_road        = 3, // 坡路
     dump_road         = 4, // 颠簸路
     weight_point      = 6, // 过磅
-    clean_point       = 7  // 洗车
+    clean_point       = 7, // 洗车
+    queue_point       = 8  // 排队点
 };
 
 enum struct SpeedLimitLevel : unsigned int {
@@ -206,6 +207,7 @@ struct _VehicleParam {
     int             load_point_end_offset_distance   = 8;
     int             load_point_start_offset_distance = 4;
     float           obsMax                           = 0;
+    float           rs_min_length                    = 2;
 };
 
 // 调用全局规划时，需要传入的参数

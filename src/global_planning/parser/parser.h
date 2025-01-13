@@ -497,6 +497,14 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 obsMax ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.obsMax = 1;
             }
+
+            if (val.HasMember("rs_min_length") && val["rs_min_length"].IsNumber()) {
+                veh_start_end.veh_param.rs_min_length = val["rs_min_length"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 rs_min_length ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.rs_min_length = 1;
+            }
         }
     }
 

@@ -1086,7 +1086,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
         threadLogger_->info("本次A*搜素{}轮，耗时:{} ms,点坐标：{} {}", total, init_time_end * 0.001, temp_point.x, temp_point.y);
     }
     else {
-        threadLogger_->info("该节点可通过增量式A*直接查询");
+        // threadLogger_->info("该节点可通过增量式A*直接查询");
         a_start_h = iter->second.getG();
     }
 

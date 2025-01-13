@@ -423,7 +423,7 @@ inline void RemoveAfterSamePoint(std::vector<_TrajectoryPoint>& traj) {
     // 应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
     int slow = 0, fast = 0;
     while (fast < traj.size()) {
-        if (slow == 0 || hypot(traj.at(fast).x - traj.at(slow - 1).x, traj.at(fast).y - traj.at(slow - 1).y) > 0.4) {
+        if (slow == 0 || hypot(traj.at(fast).x - traj.at(slow - 1).x, traj.at(fast).y - traj.at(slow - 1).y) > 0.2) {
             traj.at(slow) = traj.at(fast);
             slow++;
         }

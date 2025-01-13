@@ -906,7 +906,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
             if (trajectory_points.at(i).direction == 0) {
                 trajectory_points.at(i).speed_limit = vec_temp_max_speed.at(i);
                 // 为了便于控制跟踪，将i附近的10(10m) 路径点限速也降低i为vec_temp_max_speed.at(i)
-                for (int j = i - 5; j < i + 5; j++) {
+                for (int j = i - 1; j < i + 1; j++) {
                     if (j >= 0 && j < vec_temp_max_speed.size()) {
                         if (trajectory_points.at(j).direction == 0) {
                             if (trajectory_points.at(j).speed_limit > vec_temp_max_speed.at(i)) {

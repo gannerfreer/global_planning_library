@@ -573,14 +573,21 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.load_point_start_offset_distance = 3;
             }
 
-          
-           
+
             if (val.HasMember("obsMax") && val["obsMax"].IsNumber()) {
                 veh_start_end.veh_param.obsMax = val["obsMax"].GetFloat();
             }
             else {
                 cout << "无法找到车参 obsMax ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.obsMax = 2.5;
+            }
+
+            if (val.HasMember("rs_min_length") && val["rs_min_length"].IsNumber()) {
+                veh_start_end.veh_param.rs_min_length = val["rs_min_length"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 rs_min_length ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.rs_min_length = 1;
             }
         }
     }

@@ -175,22 +175,21 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     }
 
     // 曲率检查
-    for (int i = 0; i < global_path_.size() - 2; i++) {
-        bool allExcessive = true;
-        for (int j = i; j < i + 3; j++) {
-            if (fabs(global_path_.at(j).curvature) <= vehicle_param_.curvature_threshold) {
-                allExcessive = false;
-                break;
-            }
-        }
-        if (allExcessive) {
-            threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，索引大致位置为：{}   曲率分别为 {}, {}, {}", i, global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
-            error_type_ = ErrorType::CURVATURE_EXCESSIVE;
-            return;
-        }
-    }
-    threadLogger_->info("轨迹曲率校验通过,校验阈值：{}", vehicle_param_.curvature_threshold);
-
+    // for (int i = 0; i < global_path_.size() - 2; i++) {
+    //     bool allExcessive = true;
+    //     for (int j = i; j < i + 3; j++) {
+    //         if (fabs(global_path_.at(j).curvature) <= vehicle_param_.curvature_threshold) {
+    //             allExcessive = false;
+    //             break;
+    //         }
+    //     }
+    //     if (allExcessive) {
+    //         threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，索引大致位置为：{}   曲率分别为 {}, {}, {}", i, global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
+    //         error_type_ = ErrorType::CURVATURE_EXCESSIVE;
+    //         return;
+    //     }
+    // }
+    // threadLogger_->info("轨迹曲率校验通过,校验阈值：{}", vehicle_param_.curvature_threshold);
 
     // 计算加速度
     Helper::calculateAcceleration(global_path_);
@@ -835,6 +834,7 @@ bool Planning::IsConnect(int start, int end) {
 void Planning::StartEndPointProcess() {
     // 计算全局路径第一个点与起点的角度偏差
     threadLogger_->info("StartEndPointProcess 开始");
+  
 
     // 将终点添加到全局路径中
     // 判断终点与全局路径最后一个点的角度偏差，基于角度偏差信息来判断是否 将其抛弃
@@ -843,11 +843,13 @@ void Planning::StartEndPointProcess() {
     if (end_point_last_point_angle_diff < 0) {
         end_point_last_point_angle_diff += 2 * M_PI; // 将终点与全局路径最后一个点的角度偏差规范[0,2π）
     }
+    threadLogger_->info("路径最后一个点与终点的角度:{}", end_point_last_point_angle_diff / M_PI * 180.0);
     float last_angle_diff = fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI : fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI;
     threadLogger_->info("路径最后一个点direction：{}，角度差：{}", global_path_.back().direction, last_angle_diff);
     if ((last_angle_diff > 90 && global_path_.back().direction == 0) || (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3) || (last_angle_diff < 90 && global_path_.back().direction == 1)) {
         threadLogger_->info("将路径最后一个点剔除");
         global_path_.pop_back();
+
     }
     else {
         threadLogger_->info("路径最后一个点无需剔除");
@@ -867,6 +869,8 @@ void Planning::StartEndPointProcess() {
     global_path_.push_back(last_point);
     threadLogger_->info("将规划终点作为最后一个点添加进global_path的末尾");
     threadLogger_->info("StartEndPointProcess 结束");
+
+
 }
 bool Planning::PathOffset() {
     threadLogger_->info("均匀碾压功能开启");
@@ -1168,5 +1172,93 @@ float Planning::ReferencelineTotalDis(pair<int, int>& input_pair, int start_inde
         else {
             return end_index - start_index;
         }
+    }
+}
+
+void Planning::CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path) {
+    vector<double> x_set;
+    vector<double> y_set;
+    x_set.reserve(points.size());
+    y_set.reserve(points.size());
+    for (const auto& pt : points) {
+        x_set.push_back(pt.x);
+        y_set.push_back(pt.y);
+    }
+
+    CalculateStation(x_set, y_set);
+    sx_.set_points(s_, x_set);
+    sy_.set_points(s_, y_set);
+    kDeltaS = 1;
+
+    float  epsilon = 0.0001; // 容差值
+    double s       = 0.0;
+    for (s = 0.0; s <= s_.back(); s += kDeltaS) {
+        kDeltaS   = 1;
+        double dx = sx_.deriv(1, s);
+        double dy = sy_.deriv(1, s);
+
+        double ddx = sx_.deriv(2, s);
+        double ddy = sy_.deriv(2, s);
+
+        // float angle = atan(dy / dx);
+        // if (dx < 0)
+        //     angle = angle + M_PI;
+        // else if (dx >= 0 && dy < 0)
+        //     angle = angle + 2 * M_PI;
+        float angle = atan2(dy, dx);
+        if (angle < 0) {
+            angle += 2 * M_PI;
+        }
+        double cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
+        Point  temp_point;
+        temp_point.x         = sx_(s);
+        temp_point.y         = sy_(s);
+        temp_point.angle     = angle;
+        temp_point.curvature = cur;
+        if (flag == true)
+            temp_point.direction = MotionDirection::Forward;
+        else
+            temp_point.direction = MotionDirection::Backward;
+        cubicspline_path.emplace_back(temp_point);
+    }
+    s        = s_.back();
+    float dx = sx_.deriv(1, s);
+    float dy = sy_.deriv(1, s);
+
+    float ddx   = sx_.deriv(2, s);
+    float ddy   = sy_.deriv(2, s);
+    float angle = atan2(dy, dx);
+    if (angle < 0) {
+        angle += 2 * M_PI;
+    }
+    float cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
+    Point temp_point;
+    temp_point.x         = sx_(s);
+    temp_point.y         = sy_(s);
+    temp_point.angle     = angle;
+    temp_point.curvature = cur;
+    if (flag == true)
+        temp_point.direction = MotionDirection::Forward;
+    else
+        temp_point.direction = MotionDirection::Backward;
+    cubicspline_path.emplace_back(temp_point);
+
+    if (flag == false) {
+        for (auto& i : cubicspline_path) {
+            i.angle += M_PI;
+            if (i.angle > 2 * M_PI) i.angle -= 2 * M_PI;
+        }
+    }
+}
+void Planning::CalculateStation(const vector<double>& xs, const vector<double>& ys) {
+    double cum = 0.0;
+    s_.clear();
+    s_.push_back(cum);
+
+    for (unsigned int i = 1; i < xs.size(); i++) {
+        double dx = xs.at(i) - xs.at(i - 1);
+        double dy = ys.at(i) - ys.at(i - 1);
+        cum += hypot(dx, dy);
+        s_.push_back(cum);
     }
 }

@@ -16,6 +16,7 @@
 #endif
 #include "../planner/pathplanner/dubins/dubins.h"
 #include "../planner/pathplanner/dubins/point.h"
+#include "../planner/pathplanner/spline/spline.h"
 using namespace GlobalPlanning;
 // using namespace HybridAStar;
 using namespace rapidjson;
@@ -147,6 +148,9 @@ class Planning {
     bool  HasSearched(int start, int end);
     bool  PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag = 0);
     float ReferencelineTotalDis(pair<int, int>& input_pair, int start_index, int end_index);
+    void CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
+    void CalculateStation(const vector<double>& xs, const vector<double>& ys);
+
 
   public:
     _SinglePoint start_point_, end_point_;                                                                                                                                       // 起、终点坐标
@@ -175,6 +179,10 @@ class Planning {
     shared_ptr<spdlog::logger> threadLogger_;
     string                     vehicle_code_;
     string                     key_;
+    std::vector<double>         s_;
+    curve::spline               sx_;
+    curve::spline               sy_;
+    double                      kDeltaS = 0.1;
 
 
 #ifdef SKIP_HEADER
