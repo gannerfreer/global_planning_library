@@ -824,6 +824,7 @@ void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& c
             angle += 2 * M_PI;
         }
         double cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
+        if(fabs(cur)>0.1) kDeltaS=0.4;
         Point  temp_point;
         temp_point.x         = sx_(s);
         temp_point.y         = sy_(s);
