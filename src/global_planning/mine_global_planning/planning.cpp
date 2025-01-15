@@ -834,7 +834,7 @@ bool Planning::IsConnect(int start, int end) {
 void Planning::StartEndPointProcess() {
     // 计算全局路径第一个点与起点的角度偏差
     threadLogger_->info("StartEndPointProcess 开始");
-  
+
 
     // 将终点添加到全局路径中
     // 判断终点与全局路径最后一个点的角度偏差，基于角度偏差信息来判断是否 将其抛弃
@@ -849,7 +849,6 @@ void Planning::StartEndPointProcess() {
     if ((last_angle_diff > 90 && global_path_.back().direction == 0) || (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3) || (last_angle_diff < 90 && global_path_.back().direction == 1)) {
         threadLogger_->info("将路径最后一个点剔除");
         global_path_.pop_back();
-
     }
     else {
         threadLogger_->info("路径最后一个点无需剔除");
@@ -869,8 +868,6 @@ void Planning::StartEndPointProcess() {
     global_path_.push_back(last_point);
     threadLogger_->info("将规划终点作为最后一个点添加进global_path的末尾");
     threadLogger_->info("StartEndPointProcess 结束");
-
-
 }
 bool Planning::PathOffset() {
     threadLogger_->info("均匀碾压功能开启");

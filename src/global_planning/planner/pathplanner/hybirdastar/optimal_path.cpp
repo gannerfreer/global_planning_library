@@ -30,7 +30,7 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
         temp_Coordinate.x = map_border.at(index).x;
         temp_Coordinate.y = map_border.at(index).y;
         temp_Coordinate.z = map_border.at(index).z;
-        if (hypot(start_point.x - temp_Coordinate.x, start_point.y - temp_Coordinate.y) < 50) {
+        if (hypot(start_point.x - temp_Coordinate.x, start_point.y - temp_Coordinate.y) < 200) {
             v_road_outer_bound_.emplace_back(temp_Coordinate);
         }
     }
@@ -655,7 +655,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
 
         switch (fitting_direction_) {
             case FittingDirection::Backward_Fitting:
-                cout << "本次调用RS函数的起点坐标：" << temp_start_point.x << "  " << temp_start_point.y << "  " << temp_start_point.angle << "终点坐标" << end_f_.x << "  " << end_f_.y << "  " << end_f_.angle << endl;
+                // cout << "本次调用RS函数的起点坐标：" << temp_start_point.x << "  " << temp_start_point.y << "  " << temp_start_point.angle << "终点坐标" << end_f_.x << "  " << end_f_.y << "  " << end_f_.angle << endl;
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_f_, path_r_s_, plan_path_rule_)) && (MotionDirection::Backward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Backward_Fitting oneshot成功，一共oneshot了 {}  次 ", All);
@@ -667,15 +667,15 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         return true;
                     }
                     else {
-                        threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，但碰撞检测失败");
+                        // threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，但碰撞检测失败");
                     }
                 }
                 else {
-                    threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
+                    // threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Forword_Fitting:
-                threadLogger_->info("本次调用RS函数的起点坐标：({},{},{}),终点坐标:({},{},{})", temp_start_point.x, temp_start_point.y, temp_start_point.angle, end_r_.x, end_r_.y, end_r_.angle);
+                // threadLogger_->info("本次调用RS函数的起点坐标：({},{},{}),终点坐标:({},{},{})", temp_start_point.x, temp_start_point.y, temp_start_point.angle, end_r_.x, end_r_.y, end_r_.angle);
                 if ((true == my_r_s_curve.PlanRSPath(temp_start_point, end_r_, path_r_s_, plan_path_rule_)) && (MotionDirection::Forward == path_r_s_.back().direction)) {
                     if (false == collison_check_.IsRSPathCollision(path_r_s_)) {
                         threadLogger_->info("RS曲线Forword_Fitting成功，一共oneshot了{}次 ", All);
@@ -690,11 +690,11 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         return true;
                     }
                     else {
-                        threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，路径点个数为{}个，但碰撞检测失败", path_r_s_.size());
+                        // threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，路径点个数为{}个，但碰撞检测失败", path_r_s_.size());
                     }
                 }
                 else {
-                    threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
+                    // threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Both_Fitting:
@@ -1083,7 +1083,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
             a_start_h = AStarSearch2D(goal2D, current2D, total);
         }
         long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time); // 开始时间精确到微秒
-        threadLogger_->info("本次A*搜素{}轮，耗时:{} ms,点坐标：{} {}", total, init_time_end * 0.001, temp_point.x, temp_point.y);
+        // threadLogger_->info("本次A*搜素{}轮，耗时:{} ms,点坐标：{} {}", total, init_time_end * 0.001, temp_point.x, temp_point.y);
     }
     else {
         // threadLogger_->info("该节点可通过增量式A*直接查询");
@@ -1441,7 +1441,7 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
                 }
             }
             if (nPred == goal) {
-                threadLogger_->info("nPred is goal");
+                // threadLogger_->info("nPred is goal");
                 return nPred.getG();
             }
         }

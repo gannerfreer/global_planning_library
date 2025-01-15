@@ -189,7 +189,7 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
     rspoint_vertex.theta  = Mod2pi(start.angle);
     RSPoint rspoint;
     rspoint.push_back(rspoint_vertex);
-    threadLogger_->info("line 192  rspoint.size():{}", rspoint.size());
+    // threadLogger_->info("line 192  rspoint.size():{}", rspoint.size());
     MotionDirection directions;
     for (int i = 0; i < 4; i++) {
         if (opti_rs_path.type.at(i + 1) == RS_NOP) {
@@ -223,7 +223,7 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
     // double step_size    = m_vehicle_prarm_.hybridastar_step_length / m_vehicle_prarm_.radious;
     double step_size = 0.4 / m_vehicle_prarm_.radious;
     Point  np;
-    threadLogger_->info("line 226 rspoint.size():{}", rspoint.size());
+    // threadLogger_->info("line 226 rspoint.size():{}", rspoint.size());
     for (int i = 0; i < rspoint.size(); i++) {
         double s = step_size;
         if (i == 0) {
