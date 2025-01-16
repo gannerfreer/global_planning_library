@@ -518,9 +518,19 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     // CalCurv(path_a_star_);
 
     threadLogger_->info("HybridA_star规划出的原始路径（无尖点延伸）,曲率通过三点式原理计算得来");
-    for (auto i : path_a_star_) {
-        threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} ", i.x, i.y, i.angle / M_PI * 180.0, i.curvature, i.direction);
+    for (int i = 0; i < path_a_star_.size() - 1; i++) {
+        threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} del_s:{} ", path_a_star_.at(i).x, path_a_star_.at(i).y, path_a_star_.at(i).angle / M_PI * 180.0, path_a_star_.at(i).curvature, path_a_star_.at(i).direction, hypot(path_a_star_.at(i).x - path_a_star_.at(i + 1).x, path_a_star_.at(i).y - path_a_star_.at(i + 1).y));
     }
+    threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{}", path_a_star_.back().x, path_a_star_.back().y, path_a_star_.back().angle / M_PI * 180.0, path_a_star_.back().curvature, path_a_star_.back().direction);
+
+
+    CurvatureCal(path_a_star_);
+    threadLogger_->info("HybridA_star规划出的原始路径（无尖点延伸）,曲率通过外接圆原理计算得来");
+    for (int i = 0; i < path_a_star_.size() - 1; i++) {
+        threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} del_s:{} ", path_a_star_.at(i).x, path_a_star_.at(i).y, path_a_star_.at(i).angle / M_PI * 180.0, path_a_star_.at(i).curvature, path_a_star_.at(i).direction, hypot(path_a_star_.at(i).x - path_a_star_.at(i + 1).x, path_a_star_.at(i).y - path_a_star_.at(i + 1).y));
+    }
+    threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{}", path_a_star_.back().x, path_a_star_.back().y, path_a_star_.back().angle / M_PI * 180.0, path_a_star_.back().curvature, path_a_star_.back().direction);
+
 
     // 路径优化，得到最终的path
     my_path_opti.OptimizePath(path_a_star_, path, collison_check_, m_vehicle_param_);
@@ -1592,4 +1602,49 @@ void OptimalPath::GenerateBoundSet() {
     //         }
     //     }
     // }
+}
+
+
+void OptimalPath::CurvatureCal(Path& input_path) {
+    Point  p1, p2, p3;
+    double crossProduct = 0;
+    // 计算三角形外接圆的半径
+    if (input_path.size() > 2) {
+        for (int i = 1; i < input_path.size() - 1; i++) {
+            if (input_path.at(i).direction == input_path.at(i + 1).direction) {
+                p1           = input_path.at(i - 1);
+                p2           = input_path.at(i);
+                p3           = input_path.at(i + 1);
+                crossProduct = (p2.x - p1.x) * (p3.y - p2.y) - (p2.y - p1.y) * (p3.x - p2.x);
+                double a     = hypot(p2.x - p3.x, p2.y - p3.y);
+                double b     = hypot(p1.x - p3.x, p1.y - p3.y);
+                double c     = hypot(p1.x - p2.x, p1.y - p2.y);
+                double s     = (a + b + c) / 2.0;
+                double area  = std::sqrt(s * (s - a) * (s - b) * (s - c));
+
+                double r = (a * b * c) / (4.0 * area);
+                if (r == 0 || area == 0) {
+                    input_path.at(i).curvature = 0;
+                }
+                else {
+                    input_path.at(i).curvature = 1.0 / r;
+                }
+            }
+            else {
+                if (i - 1 > 0) {
+                    input_path.at(i).curvature = input_path.at(i - 1).curvature;
+                }
+                else {
+                    input_path.at(i).curvature = 0;
+                }
+            }
+            if (crossProduct < 0) {
+                if (input_path.at(i).curvature > 0) {
+                    input_path.at(i).curvature *= -1;
+                }
+            }
+        }
+        input_path.front().curvature = input_path.at(1).curvature;
+        input_path.back().curvature  = input_path.at(input_path.size() - 2).curvature;
+    }
 }

@@ -166,6 +166,7 @@ class Path_Opti {
      * @return 返回说明：是固定点则返回true
      */
     inline bool IsFixPoint(unsigned int m);
+    void        CurvatureCal(Path& input_path);
 
     _VehicleParam m_vehicle_param_;
 

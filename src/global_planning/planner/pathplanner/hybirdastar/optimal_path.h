@@ -340,6 +340,8 @@ class OptimalPath {
     static void PrintVersion() {
         std::cout << "Path Version：2.1" << std::endl;
     }
+
+    void  CurvatureCal(Path& input_path);
     Point midpoint_;
 
   public:

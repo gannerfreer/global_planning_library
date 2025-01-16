@@ -152,6 +152,14 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     file_out.close();
 
 
+    CurvatureCal(path_);
+    threadLogger_->info("插值后路径点信息（待平滑）（利用外接圆方式计算）");
+    for (int i = 0; i < path_.size() - 1; i++) {
+        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{} 😍s:{}", path_.at(i).x, path_.at(i).y, path_.at(i).curvature, path_.at(i).angle / M_PI * 180, path_.at(i).direction, hypot(path_.at(i).x - path_.at(i + 1).x, path_.at(i).y - path_.at(i + 1).y));
+    }
+    threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", path_.back().x, path_.back().y, path_.back().curvature, path_.back().angle / M_PI * 180, path_.back().direction);
+
+
     // 得到节点和固定点索引
     GetCuspIndex();     // 得到尖点索引查询表cuspLookup
     GetFixPointIndex(); // 得到固定点索引查询表fixpLookup
@@ -824,8 +832,8 @@ void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& c
             angle += 2 * M_PI;
         }
         double cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
-        if(fabs(cur)>0.1) kDeltaS=0.4;
-        Point  temp_point;
+        if (fabs(cur) > 0.1) kDeltaS = 0.4;
+        Point temp_point;
         temp_point.x         = sx_(s);
         temp_point.y         = sy_(s);
         temp_point.angle     = angle;
@@ -1004,4 +1012,48 @@ float CalAverageAngle(float angle_A, float angle_B) {
     average_angle = result1 * resule2 > 0 ? atan2(new_angle_2_v.y, new_angle_2_v.x) : atan2(new_angle_1_v.y, new_angle_1_v.x);
     if (average_angle < 0) average_angle += 2 * M_PI;
     return average_angle;
+}
+
+void Path_Opti::CurvatureCal(Path& input_path) {
+    Point  p1, p2, p3;
+    double crossProduct = 0;
+    // 计算三角形外接圆的半径
+    if (input_path.size() > 2) {
+        for (int i = 1; i < input_path.size() - 1; i++) {
+            if (input_path.at(i).direction == input_path.at(i + 1).direction) {
+                p1           = input_path.at(i - 1);
+                p2           = input_path.at(i);
+                p3           = input_path.at(i + 1);
+                crossProduct = (p2.x - p1.x) * (p3.y - p2.y) - (p2.y - p1.y) * (p3.x - p2.x);
+                double a     = hypot(p2.x - p3.x, p2.y - p3.y);
+                double b     = hypot(p1.x - p3.x, p1.y - p3.y);
+                double c     = hypot(p1.x - p2.x, p1.y - p2.y);
+                double s     = (a + b + c) / 2.0;
+                double area  = std::sqrt(s * (s - a) * (s - b) * (s - c));
+
+                double r = (a * b * c) / (4.0 * area);
+                if (r == 0 || area == 0) {
+                    input_path.at(i).curvature = 0;
+                }
+                else {
+                    input_path.at(i).curvature = 1.0 / r;
+                }
+            }
+            else {
+                if (i - 1 > 0) {
+                    input_path.at(i).curvature = input_path.at(i - 1).curvature;
+                }
+                else {
+                    input_path.at(i).curvature = 0;
+                }
+            }
+            if (crossProduct < 0) {
+                if (input_path.at(i).curvature > 0) {
+                    input_path.at(i).curvature *= -1;
+                }
+            }
+        }
+        input_path.front().curvature = input_path.at(1).curvature;
+        input_path.back().curvature  = input_path.at(input_path.size() - 2).curvature;
+    }
 }
