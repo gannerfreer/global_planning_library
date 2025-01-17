@@ -269,98 +269,98 @@ inline void CalDistance(vector<_TrajectoryPoint>& traj) {
         traj.at(i).distance = s;
     }
 }
-inline void CalCurv(vector<_TrajectoryPoint>& traj) {
-    Point  delta_xi;   // Δxi
-    Point  delta_xip1; // Δxi+1
-    double norm_delta_xi, norm_delta_xip1, d, dphi, kappa;
-    if (traj.size() > 2) {
-        for (int i = 1; i < traj.size() - 1; i++) {
-            if (traj.at(i).direction == traj.at(i + 1).direction) {
-                delta_xi.x      = traj.at(i).x - traj.at(i - 1).x;
-                delta_xi.y      = traj.at(i).y - traj.at(i - 1).y;
-                delta_xip1.x    = traj.at(i + 1).x - traj.at(i).x;
-                delta_xip1.y    = traj.at(i + 1).y - traj.at(i).y;
-                norm_delta_xi   = sqrt(pow(delta_xi.x, 2) + pow(delta_xi.y, 2));     // |Δxi|
-                norm_delta_xip1 = sqrt(pow(delta_xip1.x, 2) + pow(delta_xip1.y, 2)); // |Δxi+1|
-                d               = norm_delta_xi * norm_delta_xip1;
-                double temp     = (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d;
-                if (temp > 1.0) {
-                    temp = 1.0;
-                }
-                if (temp < -1.0) {
-                    temp = -1.0;
-                }
-                dphi = acos(temp); // 通过向量积求出两向量之间夹角
-                // cout << "(" << traj.at(i - 1).x << "," << traj.at(i - 1).y << ")  ->(" << traj.at(i).x << "," << traj.at(i).y << ")之间的角度变化 ：" << dphi / M_PI * 180.0 << "两者之间距离：" << norm_delta_xi << endl;
-                double cross_product = delta_xi.x * delta_xip1.y - delta_xi.y * delta_xip1.x;
-                if (cross_product > 0)
-                    kappa = dphi / norm_delta_xi;
-                else
-                    kappa = -dphi / norm_delta_xi;
-                // threadLogger_->info("delta_xi.x :{} delta_xip1.x:{}  delta_xi.y :{}  delta_xip1.y:{}  d:{}  acos({})", delta_xi.x, delta_xip1.x, delta_xi.y, delta_xip1.y, d, (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d);
-                // threadLogger_->info("kappa :{} dphi:{}  norm_delta_xi:{} ", kappa, dphi, norm_delta_xi);
-                traj.at(i).curvature = kappa;
-            }
-            else {
-                if (i - 1 > 0) {
-                    traj.at(i).curvature = traj.at(i - 1).curvature;
-                }
-                else {
-                    traj.at(i).curvature = 0;
-                }
-            }
-        }
-        traj.front().curvature = traj.at(1).curvature;
-        traj.back().curvature  = traj.at(traj.size() - 2).curvature;
-    }
-}
+// inline void CalCurv(vector<_TrajectoryPoint>& traj) {
+//     Point  delta_xi;   // Δxi
+//     Point  delta_xip1; // Δxi+1
+//     double norm_delta_xi, norm_delta_xip1, d, dphi, kappa;
+//     if (traj.size() > 2) {
+//         for (int i = 1; i < traj.size() - 1; i++) {
+//             if (traj.at(i).direction == traj.at(i + 1).direction) {
+//                 delta_xi.x      = traj.at(i).x - traj.at(i - 1).x;
+//                 delta_xi.y      = traj.at(i).y - traj.at(i - 1).y;
+//                 delta_xip1.x    = traj.at(i + 1).x - traj.at(i).x;
+//                 delta_xip1.y    = traj.at(i + 1).y - traj.at(i).y;
+//                 norm_delta_xi   = sqrt(pow(delta_xi.x, 2) + pow(delta_xi.y, 2));     // |Δxi|
+//                 norm_delta_xip1 = sqrt(pow(delta_xip1.x, 2) + pow(delta_xip1.y, 2)); // |Δxi+1|
+//                 d               = norm_delta_xi * norm_delta_xip1;
+//                 double temp     = (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d;
+//                 if (temp > 1.0) {
+//                     temp = 1.0;
+//                 }
+//                 if (temp < -1.0) {
+//                     temp = -1.0;
+//                 }
+//                 dphi = acos(temp); // 通过向量积求出两向量之间夹角
+//                 // cout << "(" << traj.at(i - 1).x << "," << traj.at(i - 1).y << ")  ->(" << traj.at(i).x << "," << traj.at(i).y << ")之间的角度变化 ：" << dphi / M_PI * 180.0 << "两者之间距离：" << norm_delta_xi << endl;
+//                 double cross_product = delta_xi.x * delta_xip1.y - delta_xi.y * delta_xip1.x;
+//                 if (cross_product > 0)
+//                     kappa = dphi / norm_delta_xi;
+//                 else
+//                     kappa = -dphi / norm_delta_xi;
+//                 // threadLogger_->info("delta_xi.x :{} delta_xip1.x:{}  delta_xi.y :{}  delta_xip1.y:{}  d:{}  acos({})", delta_xi.x, delta_xip1.x, delta_xi.y, delta_xip1.y, d, (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d);
+//                 // threadLogger_->info("kappa :{} dphi:{}  norm_delta_xi:{} ", kappa, dphi, norm_delta_xi);
+//                 traj.at(i).curvature = kappa;
+//             }
+//             else {
+//                 if (i - 1 > 0) {
+//                     traj.at(i).curvature = traj.at(i - 1).curvature;
+//                 }
+//                 else {
+//                     traj.at(i).curvature = 0;
+//                 }
+//             }
+//         }
+//         traj.front().curvature = traj.at(1).curvature;
+//         traj.back().curvature  = traj.at(traj.size() - 2).curvature;
+//     }
+// }
 
 
-inline void CalCurv(vector<Point>& traj) {
-    Point  delta_xi;   // Δxi
-    Point  delta_xip1; // Δxi+1
-    double norm_delta_xi, norm_delta_xip1, d, dphi, kappa;
-    if (traj.size() > 2) {
-        for (int i = 1; i < traj.size() - 1; i++) {
-            if (traj.at(i).direction == traj.at(i + 1).direction) {
-                delta_xi.x      = traj.at(i).x - traj.at(i - 1).x;
-                delta_xi.y      = traj.at(i).y - traj.at(i - 1).y;
-                delta_xip1.x    = traj.at(i + 1).x - traj.at(i).x;
-                delta_xip1.y    = traj.at(i + 1).y - traj.at(i).y;
-                norm_delta_xi   = sqrt(pow(delta_xi.x, 2) + pow(delta_xi.y, 2));     // |Δxi|
-                norm_delta_xip1 = sqrt(pow(delta_xip1.x, 2) + pow(delta_xip1.y, 2)); // |Δxi+1|
-                d               = norm_delta_xi * norm_delta_xip1;
-                double temp     = (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d;
-                if (temp > 1.0) {
-                    temp = 1.0;
-                }
-                if (temp < -1.0) {
-                    temp = -1.0;
-                }
-                dphi = acos(temp); // 通过向量积求出两向量之间夹角
-                // cout << "(" << traj.at(i - 1).x << "," << traj.at(i - 1).y << ")  ->(" << traj.at(i).x << "," << traj.at(i).y << ")之间的角度变化 ：" << dphi / M_PI * 180.0 << "两者之间距离：" << norm_delta_xi << endl;
-                double cross_product = delta_xi.x * delta_xip1.y - delta_xi.y * delta_xip1.x;
-                if (cross_product > 0)
-                    kappa = dphi / norm_delta_xi;
-                else
-                    kappa = -dphi / norm_delta_xi;
-                // threadLogger_->info("delta_xi.x :{} delta_xip1.x:{}  delta_xi.y :{}  delta_xip1.y:{}  d:{}  acos({})", delta_xi.x, delta_xip1.x, delta_xi.y, delta_xip1.y, d, (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d);
-                // threadLogger_->info("kappa :{} dphi:{}  norm_delta_xi:{} ", kappa, dphi, norm_delta_xi);
-                traj.at(i).curvature = kappa;
-            }
-            else {
-                if (i - 1 > 0) {
-                    traj.at(i).curvature = traj.at(i - 1).curvature;
-                }
-                else {
-                    traj.at(i).curvature = 0;
-                }
-            }
-        }
-        traj.front().curvature = traj.at(1).curvature;
-        traj.back().curvature  = traj.at(traj.size() - 2).curvature;
-    }
-}
+// inline void CalCurv(vector<Point>& traj) {
+//     Point  delta_xi;   // Δxi
+//     Point  delta_xip1; // Δxi+1
+//     double norm_delta_xi, norm_delta_xip1, d, dphi, kappa;
+//     if (traj.size() > 2) {
+//         for (int i = 1; i < traj.size() - 1; i++) {
+//             if (traj.at(i).direction == traj.at(i + 1).direction) {
+//                 delta_xi.x      = traj.at(i).x - traj.at(i - 1).x;
+//                 delta_xi.y      = traj.at(i).y - traj.at(i - 1).y;
+//                 delta_xip1.x    = traj.at(i + 1).x - traj.at(i).x;
+//                 delta_xip1.y    = traj.at(i + 1).y - traj.at(i).y;
+//                 norm_delta_xi   = sqrt(pow(delta_xi.x, 2) + pow(delta_xi.y, 2));     // |Δxi|
+//                 norm_delta_xip1 = sqrt(pow(delta_xip1.x, 2) + pow(delta_xip1.y, 2)); // |Δxi+1|
+//                 d               = norm_delta_xi * norm_delta_xip1;
+//                 double temp     = (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d;
+//                 if (temp > 1.0) {
+//                     temp = 1.0;
+//                 }
+//                 if (temp < -1.0) {
+//                     temp = -1.0;
+//                 }
+//                 dphi = acos(temp); // 通过向量积求出两向量之间夹角
+//                 // cout << "(" << traj.at(i - 1).x << "," << traj.at(i - 1).y << ")  ->(" << traj.at(i).x << "," << traj.at(i).y << ")之间的角度变化 ：" << dphi / M_PI * 180.0 << "两者之间距离：" << norm_delta_xi << endl;
+//                 double cross_product = delta_xi.x * delta_xip1.y - delta_xi.y * delta_xip1.x;
+//                 if (cross_product > 0)
+//                     kappa = dphi / norm_delta_xi;
+//                 else
+//                     kappa = -dphi / norm_delta_xi;
+//                 // threadLogger_->info("delta_xi.x :{} delta_xip1.x:{}  delta_xi.y :{}  delta_xip1.y:{}  d:{}  acos({})", delta_xi.x, delta_xip1.x, delta_xi.y, delta_xip1.y, d, (delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d);
+//                 // threadLogger_->info("kappa :{} dphi:{}  norm_delta_xi:{} ", kappa, dphi, norm_delta_xi);
+//                 traj.at(i).curvature = kappa;
+//             }
+//             else {
+//                 if (i - 1 > 0) {
+//                     traj.at(i).curvature = traj.at(i - 1).curvature;
+//                 }
+//                 else {
+//                     traj.at(i).curvature = 0;
+//                 }
+//             }
+//         }
+//         traj.front().curvature = traj.at(1).curvature;
+//         traj.back().curvature  = traj.at(traj.size() - 2).curvature;
+//     }
+// }
 
 
 inline void SmoothFilter(vector<_TrajectoryPoint>& traj, int opt_num) {
@@ -535,8 +535,6 @@ inline void calculateAcceleration(const std::vector<_TrajectoryPoint>& v_points)
 static inline float clamp(float n, float lower, float upper) {
     return std::max(lower, std::min(n, upper));
 }
-
-
 
 
 } // namespace Helper

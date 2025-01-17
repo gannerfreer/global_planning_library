@@ -4,7 +4,7 @@ import numpy as np
 
 
 def main():
-    file_name = "cusp_path_before.txt"
+    file_name = "cusp_path_after.txt"
     x_values_1 = []  # 存储 direction 为 1 的 x 值
     y_values_1 = []  # 存储 direction 为 1 的 y 值
     x_values_0 = []  # 存储 direction 为 0 的 x 值

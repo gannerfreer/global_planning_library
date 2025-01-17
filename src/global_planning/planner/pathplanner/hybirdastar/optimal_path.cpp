@@ -513,15 +513,15 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
     utility::CTimeClock start_time_opti;
 
-    // 平滑前打印路径曲率
-    Helper::CalCurv(path_a_star_);
-    // CalCurv(path_a_star_);
+    // // 平滑前打印路径曲率
+    // Helper::CalCurv(path_a_star_);
+    // // CalCurv(path_a_star_);
 
-    threadLogger_->info("HybridA_star规划出的原始路径（无尖点延伸）,曲率通过三点式原理计算得来");
-    for (int i = 0; i < path_a_star_.size() - 1; i++) {
-        threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} del_s:{} ", path_a_star_.at(i).x, path_a_star_.at(i).y, path_a_star_.at(i).angle / M_PI * 180.0, path_a_star_.at(i).curvature, path_a_star_.at(i).direction, hypot(path_a_star_.at(i).x - path_a_star_.at(i + 1).x, path_a_star_.at(i).y - path_a_star_.at(i + 1).y));
-    }
-    threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{}", path_a_star_.back().x, path_a_star_.back().y, path_a_star_.back().angle / M_PI * 180.0, path_a_star_.back().curvature, path_a_star_.back().direction);
+    // threadLogger_->info("HybridA_star规划出的原始路径（无尖点延伸）,曲率通过三点式原理计算得来");
+    // for (int i = 0; i < path_a_star_.size() - 1; i++) {
+    //     threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} del_s:{} ", path_a_star_.at(i).x, path_a_star_.at(i).y, path_a_star_.at(i).angle / M_PI * 180.0, path_a_star_.at(i).curvature, path_a_star_.at(i).direction, hypot(path_a_star_.at(i).x - path_a_star_.at(i + 1).x, path_a_star_.at(i).y - path_a_star_.at(i + 1).y));
+    // }
+    // threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{}", path_a_star_.back().x, path_a_star_.back().y, path_a_star_.back().angle / M_PI * 180.0, path_a_star_.back().curvature, path_a_star_.back().direction);
 
 
     CurvatureCal(path_a_star_);
@@ -968,8 +968,6 @@ void OptimalPath::PathIntegration() {
         // }
     }
 
-    // CalCurv(path_a_star_);
-    Helper::CalCurv(path_a_star_);
     threadLogger_->info("拼接完成终点的路径");
     for (auto i : path_a_star_) {
         threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}  curvature:{}", i.x, i.y, i.angle / M_PI * 180.0, i.direction, i.curvature);
@@ -1620,8 +1618,9 @@ void OptimalPath::CurvatureCal(Path& input_path) {
                 double b     = hypot(p1.x - p3.x, p1.y - p3.y);
                 double c     = hypot(p1.x - p2.x, p1.y - p2.y);
                 double s     = (a + b + c) / 2.0;
-                double area  = std::sqrt(s * (s - a) * (s - b) * (s - c));
+                double area  = std::sqrt(fabs(s * (s - a) * (s - b) * (s - c)));
 
+                threadLogger_->info("点信息({},{})  a:{} b:{} c:{} s:{} area:{}", input_path.at(i).x, input_path.at(i).y, a, b, c, s, area);
                 double r = (a * b * c) / (4.0 * area);
                 if (r == 0 || area == 0) {
                     input_path.at(i).curvature = 0;

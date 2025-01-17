@@ -84,7 +84,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
 
     threadLogger_->info("global_path_.size():{}", global_path_.size());
-    Helper::CalCurv(global_path_);
+    CurvatureCal(global_path_);
     threadLogger_->info("执行均匀碾压前路径点曲率");
     for (auto i : global_path_) {
         threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180);
@@ -104,37 +104,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     Helper::CalDistance(global_path_);
 
 
-    // 计算路径点曲率
-
-    Helper::CalCurv(global_path_);
+    CurvatureCal(global_path_);
 
     threadLogger_->info("执行均匀碾压后路径点曲率");
     for (auto i : global_path_) {
         threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180);
     }
-
-    threadLogger_->info("在进入速度规划之前，打印一下轨迹点direction信息");
-    for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}  direction:{}    yaw:{}", i.x, i.y, i.direction, i.yaw / M_PI * 180);
-    }
-
-
-    // std::ofstream file_out;
-    // file_out.open("pinghuaqian.txt");
-    // for (size_t index = 0; index < global_path_.size(); index++) {
-    //     file_out << 0 << " " << global_path_.at(index).curvature << endl;
-    // }
-    // file_out.close();
-
-    // // 对路径点曲率进行平滑滤波
-    // cout << "vehicle_param_.curvature_smooth_opti_num:" << vehicle_param_.curvature_smooth_opti_num << endl;
-    // Helper::SmoothFilter(global_path_, vehicle_param_.curvature_smooth_opti_num);
-
-    // file_out.open("pinghuahou.txt");
-    // for (size_t index = 0; index < global_path_.size(); index++) {
-    //     file_out << 0 << " " << global_path_.at(index).curvature << endl;
-    // }
-    // file_out.close();
 
 
     // 角度转换
@@ -148,7 +123,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     Helper::RemoveAfterSamePoint(global_path_);
 
     // 再次重新计算曲率
-    Helper::CalCurv(global_path_);
+    CurvatureCal(global_path_);
 
     // 路径断裂检查,涉及相邻点间距和相邻点角度差
     if (!Helper::CheckPathFracture(global_path_)) {
@@ -173,23 +148,6 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         error_type_ = ErrorType::SEQUENCE_AND_DIRECTION_CHECK_ERROR;
         return;
     }
-
-    // 曲率检查
-    // for (int i = 0; i < global_path_.size() - 2; i++) {
-    //     bool allExcessive = true;
-    //     for (int j = i; j < i + 3; j++) {
-    //         if (fabs(global_path_.at(j).curvature) <= vehicle_param_.curvature_threshold) {
-    //             allExcessive = false;
-    //             break;
-    //         }
-    //     }
-    //     if (allExcessive) {
-    //         threadLogger_->error("规划库输出的轨迹曲率连续三个点超标，索引大致位置为：{}   曲率分别为 {}, {}, {}", i, global_path_.at(i).curvature, global_path_.at(i + 1).curvature, global_path_.at(i + 2).curvature);
-    //         error_type_ = ErrorType::CURVATURE_EXCESSIVE;
-    //         return;
-    //     }
-    // }
-    // threadLogger_->info("轨迹曲率校验通过,校验阈值：{}", vehicle_param_.curvature_threshold);
 
     // 计算加速度
     Helper::calculateAcceleration(global_path_);
@@ -1257,5 +1215,49 @@ void Planning::CalculateStation(const vector<double>& xs, const vector<double>& 
         double dy = ys.at(i) - ys.at(i - 1);
         cum += hypot(dx, dy);
         s_.push_back(cum);
+    }
+}
+
+
+void Planning::CurvatureCal(vector<_TrajectoryPoint>& input_path) {
+    _TrajectoryPoint p1, p2, p3;
+    double           crossProduct = 0;
+    // 计算三角形外接圆的半径
+    if (input_path.size() > 2) {
+        for (int i = 1; i < input_path.size() - 1; i++) {
+            if (input_path.at(i).direction == input_path.at(i + 1).direction) {
+                p1           = input_path.at(i - 1);
+                p2           = input_path.at(i);
+                p3           = input_path.at(i + 1);
+                crossProduct = (p2.x - p1.x) * (p3.y - p2.y) - (p2.y - p1.y) * (p3.x - p2.x);
+                double a     = hypot(p2.x - p3.x, p2.y - p3.y);
+                double b     = hypot(p1.x - p3.x, p1.y - p3.y);
+                double c     = hypot(p1.x - p2.x, p1.y - p2.y);
+                double s     = (a + b + c) / 2.0;
+                double area  = std::sqrt(fabs(s * (s - a) * (s - b) * (s - c)));
+                double r     = (a * b * c) / (4.0 * area);
+                if (r == 0 || area == 0) {
+                    input_path.at(i).curvature = 0;
+                }
+                else {
+                    input_path.at(i).curvature = 1.0 / r;
+                }
+            }
+            else {
+                if (i - 1 > 0) {
+                    input_path.at(i).curvature = input_path.at(i - 1).curvature;
+                }
+                else {
+                    input_path.at(i).curvature = 0;
+                }
+            }
+            if (crossProduct < 0) {
+                if (input_path.at(i).curvature > 0) {
+                    input_path.at(i).curvature *= -1;
+                }
+            }
+        }
+        input_path.front().curvature = input_path.at(1).curvature;
+        input_path.back().curvature  = input_path.at(input_path.size() - 2).curvature;
     }
 }

@@ -58,8 +58,6 @@ class Path_Opti {
      */
     void                            OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collisonCheck, _VehicleParam m_vehicle_param);
     vector<unsigned int>            CurvatureCheck();
-    void                            CalCurv(Path& traj);
-    void                            CalCurvature(Path& new_path_);
     void                            CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
     void                            CalculateStation(const std::vector<double>& xs, const std::vector<double>& ys);
     DynamicVoronoi*                 voronoiDiagram;
