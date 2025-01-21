@@ -61,7 +61,8 @@
         "load_point_end_offset_distance": 4,
         "load_point_start_offset_distance": 4,
         "vehicle_code": 1001,
-        "offset_distance": 4.0
+        "offset_distance": 4.0,
+        "load_start_straight_length": 1.0
     },
     "task_type": 3,
     "Inner_Borders": [

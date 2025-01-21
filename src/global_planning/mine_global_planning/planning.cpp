@@ -525,8 +525,9 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("装载");
         int load_point_end_offset_distance = vehicle_param_.load_point_end_offset_distance;
         while (load_point_end_offset_distance >= 1) {
-            my_optimal_path_.start_offset_distance_ = 1;
+            my_optimal_path_.start_offset_distance_ = vehicle_param_.load_start_straight_length;
             my_optimal_path_.end_offset_distance_   = load_point_end_offset_distance;
+            threadLogger_->info("当前装载任务，起点直线延长:    {} m", my_optimal_path_.start_offset_distance_);
             threadLogger_->info("当前装载任务，终点直线延长:    {} m", my_optimal_path_.end_offset_distance_);
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Backward_All_Time, time_threshold)) {
                 threadLogger_->error("装载任务，PlanRule::Backward_All_Time，装载点直线延伸 {} m，Hybird A*无法规划出当前起点至终点的路径", load_point_end_offset_distance);

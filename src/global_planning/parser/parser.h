@@ -505,6 +505,14 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 rs_min_length ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.rs_min_length = 1;
             }
+
+            if (val.HasMember("load_start_straight_length") && val["load_start_straight_length"].IsNumber()) {
+                veh_start_end.veh_param.load_start_straight_length = val["load_start_straight_length"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 load_start_straight_length ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.load_start_straight_length = 1;
+            }
         }
     }
 

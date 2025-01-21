@@ -208,6 +208,7 @@ struct _VehicleParam {
     int             load_point_start_offset_distance = 4;
     float           obsMax                           = 0;
     float           rs_min_length                    = 2;
+    float           load_start_straight_length       = 1.0;
 };
 
 // 调用全局规划时，需要传入的参数

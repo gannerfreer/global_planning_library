@@ -48,6 +48,7 @@
     "load_point_end_offset_distance": 4,
     "load_point_start_offset_distance": 4,
     "obsMax": 1,
-    "rs_min_length": 4
+    "rs_min_length": 4,
+    "load_start_straight_length": 1
   }
 }
