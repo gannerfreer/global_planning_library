@@ -525,7 +525,7 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("装载");
         int load_point_end_offset_distance = vehicle_param_.load_point_end_offset_distance;
         while (load_point_end_offset_distance >= 1) {
-            my_optimal_path_.start_offset_distance_ = 0;
+            my_optimal_path_.start_offset_distance_ = 1;
             my_optimal_path_.end_offset_distance_   = load_point_end_offset_distance;
             threadLogger_->info("当前装载任务，终点直线延长:    {} m", my_optimal_path_.end_offset_distance_);
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Backward_All_Time, time_threshold)) {

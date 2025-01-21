@@ -186,6 +186,14 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         file_out << setprecision(4) << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
     }
     file_out.close();
+
+    InterpolationPath(new_path_);
+    CurvatureCal(new_path_);
+    file_out.open("interpolation_path.txt");
+    for (size_t index = 0; index < new_path_.size(); index++) {
+        file_out << setprecision(4) << new_path_.at(index).x << " " << new_path_.at(index).y << " " << new_path_.at(index).angle / M_PI * 180 << " " << new_path_.at(index).direction << " " << new_path_.at(index).curvature << endl;
+    }
+    file_out.close();
 }
 vector<unsigned int> Path_Opti::CurvatureCheck() {
     CurvatureCal(new_path_);
@@ -756,12 +764,11 @@ void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& c
     CalculateStation(x_set, y_set);
     sx_.set_points(s_, x_set);
     sy_.set_points(s_, y_set);
-    kDeltaS = 1;
+    kDeltaS = 0.4;
 
     float  epsilon = 0.0001; // 容差值
     double s       = 0.0;
     for (s = 0.0; s <= s_.back(); s += kDeltaS) {
-        kDeltaS   = 1;
         double dx = sx_.deriv(1, s);
         double dy = sy_.deriv(1, s);
 
@@ -778,7 +785,7 @@ void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& c
             angle += 2 * M_PI;
         }
         double cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
-        if (fabs(cur) > 0.1) kDeltaS = 0.4;
+        // if (fabs(cur) > 0.1) kDeltaS = 0.4;
         Point temp_point;
         temp_point.x         = sx_(s);
         temp_point.y         = sy_(s);
@@ -1002,4 +1009,72 @@ void Path_Opti::CurvatureCal(Path& input_path) {
         input_path.front().curvature = input_path.at(1).curvature;
         input_path.back().curvature  = input_path.at(input_path.size() - 2).curvature;
     }
+}
+
+void Path_Opti::InterpolationPath(Path& input_path) {
+    Path final_path;
+    final_path.clear();
+    Path temp_input_path, temp_output_path;
+    int  start_index = 0, end_index = 0;
+    bool forward_or_backward = false; // forward:true，backward:false
+    threadLogger_->info("input_path.size()：{}", input_path.size());
+    for (int i = 0; i < input_path.size() - 1; i++) {
+        if (input_path.at(i).direction != input_path.at(i + 1).direction) {
+            if (input_path.at(i).direction == MotionDirection::Forward) {
+                forward_or_backward = true;
+            }
+            else {
+                forward_or_backward = false;
+            }
+            end_index = i;
+            threadLogger_->info("start_index:{} end_index：{}", start_index, end_index);
+
+            temp_input_path.insert(temp_input_path.end(), input_path.begin() + start_index, input_path.begin() + end_index + 1);
+            threadLogger_->info("temp_input_path信息");
+            for (auto i : temp_input_path) {
+                threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+            }
+            if (temp_input_path.size() > 2) {
+                CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
+            }
+            else {
+                temp_output_path = temp_input_path;
+            }
+
+            final_path.insert(final_path.end(), temp_output_path.begin(), temp_output_path.end());
+            threadLogger_->info("temp_output_path信息");
+            for (auto i : temp_output_path) {
+                threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+            }
+
+            temp_output_path.clear();
+            start_index = i + 1;
+            temp_input_path.clear();
+        }
+    }
+    if (input_path.at(start_index).direction == MotionDirection::Forward) {
+        forward_or_backward = true;
+    }
+    else {
+        forward_or_backward = false;
+    }
+    threadLogger_->info("start_index:{} end_index：{}", start_index, input_path.size() - 1);
+    temp_input_path.insert(temp_input_path.end(), input_path.begin() + start_index, input_path.end());
+    threadLogger_->info("temp_input_path信息");
+    for (auto i : temp_input_path) {
+        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+    }
+    if (temp_input_path.size() > 2) {
+        CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
+    }
+    else {
+        temp_output_path = temp_input_path;
+    }
+    final_path.insert(final_path.end(), temp_output_path.begin(), temp_output_path.end());
+    threadLogger_->info("temp_output_path信息");
+    for (auto i : temp_output_path) {
+        threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
+    }
+    input_path.clear();
+    input_path = final_path;
 }
