@@ -542,7 +542,7 @@ bool Planning::NotFollowReferencelinePlanning() {
         }
         if (success_flag == false) {
             threadLogger_->info("更换规则，采用Start_Front_End_Back规划方式");
-            my_optimal_path_.start_offset_distance_ = 1;
+            my_optimal_path_.start_offset_distance_ = 3;
             my_optimal_path_.end_offset_distance_   = vehicle_param_.load_point_end_offset_distance;
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Start_Front_End_Back, time_threshold)) {
                 threadLogger_->error("装载任务，PlanRule::Start_Front_End_Back规则，装载点直线延伸 {} m，Hybird A*无法规划出当前起点至终点的路径", vehicle_param_.load_point_end_offset_distance);
@@ -562,7 +562,7 @@ bool Planning::NotFollowReferencelinePlanning() {
         threadLogger_->info("卸载");
         int unload_point_end_offset_distance = vehicle_param_.load_point_end_offset_distance;
         while (unload_point_end_offset_distance >= 1) {
-            my_optimal_path_.start_offset_distance_ = 1;
+            my_optimal_path_.start_offset_distance_ = 3;
             my_optimal_path_.end_offset_distance_   = unload_point_end_offset_distance;
             threadLogger_->info("终点直线延长:    {} m", my_optimal_path_.end_offset_distance_);
             if (!ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Start_Front_End_Back, time_threshold)) {
@@ -955,7 +955,7 @@ bool Planning::HybirdAStarFitting() {
         else {
             threadLogger_->info("常规调度任务，起点需要HybirdA*拟合");
             cout << "常规调度任务，起点需要HybirdA*拟合" << endl;
-            my_optimal_path_.start_offset_distance_ = 1;
+            my_optimal_path_.start_offset_distance_ = 3;
             my_optimal_path_.end_offset_distance_   = 1;
             vector<_TrajectoryPoint> temp_traj;
             int                      search_index = 0;

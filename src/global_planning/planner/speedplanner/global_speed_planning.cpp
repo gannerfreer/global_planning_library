@@ -773,15 +773,15 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
 
 
 void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
-    double regular_road_speed_limit      = 1;   // 常规路面限速
-    double narrow_road_speed_limit       = 1;   // 会车道路限速
-    double intersection_road_speed_limit = 1;   // 路口限速
-    double slope_road_speed_limit        = 1;   // 坡路限速
-    double bumpy_road_speed_limit        = 1;   // 颠簸路段限速
-    double reverse_speed                 = 1;   // 倒车限速
-    double a                             = 0.9; // a表示一级限速到二级限速之间的缩放比例
+    double regular_road_speed_limit      = 1;    // 常规路面限速
+    double narrow_road_speed_limit       = 1;    // 会车道路限速
+    double intersection_road_speed_limit = 1;    // 路口限速
+    double slope_road_speed_limit        = 1;    // 坡路限速
+    double bumpy_road_speed_limit        = 1;    // 颠簸路段限速
+    double reverse_speed                 = 1;    // 倒车限速
+    double a                             = 0.9;  // a表示一级限速到二级限速之间的缩放比例
     double b                             = 0.85; // b表示一级限速到三级限速之间的缩放比例
-    double c                             = 0.9; // c表示轻载到重载之间的缩放比例
+    double c                             = 0.9;  // c表示轻载到重载之间的缩放比例
 
     // if (vehicle_param.weather == true && vehicle_param.is_day == true) { // 晴天+白天【一级限速】
     //     threadLogger_->info("晴天+白天【一级限速】");
@@ -885,18 +885,24 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
     file_out.close();
 
     // 遍历整个trajectory_points，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
-    float         L_vehicle                = vehicle_param.wheel_base;
-    float         max_Steering_wheel_speed = 0.174;
+    float         L_vehicle                 = vehicle_param.wheel_base;
+    float         max_Steering_wheel_speed1 = 0.1, max_Steering_wheel_speed2 = 0.174;
     float         temp_max_speed;
     float         wheel_delta_angle, wheel_angle1, wheel_angle2;
     float         sampling_distance = 1;
     vector<float> vec_temp_max_speed; // 记录全局路径上基于曲率变化算出限速信息
 
+
     for (int i = 0; i < trajectory_points.size() - 1; i++) //
     {
-        wheel_angle1   = atan(L_vehicle * trajectory_points.at(i).curvature);
-        wheel_angle2   = atan(L_vehicle * trajectory_points.at(i + 1).curvature);
-        temp_max_speed = sampling_distance * max_Steering_wheel_speed / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速
+        wheel_angle1 = atan(L_vehicle * trajectory_points.at(i).curvature);
+        wheel_angle2 = atan(L_vehicle * trajectory_points.at(i + 1).curvature);
+        if (i < 8 || trajectory_points.at(i).direction == 1) {
+            temp_max_speed = sampling_distance * max_Steering_wheel_speed1 / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速
+        }
+        else {
+            temp_max_speed = sampling_distance * max_Steering_wheel_speed2 / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速
+        }
         if (temp_max_speed >= 10) temp_max_speed = 10;
         vec_temp_max_speed.push_back(temp_max_speed);
     }
