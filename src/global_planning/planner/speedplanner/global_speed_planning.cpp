@@ -499,9 +499,12 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
     vector<_TrajectoryPoint> temp_traj = trajectory_fragments.at(num);
     SparseSpeedPoint         temp_sparsepoint;
     float                    v0, v1, v2;
-    v0 = keypoint1.speed_limit_left;
-    v1 = keypoint1.speed_limit_right;
-    v2 = keypoint2.speed_limit_right;
+    unsigned char            direction;
+    v0                          = keypoint1.speed_limit_left;
+    v1                          = keypoint1.speed_limit_right;
+    v2                          = keypoint2.speed_limit_right;
+    direction                   = keypoint1.direction;
+    float max_acceleration_back = max_acceleration;
     threadLogger_->info("v0= {}", v0);
 
     threadLogger_->info("v1= {}", v1);
@@ -585,7 +588,14 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
         threadLogger_->info("...Case 3...");
 
         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min   = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);                              // 加速到v2所需的最小距离
+        if (direction == 1) {
+            max_acceleration -= 0.22; // 对于倒车的提梯形速度规划，加速度调小
+            if (max_acceleration <= 0) {
+                max_acceleration = 0.1;
+            }
+            threadLogger_->info("...Case 3... 进入max_acceleration调整环节,调整为：{}", max_acceleration);
+        }
+        float s_min = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration); // 加速到v2所需的最小距离
         float s_temp;
         float s_0 = temp_traj.at(keypoint1.index).distance;
         for (unsigned int i = keypoint1.index; i < keypoint2.index; i += 1) {
@@ -605,6 +615,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             last_speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_total);
         else
             last_speed = v1;
+        max_acceleration = max_acceleration_back;
         return true;
     }
 
@@ -623,6 +634,13 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             threadLogger_->error("...Case 4: s_total ={}  s_min ={}  s_total < s_min...", s_total, s_min);
 
             return false;
+        }
+        if (direction == 1) {
+            max_acceleration -= 0.22; // 对于倒车的提梯形速度规划，加速度调小
+            if (max_acceleration <= 0) {
+                max_acceleration = 0.1;
+            }
+            threadLogger_->info("...Case 4... 进入max_acceleration调整环节,调整为：{}", max_acceleration);
         }
         float s_acc = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);
         float s_dec = (pow(v2, 2) - pow(v1, 2)) / (2 * min_acceleration);
@@ -662,6 +680,7 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
             }
             last_speed = v2;
             threadLogger_->info("temp_sparsespeedpoints.size():{}", temp_sparsespeedpoints.size());
+            max_acceleration = max_acceleration_back;
             return true;
         }
         else if (s_acc + s_dec >= s_total) // 先加速，再减速，无匀速阶段
@@ -687,7 +706,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
-            last_speed = v2;
+            last_speed       = v2;
+            max_acceleration = max_acceleration_back;
             return true;
         }
     }
@@ -696,11 +716,18 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
     需要加速，再减速 */
     if (v0 < v1 && v2 < v1 && v2 > v0) {
         threadLogger_->info("...Case 5...");
-
+        if (direction == 1) {
+            max_acceleration -= 0.22; // 对于倒车的提梯形速度规划，加速度调小
+            if (max_acceleration <= 0) {
+                max_acceleration = 0.1;
+            }
+            threadLogger_->info("...Case 5... 进入max_acceleration调整环节,调整为：{}", max_acceleration);
+        }
         float s_total = temp_traj.at(keypoint2.index).distance - temp_traj.at(keypoint1.index).distance; // 该路段的路径长度
-        float s_min   = (pow(v2, 2) - pow(v0, 2)) / (2 * max_acceleration);                              // 加速到v2所需的最小距离
-        float s_acc   = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);
-        float s_dec   = (pow(v2, 2) - pow(v1, 2)) / (2 * min_acceleration);
+
+        float s_min = (pow(v2, 2) - pow(v0, 2)) / (2 * max_acceleration); // 加速到v2所需的最小距离
+        float s_acc = (pow(v1, 2) - pow(v0, 2)) / (2 * max_acceleration);
+        float s_dec = (pow(v2, 2) - pow(v1, 2)) / (2 * min_acceleration);
         if (s_acc + s_dec < s_total) // 先加速到最大速度，再减速到v2
         {
             float s_temp;
@@ -727,7 +754,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
-            last_speed = v2;
+            last_speed       = v2;
+            max_acceleration = max_acceleration_back;
             return true;
         }
         else if (s_acc + s_dec >= s_total && s_total > s_min) // 先加速，再减速，无匀速阶段
@@ -752,7 +780,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                     temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
                 }
             }
-            last_speed = v2;
+            last_speed       = v2;
+            max_acceleration = max_acceleration_back;
             return true;
         }
         else if (s_total <= s_min) // 一直加速
@@ -765,7 +794,8 @@ bool GlobalSpeedPlanning::PlanForSingleSegment(unsigned char num, KeyPoint keypo
                 temp_sparsepoint.speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_temp);
                 temp_sparsespeedpoints.emplace_back(temp_sparsepoint);
             }
-            last_speed = sqrt(pow(v0, 2) + 2 * max_acceleration * s_total);
+            last_speed       = sqrt(pow(v0, 2) + 2 * max_acceleration * s_total);
+            max_acceleration = max_acceleration_back;
             return true;
         }
     }
@@ -885,40 +915,31 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
     file_out.close();
 
     // 遍历整个trajectory_points，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
-    float         L_vehicle                 = vehicle_param.wheel_base;
-    float         max_Steering_wheel_speed1 = 0.1, max_Steering_wheel_speed2 = 0.174;
+    float         L_vehicle                = vehicle_param.wheel_base;
+    float         max_Steering_wheel_speed = 0.174;
     float         temp_max_speed;
     float         wheel_delta_angle, wheel_angle1, wheel_angle2;
     float         sampling_distance = 1;
     vector<float> vec_temp_max_speed; // 记录全局路径上基于曲率变化算出限速信息
 
 
-    for (int i = 0; i < trajectory_points.size() - 1; i++) //
+    for (int i = 1; i < trajectory_points.size(); i++) //
     {
-        wheel_angle1 = atan(L_vehicle * trajectory_points.at(i).curvature);
-        wheel_angle2 = atan(L_vehicle * trajectory_points.at(i + 1).curvature);
-        if (i < 8 || trajectory_points.at(i).direction == 1) {
-            temp_max_speed = sampling_distance * max_Steering_wheel_speed1 / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速
-        }
-        else {
-            temp_max_speed = sampling_distance * max_Steering_wheel_speed2 / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速
-        }
+        wheel_angle1   = atan(L_vehicle * trajectory_points.at(i).curvature);
+        wheel_angle2   = atan(L_vehicle * trajectory_points.at(i - 1).curvature);
+        temp_max_speed = sampling_distance * max_Steering_wheel_speed / (fabs(wheel_angle1 - wheel_angle2) + eps); // 根据控制给的方向盘最高转速和预定的采样距离算出的每个点的最大限速
         if (temp_max_speed >= 10) temp_max_speed = 10;
         vec_temp_max_speed.push_back(temp_max_speed);
     }
 
-    for (int i = 0; i < vec_temp_max_speed.size(); i++) {
+    for (int i = 1; i < vec_temp_max_speed.size(); i++) {
         if (vec_temp_max_speed.at(i) < trajectory_points.at(i).speed_limit) {
-            if (trajectory_points.at(i).direction == 0) {
-                trajectory_points.at(i).speed_limit = vec_temp_max_speed.at(i);
-                // 为了便于控制跟踪，将i附近的10(10m) 路径点限速也降低i为vec_temp_max_speed.at(i)
-                for (int j = i - 1; j < i + 1; j++) {
-                    if (j >= 0 && j < vec_temp_max_speed.size()) {
-                        if (trajectory_points.at(j).direction == 0) {
-                            if (trajectory_points.at(j).speed_limit > vec_temp_max_speed.at(i)) {
-                                trajectory_points.at(j).speed_limit = vec_temp_max_speed.at(i);
-                            }
-                        }
+            trajectory_points.at(i).speed_limit = vec_temp_max_speed.at(i);
+            // 为了便于控制跟踪，将附近路径点限速也降低为vec_temp_max_speed.at(i)
+            for (int j = i - 1; j < i + 1; j++) {
+                if (j >= 0 && j < trajectory_points.size()) {
+                    if (trajectory_points.at(j).speed_limit > vec_temp_max_speed.at(i)) {
+                        trajectory_points.at(j).speed_limit = vec_temp_max_speed.at(i);
                     }
                 }
             }
@@ -1001,11 +1022,30 @@ bool GlobalSpeedPlanning::GetKeypoint() {
 
             // 如果是倒车，暂时按照最简单的加速、匀速、加速的模式进行速度规划，全段最大速度提前设定为
             if (1 == temp_traj.at(1).direction) { // 判断第一个点的原因在于分段时会存在重合点
+                // temp_keypoints.clear();
+                // temp_keypoint.Set(0, temp_traj.at(0).distance, 1, 0, reverse_speed); // 给关键点赋值
+                // temp_keypoints.emplace_back(temp_keypoint);                          // 倒车模式下的关键点只有两个
+                // temp_keypoint.Set(temp_traj.size() - 1, temp_traj.back().distance, 1, reverse_speed, 0.0);
+                // temp_keypoints.emplace_back(temp_keypoint); // 倒车模式下的关键点只有两个
+                // key_points.emplace_back(temp_keypoints);
                 temp_keypoints.clear();
-                temp_keypoint.Set(0, temp_traj.at(0).distance, 1, 0, reverse_speed); // 给关键点赋值
-                temp_keypoints.emplace_back(temp_keypoint);                          // 倒车模式下的关键点只有两个
-                temp_keypoint.Set(temp_traj.size() - 1, temp_traj.back().distance, 1, reverse_speed, 0.0);
-                temp_keypoints.emplace_back(temp_keypoint); // 倒车模式下的关键点只有两个
+                temp_keypoint.Set(0, temp_traj.at(0).distance, 1, 0, temp_traj.at(1).speed_limit); // 给关键点赋值
+                temp_keypoints.emplace_back(temp_keypoint);
+                for (unsigned int j = 1; j < temp_traj.size() - 1; j++) {
+                    if (temp_traj.at(j).speed_limit != temp_traj.at(j + 1).speed_limit) // 最大速度改变处设置一个关键点
+                    {
+                        temp_keypoint.Set(j, temp_traj.at(j).distance, 1, temp_traj.at(j).speed_limit,
+                                          temp_traj.at(j + 1).speed_limit); // 给关键点赋值
+                        temp_keypoints.emplace_back(temp_keypoint);
+                    }
+                    if (temp_traj.size() - 2 == j) // 最后一个路径点也作为关键点
+                    {
+                        temp_keypoint.Set(j + 1, temp_traj.at(j + 1).distance, 1, temp_traj.at(j + 1).speed_limit,
+                                          0.0); // 给关键点赋值
+
+                        temp_keypoints.emplace_back(temp_keypoint);
+                    }
+                }
                 key_points.emplace_back(temp_keypoints);
             }
             else if (0 == temp_traj.at(1).direction) // 如果是前行，可能有多个不同的限速，关键点数量大于等于两个

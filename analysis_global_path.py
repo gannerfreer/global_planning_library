@@ -7,6 +7,7 @@ file_path = 'global_path.txt'
 angles = []
 speed_limits = []
 curvatures = []
+directions=[]
 
 # 读取文件
 with open(file_path, 'r') as file:
@@ -17,13 +18,15 @@ with open(file_path, 'r') as file:
         angle = float(data[4])
         speed_limit = float(data[9])
         curvature = float(data[5])
+        direction = float(data[10])
         # 将数据添加到相应的列表中
         angles.append(angle)
         speed_limits.append(speed_limit)
         curvatures.append(curvature)
+        directions.append(direction)
 
 # 创建一个包含3个子图的图形
-fig, axes = plt.subplots(3, 1, figsize=(10, 12))
+fig, axes = plt.subplots(4, 1, figsize=(10, 12))
 
 # 绘制angle变化曲线图
 axes[0].plot(angles)
@@ -41,6 +44,11 @@ axes[2].set_title('Curvature Variation')
 axes[2].set_xlabel('Data Point Index')
 axes[2].set_ylabel('Curvature')
 
+# 绘制curvature曲线图
+axes[3].plot(directions)
+axes[3].set_title('Direction Variation')
+axes[3].set_xlabel('Data Point Index')
+axes[3].set_ylabel('Direction')
 # 调整子图之间的间距
 plt.tight_layout()
 

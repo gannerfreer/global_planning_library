@@ -102,8 +102,8 @@ class CRvizPath {
     void PubObstacles(vector<geometry_msgs::Point>& vec_msga);
 
   public:
-    const double x_o_ = -672.2501686715; // 园区偏移参数
-    const double y_o_ = -253.2525918484; // 园区偏移参数
+    const double x_o_ = -569.8220117314; // 园区偏移参数
+    const double y_o_ = -853.9187251804; // 园区偏移参数
 
   private:
     ros::NodeHandle                 n;

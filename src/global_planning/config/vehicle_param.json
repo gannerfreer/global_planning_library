@@ -18,9 +18,9 @@
     "turnning_penalty": 2.468,
     "safe_margin_bound": 0.0,
     "safe_margin_error": 0.0,
-    "veh_center_2_side": 0.5,
-    "angle_discrete_num": 3,
-    "max_fitting_radius": 50,
+    "veh_center_2_side": 1.9,
+    "angle_discrete_num": 5,
+    "max_fitting_radius": 100,
     "veh_center_2_front": 7.1,
     "max_iterations_opti": 100,
     "safe_margin_obstacle": 2,
@@ -48,7 +48,7 @@
     "load_point_end_offset_distance": 4,
     "load_point_start_offset_distance": 4,
     "obsMax": 1,
-    "rs_min_length": 4,
-    "load_start_straight_length": 1
+    "rs_min_length": 2,
+    "load_start_straight_length": 3
   }
 }
