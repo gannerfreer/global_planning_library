@@ -151,7 +151,7 @@ class Planning {
     void  CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
     void  CalculateStation(const vector<double>& xs, const vector<double>& ys);
     void  CurvatureCal(vector<_TrajectoryPoint>& input_path);
-
+    void  SmoothPath(vector<_TrajectoryPoint>& input_path);
 
   public:
     _SinglePoint start_point_,

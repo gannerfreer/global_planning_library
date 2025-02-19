@@ -23,12 +23,13 @@ bool                         is_receive_start = false;
 bool                         is_receive_end   = false;
 
 
-const double x_o_ = -569.8220117314; // 园区偏移参数
-const double y_o_ = -853.9187251804; // 园区偏移参数
+const double x_o_ = -672;            // 园区偏移参数
+const double y_o_ = -253.9187251804; // 园区偏移参数
 
 vector<_TrajectoryPoint> global_path, road_nodes;
 vector<Point>            expand_point;
-void                     StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
+
+void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
     start_point.x   = msg->pose.pose.position.x;
     start_point.y   = msg->pose.pose.position.y;
     start_point.yaw = tf::getYaw(msg->pose.pose.orientation);

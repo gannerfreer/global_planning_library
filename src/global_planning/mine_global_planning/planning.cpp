@@ -100,11 +100,22 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     }
 
 
+    // 对进行速度规划前的路径基于梯度下降进行平滑
+    std::ofstream file_out;
+    file_out.open("total_path_smooth_before.txt");
+    for (size_t index = 0; index < global_path_.size(); index++) {
+        file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << endl;
+    }
+    file_out.close();
+    SmoothPath(global_path_);
     // 计算累计s
     Helper::CalDistance(global_path_);
-
-
     CurvatureCal(global_path_);
+    file_out.open("total_path_smooth_after.txt");
+    for (size_t index = 0; index < global_path_.size(); index++) {
+        file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << endl;
+    }
+    file_out.close();
 
     threadLogger_->info("执行均匀碾压后路径点曲率");
     for (auto i : global_path_) {
@@ -479,12 +490,15 @@ bool Planning::PathPlanning() {
     else {
         threadLogger_->info("调度、装载、卸载");
         // 在这里判断装载和卸载任务终点是否位于参考路径上
-        double temp_end_lat_dis, temp_end_lon_dis = 0;
-        Helper::GetNearestReferencelines(end_point_, all_referencelines_, temp_end_lat_dis, temp_end_lon_dis);
+        double temp_end_lat_dis, temp_end_lon_dis     = 0;
+        double temp_start_lat_dis, temp_start_lon_dis = 0;
+
+        int end_path_id   = Helper::GetNearestReferencelines(end_point_, all_referencelines_, temp_end_lat_dis, temp_end_lon_dis);
+        int start_path_id = Helper::GetNearestReferencelines(start_point_, all_referencelines_, temp_start_lat_dis, temp_start_lon_dis);
 
         // 不位于参考路径上
         if (task_type_ != TaskType::DISPATCH) {
-            if (fabs(temp_end_lat_dis) > 10 || fabs(temp_end_lon_dis) > 10) {
+            if (fabs(temp_end_lat_dis) > 1 || fabs(temp_end_lon_dis) > 1 || fabs(temp_start_lat_dis) > 1 || fabs(temp_start_lon_dis) > 1 || end_path_id != start_path_id) {
                 // 满足这个条件，表明这个这次装卸载任务没有参考路径
                 threadLogger_->info("此次装卸载任务无参考路径");
                 if (!NotFollowReferencelinePlanning()) {
@@ -1260,5 +1274,82 @@ void Planning::CurvatureCal(vector<_TrajectoryPoint>& input_path) {
         }
         input_path.front().curvature = input_path.at(1).curvature;
         input_path.back().curvature  = input_path.at(input_path.size() - 2).curvature;
+    }
+}
+void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
+    // 得到节点和固定点索引
+    unordered_set<unsigned int> cusp_set, fixpoint_set;
+    for (unsigned int i = 1; i < input_path.size(); ++i) {
+        if (input_path.at(i).direction != input_path.at(i - 1).direction) {
+            cusp_set.insert(i - 1);
+        }
+    }
+    for (auto it = cusp_set.begin(); it != cusp_set.end(); ++it) {
+        fixpoint_set.insert(*it - 1);
+        fixpoint_set.insert(*it);
+        fixpoint_set.insert(*it + 1);
+    }
+    fixpoint_set.insert(0);
+    fixpoint_set.insert(input_path.size() - 1);
+
+
+    unsigned int max_opti_num = 10;
+
+    int            L     = input_path.size();
+    double         x_sat = 6;
+    vector<double> coeff;
+    for (int i = 0; i < L; i++) {
+        double x    = (i < L / 2) ? i : (L - 1.0 - i);
+        double temp = 1 / (1 + exp(-x + x_sat));
+        coeff.push_back(temp);
+    }
+
+    unsigned int iterations = 0;
+    double       a1, a2, b1, b2, c1, c2, d1, d2, e1, e2;
+
+
+    // 梯度下降法迭代优化
+    while (iterations++ < max_opti_num) {
+        for (unsigned int i = 2; i < input_path.size() - 2; i++) {
+            if (fixpoint_set.count(i)) {
+                continue;
+            }
+            // 优化路径的当前点前两点、当前点、当前点后两点及原路径当前点
+            a1 = input_path.at(i - 2).x;
+            a2 = input_path.at(i - 2).y;
+            b1 = input_path.at(i - 1).x;
+            b2 = input_path.at(i - 1).y;
+            c1 = input_path.at(i).x;
+            c2 = input_path.at(i).y;
+            d1 = input_path.at(i + 1).x;
+            d2 = input_path.at(i + 1).y;
+            e1 = input_path.at(i + 2).x;
+            e2 = input_path.at(i + 2).y;
+
+            input_path.at(i).x -= coeff.at(i) * 0.1 * (e1 - 4 * d1 + 6 * c1 - 4 * b1 + a1);
+            input_path.at(i).y -= coeff.at(i) * 0.1 * (e2 - 4 * d2 + 6 * c2 - 4 * b2 + a2);
+        }
+    }
+
+    for (unsigned int i = 1; i < input_path.size() - 1; i++) {
+        if (cusp_set.count(i)) {
+            continue;
+        }
+        double dx    = (input_path.at(i + 1).x - input_path.at(i - 1).x);
+        double dy    = (input_path.at(i + 1).y - input_path.at(i - 1).y);
+        double angle = atan(dy / dx);
+        if (dx < 0)
+            angle = angle + M_PI;
+        else if (dx >= 0 && dy < 0)
+            angle = angle + 2 * M_PI;
+        else
+            ;
+        if (input_path.at(i).direction == MotionDirection::Backward) // 表示后退
+        {
+            input_path.at(i).yaw = Helper::NormalizeAngleRad(angle + M_PI);
+        }
+        else {
+            input_path.at(i).yaw = Helper::NormalizeAngleRad(angle);
+        }
     }
 }

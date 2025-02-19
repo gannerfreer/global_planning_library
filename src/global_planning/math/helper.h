@@ -73,7 +73,7 @@ inline double ToRad(double t) {
 }
 
 
-inline void GetNearestReferencelines(_SinglePoint point, const map<int, _SingleTraj>& trajs, double& lat_dis, double& lon_dis) {
+inline int GetNearestReferencelines(_SinglePoint point, const map<int, _SingleTraj>& trajs, double& lat_dis, double& lon_dis) {
     cout << "Coming GetNearestReferencelines" << endl;
     _TrajectoryPoint nearest_point;
     cout << "Point.x:   " << point.x << "point.y:    " << point.y << endl;
@@ -81,7 +81,7 @@ inline void GetNearestReferencelines(_SinglePoint point, const map<int, _SingleT
         cout << "轨迹个数为0" << endl;
         lat_dis = numeric_limits<double>::max();
         lon_dis = numeric_limits<double>::max();
-        return;
+        return -1;
     }
     bool temp_bool = false;
 
@@ -101,6 +101,7 @@ inline void GetNearestReferencelines(_SinglePoint point, const map<int, _SingleT
     lat_dis = fabs((point.y - nearest_point.y) * cos(nearest_point.yaw) - (point.x - nearest_point.x) * sin(nearest_point.yaw)); // 横向距离先不区分左正右负
     lon_dis = (point.x - nearest_point.x) * cos(nearest_point.yaw) + (point.y - nearest_point.y) * sin(nearest_point.yaw);
     cout << "找到的终点最近点距离：" << hypot(point.x - nearest_point.x, point.y - nearest_point.y) << endl;
+    return index;
     // angle_diff = fabs(point.yaw - nearest_point.yaw) > M_PI ? 2 * M_PI - fabs(point.yaw - nearest_point.yaw) : fabs(point.yaw - nearest_point.yaw);
 }
 
