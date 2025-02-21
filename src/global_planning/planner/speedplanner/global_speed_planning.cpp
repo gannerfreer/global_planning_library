@@ -899,7 +899,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
             }
             else // 未定义的路面属性
             {
-                iter->speed_limit = 1;
+                iter->speed_limit = 0;
             }
         }
         else {

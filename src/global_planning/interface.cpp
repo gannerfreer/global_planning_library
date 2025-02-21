@@ -157,7 +157,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             planning.inner_borders_ = veh_start_end.inner_borders;
         } catch (const std::exception& e) {
             cout << "规划库入参数解析，将内边界赋值给planning对象的成员变量时出现异常" << endl;
-            planning.error_type_ = ErrorType::ALGORITHM_ERROR;
+            planning.error_type_ = ErrorType::ALGORITHM_ERROR_PARAS_PARSE_FAIL;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
                 planning.threadLogger_->info("进锁成功");
@@ -199,7 +199,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     } catch (const std::exception& e) {
         cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;
         planning.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 exception 抛出");
-        planning.error_type_ = ErrorType::ALGORITHM_ERROR;
+        planning.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
             planning.threadLogger_->info("进 return_write_lock 锁成功");
@@ -221,7 +221,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
         // 处理数组越界异常
         cout << "规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出" << endl;
         planning.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出");
-        planning.error_type_ = ErrorType::ALGORITHM_ERROR;
+        planning.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
             planning.threadLogger_->info("进锁成功");
@@ -263,7 +263,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     } catch (const std::exception& e) {
         cout << "规划库执行 VecWaypoint2json 时出现 exception 抛出" << endl;
         planning.threadLogger_->info("规划库执行 VecWaypoint2json 时出现 exception 抛出");
-        planning.error_type_ = ErrorType::ALGORITHM_ERROR;
+        planning.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
             planning.threadLogger_->info("进锁成功");
@@ -285,7 +285,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
         // 处理数组越界异常
         cout << "规划库执行 VecWaypoint2json 时出现 out_of_range 抛出" << endl;
         planning.threadLogger_->info("规划库执行 VecWaypoint2json 时出现 out_of_range 抛出");
-        planning.error_type_ = ErrorType::ALGORITHM_ERROR;
+        planning.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
             planning.threadLogger_->info("进锁成功");

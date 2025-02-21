@@ -41,7 +41,7 @@ class Planning {
     bool ApplyHibridAStar(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, int plan_rule_id);
 
 
-    bool ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id);
+    PlanResult ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id);
 
     /**
      * @brief
@@ -55,7 +55,7 @@ class Planning {
      * @return true 规划成功
      * @return false 失败
      */
-    bool ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, const PlanRule& plan_rule_id, long long time_threshold);
+    PlanResult ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, const PlanRule& plan_rule_id, long long time_threshold);
 
     /**
      * @brief  去除轨迹中重复点
@@ -130,28 +130,29 @@ class Planning {
      * @brief
      *
      */
-    bool PathPlanning();
+    PlanResult PathPlanning();
 
     /**
      * @brief
      *
      */
-    bool  HybirdAStarFitting();
-    void  StartEndPointProcess();
-    bool  PathOffset();
-    bool  SpeedPlanning();
-    bool  NotFollowReferencelinePlanning();
-    bool  FollowReferencelinePlanning();
-    void  PathClipAndSplice();
-    bool  JudgeFittingDirection();
-    bool  IsShortDistance();
-    bool  HasSearched(int start, int end);
-    bool  PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag = 0);
-    float ReferencelineTotalDis(pair<int, int>& input_pair, int start_index, int end_index);
-    void  CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
-    void  CalculateStation(const vector<double>& xs, const vector<double>& ys);
-    void  CurvatureCal(vector<_TrajectoryPoint>& input_path);
-    void  SmoothPath(vector<_TrajectoryPoint>& input_path);
+    PlanResult HybirdAStarFitting();
+    void       StartEndPointProcess();
+    bool       PathOffset();
+    bool       SpeedPlanning();
+    PlanResult NotFollowReferencelinePlanning();
+    PlanResult FollowReferencelinePlanning();
+    void       PathClipAndSplice();
+    bool       JudgeFittingDirection();
+    bool       IsShortDistance();
+    bool       HasSearched(int start, int end);
+    bool       PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag = 0);
+    float      ReferencelineTotalDis(pair<int, int>& input_pair, int start_index, int end_index);
+    void       CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
+    void       CalculateStation(const vector<double>& xs, const vector<double>& ys);
+    void       CurvatureCal(vector<_TrajectoryPoint>& input_path);
+    void       SmoothPath(vector<_TrajectoryPoint>& input_path);
+    void       FillErrorCode(PlanResult result);
 
   public:
     _SinglePoint start_point_,

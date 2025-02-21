@@ -235,7 +235,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
 
     if (true == collison_check_.IsVehicleCollision(actual_start_)) {
         threadLogger_->info("起点碰撞检测不通过");
-        return PlanResult::StartPoint_Infeasible;
+        return PlanResult::StartPoint_Collision;
     }
 
     cout << "开启对终点的碰撞检测" << endl;
@@ -243,7 +243,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     if (true == collison_check_.IsVehicleCollision(end_)) {
         threadLogger_->info("终点碰撞检测不通过 {} {}  {}", end_.x + midpoint_.x, end_.y + midpoint_.y, end_.angle / M_PI * 180.0);
         cout << "终点碰撞检测不通过" << endl;
-        return PlanResult::EndPoint_Infeasible;
+        return PlanResult::EndPoint_Collision;
     }
     cout << "终点碰撞检测通过" << endl;
     bool end_f_collison_flag = false, end_r_collison_flag = false;
@@ -255,10 +255,16 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
         threadLogger_->info("PlanRule::Forward_All_Time||PlanRule::Start_Back_End_Front  ,but end_r_ 碰撞检测失败 ");
         return PlanResult::EndPoint_Infeasible;
     }
+    else {
+        threadLogger_->info("PlanRule::Forward_All_Time||PlanRule::Start_Back_End_Front  ,end_r_ 碰撞检测成功 ");
+    }
 
     if ((plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Start_Front_End_Back) && end_f_collison_flag) {
         threadLogger_->info("PlanRule::Backward_All_Time||plan_path_rule_ == PlanRule::Start_Front_End_Back ,but end_f_ 碰撞检测失败 ");
         return PlanResult::EndPoint_Infeasible;
+    }
+    else {
+        threadLogger_->info("PlanRule::Backward_All_Time||plan_path_rule_ == PlanRule::Start_Front_End_Back ,end_f_ 碰撞检测成功 ");
     }
     timelog.AddLog("IsVehicleCollision");
 
@@ -407,7 +413,8 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     if (init_time_end > 1000000) {
         threadLogger_->info("InitOpenClose()函数执行超时");
         cout << "InitOpenClose()函数执行超时" << endl;
-        return PlanResult::Plan_Overtime;
+        // 如果InitOpenClose函数执行时间过长，表面A*无法搜索出连接起点终点的路，大概率是通道太窄
+        return PlanResult::Map_Infeasible;
     }
     threadLogger_->info("InitOpenClose 耗时:{} ms", init_time_end * 0.001);
 

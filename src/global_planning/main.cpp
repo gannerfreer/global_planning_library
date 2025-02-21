@@ -155,6 +155,7 @@ int main(int argc, char** argv) {
             planning.threadLogger_->info("end_point.yaw ={}", planning.end_point_.yaw);
 
             planning.GlobalPathPlanningIntface(global_path);
+            cout << "error_code:" << static_cast<int>(planning.error_type_) << std::endl;
 
             cout << "main-global_path.size():" << global_path.size() << endl;
 
