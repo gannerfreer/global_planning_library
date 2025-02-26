@@ -183,65 +183,65 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 }
 
 
-PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id) {
-    long long    time_threshold    = 0.8 * 1000 * 1000;
-    int          counter           = 0;
-    bool         success_flag      = false;
-    bool         verification_flag = false;
-    _SinglePoint temp_start, temp_end;
-    int          cal = 0;
-    PlanResult   result;
-    for (int i = 0; i < global_path_.size(); i += 5) {
-        cal++;
-        counter++;
-        temp_end.x   = global_path_.at(i).x;
-        temp_end.y   = global_path_.at(i).y;
-        temp_end.z   = global_path_.at(i).z;
-        temp_end.yaw = global_path_.at(i).yaw;
-        if (rule_id == PlanRule::Forward_All_Time || rule_id == PlanRule::Backward_All_Time) { // 这两种规划规则，可采用dubins预先校验
-            if (rule_id == PlanRule::Forward_All_Time) {
-                verification_flag = false;
-            }
-            else {
-                verification_flag = true;
-            }
+// PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id) {
+//     long long    time_threshold    = 0.8 * 1000 * 1000;
+//     int          counter           = 0;
+//     bool         success_flag      = false;
+//     bool         verification_flag = false;
+//     _SinglePoint temp_start, temp_end;
+//     int          cal = 0;
+//     PlanResult   result;
+//     for (int i = 0; i < global_path_.size(); i += 5) {
+//         cal++;
+//         counter++;
+//         temp_end.x   = global_path_.at(i).x;
+//         temp_end.y   = global_path_.at(i).y;
+//         temp_end.z   = global_path_.at(i).z;
+//         temp_end.yaw = global_path_.at(i).yaw;
+//         if (rule_id == PlanRule::Forward_All_Time || rule_id == PlanRule::Backward_All_Time) { // 这两种规划规则，可采用dubins预先校验
+//             if (rule_id == PlanRule::Forward_All_Time) {
+//                 verification_flag = false;
+//             }
+//             else {
+//                 verification_flag = true;
+//             }
 
-            if (PoseVerificationInterface(input_point, temp_end, verification_flag)) { // false表示默认由起点向终点拟合
-                threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{},经过dubins曲线预先校验，合格", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id));
-                result = ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id, time_threshold);
-                if (result == PlanResult::Plan_OK) {
-                    search_index = i;
-                    success_flag = true;
-                    break;
-                }
-            }
-            else {
-                threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{},经过dubins曲线预先校验，不合格", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id));
-            }
-        } // 这种规划规则，不采用dubins进行预先校验
-        else {
-            threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{}", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id));
-            result = ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id, time_threshold);
-            if (result == PlanResult::Plan_OK) {
-                search_index = i;
-                success_flag = true;
-                break;
-            }
-        }
+//             if (PoseVerificationInterface(input_point, temp_end, verification_flag)) { // false表示默认由起点向终点拟合
+//                 threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{},经过dubins曲线预先校验，合格", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id));
+//                 result = ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id, time_threshold);
+//                 if (result == PlanResult::Plan_OK) {
+//                     search_index = i;
+//                     success_flag = true;
+//                     break;
+//                 }
+//             }
+//             else {
+//                 threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{},经过dubins曲线预先校验，不合格", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id));
+//             }
+//         } // 这种规划规则，不采用dubins进行预先校验
+//         else {
+//             threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{}", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id));
+//             result = ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id, time_threshold);
+//             if (result == PlanResult::Plan_OK) {
+//                 search_index = i;
+//                 success_flag = true;
+//                 break;
+//             }
+//         }
 
-        if (counter > 18) {
-            threadLogger_->info("最多搜索18个点");
-            return result;
-        }
-    }
-    if (success_flag == true) {
-        threadLogger_->info("ProgressiveHybirdAStar success");
-        return result;
-    }
-    else {
-        return result;
-    }
-}
+//         if (counter > 18) {
+//             threadLogger_->info("最多搜索18个点");
+//             return result;
+//         }
+//     }
+//     if (success_flag == true) {
+//         threadLogger_->info("ProgressiveHybirdAStar success");
+//         return result;
+//     }
+//     else {
+//         return result;
+//     }
+// }
 
 PlanResult Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, const PlanRule& plan_rule_id, long long time_threshold) {
     // 起始点、目标点结构转换
@@ -948,7 +948,9 @@ PlanResult Planning::HybirdAStarFitting() {
                 cout << "识别出从装载点或卸载点出发，当前起点直线距离" << start_point_offset_distance << " 这种情况下此采用Forward_Fitting规则" << endl;
                 vector<_TrajectoryPoint> temp_traj;
                 int                      search_index = 0;
-                result                                = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
+                search_index                          = std::min((int)global_path_.size() - 1, 100);
+                result                                = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
+                // result                                = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
                 if (result != PlanResult::Plan_OK) {
                     threadLogger_->error("从装载点/卸载点调度出去，起点直线距离 {}  ,起点hybirdA*拟合失败,拟合规则为Forward_Fitting", my_optimal_path_.start_offset_distance_);
                 }
@@ -971,12 +973,15 @@ PlanResult Planning::HybirdAStarFitting() {
             my_optimal_path_.end_offset_distance_   = 1;
             vector<_TrajectoryPoint> temp_traj;
             int                      search_index = 0;
+            search_index                          = std::min((int)global_path_.size() - 1, 100);
             if (JudgeFittingDirection()) {
                 threadLogger_->info("参考路径位于车头前方,或可以向前掉头开往对向参考路径，这种情况下采用 Forward_All_Time 规则进行规划");
-                result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
+                result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
+                // result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
                 if (result != PlanResult::Plan_OK) {
                     threadLogger_->error("常规调度任务，起点hybirdA*采用Forward_All_Time拟合失败，即将调整拟合规则为 Start_Back_End_Front");
-                    result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front);
+                    result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front);
+                    // result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front);
                     if (result != PlanResult::Plan_OK) {
                         threadLogger_->error("常规调度任务，起点hybirdA*采用 Start_Back_End_Front 依旧拟合失败");
                         return result;
@@ -985,10 +990,13 @@ PlanResult Planning::HybirdAStarFitting() {
             }
             else {
                 threadLogger_->info("参考路径位于车头后方，这种情况下采用Back_Fitting规则进行规划");
-                result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Backward_All_Time);
+                result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Backward_All_Time);
+
+                // result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Backward_All_Time);
                 if (result != PlanResult::Plan_OK) {
                     threadLogger_->error("常规调度任务，起点hybirdA*采用 Backward_All_Time 拟合失败，即将调整拟合规则为 Start_Front_End_Back");
-                    result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Front_End_Back);
+                    result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Start_Front_End_Back);
+                    // result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Front_End_Back);
                     if (result != PlanResult::Plan_OK) {
                         threadLogger_->error("常规调度任务，起点hybirdA*采用 Start_Front_End_Back 依旧拟合失败");
                         return result;
@@ -1072,7 +1080,7 @@ bool Planning::IsShortDistance() {
     return false;
 }
 
-bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag) {
+bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag, std::vector<curve::Point>& output_path) {
     threadLogger_->info("PoseVerificationInterface--start_pose:{},{},{}     end_pose:{} ,{},{}", start_pose.x, start_pose.y, start_pose.yaw, end_pose.x, end_pose.y, end_pose.yaw);
     curve::Point dubins_start, dubins_end;
     if (flag == 0) {
@@ -1103,11 +1111,53 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
         std::cout << "入参有误！！！" << std::endl;
         return false;
     }
-    curve::Dubins             dubis;
-    std::vector<curve::Point> path;
+    curve::Dubins dubis;
     dubis.SetRadius(vehicle_param_.radious);
     threadLogger_->info("dubins radius:{}", dubis.GetRadius());
-    return dubis.GetDubinsPath(dubins_start, dubins_end, path);
+    output_path.clear();
+    bool result = dubis.GetDubinsPath(dubins_start, dubins_end, output_path);
+    if (!result) {
+        threadLogger_->error("Dubins路径规划失败");
+        return false;
+    }
+    // 将起点和终点的直线延长的点也加入到output_path中，其中，起点部分延长3m，终点部分延长1m，对flag==0和flag==1分别进行处理
+    if (flag == 0) {
+        // 起点部分延长3m,加入到output_path的前端，终点部分延长1m,加入到output_path的后端
+        curve::Point temp_point;
+        for (int i = 0; i < 3; i++) {
+            temp_point.SetX(start_pose.x + i * std::cos(start_pose.yaw));
+            temp_point.SetY(start_pose.y + i * std::sin(start_pose.yaw));
+            temp_point.SetAngle(start_pose.yaw);
+            output_path.insert(output_path.begin(), temp_point);
+        }
+
+        temp_point.SetX(end_pose.x);
+        temp_point.SetY(end_pose.y);
+        temp_point.SetAngle(end_pose.yaw);
+        output_path.push_back(temp_point);
+
+
+        return true;
+    }
+    else {
+        // 终点部分延长1m,加入到output_path的前端，起点部分延长3m,加入到output_path的后端
+        curve::Point temp_point;
+
+        temp_point.SetX(end_pose.x);
+        temp_point.SetY(end_pose.y);
+        temp_point.SetAngle(end_pose.yaw);
+        output_path.insert(output_path.begin(), temp_point);
+
+        for (int i = 2; i >= 0; i--) {
+            temp_point.SetX(start_pose.x - i * std::cos(start_pose.yaw));
+            temp_point.SetY(start_pose.y - i * std::sin(start_pose.yaw));
+            temp_point.SetAngle(start_pose.yaw);
+            output_path.push_back(temp_point);
+        }
+        // 对output_path倒序
+        std::reverse(output_path.begin(), output_path.end());
+        return true;
+    }
 }
 float Planning::ReferencelineTotalDis(pair<int, int>& input_pair, int start_index, int end_index) {
     // threadLogger_->info("计算{}到{}之间的路径", sequence_mapping_.at(input_pair.first), sequence_mapping_.at(input_pair.second));
@@ -1384,4 +1434,122 @@ void Planning::FillErrorCode(PlanResult result) {
             error_type_ = ErrorType::Unload_Queue_Point_Unreasonable;
             break; // 可选的
     }
+}
+
+PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_end_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id) {
+    // global_path_为全局路径，只允许在[0,search_end_index]这个区间上进行路径拟合
+    // 在这段路径上，从0开始进行采样，每隔5m采一个点，利用dubins基于特定的规划进行规划，将规划成功的所有轨迹及其对应点索引进行存储
+    // 从中挑选出得分最佳的轨迹，并获得对应的i
+    // 将这个最优秀的i对应的temp_end作为终点交给hybridA*进行规划，成功则退出，失败则将该列表中重新找最优秀的index来进行规划，直至成功
+    // 将hybridA*规划出的路径与global_path_进行融合，得到新的result_trajectory
+    // 将result_trajectory作为最终的输出
+    long long                  time_threshold = 0.8 * 1000 * 1000;
+    _SinglePoint               temp_end;
+    bool                       verification_flag = false;
+    PlanResult                 plan_result       = PlanResult::Plan_OK;
+    std::multimap<double, int> mul_score_index; // 存储dubins预拟合的路径得分和对应的拟合点在global_path_中的index
+    bool                       dubins_success, hybridA_success = false;
+    std::vector<curve::Point>  dubins_path;
+    vector<_TrajectoryPoint>   total_path, temp_trajectory;
+    _TrajectoryPoint           xip2, xip1, xi, xim1, xim2;
+    double                     score = 0.0;
+    _TrajectoryPoint           temp_point;
+    for (int i = 0; i <= search_end_index - 1; i += 5) { // 这里-1的原因是为了防止total_path.insert(total_path.end(), global_path_.begin() + i + 1, global_path_.begin() + search_end_index);拼接出错
+        threadLogger_->info("i:{}", i);
+        temp_end.x   = global_path_.at(i).x;
+        temp_end.y   = global_path_.at(i).y;
+        temp_end.z   = global_path_.at(i).z;
+        temp_end.yaw = global_path_.at(i).yaw;
+        if (rule_id == PlanRule::Forward_All_Time || rule_id == PlanRule::Backward_All_Time) { // 这两种规划规则，可采用dubins预先校验
+            if (rule_id == PlanRule::Forward_All_Time) {
+                verification_flag = false;
+            }
+            else {
+                verification_flag = true;
+            }
+            // 如果flag==0，则表示默认由起点向终点拟合，否则由终点向起点拟合
+            if (PoseVerificationInterface(input_point, temp_end, verification_flag, dubins_path)) {
+                threadLogger_->info("索引 {} 拟合成功 dubins_path.size():{}", i, dubins_path.size());
+                score = 0.0;
+                total_path.clear();
+                // 将dubins_path中的点转换为_TrajectoryPoint并存储到tatal_path中
+                for (auto it = dubins_path.begin(); it != dubins_path.end(); ++it) {
+                    temp_point.x   = it->GetX();
+                    temp_point.y   = it->GetY();
+                    temp_point.yaw = it->GetAngle();
+                    total_path.push_back(temp_point);
+                }
+                // 将global_path_中[i,search_end_index]这段路径拼接到total_path中
+                total_path.insert(total_path.end(), global_path_.begin() + i + 1, global_path_.begin() + search_end_index);
+                // 计算total_path的得分,基于平滑度打分
+                double score = 0.0;
+                double a, b = 0.0;
+
+                for (int i = 2; i < total_path.size() - 2; i++) {
+                    xip2 = total_path.at(i - 2);
+                    xip1 = total_path.at(i - 1);
+                    xi   = total_path.at(i);
+                    xim1 = total_path.at(i + 1);
+                    xim2 = total_path.at(i + 2);
+                    a    = 0.1 * (xip2.x - 4 * xip1.x + 6 * xi.x - 4 * xim1.x + xim2.x);
+                    b    = 0.1 * (xip2.y - 4 * xip1.y + 6 * xi.y - 4 * xim1.y + xim2.y);
+                    score += sqrt(a * a + b * b);
+                }
+                dubins_success = true;
+                mul_score_index.insert({score, i});
+            }
+        }
+        else {
+            plan_result = ApplyHibridAStarWithTime(input_point, temp_end, temp_trajectory, rule_id, time_threshold);
+            if (plan_result == PlanResult::Plan_OK) {
+                // 将temp_trajectory与global_path_进行融合，得到result_trajectory
+                result_trajectory.insert(result_trajectory.end(), temp_trajectory.begin(), temp_trajectory.end());
+                // 将global_path_中[best_index+1,global_path_.size())这段路径也拼接到result_trajectory中
+                result_trajectory.insert(result_trajectory.end(), global_path_.begin() + i + 1, global_path_.begin() + search_end_index);
+                return PlanResult::Plan_OK;
+            }
+        }
+    }
+    if (!dubins_success) {
+        return PlanResult::StartPoint_Angle_Error;
+    }
+    threadLogger_->info("mul_score_index.size():{} 基本信息如下：", mul_score_index.size());
+    for (auto it = mul_score_index.begin(); it != mul_score_index.end(); ++it) {
+        threadLogger_->info("score:{} index:{}", it->first, it->second);
+    }
+
+    // 从mul_score_index中挑选出得分最低的轨迹，并获得对应的index
+    double best_score;
+    int    best_index;
+    while (!mul_score_index.empty()) {
+        best_score = mul_score_index.begin()->first;
+        best_index = mul_score_index.begin()->second;
+        threadLogger_->info("当前选中的  best_score:{}  best_index:{}", best_score, best_index);
+        temp_end.x   = global_path_.at(best_index).x;
+        temp_end.y   = global_path_.at(best_index).y;
+        temp_end.z   = global_path_.at(best_index).z;
+        temp_end.yaw = global_path_.at(best_index).yaw;
+        // 将temp_end作为终点交给hybridA*进行规划
+        temp_trajectory.clear();
+        plan_result = ApplyHibridAStarWithTime(input_point, temp_end, temp_trajectory, rule_id, time_threshold);
+        if (plan_result == PlanResult::Plan_OK) {
+            hybridA_success = true;
+            break;
+        }
+        else {
+            // 删除mul_score_index中得分最高的轨迹
+            threadLogger_->info("当前选中的  best_score:{}  best_index:{} 规划失败，删除该轨迹", best_score, best_index);
+            mul_score_index.erase(mul_score_index.begin());
+        }
+    }
+    if (!hybridA_success) {
+        threadLogger_->info("所有轨迹规划失败，返回规划失败");
+        return PlanResult::Plan_Infeasible;
+    }
+    // 将temp_trajectory与global_path_进行融合，得到result_trajectory
+    result_trajectory.insert(result_trajectory.end(), temp_trajectory.begin(), temp_trajectory.end());
+    // 将global_path_中[best_index+1,global_path_.size())这段路径也拼接到result_trajectory中
+    result_trajectory.insert(result_trajectory.end(), global_path_.begin() + best_index + 1, global_path_.begin() + search_end_index);
+    threadLogger_->info("规划成功，返回规划成功");
+    return PlanResult::Plan_OK;
 }

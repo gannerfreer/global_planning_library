@@ -87,7 +87,7 @@ bool GlobalSpeedPlanning::PlanCase0(const int departure_time) {
     threadLogger_->info("key_points.size() = {}", key_points.size());
 
     for (unsigned char i = 0; i < key_points.size(); i++) {
-        threadLogger_->info(" ...plan for the {} the segment...", (float)(i + 1));
+        threadLogger_->info(" ...plan for the {} the segment...", (float)(i));
 
         /* 得到梯形速度曲线 */
         if (!TrapezoidalSpeedPlanning(i)) {
@@ -264,6 +264,7 @@ bool GlobalSpeedPlanning::TrapezoidalSpeedPlanning(unsigned char num) {
 
 bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
     bool flag = true;
+    threadLogger_->info(" ");
     threadLogger_->info("开始KeyPointsDecelerationCheck(),路径段落个数:{}", key_points.size());
 
     float                    v1, v2;
@@ -280,8 +281,8 @@ bool GlobalSpeedPlanning::KeyPointsDecelerationCheck() {
             v1        = keypoint1.speed_limit_right;
             v2        = keypoint2.speed_limit_right;
 
-            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j, keypoint1.index + 1, keypoint1.speed_limit_left, keypoint1.speed_limit_right);
-            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i + 1), j - 1, keypoint2.index + 1, keypoint2.speed_limit_left, keypoint2.speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i), j, keypoint1.index, keypoint1.speed_limit_left, keypoint1.speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引 {},左限速 {},右限速 {}", (float)(i), j - 1, keypoint2.index, keypoint2.speed_limit_left, keypoint2.speed_limit_right);
 
             if (v2 > v1) {
                 threadLogger_->info("减速检查");
@@ -337,7 +338,7 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
         temp_key_points.clear();
         for (int i = 0; i < key_points.size(); i++) {
             temp_traj.clear();
-            threadLogger_->info("第{}段全局路径有{}个点", i + 1, trajectory_fragments.at(i).size());
+            threadLogger_->info("第{}段全局路径有{}个点", i, trajectory_fragments.at(i).size());
 
             temp_traj = trajectory_fragments.at(i);
             temp_point.clear();
@@ -362,13 +363,13 @@ bool GlobalSpeedPlanning::AdpKeyPoints() {
                     v2_right  = keypoint2.speed_limit_right;
                     threadLogger_->info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
-                    threadLogger_->info("v1_index = {}", keypoint1.index + 1);
+                    threadLogger_->info("v1_index = {}", keypoint1.index);
 
                     threadLogger_->info("v1_left = {}", v1_left);
 
                     threadLogger_->info("v1_right = {}", v1_right);
 
-                    threadLogger_->info("v2_index = {}", keypoint2.index + 1);
+                    threadLogger_->info("v2_index = {}", keypoint2.index);
 
                     threadLogger_->info("v2_left = {}", v2_left);
 
@@ -475,7 +476,7 @@ void GlobalSpeedPlanning::Deletekeypoints(std::vector<KeyPoint>& m_keypoints) {
     std::vector<KeyPoint> temp_keypoints;
     for (size_t index = 0; index < m_keypoints.size(); index++) {
         if (fabs(m_keypoints.at(index).speed_limit_left - m_keypoints.at(index).speed_limit_right) < 1e-4) {
-            threadLogger_->info(" repate ");
+            threadLogger_->info(" repate  index:{}", index);
 
             continue;
         }
@@ -899,7 +900,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
             }
             else // 未定义的路面属性
             {
-                iter->speed_limit = 0;
+                iter->speed_limit = 1;
             }
         }
         else {
@@ -963,7 +964,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed() {
 
     threadLogger_->info("限速设置--在这里打印路径点限速信息");
     for (size_t index = 0; index < trajectory_points.size(); index++) {
-        threadLogger_->info("index:{}  speed_limit:{}", index + 1, trajectory_points.at(index).speed_limit);
+        threadLogger_->info("index:{}  speed_limit:{}", index, trajectory_points.at(index).speed_limit);
     }
     file_out.open("speed_limit2.txt");
     for (size_t index = 0; index < trajectory_points.size(); index++) {
@@ -985,7 +986,7 @@ bool GlobalSpeedPlanning::SplitPath() {
             temp_traj.clear();
             end_id = i;
             temp_traj.insert(temp_traj.begin(), trajectory_points.begin() + start_id, trajectory_points.begin() + end_id + 1);
-            start_id = end_id;
+            start_id = end_id; // 分界点处作了重用，即特殊点既属于前一段最后一个点，也属于后一段第一个点
             trajectory_fragments.emplace_back(temp_traj);
         }
 
@@ -1080,10 +1081,10 @@ bool GlobalSpeedPlanning::GetKeypoint() {
     threadLogger_->info("本次任务的全局路径一共{}段", key_points.size());
 
     for (int i = 0; i < key_points.size(); i++) {
-        threadLogger_->info("第{}段有{}关键点", (float)(i + 1), key_points.at(i).size());
+        threadLogger_->info("第{}段有{}关键点", (float)(i), key_points.at(i).size());
 
         for (int j = 0; j < key_points.at(i).size(); j++) {
-            threadLogger_->info("第{}段的第{}个关键点的索引{},左限速{},右限速{}", (float)(i + 1), j + 1, key_points.at(i).at(j).index + 1, key_points.at(i).at(j).speed_limit_left, key_points.at(i).at(j).speed_limit_right);
+            threadLogger_->info("第{}段的第{}个关键点的索引{},左限速{},右限速{}", (float)(i), j, key_points.at(i).at(j).index, key_points.at(i).at(j).speed_limit_left, key_points.at(i).at(j).speed_limit_right);
         }
     }
 

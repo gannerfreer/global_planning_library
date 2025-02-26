@@ -39,7 +39,7 @@
     "slope_road_speed_limit": 2,
     "narrow_road_speed_limit": 2,
     "intersection_road_speed_limit": 2,
-    "task_type": 3,
+    "task_type": 2,
     "path_voronoi_term": 1,
     "vonoroi_grid_dist": 0.1,
     "curvature_threshold": 0.111,

@@ -40,38 +40,40 @@ enum struct TaskType : unsigned int {
 };
 
 enum class PlanResult {
-    Plan_OK                         = 0, // 规划成功
-    Plan_Infeasible                 = 1, // 无可行路径
-    Plan_Overtime                   = 2, // 规划超时
-    StartPoint_Collision            = 3, // 起点不可行
-    EndPoint_Deviation              = 4, // 终点不可行
-    EndPoint_Collision              = 5, // 终点不可行
-    EndPoint_Infeasible             = 6, // 终点不可达
-    Map_Infeasible                  = 7, // 地图不可行
-    Leaving_Load_Point_Too_Close    = 8, // 驶离装载点距离装载点太近
-    Load_Queue_Point_Unreasonable   = 9, // 装载排队点不合理，距离装载点太近且无调整空间
-    Unload_Queue_Point_Unreasonable = 10
+    Plan_OK                         = 0,  // 规划成功
+    Plan_Infeasible                 = 1,  // 无可行路径
+    Plan_Overtime                   = 2,  // 规划超时
+    StartPoint_Collision            = 3,  // 起点不可行
+    StartPoint_Angle_Error          = 4,  // 起点角度太偏离参考路径
+    EndPoint_Deviation              = 5,  // 终点不可行
+    EndPoint_Collision              = 6,  // 终点不可行
+    EndPoint_Infeasible             = 7,  // 终点不可达
+    Map_Infeasible                  = 8,  // 地图不可行
+    Leaving_Load_Point_Too_Close    = 9,  // 驶离装载点距离装载点太近
+    Load_Queue_Point_Unreasonable   = 10, // 装载排队点不合理，距离装载点太近且无调整空间
+    Unload_Queue_Point_Unreasonable = 11
 };
 enum struct ErrorType : unsigned int {
     SUCCESS                                           = 0,
     Plan_Infeasible                                   = 1,  // Plan_Infeasible 起点距离地图边界太近，请挪动车辆
     UnReasonable_Task                                 = 2,  // Plan_Overtime  当前车辆位置前方区域太窄，无法穿越或掉头，请调整车辆位置
     StartPoint_Collision                              = 3,  // StartPoint_Collision 当前车辆位置与地图边界干涉，请挪车至地图区域内
-    EndPoint_Deviation                                = 4,  // EndPoint_Deviation 当前任务终点不位于参考路径上，请后台系统人员排查问题
-    EndPoint_Collision                                = 5,  // EndPoint_Collision  当前任务终点与地图边界干涉，请调整任务终点
-    EndPoint_Infeasible                               = 6,  // EndPoint_Infeasible 当前任务终点距离边界太近，无法成功规划到此位置的轨迹，请调整目标点角度或位置
-    ROAD_GRAPH_ERROR                                  = 7,  // Map_Infeasible 地图文件中，参考路径联通关系数据异常，请后台人员排查问题
-    Leaving_Load_Point_Too_Close                      = 8,  // Leaving_Load_Point_Too_Close 装载排队点距离装载点太近
-    Load_Queue_Point_Unreasonable                     = 9,  // Load_Queue_Point_Unreasonable 装载排队点不合理，距离装载点太近且无调整空间
-    Unload_Queue_Point_Unreasonable                   = 10, // Unload_Queue_Point_Unreasonable 卸载排队点不合理，距离卸载点太近且无调整空间
-    NO_MAP                                            = 11, // 规划库所在容器未加载地图
-    ALGORITHM_ERROR_SPEED_PLANNING_FAIL               = 12, // 全局规划算法运行异常-速度规划功能异常
-    ALGORITHM_ERROR_PARAS_PARSE_FAIL                  = 13, // 全局规划算法运行异常-入参解析功能异常
-    ALGORITHM_ERROR_UNIFORM_COMPACTION                = 14, // 全局规划算法运行异常-均匀碾压功能异常
-    ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_BREAK      = 15, // 全局规划算法运行异常-路径校验异常，路径断裂
-    ALGORITHM_ERROR_TRAJECTORY_VERIFY_SPEED_OVER      = 16, // 全局规划算法运行异常-路径校验异常,轨迹超速
-    ALGORITHM_ERROR_TRAJECTORY_VERIFY_DIRECTION_ERROR = 17, // 全局规划算法运行异常-路径校验异常,倒车路段direction错误
-    ALGORITHM_ERROR_TRY_CATCH_ERROR                   = 18  // try_catch捕获异常
+    StartPoint_Angle_Error                            = 4,  // StartPoint_Angle_Error 当前车辆位置角度与参考路径角度偏差过大，请调整车辆位置
+    EndPoint_Deviation                                = 5,  // EndPoint_Deviation 当前任务终点不位于参考路径上，请后台系统人员排查问题
+    EndPoint_Collision                                = 6,  // EndPoint_Collision  当前任务终点与地图边界干涉，请调整任务终点
+    EndPoint_Infeasible                               = 7,  // EndPoint_Infeasible 当前任务终点距离边界太近，无法成功规划到此位置的轨迹，请调整目标点角度或位置
+    ROAD_GRAPH_ERROR                                  = 8,  // Map_Infeasible 地图文件中，参考路径联通关系数据异常，请后台人员排查问题
+    Leaving_Load_Point_Too_Close                      = 9,  // Leaving_Load_Point_Too_Close 装载排队点距离装载点太近
+    Load_Queue_Point_Unreasonable                     = 10, // Load_Queue_Point_Unreasonable 装载排队点不合理，距离装载点太近且无调整空间
+    Unload_Queue_Point_Unreasonable                   = 11, // Unload_Queue_Point_Unreasonable 卸载排队点不合理，距离卸载点太近且无调整空间
+    NO_MAP                                            = 12, // 规划库所在容器未加载地图
+    ALGORITHM_ERROR_SPEED_PLANNING_FAIL               = 13, // 全局规划算法运行异常-速度规划功能异常
+    ALGORITHM_ERROR_PARAS_PARSE_FAIL                  = 14, // 全局规划算法运行异常-入参解析功能异常
+    ALGORITHM_ERROR_UNIFORM_COMPACTION                = 15, // 全局规划算法运行异常-均匀碾压功能异常
+    ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_BREAK      = 16, // 全局规划算法运行异常-路径校验异常，路径断裂
+    ALGORITHM_ERROR_TRAJECTORY_VERIFY_SPEED_OVER      = 17, // 全局规划算法运行异常-路径校验异常,轨迹超速
+    ALGORITHM_ERROR_TRAJECTORY_VERIFY_DIRECTION_ERROR = 18, // 全局规划算法运行异常-路径校验异常,倒车路段direction错误
+    ALGORITHM_ERROR_TRY_CATCH_ERROR                   = 19  // try_catch捕获异常
 
 };
 
