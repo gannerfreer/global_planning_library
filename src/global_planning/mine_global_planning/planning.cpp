@@ -1448,13 +1448,14 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
     bool                       verification_flag = false;
     PlanResult                 plan_result       = PlanResult::Plan_OK;
     std::multimap<double, int> mul_score_index; // 存储dubins预拟合的路径得分和对应的拟合点在global_path_中的index
-    bool                       dubins_success, hybridA_success = false;
+    bool                       dubins_success = false, hybridA_success = false;
     std::vector<curve::Point>  dubins_path;
     vector<_TrajectoryPoint>   total_path, temp_trajectory;
     _TrajectoryPoint           xip2, xip1, xi, xim1, xim2;
     double                     score = 0.0;
     _TrajectoryPoint           temp_point;
-    for (int i = 0; i <= search_end_index - 1; i += 5) { // 这里-1的原因是为了防止total_path.insert(total_path.end(), global_path_.begin() + i + 1, global_path_.begin() + search_end_index);拼接出错
+    threadLogger_->info("search_end_index {} ", search_end_index);
+    for (int i = 0; i <= search_end_index; i += 5) { // 这里-1的原因是为了防止total_path.insert(total_path.end(), global_path_.begin() + i + 1, global_path_.begin() + search_end_index);拼接出错
         threadLogger_->info("i:{}", i);
         temp_end.x   = global_path_.at(i).x;
         temp_end.y   = global_path_.at(i).y;
@@ -1480,7 +1481,8 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
                     total_path.push_back(temp_point);
                 }
                 // 将global_path_中[i,search_end_index]这段路径拼接到total_path中
-                total_path.insert(total_path.end(), global_path_.begin() + i + 1, global_path_.begin() + search_end_index);
+                total_path.insert(total_path.end(), global_path_.begin() + i, global_path_.begin() + search_end_index);
+                Helper::RemoveBeforeSamePoint(total_path);
                 // 计算total_path的得分,基于平滑度打分
                 double score = 0.0;
                 double a, b = 0.0;
@@ -1498,6 +1500,10 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
                 dubins_success = true;
                 mul_score_index.insert({score, i});
             }
+            else {
+                threadLogger_->info("索引 {} dubins拟合失败", i);
+                dubins_success = false;
+            }
         }
         else {
             plan_result = ApplyHibridAStarWithTime(input_point, temp_end, temp_trajectory, rule_id, time_threshold);
@@ -1505,11 +1511,13 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
                 // 将temp_trajectory与global_path_进行融合，得到result_trajectory
                 result_trajectory.insert(result_trajectory.end(), temp_trajectory.begin(), temp_trajectory.end());
                 // 将global_path_中[best_index+1,global_path_.size())这段路径也拼接到result_trajectory中
-                result_trajectory.insert(result_trajectory.end(), global_path_.begin() + i + 1, global_path_.begin() + search_end_index);
+                result_trajectory.insert(result_trajectory.end(), global_path_.begin() + i, global_path_.begin() + search_end_index);
+                Helper::RemoveBeforeSamePoint(result_trajectory);
                 return PlanResult::Plan_OK;
             }
         }
     }
+    threadLogger_->info("dubins_success:{}", dubins_success);
     if (!dubins_success) {
         return PlanResult::StartPoint_Angle_Error;
     }
@@ -1549,7 +1557,8 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
     // 将temp_trajectory与global_path_进行融合，得到result_trajectory
     result_trajectory.insert(result_trajectory.end(), temp_trajectory.begin(), temp_trajectory.end());
     // 将global_path_中[best_index+1,global_path_.size())这段路径也拼接到result_trajectory中
-    result_trajectory.insert(result_trajectory.end(), global_path_.begin() + best_index + 1, global_path_.begin() + search_end_index);
+    result_trajectory.insert(result_trajectory.end(), global_path_.begin() + best_index, global_path_.begin() + search_end_index);
+    Helper::RemoveBeforeSamePoint(result_trajectory);
     threadLogger_->info("规划成功，返回规划成功");
     return PlanResult::Plan_OK;
 }
