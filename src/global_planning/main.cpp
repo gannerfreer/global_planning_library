@@ -23,19 +23,18 @@ bool                         is_receive_start = false;
 bool                         is_receive_end   = false;
 
 
-const double x_o_ = -672;            // 园区偏移参数
-const double y_o_ = -253.9187251804; // 园区偏移参数
+const double x_o_ = -499;           // 园区偏移参数
+const double y_o_ = 662.9187251804; // 园区偏移参数
 
 vector<_TrajectoryPoint> global_path, road_nodes;
 vector<Point>            expand_point;
-
-void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
-    // start_point.x   = msg->pose.pose.position.x;
-    // start_point.y   = msg->pose.pose.position.y;
-    // start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    start_point.x   = -1102.2172137186 - x_o_;
-    start_point.y   = -168.9640222709 - y_o_;
-    start_point.yaw = 259.072869363 / 180.0 * M_PI;
+void                     StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
+    start_point.x   = msg->pose.pose.position.x;
+    start_point.y   = msg->pose.pose.position.y;
+    start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
+    // start_point.x   = -449.06056213378906 - x_o_;
+    // start_point.y   = -1024.6021358249313 - y_o_;
+    // start_point.yaw = 171.36245216190983 / 180.0 * M_PI;
 
     is_receive_start = true;
 }
@@ -44,9 +43,9 @@ void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     end_point.x   = msg->pose.position.x;
     end_point.y   = msg->pose.position.y;
     end_point.yaw = tf::getYaw(msg->pose.orientation);
-    // end_point.x   = -1102.2172137186 - x_o_;
-    // end_point.y   = -168.9640222709 - y_o_;
-    // end_point.yaw = 210.19 / 180.0 * M_PI;
+    // end_point.x   = -1097.4281921386719 - x_o_;
+    // end_point.y   = -188.91636769748985 - y_o_;
+    // end_point.yaw = 324.7349512585642 / 180.0 * M_PI;
 
     is_receive_end = true;
 }
@@ -178,9 +177,8 @@ int main(int argc, char** argv) {
             ofstream file_out;
             file_out.open("global_path.txt", ios::out);
             for (size_t i = 0; i < global_path.size(); i++) {
-                // file_out << setprecision(11) << global_path.at(i).x << " " << global_path.at(i).y << " " << global_path.at(i).z << " " << global_path.at(i).yaw << " " << global_path.at(i).speed << " " << global_path.at(i).speed_limit << " " << global_path.at(i).curvature << " " << global_path.at(i).distance << " " << static_cast<int>(global_path.at(i).attribute) << " " << static_cast<int>(global_path.at(i).direction) << endl;
-                // file_out << setprecision(11) << global_path.at(i).curvature << " " << global_path.at(i).speed << " " << global_path.at(i).speed_limit << endl;
-                file_out << global_path.at(i).x << " " << global_path.at(i).y << " " << 0 << " " << 0 << " " << global_path.at(i).yaw << " " << global_path.at(i).curvature << " " << global_path.at(i).speed << " " << global_path.at(i).distance << " " << 0 << " " << global_path.at(i).speed_limit << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << endl;
+                file_out << setprecision(11) << global_path.at(i).speed << " " << global_path.at(i).speed_limit << endl;
+                // file_out << global_path.at(i).x << " " << global_path.at(i).y << " " << 0 << " " << 0 << " " << global_path.at(i).yaw << " " << global_path.at(i).curvature << " " << global_path.at(i).speed << " " << global_path.at(i).distance << " " << 0 << " " << global_path.at(i).speed_limit << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << endl;
             } //  x y left right angle curvature speed distance slope speed_limit direction attribute
             file_out.close();
             std_msgs::Float64MultiArray speed_curve;

@@ -57,6 +57,7 @@ bool GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
 
     /*限速设置*/
     ReplanPointMaxSpeed();
+
     /* 根据前进、后退分割点对全局路径进行分割 */
     if (!SplitPath()) return false;
     /* 获取每一段路径的关键点 */
@@ -66,6 +67,42 @@ bool GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
     // 减速安全检查，调整关键点
     if (!KeyPointsDecelerationCheck()) return false;
 
+    threadLogger_->info("调整后的关键点一共{}段", key_points.size());
+
+    for (int i = 0; i < key_points.size(); i++) {
+        threadLogger_->info("第{}段有{}关键点", (float)(i), key_points.at(i).size());
+
+        for (int j = 0; j < key_points.at(i).size(); j++) {
+            threadLogger_->info("第{}段的第{}个关键点的索引{},左限速{},右限速{}", (float)(i), j, key_points.at(i).at(j).index, key_points.at(i).at(j).speed_limit_left, key_points.at(i).at(j).speed_limit_right);
+        }
+    }
+
+    ofstream file_out("trajectory_points_speed_limit.txt");
+    for (int i = 0; i < trajectory_points.size(); i++) {
+        file_out << trajectory_points.at(i).speed_limit << endl;
+    }
+    file_out.close();
+
+    int start_index = 0, end_index = 0;
+    for (int i = 0; i < key_points.size(); i++) {
+        for (int j = 0; j < key_points.at(i).size() - 1; j++) {
+            start_index = key_points.at(i).at(j).index;
+            end_index   = key_points.at(i).at(j + 1).index;
+            for (int k = start_index; k <= end_index; k++) {
+                trajectory_fragments.at(i).at(k).speed_limit = key_points.at(i).at(j).speed_limit_right;
+            }
+        }
+    }
+    // 再将rajectory_points中的speed_limit保存到文件中
+    ofstream file_out2("trajectory_points_speed_limit_after.txt");
+    for (int i = 0; i < trajectory_fragments.size(); i++) {
+        for (int j = 0; j < trajectory_fragments.at(i).size(); j++) {
+            file_out2 << trajectory_fragments.at(i).at(j).speed_limit << endl;
+        }
+    }
+    file_out2.close();
+
+
     if (!PlanCase0(departure_time)) {
         threadLogger_->error(" ...The Shortest_Time mode speed planning failed...");
 
@@ -74,6 +111,7 @@ bool GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
 
 
     trajectory = final_trajectory_points;
+
     return true;
 }
 
@@ -1114,8 +1152,10 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(unsigned char num) {
             float v2 = temp_opti_global_speed.at(i + 1).speed;
             float vo = global_speeds.at(num).at(i).speed;
 
-            float gradient_error  = speed_error_term * (vo - v1);
-            float gradient_smooth = speed_smooth_term * (v0 + v2 - 2 * v1);
+            // float gradient_error  = speed_error_term * (vo - v1);
+            // float gradient_smooth = speed_smooth_term * (v0 + v2 - 2 * v1);
+            float gradient_error  = 0 * (vo - v1);
+            float gradient_smooth = 0 * (v0 + v2 - 2 * v1);
 
 
             temp_opti_global_speed.at(i).speed += gradient_error + gradient_smooth;

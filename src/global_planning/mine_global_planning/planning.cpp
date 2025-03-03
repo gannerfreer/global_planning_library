@@ -521,11 +521,13 @@ PlanResult Planning::PathPlanning() {
         }
         else {
             // 对于常规调度任务，需上来就判断终点是否位于参考路径上
-            if (fabs(temp_end_lat_dis) > 0.2 || fabs(temp_end_lon_dis) > 0.2) {
+            if (fabs(temp_end_lat_dis) > 0.3 || fabs(temp_end_lon_dis) > 0.3) {
+                threadLogger_->info("终点偏离参考路径，采用hybridA*算法直接规划，temp_end_lat_dis:{} temp_end_lon_dis:{}", temp_end_lat_dis, temp_end_lon_dis);
                 return PlanResult::EndPoint_Deviation;
             }
             else {
                 // 终点位于参考路径上，才可以开启沿参考路径规划策略
+                threadLogger_->info("终点位于参考路径上，采用沿参考路径规划策略，temp_end_lat_dis:{} temp_end_lon_dis:{}", temp_end_lat_dis, temp_end_lon_dis);
                 result = FollowReferencelinePlanning();
                 return result;
             }
@@ -947,9 +949,17 @@ PlanResult Planning::HybirdAStarFitting() {
                 threadLogger_->info("识别出从装载点或卸载点出发，当前起点直线距离 {}，这种情况下此采用Forward_Fitting规则 ", start_point_offset_distance);
                 cout << "识别出从装载点或卸载点出发，当前起点直线距离" << start_point_offset_distance << " 这种情况下此采用Forward_Fitting规则" << endl;
                 vector<_TrajectoryPoint> temp_traj;
-                int                      search_index = 0;
-                search_index                          = std::min((int)global_path_.size() - 1, 100);
-                result                                = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
+                int                      search_index = std::numeric_limits<int>::max();
+                // 需要先找到global_path_中排队点、过磅、洗车点的具体索引，hybrida*做路径拟合不能越过这些点
+                for (int i = 0; i < global_path_.size(); i++) {
+                    if (global_path_.at(i).attribute == PointAttribute::queue_point || global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
+                        threadLogger_->info("找到排队点、过磅、洗车点，索引为{}", i);
+                        search_index = i;
+                        break;
+                    }
+                }
+
+                result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
                 // result                                = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
                 if (result != PlanResult::Plan_OK) {
                     threadLogger_->error("从装载点/卸载点调度出去，起点直线距离 {}  ,起点hybirdA*拟合失败,拟合规则为Forward_Fitting", my_optimal_path_.start_offset_distance_);
@@ -972,8 +982,16 @@ PlanResult Planning::HybirdAStarFitting() {
             my_optimal_path_.start_offset_distance_ = 3;
             my_optimal_path_.end_offset_distance_   = 1;
             vector<_TrajectoryPoint> temp_traj;
-            int                      search_index = 0;
-            search_index                          = std::min((int)global_path_.size() - 1, 100);
+            int                      search_index = std::numeric_limits<int>::max();
+            // 需要先找到global_path_中排队点、过磅、洗车点的具体索引，hybrida*做路径拟合不能越过这些点
+            for (int i = 0; i < global_path_.size(); i++) {
+                if (global_path_.at(i).attribute == PointAttribute::queue_point || global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
+                    threadLogger_->info("找到排队点、过磅、洗车点，索引为{}", i);
+                    search_index = i;
+                    break;
+                }
+            }
+            search_index = std::min(search_index, std::min((int)global_path_.size() - 1, 100));
             if (JudgeFittingDirection()) {
                 threadLogger_->info("参考路径位于车头前方,或可以向前掉头开往对向参考路径，这种情况下采用 Forward_All_Time 规则进行规划");
                 result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
