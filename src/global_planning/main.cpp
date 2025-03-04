@@ -23,8 +23,8 @@ bool                         is_receive_start = false;
 bool                         is_receive_end   = false;
 
 
-const double x_o_ = -499;           // 园区偏移参数
-const double y_o_ = 662.9187251804; // 园区偏移参数
+const double x_o_ = -672; // 园区偏移参数
+const double y_o_ = -253; // 园区偏移参数
 
 vector<_TrajectoryPoint> global_path, road_nodes;
 vector<Point>            expand_point;
@@ -177,8 +177,8 @@ int main(int argc, char** argv) {
             ofstream file_out;
             file_out.open("global_path.txt", ios::out);
             for (size_t i = 0; i < global_path.size(); i++) {
-                file_out << setprecision(11) << global_path.at(i).speed << " " << global_path.at(i).speed_limit << endl;
-                // file_out << global_path.at(i).x << " " << global_path.at(i).y << " " << 0 << " " << 0 << " " << global_path.at(i).yaw << " " << global_path.at(i).curvature << " " << global_path.at(i).speed << " " << global_path.at(i).distance << " " << 0 << " " << global_path.at(i).speed_limit << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << endl;
+                // file_out << setprecision(11) << global_path.at(i).speed << " " << global_path.at(i).speed_limit << endl;
+                file_out << global_path.at(i).x << " " << global_path.at(i).y << " " << 0 << " " << 0 << " " << global_path.at(i).yaw << " " << global_path.at(i).curvature << " " << global_path.at(i).speed << " " << global_path.at(i).distance << " " << 0 << " " << global_path.at(i).speed_limit << " " << static_cast<int>(global_path.at(i).direction) << " " << static_cast<int>(global_path.at(i).attribute) << endl;
             } //  x y left right angle curvature speed distance slope speed_limit direction attribute
             file_out.close();
             std_msgs::Float64MultiArray speed_curve;

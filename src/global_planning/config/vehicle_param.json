@@ -31,7 +31,7 @@
     "min_acceleration": -0.4,
     "reverse_speed": 1.0,
     "speed_error_term": 0.0,
-    "speed_smooth_term": 0.0,
+    "speed_smooth_term": 0.5,
     "linear_preferred_distance": 3,
     "uniform_compaction_enable": false,
     "regular_road_speed_limit": 8,

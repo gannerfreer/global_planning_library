@@ -140,10 +140,10 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
 
     // 速度规划：限速设置、梯形速度规划
-    if (!SpeedPlanning()) {
-        error_type_ = ErrorType::ALGORITHM_ERROR_SPEED_PLANNING_FAIL;
-        return;
-    }
+    my_speed_planning_.threadLogger_ = threadLogger_;
+    my_speed_planning_.SpeedPlanning(global_path_, vehicle_param_);
+    threadLogger_->info("梯形速度规划完成");
+
     Helper::RemoveAfterSamePoint(global_path_);
 
     // 再次重新计算曲率
@@ -1044,15 +1044,7 @@ bool Planning::JudgeFittingDirection() {
     }
     return true;
 }
-bool Planning::SpeedPlanning() {
-    my_speed_planning_.threadLogger_ = threadLogger_;
-    if (!my_speed_planning_.SpeedPlanning(global_path_, vehicle_param_)) {
-        threadLogger_->error("SpeedPlanning  failed !!!");
-        return false;
-    }
-    threadLogger_->info("SpeedPlanning() end");
-    return true;
-}
+
 bool Planning::IsShortDistance() {
     if (global_path_.size() <= 2) {
         threadLogger_->info("超短距离规划");

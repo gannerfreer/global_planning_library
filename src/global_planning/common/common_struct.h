@@ -67,13 +67,12 @@ enum struct ErrorType : unsigned int {
     Load_Queue_Point_Unreasonable                     = 10, // Load_Queue_Point_Unreasonable 装载排队点不合理，距离装载点太近且无调整空间
     Unload_Queue_Point_Unreasonable                   = 11, // Unload_Queue_Point_Unreasonable 卸载排队点不合理，距离卸载点太近且无调整空间
     NO_MAP                                            = 12, // 规划库所在容器未加载地图
-    ALGORITHM_ERROR_SPEED_PLANNING_FAIL               = 13, // 全局规划算法运行异常-速度规划功能异常
-    ALGORITHM_ERROR_PARAS_PARSE_FAIL                  = 14, // 全局规划算法运行异常-入参解析功能异常
-    ALGORITHM_ERROR_UNIFORM_COMPACTION                = 15, // 全局规划算法运行异常-均匀碾压功能异常
-    ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_BREAK      = 16, // 全局规划算法运行异常-路径校验异常，路径断裂
-    ALGORITHM_ERROR_TRAJECTORY_VERIFY_SPEED_OVER      = 17, // 全局规划算法运行异常-路径校验异常,轨迹超速
-    ALGORITHM_ERROR_TRAJECTORY_VERIFY_DIRECTION_ERROR = 18, // 全局规划算法运行异常-路径校验异常,倒车路段direction错误
-    ALGORITHM_ERROR_TRY_CATCH_ERROR                   = 19  // try_catch捕获异常
+    ALGORITHM_ERROR_PARAS_PARSE_FAIL                  = 13, // 全局规划算法运行异常-入参解析功能异常
+    ALGORITHM_ERROR_UNIFORM_COMPACTION                = 14, // 全局规划算法运行异常-均匀碾压功能异常
+    ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_BREAK      = 15, // 全局规划算法运行异常-路径校验异常，路径断裂
+    ALGORITHM_ERROR_TRAJECTORY_VERIFY_SPEED_OVER      = 16, // 全局规划算法运行异常-路径校验异常,轨迹超速
+    ALGORITHM_ERROR_TRAJECTORY_VERIFY_DIRECTION_ERROR = 17, // 全局规划算法运行异常-路径校验异常,倒车路段direction错误
+    ALGORITHM_ERROR_TRY_CATCH_ERROR                   = 18  // try_catch捕获异常
 
 };
 

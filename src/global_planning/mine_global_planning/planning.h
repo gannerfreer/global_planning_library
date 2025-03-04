@@ -141,7 +141,6 @@ class Planning {
     PlanResult HybirdAStarFitting();
     void       StartEndPointProcess();
     bool       PathOffset();
-    bool       SpeedPlanning();
     PlanResult NotFollowReferencelinePlanning();
     PlanResult FollowReferencelinePlanning();
     void       PathClipAndSplice();
