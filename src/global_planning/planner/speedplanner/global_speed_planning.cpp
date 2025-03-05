@@ -56,6 +56,12 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
     // 速度曲线平滑
     SpeedCurveSmooth(trajectory);
 
+    // 恢复倒车速度
+    for (auto& point : trajectory) {
+        if (point.direction == 1) {
+            point.speed *= -1;
+        }
+    }
     // 保存平滑后的速度
     std::ofstream file_after;
     file_after.open("speed_after_smooth.txt");
@@ -276,7 +282,7 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory)
                     double v_next = sqrt(v * v + 2 * a * ds);
 
                     if (fabs(v_next) > fabs(trajectory[j + 1].speed)) {
-                        v = trajectory[j + 1].speed > 0 ? fabs(trajectory[j + 1].speed) : -fabs(trajectory[j + 1].speed);
+                        v = fabs(trajectory[j + 1].speed);
                     }
                     else {
                         v = v_next;
@@ -298,7 +304,7 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory)
                     double v_prev = sqrt(v * v + 2 * a * ds);
 
                     if (fabs(v_prev) > fabs(trajectory[j - 1].speed)) {
-                        v = trajectory[j - 1].speed > 0 ? fabs(trajectory[j - 1].speed) : -fabs(trajectory[j - 1].speed);
+                        v = fabs(trajectory[j - 1].speed);
                     }
                     else {
                         v = v_prev;
@@ -346,6 +352,27 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory)
             }
         }
     }
+    vector<_TrajectoryPoint> trajectory_copy = trajectory;
+    unsigned int             iterations      = 0;
+    // 最大遍历次数为100次
+    while (iterations++ < 100) {
+        // 遍历稀疏速度曲线，分别计算出目标函数中每一项的梯度值，采用梯度下降法对速度曲线优化。
+        for (unsigned int i = 1; i < trajectory.size() - 1; i++) {
+            float v0 = trajectory[i - 1].speed;
+            float v1 = trajectory[i].speed;
+            float v2 = trajectory[i + 1].speed;
+
+            float gradient_smooth = speed_smooth_term * (v0 + v2 - 2 * v1);
+
+
+            trajectory.at(i).speed += gradient_smooth;
+
+            // 确保速度不超过原始限速
+            if (trajectory_copy.at(i).speed < trajectory.at(i).speed) {
+                trajectory.at(i).speed = trajectory_copy.at(i).speed;
+            }
+        }
+    }
 }
 
 
@@ -369,8 +396,7 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
         // 根据方向选择加速度限制
         double current_max_acc    = trajectory[i].direction == 0 ? max_acceleration : max_acceleration * 0.5;
         double max_possible_speed = std::sqrt(trajectory[i - 1].speed * trajectory[i - 1].speed + 2 * current_max_acc * ds);
-        double speed_limit        = trajectory[i].direction == 0 ? trajectory[i].speed_limit : -trajectory[i].speed_limit;
-        trajectory[i].speed       = trajectory[i].direction == 0 ? std::min(max_possible_speed, speed_limit) : std::max(-max_possible_speed, speed_limit);
+        trajectory[i].speed       = std::min(max_possible_speed, trajectory[i].speed_limit);
     }
 
     // 后向扫描：确保能够及时减速到0
@@ -379,12 +405,6 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
         // 根据方向选择减速度限制
         double current_min_acc    = trajectory[i].direction == 0 ? min_acceleration : min_acceleration * 0.5;
         double max_possible_speed = std::sqrt(trajectory[i + 1].speed * trajectory[i + 1].speed + 2 * std::abs(current_min_acc) * ds);
-
-        if (trajectory[i].direction == 0) {
-            trajectory[i].speed = std::min(trajectory[i].speed, max_possible_speed);
-        }
-        else {
-            trajectory[i].speed = std::max(trajectory[i].speed, -max_possible_speed);
-        }
+        trajectory[i].speed       = std::min(trajectory[i].speed, max_possible_speed);
     }
 }
