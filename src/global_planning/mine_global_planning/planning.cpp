@@ -1422,6 +1422,9 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
 }
 
 void Planning::FillErrorCode(PlanResult result) {
+    threadLogger_->info("FillErrorCode  result:{}", static_cast<int>(result));
+
+
     switch (result) {
         case PlanResult::Plan_Infeasible:
             error_type_ = ErrorType::Plan_Infeasible;
@@ -1431,6 +1434,9 @@ void Planning::FillErrorCode(PlanResult result) {
             break; // 可选的
         case PlanResult::StartPoint_Collision:
             error_type_ = ErrorType::StartPoint_Collision;
+            break; // 可选的
+        case PlanResult::StartPoint_Angle_Error:
+            error_type_ = ErrorType::StartPoint_Angle_Error;
             break; // 可选的
         case PlanResult::EndPoint_Deviation:
             error_type_ = ErrorType::EndPoint_Deviation;

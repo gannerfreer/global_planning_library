@@ -45,7 +45,7 @@ enum class PlanResult {
     Plan_Infeasible                 = 1,  // 无可行路径
     Plan_Overtime                   = 2,  // 规划超时
     StartPoint_Collision            = 3,  // 起点不可行
-    StartPoint_Angle_Error          = 4,  // 起点角度太偏离参考路径
+    StartPoint_Angle_Error          = 4,  // 起点角度太偏离参考路径,请调整车辆位置
     EndPoint_Deviation              = 5,  // 终点不可行
     EndPoint_Collision              = 6,  // 终点不可行
     EndPoint_Infeasible             = 7,  // 终点不可达
