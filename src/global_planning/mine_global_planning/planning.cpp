@@ -736,7 +736,7 @@ PlanResult Planning::FollowReferencelinePlanning() {
         Helper::CalNearestIndex(start_point_, temp_start_traj, temp_start_index, temp_start_lat_dis, temp_start_lon_dis, temp_start_distance, temp_start_angle_diff);
         Helper::CalNearestIndex(end_point_, temp_end_traj, temp_end_index, temp_end_lat_dis, temp_end_lon_dis, temp_end_distance, temp_end_angle_diff);
         if (temp_start_angle_diff > M_PI / 2) {
-            cost1 = 100;
+            cost1 = 200;
         }
         else {
             cost1 = 0;
@@ -926,14 +926,23 @@ PlanResult Planning::HybirdAStarFitting() {
     // 基于横纵向距离来判断是否进行hybirdA*拟合
     threadLogger_->info("Enter HybirdAStarFitting");
     double lat_threshold = 0.3, lon_threshold = 0.8;
-    bool   start_need_fitting  = false;
-    bool   cycle_dispatch_flag = false; // 此标志位为true时，表明是从装载点\卸载点出来时的规划
-    bool   success_flag        = false;
+    bool   start_need_fitting     = false;
+    bool   load_unload_start_flag = false; // 此标志位为true时，表明是从装载点\卸载点出来的调度任务
+    bool   success_flag           = false;
+    double lon_dis                = 0;
+    // 这里的逻辑主要是区分global_path位于start_point_前方还是后方，如果是前方，配合start_lat_dis_和start_lon_dis_来判断是常规调度还是装载点调度
+    if (global_path_.size() > 1) {
+        lon_dis = (start_point_.x - global_path_.at(1).x) * cos(global_path_.at(1).yaw) + (start_point_.y - global_path_.at(1).y) * sin(global_path_.at(1).yaw);
+    }
+    else {
+        lon_dis = (start_point_.x - global_path_.front().x) * cos(global_path_.front().yaw) + (start_point_.y - global_path_.front().y) * sin(global_path_.front().yaw);
+    }
+    threadLogger_->info("起点与参考路径第一个点的纵向距离:{}", lon_dis);
     if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold || start_angle_diff_ > 8.0 / 180.0 * M_PI) { // 横向阈值大于0.7m,或者纵向阈值大于3m,就需要进行hybirdA*拟合
         start_need_fitting = true;
-        if (start_lat_dis_ > 10 || fabs(start_lon_dis_) > 10) {
+        if ((start_lat_dis_ > 10 || fabs(start_lon_dis_) > 10) && lon_dis < eps) {
             // 说明这是个从卸载点（无参考路径情况下）或从装载点出发的任务，由于可能有乱石堆的存在，这种直线延伸距离需要额外自行配置
-            cycle_dispatch_flag = true;
+            load_unload_start_flag = true;
         }
     }
 
@@ -941,7 +950,8 @@ PlanResult Planning::HybirdAStarFitting() {
     // 只看起点
     if (start_need_fitting) // 起点需要进行HybirdA*拟合
     {
-        if (cycle_dispatch_flag) {
+        // 下面需要将从装载点调度起步和常规调度起步区分开，是为了能够区分异常类型，便于给后台反馈到底是驶离装载点不合理，还是任务起点不合理，不然就合并代码统一处理了，没必要写的这么冗余
+        if (load_unload_start_flag) {
             int start_point_offset_distance = vehicle_param_.load_point_start_offset_distance;
             while (start_point_offset_distance >= 1) {
                 my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
@@ -958,8 +968,8 @@ PlanResult Planning::HybirdAStarFitting() {
                         break;
                     }
                 }
-
-                result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
+                search_index = std::min(search_index, std::min((int)global_path_.size() - 1, 100));
+                result       = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
                 // result                                = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
                 if (result != PlanResult::Plan_OK) {
                     threadLogger_->error("从装载点/卸载点调度出去，起点直线距离 {}  ,起点hybirdA*拟合失败,拟合规则为Forward_Fitting", my_optimal_path_.start_offset_distance_);

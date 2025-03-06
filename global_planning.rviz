@@ -139,7 +139,7 @@ Visualization Manager:
       Marker Topic: /path_global
       Name: Marker
       Namespaces:
-        my_namespace: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -153,8 +153,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 477.2921447753906
-        Min Value: -288.16595458984375
+        Max Value: 671.5401611328125
+        Min Value: -181.81198120117188
         Value: true
       Axis: Y
       Channel Name: intensity
@@ -219,7 +219,7 @@ Visualization Manager:
       Marker Topic: /start
       Name: Marker
       Namespaces:
-        my_namespace: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -227,7 +227,7 @@ Visualization Manager:
       Marker Topic: /end
       Name: Marker
       Namespaces:
-        my_namespace: true
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
@@ -267,10 +267,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 18.56831932067871
+      Scale: 9.799095153808594
       Target Frame: <Fixed Frame>
-      X: 25.357803344726562
-      Y: -216.08688354492188
+      X: 107.5785903930664
+      Y: -161.48147583007812
     Saved: ~
 Window Geometry:
   Displays:
