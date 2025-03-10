@@ -33,7 +33,7 @@
     "speed_error_term": 0.0,
     "speed_smooth_term": 0.1,
     "linear_preferred_distance": 3,
-    "uniform_compaction_enable": false,
+    "uniform_compaction_enable": true,
     "regular_road_speed_limit": 8,
     "bumpy_road_speed_limit": 8,
     "slope_road_speed_limit": 8,
@@ -49,6 +49,7 @@
     "load_point_start_offset_distance": 4,
     "obsMax": 1,
     "rs_min_length": 2,
-    "load_start_straight_length": 3
+    "load_start_straight_length": 3,
+    "offset_distance": 0.3
   }
 }

@@ -33,6 +33,7 @@
 #include <geometry_msgs/Point.h>
 
 #include "../globalvariable.h"
+#include "algorithm"
 
 
 using namespace GlobalPlanning;

@@ -467,7 +467,7 @@ bool Planning::RandomOffsetWithoutCuravture() {
 }
 
 float Planning::CalculateOffSetWithoutCuravture(int index, int sum, float weight) {
-    float L = 0.2 * weight; // 控制默认偏移量
+    float L = 0.3 * weight; // 控制默认偏移量
     L       = L * WeightFunction(index, sum);
     return L;
 }
@@ -867,9 +867,9 @@ bool Planning::PathOffset() {
         }
 
         // 曲率超标的部分也不偏移
-        if (fabs(global_path_.at(i).curvature) > 0.07) {
-            global_path_.at(i).offset_flag = false;
-        }
+        // if (fabs(global_path_.at(i).curvature) > 0.01) {
+        //     global_path_.at(i).offset_flag = false;
+        // }
     }
 
     if (!RandomOffsetWithoutCuravture()) // 不基于曲率的轨迹偏移
@@ -1357,10 +1357,12 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
         fixpoint_set.insert(*it + 1);
     }
     fixpoint_set.insert(0);
+    fixpoint_set.insert(1);
     fixpoint_set.insert(input_path.size() - 1);
+    fixpoint_set.insert(input_path.size() - 2);
 
 
-    unsigned int max_opti_num = 10;
+    unsigned int max_opti_num = 50;
 
     int            L     = input_path.size();
     double         x_sat = 6;

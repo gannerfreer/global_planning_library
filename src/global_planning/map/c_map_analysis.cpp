@@ -597,6 +597,15 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 load_start_straight_length ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.load_start_straight_length = 1;
             }
+
+            if (val.HasMember("offset_distance") && val["offset_distance"].IsNumber()) {
+                veh_start_end.veh_param.offset_distance = val["offset_distance"].GetFloat();
+                veh_start_end.veh_param.offset_distance = std::min(std::max(veh_start_end.veh_param.offset_distance, float(0)), float(0.5));
+            }
+            else {
+                cout << "无法找到车参 offset_distance ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.offset_distance = 0.3;
+            }
         }
     }
     vehicle_param = veh_start_end.veh_param;

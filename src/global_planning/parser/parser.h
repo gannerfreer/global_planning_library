@@ -513,6 +513,15 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 load_start_straight_length ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.load_start_straight_length = 1;
             }
+
+            if (val.HasMember("offset_distance") && val["offset_distance"].IsNumber()) {
+                veh_start_end.veh_param.offset_distance = val["offset_distance"].GetFloat();
+                veh_start_end.veh_param.offset_distance = std::min(std::max(veh_start_end.veh_param.offset_distance, float(0)), float(0.5));
+            }
+            else {
+                cout << "无法找到车参 offset_distance ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.offset_distance = 0.3;
+            }
         }
     }
 
@@ -712,7 +721,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.4.0.20250103_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.4.0.20250310_beta" << endl;
         record.close();
     }
 

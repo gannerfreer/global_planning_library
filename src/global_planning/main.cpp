@@ -23,8 +23,8 @@ bool                         is_receive_start = false;
 bool                         is_receive_end   = false;
 
 
-const double x_o_ = -672; // 园区偏移参数
-const double y_o_ = -253; // 园区偏移参数
+const double x_o_ = -94; // 园区偏移参数
+const double y_o_ = 173; // 园区偏移参数
 
 
 vector<_TrajectoryPoint> global_path, road_nodes;
