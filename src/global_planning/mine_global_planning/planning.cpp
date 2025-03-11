@@ -1483,7 +1483,7 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
     double                     score = 0.0;
     _TrajectoryPoint           temp_point;
     threadLogger_->info("search_end_index {} ", search_end_index);
-    for (int i = 0; i <= search_end_index; i += 5) { // 这里-1的原因是为了防止total_path.insert(total_path.end(), global_path_.begin() + i + 1, global_path_.begin() + search_end_index);拼接出错
+    for (int i = 0; i <= search_end_index; i += 1) {
         threadLogger_->info("i:{}", i);
         temp_end.x   = global_path_.at(i).x;
         temp_end.y   = global_path_.at(i).y;
