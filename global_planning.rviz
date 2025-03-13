@@ -153,8 +153,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: -167.44686889648438
-        Min Value: -932.9049682617188
+        Max Value: -31.90632438659668
+        Min Value: -161.53567504882812
         Value: true
       Axis: Y
       Channel Name: intensity
@@ -267,10 +267,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 3.4545791149139404
+      Scale: 11.27829360961914
       Target Frame: <Fixed Frame>
-      X: 937.1386108398438
-      Y: -335.56591796875
+      X: 13.498144149780273
+      Y: -33.98659133911133
     Saved: ~
 Window Geometry:
   Displays:

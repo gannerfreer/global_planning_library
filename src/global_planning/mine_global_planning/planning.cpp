@@ -518,6 +518,12 @@ PlanResult Planning::PathPlanning() {
                 result = NotFollowReferencelinePlanning();
                 return result;
             }
+            else {
+                // 终点位于参考路径上，才可以开启沿参考路径规划策略
+                threadLogger_->info("终点位于参考路径上，采用沿参考路径规划策略，temp_end_lat_dis:{} temp_end_lon_dis:{}", temp_end_lat_dis, temp_end_lon_dis);
+                result = FollowReferencelinePlanning();
+                return result;
+            }
         }
         else {
             // 对于常规调度任务，需上来就判断终点是否位于参考路径上
@@ -940,7 +946,7 @@ PlanResult Planning::HybirdAStarFitting() {
     threadLogger_->info("起点与参考路径第一个点的纵向距离:{}", lon_dis);
     if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold || start_angle_diff_ > 8.0 / 180.0 * M_PI) { // 横向阈值大于0.7m,或者纵向阈值大于3m,就需要进行hybirdA*拟合
         start_need_fitting = true;
-        if ((start_lat_dis_ > 10 || fabs(start_lon_dis_) > 10) && lon_dis < eps) {
+        if ((start_lat_dis_ > 10 || fabs(start_lon_dis_) > 10) && (lon_dis + 10) < eps) {
             // 说明这是个从卸载点（无参考路径情况下）或从装载点出发的任务，由于可能有乱石堆的存在，这种直线延伸距离需要额外自行配置
             load_unload_start_flag = true;
         }
@@ -1542,6 +1548,9 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
                 result_trajectory.insert(result_trajectory.end(), global_path_.begin() + i, global_path_.begin() + search_end_index);
                 Helper::RemoveBeforeSamePoint(result_trajectory);
                 return PlanResult::Plan_OK;
+            }
+            else if (plan_result == PlanResult::StartPoint_Collision) {
+                return plan_result;
             }
         }
     }

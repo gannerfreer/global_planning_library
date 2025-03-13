@@ -234,6 +234,7 @@ struct _VehicleParam {
     float           rs_min_length                    = 2;
     float           load_start_straight_length       = 1.0;
     float           offset_distance                  = 0.3;
+    float           max_steering_wheel_speed         = 0.1396;
 };
 
 // 调用全局规划时，需要传入的参数

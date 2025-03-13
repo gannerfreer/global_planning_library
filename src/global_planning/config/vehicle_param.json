@@ -25,7 +25,7 @@
     "max_iterations_opti": 100,
     "safe_margin_obstacle": 2,
     "cusp_extension_distance": 1,
-    "veh_center_2_rear_bound": 0.0,
+    "veh_center_2_rear_bound": 2.0,
     "veh_center_2_rear_obstacle": 2.77,
     "max_acceleration": 0.3,
     "min_acceleration": -0.4,
@@ -39,7 +39,7 @@
     "slope_road_speed_limit": 8,
     "narrow_road_speed_limit": 8,
     "intersection_road_speed_limit": 8,
-    "task_type": 2,
+    "task_type": 3,
     "path_voronoi_term": 1,
     "vonoroi_grid_dist": 0.1,
     "curvature_threshold": 0.111,
@@ -50,6 +50,7 @@
     "obsMax": 1,
     "rs_min_length": 2,
     "load_start_straight_length": 3,
-    "offset_distance": 0.3
+    "offset_distance": 0.3,
+    "max_steering_wheel_speed": 0.174
   }
 }
