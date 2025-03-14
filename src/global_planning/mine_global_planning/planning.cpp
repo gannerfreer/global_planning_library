@@ -87,6 +87,10 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         return;
     }
 
+    threadLogger_->info("执行RemoveAfterSamePoint操作前");
+    for (auto i : global_path_) {
+        threadLogger_->info("x:{}  y:{}   attribute:{}", i.x, i.y, static_cast<int>(i.attribute));
+    }
     Helper::RemoveAfterSamePoint(global_path_);
 
     threadLogger_->info("StartEndPointProcess global_path_.size():{}", global_path_.size());
@@ -98,7 +102,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     CurvatureCal(global_path_);
     threadLogger_->info("执行均匀碾压前路径点曲率");
     for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180);
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute));
     }
 
 
@@ -116,7 +120,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     std::ofstream file_out;
     file_out.open("total_path_smooth_before.txt");
     for (size_t index = 0; index < global_path_.size(); index++) {
-        file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << endl;
+        file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
     }
     file_out.close();
     SmoothPath(global_path_);
@@ -125,13 +129,13 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     CurvatureCal(global_path_);
     file_out.open("total_path_smooth_after.txt");
     for (size_t index = 0; index < global_path_.size(); index++) {
-        file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << endl;
+        file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
     }
     file_out.close();
 
     threadLogger_->info("执行均匀碾压后路径点曲率");
     for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180);
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute));
     }
 
 
@@ -285,10 +289,34 @@ PlanResult Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint
             }
             threadLogger_->info("段数检测达标");
         }
+
+        // 长距离倒车检查，检查远离：对于大于1段的，起步就倒车的，进行倒车距离检测
+        // 先判断路径段数
+        int sum = 1;
+        for (int i = 0; i < final_path.size() - 1; i++) {
+            if (final_path.at(i).direction != final_path.at(i + 1).direction) {
+                sum++;
+            }
+        }
+        if (sum > 1) {
+            int total_length = 0;
+            if (final_path.front().direction == MotionDirection::Backward) {
+                for (int i = 0; i < final_path.size() - 1; i++) {
+                    if (final_path.at(i).direction == final_path.at(i + 1).direction) {
+                        total_length += hypot(final_path.at(i).x - final_path.at(i + 1).x, final_path.at(i).y - final_path.at(i + 1).y);
+                    }
+                }
+                if (total_length > 20) {
+                    threadLogger_->error("检测出起步倒车，且倒车距离过长，放弃此次规划结果");
+                    return PlanResult::Plan_Infeasible;
+                }
+            }
+        }
         return PlanResult::Plan_OK;
     }
     else {
         threadLogger_->error(" Failed to plan the path by hibrid A star  ");
+        threadLogger_->error(" result:{}", static_cast<int>(result));
         return result;
     }
 }
@@ -512,8 +540,10 @@ PlanResult Planning::PathPlanning() {
         int    start_path_id = Helper::GetNearestReferencelines(start_point_, all_referencelines_, temp_start_lat_dis, temp_start_lon_dis);
 
         if (task_type_ != TaskType::DISPATCH) {
+            threadLogger_->info("temp_end_lat_dis:{} temp_end_lon_dis:{} temp_start_lat_dis:{} temp_start_lon_dis:{} end_path_id:{} start_path_id:{}", temp_end_lat_dis, temp_end_lon_dis, temp_start_lat_dis, temp_start_lon_dis, end_path_id, start_path_id);
+
             // 对于 装载体/卸载之类的任务，下述条件满足其一，就直接采用hybridA*算法直接规划
-            if (fabs(temp_end_lat_dis) > 1 || fabs(temp_end_lon_dis) > 1 || fabs(temp_start_lat_dis) > 1 || fabs(temp_start_lon_dis) > 1 || end_path_id != start_path_id) {
+            if (fabs(temp_end_lat_dis) > 1 || fabs(temp_end_lon_dis) > 1 || fabs(temp_start_lat_dis) > 1 || fabs(temp_start_lon_dis) > 1) {
                 threadLogger_->info("此次装卸载任务无参考路径");
                 result = NotFollowReferencelinePlanning();
                 return result;
@@ -1007,7 +1037,11 @@ PlanResult Planning::HybirdAStarFitting() {
                     break;
                 }
             }
-            search_index = std::min(search_index, std::min((int)global_path_.size() - 1, 100));
+            search_index = std::min(search_index - 10, std::min((int)global_path_.size() - 1, 100));
+            if (search_index <= 0) {
+                threadLogger_->info("距离特殊点位太近了，虽然起点偏离参考路径，但是保险起见，还是不拟合了");
+                return result;
+            }
             if (JudgeFittingDirection()) {
                 threadLogger_->info("参考路径位于车头前方,或可以向前掉头开往对向参考路径，这种情况下采用 Forward_All_Time 规则进行规划");
                 result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
@@ -1037,9 +1071,17 @@ PlanResult Planning::HybirdAStarFitting() {
                     }
                 }
             }
-            global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
+
+            global_path_.erase(global_path_.begin(), global_path_.begin() + search_index);
+            threadLogger_->info("HybirdAStarFitting结束,拟合的路径+截取特殊点的路径");
+            for (auto i : temp_traj) {
+                threadLogger_->info("x:{}  y:{}   attribute:{}", i.x, i.y, static_cast<int>(i.attribute));
+            }
             global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
         }
+    }
+    else {
+        threadLogger_->info("压根不需要起点进行hybridA*拟合");
     }
 
     my_optimal_path_.DeleteVoronoiSpace(false);

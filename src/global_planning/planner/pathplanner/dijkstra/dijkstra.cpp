@@ -49,8 +49,8 @@ bool Dijkstra::searchpath(int start_, int end_) {
         dist.at(v)   = 100000;
         father.at(v) = -1;
     }
-    cout << "初始化结点信息完成" << endl;
-    threadLogger_->info("初始化结点信息完成");
+    // cout << "初始化结点信息完成" << endl;
+    // threadLogger_->info("初始化结点信息完成");
     if (start_index >= 0 && start_index < len) {
         dist.at(start_index) = 0; // 将起始节点到起始点的最短距离设为0
     }
@@ -61,8 +61,8 @@ bool Dijkstra::searchpath(int start_, int end_) {
     }
 
     int max_loop_num = 2999;
-    threadLogger_->info("开始进入主循环");
-    cout << "开始进入主循环  " << endl;
+    // threadLogger_->info("开始进入主循环");
+    // cout << "开始进入主循环  " << endl;
     for (int i = 1; i <= max_loop_num; i++) {
         min = 100000;
         // 找出dist最小的点作为curNode，并根据close属性，剔除已经搜索过的区域
@@ -72,8 +72,8 @@ bool Dijkstra::searchpath(int start_, int end_) {
                 min     = dist.at(w);
             }
         }
-        threadLogger_->info("当前节点：{}, min:{}", curNode, min);
-        cout << "当前节点 " << curNode << endl;
+        // threadLogger_->info("当前节点：{}, min:{}", curNode, min);
+        // cout << "当前节点 " << curNode << endl;
         // 将curNode加入close中
         if (close.at(curNode) == true) {
             cout << "当前轮弹出的节点竟然属于close集，不可能发生的事情 " << endl;
@@ -81,8 +81,8 @@ bool Dijkstra::searchpath(int start_, int end_) {
         }
         close.at(curNode) = true;
         if (curNode == end_index) {
-            threadLogger_->info("搜索到终点");
-            cout << "搜索到终点 " << endl;
+            // threadLogger_->info("搜索到终点");
+            // cout << "搜索到终点 " << endl;
             break;
         }
         // 以curNode为基准进行拓展搜索，并更新其他节点的相关值
