@@ -87,10 +87,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         return;
     }
 
-    threadLogger_->info("执行RemoveAfterSamePoint操作前");
-    for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}   attribute:{}", i.x, i.y, static_cast<int>(i.attribute));
-    }
+
     Helper::RemoveAfterSamePoint(global_path_);
 
     threadLogger_->info("StartEndPointProcess global_path_.size():{}", global_path_.size());
@@ -182,7 +179,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("CalAcc");
 
     path = global_path_;
-    threadLogger_->info("规划成功，即将返回轨迹 final_out global_Path.size():{}", global_path_.size());
+    threadLogger_->info("规划成功，即将返回轨迹  轨迹总长:{}", global_path_.size());
     return;
 }
 
@@ -687,14 +684,14 @@ PlanResult Planning::FollowReferencelinePlanning() {
     while (start_search_radius <= 100) {
         if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
             threadLogger_->info("起点搜索半径：{},搜索到路径数量:{}", start_search_radius, start_path_vec.size());
-            threadLogger_->info("搜索到的路径ID信息如下");
+            // threadLogger_->info("搜索到的路径ID信息如下");
             cout << "起点搜索半径：:" << start_search_radius << "  搜索到路径数量:  " << start_path_vec.size() << endl;
-            cout << "搜索到的路径ID信息如下:" << endl;
-            for (auto i : start_path_vec) {
-                threadLogger_->info(i);
-                cout << i << " ";
-            }
-            cout << endl;
+            // cout << "搜索到的路径ID信息如下:" << endl;
+            // for (auto i : start_path_vec) {
+            //     threadLogger_->info(i);
+            //     cout << i << " ";
+            // }
+            // cout << endl;
 
             vector<int> start_path_vec_switch, end_path_vec_switch;
             for (auto i : start_path_vec) {
@@ -998,8 +995,8 @@ PlanResult Planning::HybirdAStarFitting() {
                 int                      search_index = std::numeric_limits<int>::max();
                 // 需要先找到global_path_中排队点、过磅、洗车点的具体索引，hybrida*做路径拟合不能越过这些点
                 for (int i = 0; i < global_path_.size(); i++) {
-                    if (global_path_.at(i).attribute == PointAttribute::queue_point || global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
-                        threadLogger_->info("找到排队点、过磅、洗车点，索引为{}", i);
+                    if (global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
+                        threadLogger_->info("过磅、洗车点，索引为{}", i);
                         search_index = i;
                         break;
                     }
@@ -1031,7 +1028,7 @@ PlanResult Planning::HybirdAStarFitting() {
             int                      search_index = std::numeric_limits<int>::max();
             // 需要先找到global_path_中排队点、过磅、洗车点的具体索引，hybrida*做路径拟合不能越过这些点
             for (int i = 0; i < global_path_.size(); i++) {
-                if (global_path_.at(i).attribute == PointAttribute::queue_point || global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
+                if (global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
                     threadLogger_->info("找到排队点、过磅、洗车点，索引为{}", i);
                     search_index = i;
                     break;
@@ -1039,8 +1036,7 @@ PlanResult Planning::HybirdAStarFitting() {
             }
             search_index = std::min(search_index - 10, std::min((int)global_path_.size() - 1, 100));
             if (search_index <= 0) {
-                threadLogger_->info("距离特殊点位太近了，虽然起点偏离参考路径，但是保险起见，还是不拟合了");
-                return result;
+                search_index = 0;
             }
             if (JudgeFittingDirection()) {
                 threadLogger_->info("参考路径位于车头前方,或可以向前掉头开往对向参考路径，这种情况下采用 Forward_All_Time 规则进行规划");
@@ -1485,8 +1481,8 @@ void Planning::FillErrorCode(PlanResult result) {
         case PlanResult::StartPoint_Collision:
             error_type_ = ErrorType::StartPoint_Collision;
             break; // 可选的
-        case PlanResult::StartPoint_Angle_Error:
-            error_type_ = ErrorType::StartPoint_Angle_Error;
+        case PlanResult::StartPoint_Unreasonable:
+            error_type_ = ErrorType::StartPoint_Unreasonable;
             break; // 可选的
         case PlanResult::EndPoint_Deviation:
             error_type_ = ErrorType::EndPoint_Deviation;
@@ -1531,12 +1527,15 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
     double                     score = 0.0;
     _TrajectoryPoint           temp_point;
     threadLogger_->info("search_end_index {} ", search_end_index);
+    utility::CTimeClock init_time1;
     for (int i = 0; i <= search_end_index; i += 1) {
         threadLogger_->info("i:{}", i);
         temp_end.x   = global_path_.at(i).x;
         temp_end.y   = global_path_.at(i).y;
         temp_end.z   = global_path_.at(i).z;
         temp_end.yaw = global_path_.at(i).yaw;
+
+
         if (rule_id == PlanRule::Forward_All_Time || rule_id == PlanRule::Backward_All_Time) { // 这两种规划规则，可采用dubins预先校验
             if (rule_id == PlanRule::Forward_All_Time) {
                 verification_flag = false;
@@ -1594,11 +1593,18 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
             else if (plan_result == PlanResult::StartPoint_Collision) {
                 return plan_result;
             }
+            long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time1); // 开始时间精确到微秒
+            threadLogger_->info("搜索累积耗时：{}us ", init_time_end);
+            if (init_time_end > 5000000) {
+                threadLogger_->info("搜索函数执行超时");
+                cout << "搜索函数执行超时" << endl;
+                return PlanResult::Plan_Overtime;
+            }
         }
     }
     threadLogger_->info("dubins_success:{}", dubins_success);
     if (!dubins_success) {
-        return PlanResult::StartPoint_Angle_Error;
+        return PlanResult::StartPoint_Unreasonable;
     }
     threadLogger_->info("mul_score_index.size():{} 基本信息如下：", mul_score_index.size());
     for (auto it = mul_score_index.begin(); it != mul_score_index.end(); ++it) {
@@ -1608,6 +1614,10 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
     // 从mul_score_index中挑选出得分最低的轨迹，并获得对应的index
     double best_score;
     int    best_index;
+
+    utility::CTimeClock init_time2;
+
+
     while (!mul_score_index.empty()) {
         best_score = mul_score_index.begin()->first;
         best_index = mul_score_index.begin()->second;
@@ -1627,6 +1637,14 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
             // 删除mul_score_index中得分最高的轨迹
             threadLogger_->info("当前选中的  best_score:{}  best_index:{} 规划失败，删除该轨迹", best_score, best_index);
             mul_score_index.erase(mul_score_index.begin());
+        }
+
+        long long init_time_end = utility::CTimeHelper::GetTimeIntervalMicroseconds(init_time2); // 开始时间精确到微秒
+        threadLogger_->info("搜索累积耗时：{}us ", init_time_end);
+        if (init_time_end > 5000000) {
+            threadLogger_->info("搜索函数执行超时");
+            cout << "搜索函数执行超时" << endl;
+            return PlanResult::Plan_Overtime;
         }
     }
     if (!hybridA_success) {

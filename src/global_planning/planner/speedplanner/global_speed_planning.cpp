@@ -356,17 +356,19 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory)
     vector<_TrajectoryPoint> trajectory_copy = trajectory;
     unsigned int             iterations      = 0;
     // 最大遍历次数为100次
-    while (iterations++ < 50) {
+    while (iterations++ < 100) {
         // 遍历稀疏速度曲线，分别计算出目标函数中每一项的梯度值，采用梯度下降法对速度曲线优化。
         for (unsigned int i = 1; i < trajectory.size() - 1; i++) {
-            float v0 = trajectory[i - 1].speed;
-            float v1 = trajectory[i].speed;
-            float v2 = trajectory[i + 1].speed;
+            float v0     = trajectory.at(i - 1).speed;
+            float v1     = trajectory.at(i).speed;
+            float v2     = trajectory.at(i + 1).speed;
+            float v_init = trajectory_copy.at(i).speed;
 
             float gradient_smooth = speed_smooth_term * (v0 + v2 - 2 * v1);
+            float error_smooth    = speed_error_term * (v_init - v1);
 
 
-            trajectory.at(i).speed += gradient_smooth;
+            trajectory.at(i).speed += gradient_smooth + error_smooth;
 
             // 确保速度不超过原始限速
             if (trajectory_copy.at(i).speed < trajectory.at(i).speed) {

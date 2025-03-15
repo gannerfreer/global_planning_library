@@ -30,7 +30,7 @@
     "max_acceleration": 0.3,
     "min_acceleration": -0.4,
     "reverse_speed": 1.0,
-    "speed_error_term": 0.0,
+    "speed_error_term": 0.1,
     "speed_smooth_term": 0.1,
     "linear_preferred_distance": 3,
     "uniform_compaction_enable": true,
