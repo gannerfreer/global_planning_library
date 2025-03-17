@@ -530,6 +530,14 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 max_steering_wheel_speed ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.max_steering_wheel_speed = 0.1396;
             }
+
+            if (val.HasMember("max_search_distance") && val["max_search_distance"].IsNumber()) {
+                veh_start_end.veh_param.max_search_distance = val["max_search_distance"].GetUint();
+            }
+            else {
+                cout << "无法找到车参 max_search_distance ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.max_search_distance = 50;
+            }
         }
     }
 

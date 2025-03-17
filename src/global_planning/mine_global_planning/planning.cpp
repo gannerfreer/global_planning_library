@@ -1001,8 +1001,9 @@ PlanResult Planning::HybirdAStarFitting() {
                         break;
                     }
                 }
-                search_index = std::min(search_index, std::min((int)global_path_.size() - 1, 100));
-                result       = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
+                search_index = std::min(search_index, std::min((int)global_path_.size() - 1, vehicle_param_.max_search_distance));
+                threadLogger_->info("系统设定的最大搜索距离{},结合特殊点位置，最终确定的dubins前向搜索截至距离为{}", vehicle_param_.max_search_distance, search_index);
+                result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
                 // result                                = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
                 if (result != PlanResult::Plan_OK) {
                     threadLogger_->error("从装载点/卸载点调度出去，起点直线距离 {}  ,起点hybirdA*拟合失败,拟合规则为Forward_Fitting", my_optimal_path_.start_offset_distance_);
@@ -1034,10 +1035,12 @@ PlanResult Planning::HybirdAStarFitting() {
                     break;
                 }
             }
-            search_index = std::min(search_index - 10, std::min((int)global_path_.size() - 1, 100));
+
+            search_index = std::min(search_index - 10, std::min((int)global_path_.size() - 1, vehicle_param_.max_search_distance));
             if (search_index <= 0) {
                 search_index = 0;
             }
+            threadLogger_->info("系统设定的最大搜索距离{},结合特殊点位置，最终确定的dubins前向搜索截至距离为{}", vehicle_param_.max_search_distance, search_index);
             if (JudgeFittingDirection()) {
                 threadLogger_->info("参考路径位于车头前方,或可以向前掉头开往对向参考路径，这种情况下采用 Forward_All_Time 规则进行规划");
                 result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
@@ -1069,10 +1072,6 @@ PlanResult Planning::HybirdAStarFitting() {
             }
 
             global_path_.erase(global_path_.begin(), global_path_.begin() + search_index);
-            threadLogger_->info("HybirdAStarFitting结束,拟合的路径+截取特殊点的路径");
-            for (auto i : temp_traj) {
-                threadLogger_->info("x:{}  y:{}   attribute:{}", i.x, i.y, static_cast<int>(i.attribute));
-            }
             global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
         }
     }
@@ -1598,7 +1597,7 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
             if (init_time_end > 5000000) {
                 threadLogger_->info("搜索函数执行超时");
                 cout << "搜索函数执行超时" << endl;
-                return PlanResult::Plan_Overtime;
+                return PlanResult::StartPoint_Unreasonable;
             }
         }
     }
@@ -1644,7 +1643,7 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
         if (init_time_end > 5000000) {
             threadLogger_->info("搜索函数执行超时");
             cout << "搜索函数执行超时" << endl;
-            return PlanResult::Plan_Overtime;
+            return PlanResult::StartPoint_Unreasonable;
         }
     }
     if (!hybridA_success) {

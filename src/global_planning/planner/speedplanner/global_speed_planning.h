@@ -44,9 +44,9 @@ class GlobalSpeedPlanning {
      * @param  num：trajectory_fragments中的第num条
      * @return 无
      */
-    void SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory);
-
-
+    void             SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory);
+    void             AdjustSpeedLimit(vector<_TrajectoryPoint>& trajectory);
+    std::vector<int> findMinimaIndices(vector<_TrajectoryPoint>& trajectory);
     /**
      *@brief: 初始化速度规划参数
      *@param [in] m_veh_param 车辆参数

@@ -51,6 +51,7 @@
     "rs_min_length": 2,
     "load_start_straight_length": 3,
     "offset_distance": 0.3,
-    "max_steering_wheel_speed": 0.174
+    "max_steering_wheel_speed": 0.174,
+    "max_search_distance": 51
   }
 }

@@ -59,7 +59,7 @@ enum struct ErrorType : unsigned int {
     Plan_Infeasible                                   = 1,  // Plan_Infeasible 起点距离地图边界太近，请挪动车辆
     UnReasonable_Task                                 = 2,  // Plan_Overtime  当前车辆位置前方区域太窄，无法穿越或掉头，请调整车辆位置
     StartPoint_Collision                              = 3,  // StartPoint_Collision 当前车辆位置与地图边界干涉，请挪车至地图区域内
-    StartPoint_Unreasonable                           = 4,  // StartPoint_Unreasonable 当前车辆太靠近洗车或过磅点且后方区域太窄，无法搜索出轨迹，请调整车辆位置
+    StartPoint_Unreasonable                           = 4,  // StartPoint_Unreasonable 当前车辆太靠近洗车或过磅点，且前后方区域太窄，无法搜索出轨迹，请调整车辆位置
     EndPoint_Deviation                                = 5,  // EndPoint_Deviation 当前任务终点不位于参考路径上，请后台系统人员排查问题
     EndPoint_Collision                                = 6,  // EndPoint_Collision  当前任务终点与地图边界干涉，请调整任务终点
     EndPoint_Infeasible                               = 7,  // EndPoint_Infeasible 当前任务终点距离边界太近，无法成功规划到此位置的轨迹，请调整目标点角度或位置
@@ -235,6 +235,7 @@ struct _VehicleParam {
     float           load_start_straight_length       = 1.0;
     float           offset_distance                  = 0.3;
     float           max_steering_wheel_speed         = 0.1396;
+    int             max_search_distance              = 50;
 };
 
 // 调用全局规划时，需要传入的参数
