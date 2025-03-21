@@ -123,7 +123,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
     }
     file_out.close();
-    SmoothPath(global_path_);
+    // SmoothPath(global_path_);
     // 计算累计s
     Helper::CalDistance(global_path_);
     CurvatureCal(global_path_);
