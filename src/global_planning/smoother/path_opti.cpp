@@ -221,7 +221,7 @@ void Path_Opti::GetCuspIndex() {
     // 方向属性切换的点则为尖点
     for (unsigned int i = 1; i < path_.size(); ++i) {
         if (path_.at(i).direction != path_.at(i - 1).direction) {
-            cusp_set_.insert(i - 1);
+            cusp_set_.insert(i - 1); // 之所以放i-1,是因为hybridA*规划的尖点属性是跟随前面的，这里需要严格把控rs曲线采样那里的逻辑
         }
     }
 }

@@ -15,7 +15,7 @@ def read_data(file_name):
     with open(file_name, 'r') as file:
         for line in file:
             parts = line.strip().split()
-            if len(parts) == 5:
+            if len(parts) == 6:
                 x.append(float(parts[0]))
                 y.append(float(parts[1]))
                 yaw.append(float(parts[2]))

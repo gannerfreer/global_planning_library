@@ -87,7 +87,10 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         return;
     }
 
-
+    threadLogger_->info("执行RemoveAfterSamePoint");
+    for (int i = 0; i < global_path_.size() - 1; i++) {
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} delta_s:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).direction, global_path_.at(i).curvature, global_path_.at(i).yaw / M_PI * 180, static_cast<int>(global_path_.at(i).attribute), hypot(global_path_.at(i + 1).x - global_path_.at(i).x, global_path_.at(i + 1).y - global_path_.at(i).y));
+    }
     Helper::RemoveAfterSamePoint(global_path_);
 
     threadLogger_->info("StartEndPointProcess global_path_.size():{}", global_path_.size());
@@ -98,8 +101,8 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("global_path_.size():{}", global_path_.size());
     CurvatureCal(global_path_);
     threadLogger_->info("执行均匀碾压前路径点曲率");
-    for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute));
+    for (int i = 0; i < global_path_.size() - 1; i++) {
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} delta_s:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).direction, global_path_.at(i).curvature, global_path_.at(i).yaw / M_PI * 180, static_cast<int>(global_path_.at(i).attribute), hypot(global_path_.at(i + 1).x - global_path_.at(i).x, global_path_.at(i + 1).y - global_path_.at(i).y));
     }
 
 
@@ -767,6 +770,8 @@ PlanResult Planning::FollowReferencelinePlanning() {
         temp_start_traj = all_referencelines_.at(temp_start_key);
         temp_end_traj   = all_referencelines_.at(temp_end_key);
         Helper::CalNearestIndex(start_point_, temp_start_traj, temp_start_index, temp_start_lat_dis, temp_start_lon_dis, temp_start_distance, temp_start_angle_diff);
+        // 这里加个特殊逻辑，如何temp_start_lon_dis很小，将temp_start_distance设置为0
+        if (fabs(temp_start_lon_dis) < 1.5) temp_start_distance = 0;
         Helper::CalNearestIndex(end_point_, temp_end_traj, temp_end_index, temp_end_lat_dis, temp_end_lon_dis, temp_end_distance, temp_end_angle_diff);
         if (temp_start_angle_diff > M_PI / 2) {
             cost1 = 200;
@@ -950,6 +955,9 @@ void Planning::PathClipAndSplice() {
         }
     }
     threadLogger_->info("PathClipAndSplice---global_path_.size():{}", global_path_.size());
+    for (int i = 0; i < global_path_.size() - 1; i++) {
+        threadLogger_->info("x:{} y:{} yaw:{} direction:{} delta_s:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).yaw / M_PI * 180.0, static_cast<int>(global_path_.at(i).direction), hypot(global_path_.at(i + 1).y - global_path_.at(i).y, global_path_.at(i + 1).x - global_path_.at(i).x));
+    }
 }
 PlanResult Planning::HybirdAStarFitting() {
     //  初始化HybrdiA*算法地图边界及voronoi图
@@ -1081,6 +1089,9 @@ PlanResult Planning::HybirdAStarFitting() {
 
     my_optimal_path_.DeleteVoronoiSpace(false);
     threadLogger_->info("HybirdAStarFitting结束");
+    for (int i = 0; i < global_path_.size() - 1; i++) {
+        threadLogger_->info("x:{} y:{} yaw:{} direction:{} delta_s:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).yaw / M_PI * 180.0, static_cast<int>(global_path_.at(i).direction), hypot(global_path_.at(i + 1).y - global_path_.at(i).y, global_path_.at(i + 1).x - global_path_.at(i).x));
+    }
     return result;
 }
 bool Planning::JudgeFittingDirection() {
@@ -1514,7 +1525,7 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
     // 将这个最优秀的i对应的temp_end作为终点交给hybridA*进行规划，成功则退出，失败则将该列表中重新找最优秀的index来进行规划，直至成功
     // 将hybridA*规划出的路径与global_path_进行融合，得到新的result_trajectory
     // 将result_trajectory作为最终的输出
-    long long                  time_threshold = 0.8 * 1000 * 1000;
+    long long                  time_threshold = 0.4 * 1000 * 1000;
     _SinglePoint               temp_end;
     bool                       verification_flag = false;
     PlanResult                 plan_result       = PlanResult::Plan_OK;
@@ -1586,7 +1597,7 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
                 result_trajectory.insert(result_trajectory.end(), temp_trajectory.begin(), temp_trajectory.end());
                 // 将global_path_中[best_index+1,global_path_.size())这段路径也拼接到result_trajectory中
                 result_trajectory.insert(result_trajectory.end(), global_path_.begin() + i, global_path_.begin() + search_end_index);
-                Helper::RemoveBeforeSamePoint(result_trajectory);
+                // Helper::RemoveBeforeSamePoint(result_trajectory);
                 return PlanResult::Plan_OK;
             }
             else if (plan_result == PlanResult::StartPoint_Collision) {
@@ -1654,7 +1665,7 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
     result_trajectory.insert(result_trajectory.end(), temp_trajectory.begin(), temp_trajectory.end());
     // 将global_path_中[best_index+1,global_path_.size())这段路径也拼接到result_trajectory中
     result_trajectory.insert(result_trajectory.end(), global_path_.begin() + best_index, global_path_.begin() + search_end_index);
-    Helper::RemoveBeforeSamePoint(result_trajectory);
+    // Helper::RemoveBeforeSamePoint(result_trajectory);
     threadLogger_->info("规划成功，返回规划成功");
     return PlanResult::Plan_OK;
 }

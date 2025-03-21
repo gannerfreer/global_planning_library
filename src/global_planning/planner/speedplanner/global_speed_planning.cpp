@@ -215,9 +215,9 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
         }
     }
 
-    threadLogger_->info("限速设置--在这里打印路径点限速信息");
+    // threadLogger_->info("限速设置--在这里打印路径点限速信息");
     for (size_t index = 0; index < trajectory.size(); index++) {
-        threadLogger_->info("index:{}  speed_limit:{}", index, trajectory.at(index).speed_limit);
+        // threadLogger_->info("index:{}  speed_limit:{}", index, trajectory.at(index).speed_limit);
     }
     file_out.open("speed_limit2.txt");
     for (size_t index = 0; index < trajectory.size(); index++) {
@@ -400,7 +400,7 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
         double current_max_acc    = trajectory[i].direction == 0 ? max_acceleration : max_acceleration * 0.5;
         double max_possible_speed = std::sqrt(trajectory[i - 1].speed * trajectory[i - 1].speed + 2 * current_max_acc * ds);
         trajectory[i].speed       = std::min(max_possible_speed, trajectory[i].speed_limit);
-        threadLogger_->info("i:{} speed:{}", i, trajectory[i].speed);
+        // threadLogger_->info("i:{} speed:{}", i, trajectory[i].speed);
     }
 
     // 后向扫描：确保能够及时减速到0
@@ -410,7 +410,7 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
         double current_min_acc    = trajectory[i].direction == 0 ? min_acceleration * 0.5 : min_acceleration * 0.5;
         double max_possible_speed = std::sqrt(trajectory[i + 1].speed * trajectory[i + 1].speed + 2 * std::abs(current_min_acc) * ds);
         trajectory[i].speed       = std::min(trajectory[i].speed, max_possible_speed);
-        threadLogger_->info("i:{} speed:{}", i, trajectory[i].speed);
+        // threadLogger_->info("i:{} speed:{}", i, trajectory[i].speed);
     }
 }
 void GlobalSpeedPlanning::AdjustSpeedLimit(vector<_TrajectoryPoint>& trajectory) {

@@ -1,15 +1,15 @@
 {
     "m_Start_Point": {
-        "x": 30.355984887188104,
-        "y": -253.80398990411024,
-        "z": 15.69550895690918,
-        "yaw": 147.6072235107422
+        "x": 31.804742880090316,
+        "y": -256.20715078896166,
+        "z": 15.791915893554688,
+        "yaw": 150.79588317871094
     },
     "m_End_Point": {
-        "x": -104.7176222526,
-        "y": -98.5863713585,
+        "x": -103.1586893095,
+        "y": -101.3495672732,
         "z": 0.0,
-        "yaw": 134.424327169,
+        "yaw": 129.0757581587,
         "endPointId": 15
     },
     "m_Veh_Param": {
@@ -47,22 +47,17 @@
         "path_curvature_term": 0.0,
         "path_smoothness_term": 0.2,
         "safe_margin_obstacle": 2,
-        "bumpy_road_speed_limit": 8,
-        "slope_road_speed_limit": 8,
         "cusp_extension_distance": 3,
         "hybridastar_step_length": 1,
-        "narrow_road_speed_limit": 8,
         "veh_center_2_rear_bound": 0.5,
-        "regular_road_speed_limit": 8,
         "linear_preferred_distance": 3,
         "uniform_compaction_enable": false,
         "veh_center_2_rear_obstacle": 2.77,
-        "intersection_road_speed_limit": 8,
         "load_point_end_offset_distance": 4,
         "load_point_start_offset_distance": 4,
-        "vehicle_code": 615
+        "vehicle_code": 614
     },
     "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1900507645782515712"
+    "key": "ids:mine:dispatch:planPath:result:1902647764297490432"
 }
