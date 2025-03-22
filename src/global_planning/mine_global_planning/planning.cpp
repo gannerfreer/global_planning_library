@@ -123,7 +123,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
     }
     file_out.close();
-    // SmoothPath(global_path_);
+    SmoothPath(global_path_);
     // 计算累计s
     Helper::CalDistance(global_path_);
     CurvatureCal(global_path_);
@@ -557,7 +557,7 @@ PlanResult Planning::PathPlanning() {
         }
         else {
             // 对于常规调度任务，需上来就判断终点是否位于参考路径上
-            if (fabs(temp_end_lat_dis) > 0.3 || fabs(temp_end_lon_dis) > 0.3) {
+            if (hypot(temp_end_lat_dis, temp_end_lon_dis) > 0.3) {
                 threadLogger_->info("终点偏离参考路径，采用hybridA*算法直接规划，temp_end_lat_dis:{} temp_end_lon_dis:{}", temp_end_lat_dis, temp_end_lon_dis);
                 return PlanResult::EndPoint_Deviation;
             }
@@ -1009,7 +1009,10 @@ PlanResult Planning::HybirdAStarFitting() {
                         break;
                     }
                 }
-                search_index = std::min(search_index, std::min((int)global_path_.size() - 1, vehicle_param_.max_search_distance));
+                search_index = std::min(search_index - 10, std::min((int)global_path_.size() - 1, vehicle_param_.max_search_distance));
+                if (search_index <= 0) {
+                    search_index = 0;
+                }
                 threadLogger_->info("系统设定的最大搜索距离{},结合特殊点位置，最终确定的dubins前向搜索截至距离为{}", vehicle_param_.max_search_distance, search_index);
                 result = FindBestTrajectory(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
                 // result                                = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time);
@@ -1017,7 +1020,7 @@ PlanResult Planning::HybirdAStarFitting() {
                     threadLogger_->error("从装载点/卸载点调度出去，起点直线距离 {}  ,起点hybirdA*拟合失败,拟合规则为Forward_Fitting", my_optimal_path_.start_offset_distance_);
                 }
                 else {
-                    global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
+                    global_path_.erase(global_path_.begin(), global_path_.begin() + search_index);
                     global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
                     success_flag = true;
                     break;
