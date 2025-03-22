@@ -770,8 +770,6 @@ PlanResult Planning::FollowReferencelinePlanning() {
         temp_start_traj = all_referencelines_.at(temp_start_key);
         temp_end_traj   = all_referencelines_.at(temp_end_key);
         Helper::CalNearestIndex(start_point_, temp_start_traj, temp_start_index, temp_start_lat_dis, temp_start_lon_dis, temp_start_distance, temp_start_angle_diff);
-        // 这里加个特殊逻辑，如何temp_start_lon_dis很小，将temp_start_distance设置为0
-        if (fabs(temp_start_lon_dis) < 1.5) temp_start_distance = 0;
         Helper::CalNearestIndex(end_point_, temp_end_traj, temp_end_index, temp_end_lat_dis, temp_end_lon_dis, temp_end_distance, temp_end_angle_diff);
         if (temp_start_angle_diff > M_PI / 2) {
             cost1 = 200;
@@ -779,10 +777,10 @@ PlanResult Planning::FollowReferencelinePlanning() {
         else {
             cost1 = 0;
         }
-        cost2    = temp_start_distance * 10;
+        cost2    = temp_start_distance * vehicle_param_.cost_ratio;
         cost3    = ReferencelineTotalDis(i.first, temp_start_index, temp_end_index);
         i.second = cost1 + cost2 + cost3;
-        threadLogger_->info("路径对 {}--{}  cost1: {}  cost2: {}  cost3: {}  total_cost:{}", sequence_mapping_.at(i.first.first), sequence_mapping_.at(i.first.second), cost1, cost2, cost3, cost1 + cost2 + cost3);
+        threadLogger_->info("路径对 {}--{}  cost1: {}  cost2: {}(放大系数：{})  cost3: {}  total_cost:{}", sequence_mapping_.at(i.first.first), sequence_mapping_.at(i.first.second), cost1, cost2, vehicle_param_.cost_ratio, cost3, cost1 + cost2 + cost3);
         cout << "路径对" << sequence_mapping_.at(i.first.first) << "--" << sequence_mapping_.at(i.first.second) << "  cost1:" << cost1 << " cost2:" << cost2 << " cost3:" << cost3 << endl;
     }
     threadLogger_->info("计算代价完毕");
@@ -980,6 +978,7 @@ PlanResult Planning::HybirdAStarFitting() {
     }
     threadLogger_->info("起点与参考路径第一个点的纵向距离:{}", lon_dis);
     if (start_lat_dis_ > lat_threshold || fabs(start_lon_dis_) > lon_threshold || start_angle_diff_ > 8.0 / 180.0 * M_PI) { // 横向阈值大于0.7m,或者纵向阈值大于3m,就需要进行hybirdA*拟合
+        threadLogger_->info("起点与参考路径的横向距离：{}  纵向距离：{}", start_lat_dis_, start_lon_dis_);
         start_need_fitting = true;
         if ((start_lat_dis_ > 10 || fabs(start_lon_dis_) > 10) && (lon_dis + 10) < eps) {
             // 说明这是个从卸载点（无参考路径情况下）或从装载点出发的任务，由于可能有乱石堆的存在，这种直线延伸距离需要额外自行配置

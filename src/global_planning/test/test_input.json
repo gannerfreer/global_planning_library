@@ -1,16 +1,16 @@
 {
     "m_Start_Point": {
-        "x": -554.0696324927,
-        "y": -516.885162449,
-        "z": 0.0,
-        "yaw": 54.3835360532
+        "x": 224.18096608362322,
+        "y": -335.1042004977179,
+        "z": 19.76316261291504,
+        "yaw": 202.83087158203125
     },
     "m_End_Point": {
-        "x": -561.1198564734,
-        "y": -417.035205368,
+        "x": 164.4260035488,
+        "y": -682.5354699357,
         "z": 0.0,
-        "yaw": 334.4590190108,
-        "endPointId": 69
+        "yaw": 242.2064623553,
+        "endPointId": 78
     },
     "m_Veh_Param": {
         "obsMax": 1,
@@ -33,9 +33,9 @@
         "speed_error_term": 0.1,
         "turnning_penalty": 2.468,
         "path_voronoi_term": 1,
-        "safe_margin_bound": 0,
+        "safe_margin_bound": 0.5,
         "safe_margin_error": 0,
-        "speed_limit_level": 3,
+        "speed_limit_level": 1,
         "speed_smooth_term": 0.01,
         "veh_center_2_side": 1.800,
         "vonoroi_grid_dist": 0.1,
@@ -44,27 +44,27 @@
         "veh_center_2_front": 7.330,
         "curvature_threshold": 0.08,
         "max_iterations_opti": 100,
-        "max_search_distance": 51,
+        "max_search_distance": 35,
         "path_curvature_term": 0.0,
         "path_smoothness_term": 0.2,
         "safe_margin_obstacle": 2,
-        "bumpy_road_speed_limit": 8.0,
-        "slope_road_speed_limit": 8.0,
+        "bumpy_road_speed_limit": 2.0,
+        "slope_road_speed_limit": 2.0,
         "cusp_extension_distance": 3,
         "hybridastar_step_length": 1,
-        "narrow_road_speed_limit": 8.0,
+        "narrow_road_speed_limit": 2.0,
         "veh_center_2_rear_bound": 2.770,
-        "regular_road_speed_limit": 8.0,
+        "regular_road_speed_limit": 2.0,
         "linear_preferred_distance": 3,
-        "uniform_compaction_enable": false,
+        "uniform_compaction_enable": true,
         "veh_center_2_rear_obstacle": 2.77,
-        "intersection_road_speed_limit": 8.0,
+        "intersection_road_speed_limit": 2.0,
         "load_point_end_offset_distance": 4,
         "load_point_start_offset_distance": 4,
-        "vehicle_code": 1010,
+        "vehicle_code": 613,
         "wheelbase": 5.250
     },
-    "task_type": 3,
+    "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1902975267822956544"
+    "key": "ids:mine:dispatch:planPath:result:1903366168934424576"
 }

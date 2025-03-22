@@ -39,7 +39,7 @@
     "slope_road_speed_limit": 8,
     "narrow_road_speed_limit": 8,
     "intersection_road_speed_limit": 8,
-    "task_type": 3,
+    "task_type": 2,
     "path_voronoi_term": 1,
     "vonoroi_grid_dist": 0.1,
     "curvature_threshold": 0.111,
@@ -52,6 +52,7 @@
     "load_start_straight_length": 3,
     "offset_distance": 0.3,
     "max_steering_wheel_speed": 0.174,
-    "max_search_distance": 51
+    "max_search_distance": 51,
+    "cost_ratio": 4
   }
 }

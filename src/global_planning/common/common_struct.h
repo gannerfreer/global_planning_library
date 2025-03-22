@@ -64,7 +64,7 @@ enum struct ErrorType : unsigned int {
     EndPoint_Collision                                = 6,  // EndPoint_Collision  当前任务终点与地图边界干涉，请调整任务终点
     EndPoint_Infeasible                               = 7,  // EndPoint_Infeasible 当前任务终点距离边界太近，无法成功规划到此位置的轨迹，请调整目标点角度或位置
     ROAD_GRAPH_ERROR                                  = 8,  // Map_Infeasible 地图文件中，参考路径联通关系数据异常，请后台人员排查问题
-    Leaving_Load_Point_Too_Close                      = 9,  // Leaving_Load_Point_Too_Close 装载排队点距离装载点太近
+    Leaving_Load_Point_Too_Close                      = 9,  // Leaving_Load_Point_Too_Close 驶离装载点距离装载点太近
     Load_Queue_Point_Unreasonable                     = 10, // Load_Queue_Point_Unreasonable 装载排队点不合理，距离装载点太近且无调整空间
     Unload_Queue_Point_Unreasonable                   = 11, // Unload_Queue_Point_Unreasonable 卸载排队点不合理，距离卸载点太近且无调整空间
     NO_MAP                                            = 12, // 规划库所在容器未加载地图
@@ -236,6 +236,7 @@ struct _VehicleParam {
     float           offset_distance                  = 0.3;
     float           max_steering_wheel_speed         = 0.1396;
     int             max_search_distance              = 50;
+    int             cost_ratio                       = 3;
 };
 
 // 调用全局规划时，需要传入的参数

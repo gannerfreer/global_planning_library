@@ -621,6 +621,14 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 max_search_distance ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.max_search_distance = 50;
             }
+
+            if (val.HasMember("cost_ratio") && val["cost_ratio"].IsNumber()) {
+                veh_start_end.veh_param.cost_ratio = val["cost_ratio"].GetUint();
+            }
+            else {
+                cout << "无法找到车参 cost_ratio ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.cost_ratio = 3;
+            }
         }
     }
     vehicle_param = veh_start_end.veh_param;
