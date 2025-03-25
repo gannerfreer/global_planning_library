@@ -33,7 +33,7 @@
     "speed_error_term": 0.1,
     "speed_smooth_term": 0.1,
     "linear_preferred_distance": 3,
-    "uniform_compaction_enable": false,
+    "uniform_compaction_enable": true,
     "regular_road_speed_limit": 8,
     "bumpy_road_speed_limit": 8,
     "slope_road_speed_limit": 8,
@@ -50,7 +50,7 @@
     "obsMax": 1,
     "rs_min_length": 2,
     "load_start_straight_length": 3,
-    "offset_distance": 0.3,
+    "offset_distance": 0.25,
     "max_steering_wheel_speed": 0.174,
     "max_search_distance": 51,
     "cost_ratio": 4

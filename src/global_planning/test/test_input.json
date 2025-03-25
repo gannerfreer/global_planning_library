@@ -1,21 +1,21 @@
 {
     "m_Start_Point": {
-        "x": 224.18096608362322,
-        "y": -335.1042004977179,
-        "z": 19.76316261291504,
-        "yaw": 202.83087158203125
+        "x": -103.1744947558,
+        "y": -138.2282520998,
+        "z": 0.0,
+        "yaw": 97.3465612705
     },
     "m_End_Point": {
-        "x": 164.4260035488,
-        "y": -682.5354699357,
+        "x": -89.8351008081,
+        "y": -113.0312608727,
         "z": 0.0,
-        "yaw": 242.2064623553,
-        "endPointId": 78
+        "yaw": 136.1271502465,
+        "endPointId": 17
     },
     "m_Veh_Param": {
         "obsMax": 1,
         "radious": 13,
-        "is_light": false,
+        "is_light": true,
         "grid_dist": 1,
         "max_kappa": 0.07,
         "delta_dist": 2,
@@ -44,27 +44,27 @@
         "veh_center_2_front": 7.330,
         "curvature_threshold": 0.08,
         "max_iterations_opti": 100,
-        "max_search_distance": 35,
         "path_curvature_term": 0.0,
         "path_smoothness_term": 0.2,
         "safe_margin_obstacle": 2,
-        "bumpy_road_speed_limit": 2.0,
-        "slope_road_speed_limit": 2.0,
+        "bumpy_road_speed_limit": 1.5,
+        "slope_road_speed_limit": 3.0,
         "cusp_extension_distance": 3,
         "hybridastar_step_length": 1,
         "narrow_road_speed_limit": 2.0,
         "veh_center_2_rear_bound": 2.770,
-        "regular_road_speed_limit": 2.0,
+        "regular_road_speed_limit": 4.0,
         "linear_preferred_distance": 3,
         "uniform_compaction_enable": true,
+        "load_start_straight_length": 3,
         "veh_center_2_rear_obstacle": 2.77,
-        "intersection_road_speed_limit": 2.0,
+        "intersection_road_speed_limit": 3.5,
         "load_point_end_offset_distance": 4,
         "load_point_start_offset_distance": 4,
-        "vehicle_code": 613,
+        "vehicle_code": 614,
         "wheelbase": 5.250
     },
     "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1903366168934424576"
+    "key": "ids:mine:dispatch:planPath:result:1904076902219718656"
 }

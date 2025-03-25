@@ -342,6 +342,7 @@ bool Planning::RandomOffsetWithoutCuravture() {
     // 从集合中随机选择一个权重
     weight = weights[dis(gen)];
     threadLogger_->info("weight：{}", weight);
+
     vector<pair<int, int>> reverse_section, forward_section;
 
     int  start = 0, end = 0;
@@ -495,7 +496,7 @@ bool Planning::RandomOffsetWithoutCuravture() {
 }
 
 float Planning::CalculateOffSetWithoutCuravture(int index, int sum, float weight) {
-    float L = 0.3 * weight; // 控制默认偏移量
+    float L = vehicle_param_.offset_distance * weight; // 控制默认偏移量
     L       = L * WeightFunction(index, sum);
     return L;
 }
@@ -892,13 +893,13 @@ bool Planning::PathOffset() {
     // 设置temp中，每个点的offset_flag信息，来确定此次规划任务需要偏移的路段，true表示需要偏移，false表示不需要偏移
     for (int i = 0; i < global_path_.size(); i++) {
         if (global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
-            for (int j = i - 10; j < i + 10; j++) {
+            for (int j = i - 20; j < i + 20; j++) {
                 if (j >= 0 && j < global_path_.size()) {
                     global_path_.at(j).offset_flag = false; // 将过磅点和洗车点左右10m设置为无需偏移的路段
                 }
             }
         }
-        if (global_path_.at(i).direction == 1) {
+        if (global_path_.at(i).direction == 1 || global_path_.at(i).attribute == PointAttribute::narrow_road) {
             global_path_.at(i).offset_flag = false; // 将倒车的路段offset_flag也设置为false,即不需要进行偏移
         }
 
