@@ -899,7 +899,7 @@ bool Planning::PathOffset() {
                 }
             }
         }
-        if (global_path_.at(i).direction == 1 || global_path_.at(i).attribute == PointAttribute::narrow_road) {
+        if (global_path_.at(i).direction == 1) {
             global_path_.at(i).offset_flag = false; // 将倒车的路段offset_flag也设置为false,即不需要进行偏移
         }
 
@@ -1402,6 +1402,7 @@ void Planning::CurvatureCal(vector<_TrajectoryPoint>& input_path) {
 }
 void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
     // 得到节点和固定点索引
+    vector<_TrajectoryPoint>    origin_path = input_path;
     unordered_set<unsigned int> cusp_set, fixpoint_set;
     for (unsigned int i = 1; i < input_path.size(); ++i) {
         if (input_path.at(i).direction != input_path.at(i - 1).direction) {
@@ -1436,8 +1437,10 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
 
     // 梯度下降法迭代优化
     while (iterations++ < max_opti_num) {
+        input_path = origin_path;
         for (unsigned int i = 2; i < input_path.size() - 2; i++) {
             if (fixpoint_set.count(i)) {
+                threadLogger_->info("第 {} 个点跳过", i);
                 continue;
             }
             // 优化路径的当前点前两点、当前点、当前点后两点及原路径当前点
@@ -1455,6 +1458,16 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
             input_path.at(i).x -= coeff.at(i) * 0.1 * (e1 - 4 * d1 + 6 * c1 - 4 * b1 + a1);
             input_path.at(i).y -= coeff.at(i) * 0.1 * (e2 - 4 * d2 + 6 * c2 - 4 * b2 + a2);
         }
+
+        // auto curvature_exceed = CurvatureCheck(input_path);
+        // threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
+        // if (!curvature_exceed.empty()) // 若无碰撞且曲率不超标
+        // {
+        //     for (unsigned int i = 0; i < curvature_exceed.size(); i++) {
+        //         unsigned int index = curvature_exceed.at(i);
+        //         fixpoint_set.insert(index);
+        //     }
+        // }
     }
 
     for (unsigned int i = 1; i < input_path.size() - 1; i++) {
@@ -1671,4 +1684,20 @@ PlanResult Planning::FindBestTrajectory(_SinglePoint& input_point, int& search_e
     // Helper::RemoveBeforeSamePoint(result_trajectory);
     threadLogger_->info("规划成功，返回规划成功");
     return PlanResult::Plan_OK;
+}
+
+vector<unsigned int> Planning::CurvatureCheck(vector<_TrajectoryPoint>& input_path) {
+    CurvatureCal(input_path);
+    vector<unsigned int> curvature_exceed_point;
+    curvature_exceed_point.clear();
+    for (unsigned int i = 1; i < input_path.size() - 1; i++) {
+        double curvature = input_path.at(i).curvature;
+        if (fabs(curvature) > vehicle_param_.curvature_threshold) {
+            threadLogger_->info("第 {} 个点曲率超标，点坐标为({},{}),曲率为{},此点将被列为anchor点", i, input_path.at(i).x, input_path.at(i).y, input_path.at(i).curvature);
+            curvature_exceed_point.push_back(i);
+            curvature_exceed_point.push_back(i - 1);
+            curvature_exceed_point.push_back(i + 1);
+        }
+    }
+    return curvature_exceed_point;
 }
