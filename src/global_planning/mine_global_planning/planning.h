@@ -43,7 +43,7 @@ class Planning {
     bool ApplyHibridAStar(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, int plan_rule_id);
 
 
-    PlanResult ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id);
+    PlanResult ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id, int max_search_index);
 
     /**
      * @brief
@@ -147,14 +147,13 @@ class Planning {
     bool                 JudgeFittingDirection();
     bool                 IsShortDistance();
     bool                 HasSearched(int start, int end);
-    bool                 PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag, std::vector<curve::Point>& output_path);
+    bool                 PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag);
     float                ReferencelineTotalDis(pair<int, int>& input_pair, int start_index, int end_index);
     void                 CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
     void                 CalculateStation(const vector<double>& xs, const vector<double>& ys);
     void                 CurvatureCal(vector<_TrajectoryPoint>& input_path);
     void                 SmoothPath(vector<_TrajectoryPoint>& input_path);
     void                 FillErrorCode(PlanResult result);
-    PlanResult           FindBestTrajectory(_SinglePoint& input_point, int& search_end_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id);
     vector<unsigned int> CurvatureCheck(vector<_TrajectoryPoint>& input_path);
 
   public:

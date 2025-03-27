@@ -45,7 +45,7 @@ enum class PlanResult {
     Plan_Infeasible                 = 1,  // 无可行路径
     Plan_Overtime                   = 2,  // 规划超时
     StartPoint_Collision            = 3,  // 起点碰撞
-    StartPoint_Unreasonable         = 4,  // 当前车辆太靠近洗车或过磅点且后方区域太窄
+    StartPoint_Unreasonable         = 4,  // 当前车辆位置不合理
     EndPoint_Deviation              = 5,  // 终点不可行
     EndPoint_Collision              = 6,  // 终点不可行
     EndPoint_Infeasible             = 7,  // 终点不可达
@@ -57,9 +57,9 @@ enum class PlanResult {
 enum struct ErrorType : unsigned int {
     SUCCESS                                           = 0,
     Plan_Infeasible                                   = 1,  // Plan_Infeasible 起点距离地图边界太近，请挪动车辆
-    UnReasonable_Task                                 = 2,  // Plan_Overtime  当前车辆位置前方区域太窄，无法穿越或掉头，请调整车辆位置
+    UnReasonable_Task                                 = 2,  // Plan_Overtime  当前车辆位置前、后方区域太窄，请将车挪至空旷地带
     StartPoint_Collision                              = 3,  // StartPoint_Collision 当前车辆位置与地图边界干涉，请挪车至地图区域内
-    StartPoint_Unreasonable                           = 4,  // StartPoint_Unreasonable 当前车辆太靠近洗车或过磅点，且前后方区域太窄，无法搜索出轨迹，请调整车辆位置
+    StartPoint_Unreasonable                           = 4,  // StartPoint_Unreasonable 当前车辆位置不合理，请调整车辆位置
     EndPoint_Deviation                                = 5,  // EndPoint_Deviation 当前任务终点不位于参考路径上，请后台系统人员排查问题
     EndPoint_Collision                                = 6,  // EndPoint_Collision  当前任务终点与地图边界干涉，请调整任务终点
     EndPoint_Infeasible                               = 7,  // EndPoint_Infeasible 当前任务终点距离边界太近，无法成功规划到此位置的轨迹，请调整目标点角度或位置
