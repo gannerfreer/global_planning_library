@@ -968,19 +968,15 @@ PlanResult Planning::HybirdAStarFitting() {
     bool   start_need_fitting     = false;
     bool   load_unload_start_flag = false; // 此标志位为true时，表明是从装载点\卸载点出来的调度任务
     bool   success_flag           = false;
-    double lon_dis                = 0;
+    double nearest_distance       = 0;
     // 这里的逻辑主要是区分global_path位于start_point_前方还是后方，如果是前方，配合start_lat_dis_和start_lon_dis_来判断是常规调度还是装载点调度
-    if (global_path_.size() > 1) {
-        lon_dis = (start_point_.x - global_path_.at(1).x) * cos(global_path_.at(1).yaw) + (start_point_.y - global_path_.at(1).y) * sin(global_path_.at(1).yaw);
-    }
-    else {
-        lon_dis = (start_point_.x - global_path_.front().x) * cos(global_path_.front().yaw) + (start_point_.y - global_path_.front().y) * sin(global_path_.front().yaw);
-    }
-    threadLogger_->info("起点与参考路径第一个点的纵向距离:{}", lon_dis);
-    if (start_lat_dis_ > 0.2 || fabs(start_lon_dis_) > 0.8 || start_angle_diff_ > 8.0 / 180.0 * M_PI) {
-        threadLogger_->info("起点与参考路径的横向距离：{}  纵向距离：{}", start_lat_dis_, start_lon_dis_);
+    nearest_distance = hypot(start_point_.x - global_path_.front().x, start_point_.y - global_path_.front().y);
+    threadLogger_->info("起点与参考路径最近点的几何距离:{},其中，横向距离：{},纵向距离：{}", nearest_distance, start_lat_dis_, start_lon_dis_);
+
+    if (fabs(start_lat_dis_) > 0.2 || fabs(start_lon_dis_) > 0.8 || start_angle_diff_ > 8.0 / 180.0 * M_PI) {
         start_need_fitting = true;
-        if ((start_lat_dis_ > 10 || fabs(start_lon_dis_) > 10) && (lon_dis + 10) < eps) {
+
+        if (nearest_distance > fabs(start_lat_dis_) && nearest_distance > fabs(start_lon_dis_)) {
             // 说明这是个从卸载点（无参考路径情况下）或从装载点出发的任务，由于可能有乱石堆的存在，这种直线延伸距离需要额外自行配置
             load_unload_start_flag = true;
         }
@@ -1015,6 +1011,7 @@ PlanResult Planning::HybirdAStarFitting() {
                     max_search_index = 0;
                 }
                 threadLogger_->info("结合特殊点位置，最终确定hybridA*前向搜索截至距离为{}", max_search_index);
+
 
                 result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time, max_search_index);
                 if (result != PlanResult::Plan_OK) {
