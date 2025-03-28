@@ -33,7 +33,7 @@
         "speed_error_term": 0.1,
         "turnning_penalty": 2.468,
         "path_voronoi_term": 1,
-        "safe_margin_bound": 0.5,
+        "safe_margin_bound": 0.3,
         "safe_margin_error": 0,
         "speed_limit_level": 1,
         "speed_smooth_term": 0.01,

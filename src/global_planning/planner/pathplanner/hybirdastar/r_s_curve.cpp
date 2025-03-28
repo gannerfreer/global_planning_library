@@ -252,24 +252,61 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
         np.direction = directions; // directions维持之前原样
         rs_path.push_back(np);
     }
-    // 为避免出现过于稠密的点，需要进行去重，去掉前面的点,去重间隔为step_size/2.0
-    if (rs_path.size() > 2) {
-        // 反转轨迹
-        std::reverse(rs_path.begin(), rs_path.end());
-        // 应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
-        int slow = 0, fast = 0;
-        while (fast < rs_path.size()) {
-            if (slow == 0 || hypot(rs_path.at(fast).x - rs_path.at(slow - 1).x, rs_path.at(fast).y - rs_path.at(slow - 1).y) > step_size * m_vehicle_prarm_.radious / 2.0) {
-                rs_path.at(slow) = rs_path.at(fast);
-                slow++;
+    // // 为避免出现过于稠密的点，需要进行去重，去掉前面的点,去重间隔为step_size/2.0
+    // if (rs_path.size() > 2) {
+    //     // 反转轨迹
+    //     std::reverse(rs_path.begin(), rs_path.end());
+    //     // 应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
+    //     int slow = 0, fast = 0;
+    //     while (fast < rs_path.size()) {
+    //         if (slow == 0 || hypot(rs_path.at(fast).x - rs_path.at(slow - 1).x, rs_path.at(fast).y - rs_path.at(slow - 1).y) > step_size * m_vehicle_prarm_.radious / 2.0) {
+    //             rs_path.at(slow) = rs_path.at(fast);
+    //             slow++;
+    //         }
+    //         fast++;
+    //     }
+    //     // 保留不重复的部分
+    //     rs_path.resize(slow);
+    //     // 再次反转以恢复原始顺序
+    //     std::reverse(rs_path.begin(), rs_path.end());
+    // }
+
+
+    Path result;
+
+    int n = rs_path.size();
+
+
+    int start_index = 0;
+    for (int i = 1; i <= n; ++i) {
+        if (i == n || rs_path[i].direction != rs_path[start_index].direction) {
+            int end_index = i - 1;
+            if (start_index == end_index) {
+                // 某段只有一个点，保留该点
+                result.push_back(rs_path[start_index]);
             }
-            fast++;
+            else {
+                // 保留每段的第一个点
+                result.push_back(rs_path[start_index]);
+                Point lastKept = rs_path[start_index];
+                for (int j = start_index + 1; j < end_index; ++j) {
+                    if (hypot(lastKept.x - rs_path[j].x, rs_path[j].y - lastKept.y) > step_size * m_vehicle_prarm_.radious / 2.0) {
+                        result.push_back(rs_path[j]);
+                        lastKept = rs_path[j];
+                    }
+                }
+                // 检查倒数第二个点和最后一个点的间距
+                if (end_index - start_index > 1 && hypot(result.back().x - rs_path[end_index].x, result.back().y - rs_path[end_index].y) <= step_size * m_vehicle_prarm_.radious / 2.0) {
+                    result.pop_back();
+                }
+                // 保留每段的最后一个点
+                result.push_back(rs_path[end_index]);
+            }
+            start_index = i;
         }
-        // 保留不重复的部分
-        rs_path.resize(slow);
-        // 再次反转以恢复原始顺序
-        std::reverse(rs_path.begin(), rs_path.end());
     }
+    rs_path.clear();
+    rs_path = result;
 }
 
 /**
