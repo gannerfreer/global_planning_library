@@ -123,7 +123,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
     }
     file_out.close();
-    // SmoothPath(global_path_);
+    SmoothPath(global_path_);
     // 计算累计s
     Helper::CalDistance(global_path_);
     CurvatureCal(global_path_);
@@ -976,8 +976,8 @@ PlanResult Planning::HybirdAStarFitting() {
     if (fabs(start_lat_dis_) > 0.2 || fabs(start_lon_dis_) > 0.8 || start_angle_diff_ > 8.0 / 180.0 * M_PI) {
         start_need_fitting = true;
 
-        if (nearest_distance > fabs(start_lat_dis_) && nearest_distance > fabs(start_lon_dis_)) {
-            // 说明这是个从卸载点（无参考路径情况下）或从装载点出发的任务，由于可能有乱石堆的存在，这种直线延伸距离需要额外自行配置
+        if (nearest_distance > 20) {
+            // nearest_distance>20之间诶判定从卸载点（无参考路径情况下）或从装载点出发的任务，由于可能有乱石堆的存在，这种直线延伸距离需要额外自行配置
             load_unload_start_flag = true;
         }
     }
@@ -1387,36 +1387,36 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
     // 梯度下降法迭代优化
     while (iterations++ < max_opti_num) {
         input_path = origin_path;
-        for (unsigned int i = 2; i < input_path.size() - 2; i++) {
+        for (unsigned int i = 1; i < input_path.size() - 1; i++) {
             if (fixpoint_set.count(i)) {
                 threadLogger_->info("第 {} 个点跳过", i);
                 continue;
             }
             // 优化路径的当前点前两点、当前点、当前点后两点及原路径当前点
-            a1 = input_path.at(i - 2).x;
-            a2 = input_path.at(i - 2).y;
+            // a1 = input_path.at(i - 2).x;
+            // a2 = input_path.at(i - 2).y;
             b1 = input_path.at(i - 1).x;
             b2 = input_path.at(i - 1).y;
             c1 = input_path.at(i).x;
             c2 = input_path.at(i).y;
             d1 = input_path.at(i + 1).x;
             d2 = input_path.at(i + 1).y;
-            e1 = input_path.at(i + 2).x;
-            e2 = input_path.at(i + 2).y;
+            // e1 = input_path.at(i + 2).x;
+            // e2 = input_path.at(i + 2).y;
 
-            input_path.at(i).x -= coeff.at(i) * 0.1 * (e1 - 4 * d1 + 6 * c1 - 4 * b1 + a1);
-            input_path.at(i).y -= coeff.at(i) * 0.1 * (e2 - 4 * d2 + 6 * c2 - 4 * b2 + a2);
+            input_path.at(i).x += coeff.at(i) * 0.5 * (b1 + d1 - 2 * c1);
+            input_path.at(i).y += coeff.at(i) * 0.5 * (b2 + d2 - 2 * c2);
         }
 
-        // auto curvature_exceed = CurvatureCheck(input_path);
-        // threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
-        // if (!curvature_exceed.empty()) // 若无碰撞且曲率不超标
-        // {
-        //     for (unsigned int i = 0; i < curvature_exceed.size(); i++) {
-        //         unsigned int index = curvature_exceed.at(i);
-        //         fixpoint_set.insert(index);
-        //     }
-        // }
+        auto curvature_exceed = CurvatureCheck(input_path);
+        threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
+        if (!curvature_exceed.empty()) // 若无碰撞且曲率不超标
+        {
+            for (unsigned int i = 0; i < curvature_exceed.size(); i++) {
+                unsigned int index = curvature_exceed.at(i);
+                fixpoint_set.insert(index);
+            }
+        }
     }
 
     for (unsigned int i = 1; i < input_path.size() - 1; i++) {
