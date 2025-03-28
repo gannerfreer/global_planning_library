@@ -33,7 +33,7 @@ void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::Const
     start_point.x   = msg->pose.pose.position.x;
     start_point.y   = msg->pose.pose.position.y;
     start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    // start_point.x   = -385.70486017117776 - x_o_;
+    // start_point.x   = -38.922159011576476 - x_o_;
     // start_point.y   = 410.48929834189175 - y_o_;
     // start_point.yaw = 264.3038330078125 / 180.0 * M_PI;
 
