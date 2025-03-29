@@ -69,16 +69,12 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("PathPlanning 成功");
     cout << "PathPlanning 成功" << endl;
 
-    // 只针对DISPATCH任务进行参考路径拼接
-    //  HybirdA*拟合：起点、终点需要拟合则拟合，否则跳过
-    if (task_type_ == TaskType::DISPATCH) {
-        result = HybirdAStarFitting();
-        if (result != PlanResult::Plan_OK) {
-            threadLogger_->info("hybridA*算法在处理起点到参考路径拟合的路段失败");
-            cout << "hybridA*算法在处理起点到参考路径拟合的路段失败" << endl;
-            FillErrorCode(result);
-            return;
-        }
+    result = HybirdAStarFitting();
+    if (result != PlanResult::Plan_OK) {
+        threadLogger_->info("hybridA*算法在处理起点到参考路径拟合的路段失败");
+        cout << "hybridA*算法在处理起点到参考路径拟合的路段失败" << endl;
+        FillErrorCode(result);
+        return;
     }
 
     // 处理路径点只有2个的情况，这种case无法执行后续的速度规划逻辑，只能在此进行特殊处理
@@ -123,7 +119,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
         file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
     }
     file_out.close();
-    SmoothPath(global_path_);
+    // SmoothPath(global_path_);
     // 计算累计s
     Helper::CalDistance(global_path_);
     CurvatureCal(global_path_);
@@ -188,7 +184,7 @@ void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
 
 
 PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id, int max_search_index) {
-    long long    time_threshold    = 0.4 * 1000 * 1000;
+    long long    time_threshold    = 0.2 * 1000 * 1000;
     int          counter           = 0;
     bool         success_flag      = false;
     bool         verification_flag = false;
@@ -786,6 +782,10 @@ PlanResult Planning::FollowReferencelinePlanning() {
         cost2    = temp_start_distance * vehicle_param_.cost_ratio;
         cost3    = ReferencelineTotalDis(i.first, temp_start_index, temp_end_index);
         i.second = cost1 + cost2 + cost3;
+        if (temp_start_distance <= 1.0) // 如果有参考路径起点几何距离小于1m，那么坚定不移的选择这条参考路径
+        {
+            i.second = 0;
+        }
         threadLogger_->info("路径对 {}--{}  cost1: {}  cost2: {}(放大系数：{})  cost3: {}  total_cost:{}", sequence_mapping_.at(i.first.first), sequence_mapping_.at(i.first.second), cost1, cost2, vehicle_param_.cost_ratio, cost3, cost1 + cost2 + cost3);
         cout << "路径对" << sequence_mapping_.at(i.first.first) << "--" << sequence_mapping_.at(i.first.second) << "  cost1:" << cost1 << " cost2:" << cost2 << " cost3:" << cost3 << endl;
     }
@@ -986,9 +986,9 @@ PlanResult Planning::HybirdAStarFitting() {
     // 只看起点
     if (start_need_fitting) // 起点需要进行HybirdA*拟合
     {
-        int start_point_offset_distance = 3, end_point_offset_distance = 3;
+        int start_point_offset_distance = vehicle_param_.load_point_start_offset_distance, end_point_offset_distance = 1;
         while (start_point_offset_distance >= 0) {
-            end_point_offset_distance = 3;
+            end_point_offset_distance = 1;
             while (end_point_offset_distance >= 0) {
                 my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
                 my_optimal_path_.end_offset_distance_   = end_point_offset_distance;
@@ -1075,6 +1075,9 @@ PlanResult Planning::HybirdAStarFitting() {
     my_optimal_path_.DeleteVoronoiSpace(false);
     if (load_unload_start_flag) {
         return PlanResult::Leaving_Load_Point_Too_Close;
+    }
+    if (result == PlanResult::EndPoint_Collision) {
+        return PlanResult::StartPoint_Unreasonable;
     }
     return result;
 

@@ -16,7 +16,7 @@
     "path_smoothness_term": 0.1,
     "backward_penalty": 5.5,
     "turnning_penalty": 2.468,
-    "safe_margin_bound": 0.3,
+    "safe_margin_bound": 0.2,
     "safe_margin_error": 0.0,
     "veh_center_2_side": 1.80,
     "angle_discrete_num": 5,
