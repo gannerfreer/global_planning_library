@@ -782,7 +782,7 @@ PlanResult Planning::FollowReferencelinePlanning() {
         cost2    = temp_start_distance * vehicle_param_.cost_ratio;
         cost3    = ReferencelineTotalDis(i.first, temp_start_index, temp_end_index);
         i.second = cost1 + cost2 + cost3;
-        if (temp_start_distance <= 1.0) // 如果有参考路径起点几何距离小于1m，那么坚定不移的选择这条参考路径
+        if (temp_start_distance <= 1.0 && temp_start_angle_diff < M_PI / 2) // 如果有参考路径起点几何距离小于1m，那么坚定不移的选择这条参考路径
         {
             i.second = 0;
         }
@@ -986,7 +986,11 @@ PlanResult Planning::HybirdAStarFitting() {
     // 只看起点
     if (start_need_fitting) // 起点需要进行HybirdA*拟合
     {
-        int start_point_offset_distance = vehicle_param_.load_point_start_offset_distance, end_point_offset_distance = 1;
+        int start_point_offset_distance = 4;
+        if (load_unload_start_flag) {
+            start_point_offset_distance = vehicle_param_.load_point_start_offset_distance;
+        }
+        int end_point_offset_distance = 1;
         while (start_point_offset_distance >= 0) {
             end_point_offset_distance = 1;
             while (end_point_offset_distance >= 0) {
