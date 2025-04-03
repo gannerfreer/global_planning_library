@@ -234,7 +234,7 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
             }
         }
 
-        if (counter > 18) {
+        if (counter > 8) {
             threadLogger_->info("最多搜索18个点");
             return result;
         }
