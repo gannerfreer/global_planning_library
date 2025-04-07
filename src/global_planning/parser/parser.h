@@ -546,6 +546,14 @@ _TarStartEnd ParseJson(char* str) {
                 cout << "无法找到车参 cost_ratio ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.cost_ratio = 3;
             }
+
+            if (val.HasMember("sample_num") && val["sample_num"].IsNumber()) {
+                veh_start_end.veh_param.sample_num = val["sample_num"].GetUint();
+            }
+            else {
+                cout << "无法找到车参 sample_num ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.sample_num = 8;
+            }
         }
     }
 

@@ -237,6 +237,7 @@ struct _VehicleParam {
     float           max_steering_wheel_speed         = 0.1396;
     int             max_search_distance              = 50;
     int             cost_ratio                       = 3;
+    int             sample_num                       = 8;
 };
 
 // 调用全局规划时，需要传入的参数

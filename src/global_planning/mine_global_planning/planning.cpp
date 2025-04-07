@@ -234,8 +234,8 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
             }
         }
 
-        if (counter > 8) {
-            threadLogger_->info("最多搜索18个点");
+        if (counter > vehicle_param_.sample_num) {
+            threadLogger_->info("最多搜索 {} 个点", vehicle_param_.sample_num);
             return result;
         }
     }
@@ -752,7 +752,7 @@ PlanResult Planning::FollowReferencelinePlanning() {
     // 从success_pair中挑选最优的路径对
     int                               min = INT_MAX;
     pair<int, int>                    best_pair;
-    vector<pair<pair<int, int>, int>> record;
+    vector<pair<pair<int, int>, int>> record, record1, record2;
     for (int i = 0; i < success_pair.size(); i++) {
         record.push_back(pair<pair<int, int>, int>(success_pair.at(i), 0));
     }
@@ -784,25 +784,45 @@ PlanResult Planning::FollowReferencelinePlanning() {
         i.second = cost1 + cost2 + cost3;
         if (temp_start_distance <= 1.0 && temp_start_angle_diff < M_PI / 2) // 如果有参考路径起点几何距离小于1m，那么坚定不移的选择这条参考路径
         {
-            i.second = 0;
+            record1.push_back(i);
         }
-        threadLogger_->info("路径对 {}--{}  cost1: {}  cost2: {}(放大系数：{})  cost3: {}  total_cost:{}", sequence_mapping_.at(i.first.first), sequence_mapping_.at(i.first.second), cost1, cost2, vehicle_param_.cost_ratio, cost3, cost1 + cost2 + cost3);
+        else {
+            record2.push_back(i);
+        }
+        threadLogger_->info("路径对 {}--{}  cost1: {}  cost2: {}(放大系数：{})  cost3: {}  total_cost:{}", sequence_mapping_.at(i.first.first), sequence_mapping_.at(i.first.second), cost1, cost2, vehicle_param_.cost_ratio, cost3, i.second);
         cout << "路径对" << sequence_mapping_.at(i.first.first) << "--" << sequence_mapping_.at(i.first.second) << "  cost1:" << cost1 << " cost2:" << cost2 << " cost3:" << cost3 << endl;
     }
     threadLogger_->info("计算代价完毕");
     cout << "计算代价完毕" << endl;
     float min_cost  = FLT_MAX;
     int   min_index = -1;
-    for (int i = 0; i < record.size(); i++) {
-        if (record.at(i).second < min_cost) {
-            min_cost  = record.at(i).second;
-            min_index = i;
+    // 先优先从record1中选择,如果recrod1为空，则从record2中选择
+    if (!record1.empty()) {
+        for (int i = 0; i < record1.size(); i++) {
+            if (record1.at(i).second < min_cost) {
+                min_cost  = record1.at(i).second;
+                min_index = i;
+            }
         }
+        threadLogger_->info("min_index:{}", min_index);
+        cout << "min_index:" << min_index << endl;
+        best_pair.first  = record1.at(min_index).first.first;
+        best_pair.second = record1.at(min_index).first.second;
     }
-    threadLogger_->info("min_index:{}", min_index);
-    cout << "min_index:" << min_index << endl;
-    best_pair.first  = record.at(min_index).first.first;
-    best_pair.second = record.at(min_index).first.second;
+    else {
+        for (int i = 0; i < record2.size(); i++) {
+            if (record2.at(i).second < min_cost) {
+                min_cost  = record2.at(i).second;
+                min_index = i;
+            }
+        }
+        threadLogger_->info("min_index:{}", min_index);
+        cout << "min_index:" << min_index << endl;
+        best_pair.first  = record2.at(min_index).first.first;
+        best_pair.second = record2.at(min_index).first.second;
+    }
+
+
     threadLogger_->info("找到的最优路径对：{} --{}", best_pair.first, best_pair.second);
     cout << "找到的最优路径对 " << best_pair.first << "  " << best_pair.second << endl;
 
