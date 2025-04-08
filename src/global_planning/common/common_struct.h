@@ -250,6 +250,16 @@ struct _TarStartEnd {
     string                       my_key;
 };
 
+struct _HumanVechicleInfo {
+    _SinglePoint pos; // 起点
+    string       id;
+};
+// 调用有人车未来路径预测时，需要传入的参数
+struct _AllHumanVechicleInfos {
+    vector<_HumanVechicleInfo> human_vechicle_infos; // 有人车路位姿信息
+    string                     my_key;
+};
+
 struct GridPoint {
     GridPoint() : x(0.0), y(0.0), z(0.0), length(0.0), width(0.0), height(0.0) {}
     double x;

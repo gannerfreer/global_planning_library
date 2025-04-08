@@ -46,6 +46,12 @@ class GlobalVariable // 单例类
     const std::map<int, _SingleTraj>& GetAllReferencelines() const {
         return all_referencelines_;
     }
+    const std::map<int, _SingleTraj>& GetAllSelfDrivingReferencelines() const {
+        return all_self_driving_referencelines_;
+    }
+    const std::map<int, _SingleTraj>& GetAllHumanDrivingReferencelines() const {
+        return all_human_driving_referencelines_;
+    }
 
     const std::map<int, std::vector<int>>& GetReferencelineRelation() const {
         return referenceline_relation_;
@@ -80,10 +86,17 @@ class GlobalVariable // 单例类
     void SetAllReferencelines(const std::map<int, _SingleTraj>& newAllReferencelines) {
         all_referencelines_ = newAllReferencelines;
     }
+    void SetAllSelfDrivingReferencelines(const std::map<int, _SingleTraj>& newAllReferencelines) {
+        all_self_driving_referencelines_ = newAllReferencelines;
+    }
+    void SetAllHumanDrivingReferencelines(const std::map<int, _SingleTraj>& newAllReferencelines) {
+        all_human_driving_referencelines_ = newAllReferencelines;
+    }
 
     void SetReferencelineRelation(const std::map<int, std::vector<int>>& newReferencelineRelation) {
         referenceline_relation_ = newReferencelineRelation;
     }
+
 
     void SetReferencelineGraph(const std::vector<std::vector<double>>& newReferencelineGraph) {
         referenceline_graph_ = newReferencelineGraph;
@@ -117,6 +130,8 @@ class GlobalVariable // 单例类
   private:
     vector<_BorderPoint>   map_border_;
     map<int, _SingleTraj>  all_referencelines_;
+    map<int, _SingleTraj>  all_self_driving_referencelines_;
+    map<int, _SingleTraj>  all_human_driving_referencelines_;
     map<int, vector<int>>  referenceline_relation_;
     vector<vector<double>> referenceline_graph_;
     vector<int>            sequence_mapping_; // 序列映射关系

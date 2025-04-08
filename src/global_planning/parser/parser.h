@@ -19,7 +19,7 @@ namespace GlobalPlanning {
 namespace Parser {
 using namespace rapidjson;
 
-_TarStartEnd ParseJson(char* str) {
+_TarStartEnd ParseGlobalPlanningJson(char* str) {
     _TarStartEnd        veh_start_end;
     rapidjson::Document doc;
     doc.Parse(str);
@@ -791,12 +791,14 @@ bool GetMap(char* parea) {
 
     // 解析reference_trajs
     const Value&          trajsArray = doc["reference_trajs"];
-    map<int, _SingleTraj> m_traj;
+    map<int, _SingleTraj> m_traj, m_traj_self_driving, m_traj_human_driving;
     _SingleTraj           traj;
     _TrajectoryPoint      tp;
+    int                   traj_type = -1;
     for (SizeType i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
         traj.id                      = trajsArray[i]["id"].GetInt();
+        traj_type                    = trajsArray[i]["type"].GetInt();
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
         for (SizeType j = 0; j < trajPointsArray.Size(); j++) {
             tp.x         = trajPointsArray[j]["x"].GetDouble();
@@ -809,8 +811,16 @@ bool GetMap(char* parea) {
             traj.trajectory.push_back(tp);
         }
         m_traj[traj.id] = traj;
+        if (traj_type == 0 || traj_type == 2) {
+            m_traj_self_driving[traj.id] = traj;
+        }
+        else if (traj_type == 1) {
+            m_traj_human_driving[traj.id] = traj;
+        }
     }
     GlobalVariable::getInstance()->SetAllReferencelines(m_traj);
+    GlobalVariable::getInstance()->SetAllSelfDrivingReferencelines(m_traj_self_driving);
+    GlobalVariable::getInstance()->SetAllHumanDrivingReferencelines(m_traj_human_driving);
 
 
     // 解析relation
@@ -834,6 +844,195 @@ bool GetMap(char* parea) {
     GlobalVariable::getInstance()->CreateDirectedGraph(GlobalVariable::getInstance()->GetReferencelineRelation());
 
     return true;
+}
+
+
+_AllHumanVechicleInfos ParseHumanVehPredictingJson(char* str) {
+    _AllHumanVechicleInfos all_human_vehicle_infos;
+    rapidjson::Document    doc;
+    doc.Parse(str);
+    if (doc.HasParseError()) {
+        cout << "parse失败......" << endl;
+    }
+    doc.GetAllocator();
+
+    const Value& vehInfoArray = doc["veh_info"];
+
+
+    for (SizeType i = 0; i < vehInfoArray.Size(); i++) {
+        const Value& vehInfo = vehInfoArray[i];
+
+        if (!vehInfo.IsObject()) {
+            std::cerr << "JSON 格式错误: veh_info 数组中的元素不是对象" << std::endl;
+            continue;
+        }
+
+        _HumanVechicleInfo humanVechicleInfo;
+
+        if (vehInfo.HasMember("x") && vehInfo["x"].IsDouble()) {
+            humanVechicleInfo.pos.x = vehInfo["x"].GetDouble();
+        }
+        else {
+            std::cerr << "JSON 格式错误: 缺少或类型错误的 x 字段" << std::endl;
+            continue;
+        }
+
+        if (vehInfo.HasMember("y") && vehInfo["y"].IsDouble()) {
+            humanVechicleInfo.pos.y = vehInfo["y"].GetDouble();
+        }
+        else {
+            std::cerr << "JSON 格式错误: 缺少或类型错误的 y 字段" << std::endl;
+            continue;
+        }
+
+        if (vehInfo.HasMember("yaw") && vehInfo["yaw"].IsDouble()) {
+            humanVechicleInfo.pos.yaw = vehInfo["yaw"].GetDouble();
+        }
+        else {
+            std::cerr << "JSON 格式错误: 缺少或类型错误的 yaw 字段" << std::endl;
+            continue;
+        }
+
+        if (vehInfo.HasMember("vehicle_code") && vehInfo["vehicle_code"].IsString()) {
+            humanVechicleInfo.id = vehInfo["vehicle_code"].GetString();
+        }
+        else {
+            std::cerr << "JSON 格式错误: 缺少或类型错误的 vehicle_code 字段" << std::endl;
+            continue;
+        }
+
+        all_human_vehicle_infos.human_vechicle_infos.push_back(humanVechicleInfo);
+    }
+    return all_human_vehicle_infos;
+}
+
+
+string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<_TrajectoryPoint>>& vec_wp) {
+    cout << "enter VecWaypoint2json" << endl;
+    // this_thread::sleep_for(chrono::milliseconds(100));
+    // cout << "VecWaypoint2json..." << endl;
+
+
+    time_t start_time, end_time;
+    time(&start_time);
+    rapidjson::StringBuffer                    strbuf;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(strbuf);
+
+    cout << "开始写json" << endl;
+    writer.StartObject();
+    cout << "执行完代码 writer.StartObject();" << endl;
+
+    writer.Key("trajectory_info");
+    cout << "执行完代码 writer.Key(trajectory_info )" << endl;
+    writer.StartArray();
+    cout << "执行完代码 writer.StartArray();" << endl;
+
+    cout << "执行完代码 if (vec_wp.size() == 0)" << endl;
+
+    for (size_t i = 0; i < vec_wp.size(); i++) {
+        writer.StartObject();
+        writer.Key("x");
+        writer.Double(vec_wp.at(i).x);
+
+        writer.Key("y");
+        writer.Double(vec_wp.at(i).y);
+
+        writer.Key("z");
+        writer.Double(0);
+
+        writer.Key("yaw");
+        writer.Double(vec_wp.at(i).yaw);
+
+        writer.Key("curvature");
+        writer.Double(vec_wp.at(i).curvature);
+
+        writer.Key("speed");
+        writer.Double(vec_wp.at(i).speed);
+
+        writer.Key("distance");
+        writer.Double(vec_wp.at(i).distance);
+
+        writer.Key("attribute");
+        writer.Uint(static_cast<int>(vec_wp.at(i).attribute));
+
+        writer.Key("speed_limit");
+        writer.Double(vec_wp.at(i).speed_limit);
+
+        writer.Key("direction");
+        writer.Int(vec_wp.at(i).direction);
+        writer.EndObject();
+    }
+    cout << "执行完代码  for (size_t i = 0; i < vec_wp.size(); i++)" << endl;
+    writer.EndArray();
+    cout << "执行完代码 writer.EndArray();" << endl;
+
+    writer.Key("vec_path");
+    cout << "执行完代码 writer.Key(vec_path);" << endl;
+    writer.StartArray();
+    cout << "执行完代码 writer.StartArray();" << endl;
+    if (plan_obj.road_sequence_.size() == 0) {
+        writer.Uint(999);
+        cout << "执行完代码 writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.start_key_))" << endl;
+    }
+    else {
+        for (size_t j = 0; j < plan_obj.road_sequence_.size(); j++) {
+            writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.road_sequence_.at(j)));
+        }
+        cout << "执行完代码 writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.road_sequence_.at(j)));" << endl;
+    }
+
+    writer.EndArray();
+    cout << "执行完代码 writer.EndArray();" << endl;
+
+    writer.Key("error_type");
+    writer.Uint(static_cast<unsigned char>(plan_obj.error_type_));
+    cout << "执行完代码 writer.Uint(static_cast<unsigned char>(plan_obj.error_type_));" << endl;
+
+
+    writer.EndObject();
+
+    cout << "执行完代码 writer.EndObject();" << endl;
+
+    GlobalVariable::getInstance()->SetGlobalStr(strbuf.GetString());
+    auto         currentTime = chrono::system_clock::now();
+    time_t       timestamp   = chrono::system_clock::to_time_t(currentTime);
+    stringstream ss;
+    ss << put_time(localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
+    string timeStr = ss.str();
+
+    // 构造文件路径
+    string filePath = timeStr + "_" + plan_obj.vehicle_code_ + "_output.json";
+
+    ofstream outputFile(filePath);
+    cout << "执行完代码 ofstream outputFile(filePath);;" << endl;
+    // 将JSON数据写入文件
+    outputFile << GlobalVariable::getInstance()->GetGlobalStr();
+    cout << "执行完代码 outputFile << GlobalVariable::getInstance()->GetGlobalStr();" << endl;
+    // 关闭文件流
+    outputFile.close();
+
+
+    cout << "规划库成功返回轨迹，欢迎下次光临                 " << timeStr << endl;
+    time(&end_time);
+
+    {
+        unique_lock<shared_mutex> lock(GlobalVariable::getInstance()->record_file_write_lock);
+        ofstream                  record;
+        std::string               folderPath = "record_file";
+        std::string               filePath   = folderPath + "/HumanVehPredicting_record.txt";
+        if (!fs::exists(folderPath)) {
+            try {
+                fs::create_directory(folderPath);
+            } catch (const fs::filesystem_error& e) {
+                std::cerr << "Error creating directory: " << e.what() << std::endl;
+            }
+        }
+        record.open(filePath, ios_base::app);
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.4.0.20250310_beta" << endl;
+        record.close();
+    }
+
+    return GlobalVariable::getInstance()->GetGlobalStr();
 }
 
 

@@ -22,10 +22,10 @@
 using namespace GlobalPlanning;
 // using namespace HybridAStar;
 using namespace rapidjson;
-class Planning {
+class Predicting {
   public:
-    Planning();
-    ~Planning();
+    Predicting();
+    ~Predicting();
 
     /**
      * @brief 类初始化函数，进行地图文件读取，相关参数初始化
@@ -162,13 +162,13 @@ class Planning {
     int    start_key_, end_key_, start_index_, end_index_;                                                                                                                 // 起点、终点匹配上的参考路径id以及在在参考路径上的具体索引
     double start_lat_dis_ = 0, start_lon_dis_ = 0, start_distance_ = 0, start_angle_diff_ = 0, end_lat_dis_ = 0, end_lon_dis_ = 0, end_distance_ = 0, end_angle_diff_ = 0; // 起点、终点与匹配上的参考路径的横纵向距离
 
-    vector<vector<double>>       road_directed_graph_;                 // 路段有向图
-    vector<_BorderPoint>         map_border_;                          // 地图外边界
-    vector<vector<_BorderPoint>> inner_borders_;                       // 内边界
-    map<int, _SingleTraj>        all_referencelines_for_self_driving_; // 所有可供无人车行使的参考路段
-    vector<_TrajectoryPoint>     global_path_;                         // 全局路径
-    vector<int>                  road_sequence_;                       // 路段拓扑结果
-    vector<int>                  sequence_mapping_;                    // 序列映射关系
+    vector<vector<double>>       road_directed_graph_; // 路段有向图
+    vector<_BorderPoint>         map_border_;          // 地图外边界
+    vector<vector<_BorderPoint>> inner_borders_;       // 内边界
+    map<int, _SingleTraj>        all_referencelines_;  // 所有可供有人车行驶的参考路段
+    vector<_TrajectoryPoint>     global_path_;         // 全局路径
+    vector<int>                  road_sequence_;       // 路段拓扑结果
+    vector<int>                  sequence_mapping_;    // 序列映射关系
 
     Dijkstra            dijkstra_;        // dijkstra对象
     OptimalPath         my_optimal_path_; // hibrid A star类的实例对象
