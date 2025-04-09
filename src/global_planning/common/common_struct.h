@@ -257,7 +257,7 @@ struct _HumanVechicleInfo {
 // 调用有人车未来路径预测时，需要传入的参数
 struct _AllHumanVechicleInfos {
     vector<_HumanVechicleInfo> human_vechicle_infos; // 有人车路位姿信息
-    string                     my_key;
+    string                     my_key = "test";
 };
 
 struct GridPoint {

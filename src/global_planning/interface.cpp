@@ -143,7 +143,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
         // 给planning对象的有向图、地图边界、路段进行赋值
         planning.road_directed_graph_ = GlobalVariable::getInstance()->GetReferencelineGraph();
         planning.map_border_          = GlobalVariable::getInstance()->GetMapBorder();
-        planning.all_referencelines_  = GlobalVariable::getInstance()->GetAllReferencelines();
+        planning.all_referencelines_  = GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines();
         planning.sequence_mapping_    = GlobalVariable::getInstance()->GetSequenceMapping();
         planning.threadLogger_->info("road_directed_graph_:{}", planning.road_directed_graph_.size());
         planning.threadLogger_->info("map_border_:{}", planning.map_border_.size());
@@ -314,8 +314,8 @@ char* PathPredicting(char* input_info) {
     cout << "**********************欢迎光临有人车路径预测接口,版本号:P_V1.4.0.20250310_beta************************************" << timeStr << endl;
     time_t start_time, end_time;
     time(&start_time);
-    Predicting                                      predicting;
-    std::map<string, std::vector<_TrajectoryPoint>> path;
+    Predicting                                                   predicting;
+    std::map<string, std::vector<std::vector<_TrajectoryPoint>>> all_path;
     // 解析传入的参数
     cout << "本次入參大小： " << strlen(input_info) << "strlen()计算方式" << endl;
     _AllHumanVechicleInfos all_human_vechicle_infos;
@@ -367,24 +367,24 @@ char* PathPredicting(char* input_info) {
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
                 predicting.threadLogger_->info("进锁成功");
-                string temp_string      = GlobalPlanning::Parser::HumanVehFurtureVecWaypoint2json(path, predicting);
+                string temp_string      = GlobalPlanning::Parser::HumanVehFurtureVecWaypoint2json(all_path, predicting);
                 int    temp_string_size = temp_string.size();
                 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
                 if (temp_string_size < 10) {
                     cout << "temp_string还没接就被释放了" << endl;
                     predicting.threadLogger_->info("出锁成功");
                 }
-                predicting.threadLogger_->info("VecWaypoint2json successfully");
+                predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
                 predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 predicting.threadLogger_->info("出锁成功");
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
 
-        // 给planning对象的有向图、地图边界、路段进行赋值
+        // 给predicting对象的有向图、地图边界、路段进行赋值
         predicting.road_directed_graph_ = GlobalVariable::getInstance()->GetReferencelineGraph();
         predicting.map_border_          = GlobalVariable::getInstance()->GetMapBorder();
-        predicting.all_referencelines_  = GlobalVariable::getInstance()->GetAllReferencelines();
+        predicting.all_referencelines_  = GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines();
         predicting.sequence_mapping_    = GlobalVariable::getInstance()->GetSequenceMapping();
         predicting.threadLogger_->info("road_directed_graph_:{}", predicting.road_directed_graph_.size());
         predicting.threadLogger_->info("map_border_:{}", predicting.map_border_.size());
@@ -393,155 +393,121 @@ char* PathPredicting(char* input_info) {
 
     } // 获取传入的内边界并将其存入对应的r区域内
 
-    if (!all_human_vechicle_infos.inner_borders.empty()) {
-        cout << "入参传入" << all_human_vechicle_infos.inner_borders.size() << "组内边界" << endl;
+    _HumanVechicleInfo                         veh_info;
+    std::vector<std::vector<_TrajectoryPoint>> path;
+    for (int i = 0; i < all_human_vechicle_infos.human_vechicle_infos.size(); i++) {
+        veh_info = all_human_vechicle_infos.human_vechicle_infos.at(i);
+        predicting.threadLogger_->info("id:{} pos:({},{},{})", veh_info.id, veh_info.pos.x, veh_info.pos.y, veh_info.pos.yaw);
+        // 起点
+        predicting.start_point_ = veh_info.pos;
         try {
-            predicting.inner_borders_ = all_human_vechicle_infos.inner_borders;
+            predicting.GlobalPathPlanningIntface(path);
+            all_path[veh_info.id] = path;
         } catch (const std::exception& e) {
-            cout << "规划库入参数解析，将内边界赋值给planning对象的成员变量时出现异常" << endl;
-            predicting.error_type_ = ErrorType::ALGORITHM_ERROR_PARAS_PARSE_FAIL;
+            cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;
+            predicting.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 exception 抛出");
+            predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
+            {
+                std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+                predicting.threadLogger_->info("进 return_write_lock 锁成功");
+                cout << "进 return_write_lock 锁成功" << endl;
+                string temp_string      = GlobalPlanning::Parser::HumanVehFurtureVecWaypoint2json(all_path, predicting);
+                int    temp_string_size = temp_string.size();
+                GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+                if (temp_string_size < 10) {
+                    cout << "temp_string还没接就被释放了" << endl;
+                    predicting.threadLogger_->info("temp_string还没接就被释放了");
+                }
+                predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
+                predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+                predicting.threadLogger_->info("即将出  return_write_lock 锁");
+                cout << "即将出  return_write_lock 锁" << endl;
+                return GlobalVariable::getInstance()->GetReceivePtr();
+            }
+        } catch (const std::out_of_range& e) {
+            // 处理数组越界异常
+            cout << "规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出" << endl;
+            predicting.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出");
+            predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
                 predicting.threadLogger_->info("进锁成功");
-                string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, predicting);
+                string temp_string      = GlobalPlanning::Parser::HumanVehFurtureVecWaypoint2json(all_path, predicting);
                 int    temp_string_size = temp_string.size();
                 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
                 if (temp_string_size < 10) {
                     cout << "temp_string还没接就被释放了" << endl;
                     predicting.threadLogger_->info("出锁成功");
                 }
-                predicting.threadLogger_->info("VecWaypoint2json successfully");
+                predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
                 predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 predicting.threadLogger_->info("出锁成功");
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
-    }
-    else {
-        predicting.threadLogger_->error("此次任务无inner_borders信息");
-    }
 
-    predicting.task_type_     = all_human_vechicle_infos.task_type;
-    predicting.vehicle_param_ = all_human_vechicle_infos.veh_param;
-    predicting.threadLogger_->info("start_point.x ={}", all_human_vechicle_infos.start_point.x);
-    predicting.threadLogger_->info("start_point.y ={}", all_human_vechicle_infos.start_point.y);
-    predicting.threadLogger_->info("start_point.z ={}", all_human_vechicle_infos.start_point.z);
-    predicting.threadLogger_->info("start_point.yaw ={}", all_human_vechicle_infos.start_point.yaw);
-    predicting.threadLogger_->info("end_point.x ={}", all_human_vechicle_infos.end_point.x);
-    predicting.threadLogger_->info("end_point.y ={}", all_human_vechicle_infos.end_point.y);
-    predicting.threadLogger_->info("end_point.z ={}", all_human_vechicle_infos.end_point.z);
-    predicting.threadLogger_->info("end_point.yaw ={}", all_human_vechicle_infos.end_point.yaw);
-    // 起点
-    predicting.start_point_ = all_human_vechicle_infos.start_point;
-    // 终点
-    predicting.end_point_ = all_human_vechicle_infos.end_point;
-
-    try {
-        predicting.GlobalPathPlanningIntface(path);
-    } catch (const std::exception& e) {
-        cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;
-        predicting.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 exception 抛出");
-        predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
-        {
-            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            predicting.threadLogger_->info("进 return_write_lock 锁成功");
-            cout << "进 return_write_lock 锁成功" << endl;
-            string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, predicting);
-            int    temp_string_size = temp_string.size();
-            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
-            if (temp_string_size < 10) {
-                cout << "temp_string还没接就被释放了" << endl;
-                predicting.threadLogger_->info("temp_string还没接就被释放了");
-            }
-            predicting.threadLogger_->info("VecWaypoint2json successfully");
-            predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            predicting.threadLogger_->info("即将出  return_write_lock 锁");
-            cout << "即将出  return_write_lock 锁" << endl;
-            return GlobalVariable::getInstance()->GetReceivePtr();
-        }
-    } catch (const std::out_of_range& e) {
-        // 处理数组越界异常
-        cout << "规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出" << endl;
-        predicting.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出");
-        predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
-        {
-            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            predicting.threadLogger_->info("进锁成功");
-            string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, predicting);
-            int    temp_string_size = temp_string.size();
-            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
-            if (temp_string_size < 10) {
-                cout << "temp_string还没接就被释放了" << endl;
+        try {
+            cout << "最后一步，将规划结果转为json格式字符串并返回" << endl;
+            predicting.threadLogger_->info("最后一步，返回字符指针");
+            {
+                std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+                predicting.threadLogger_->info("进锁成功");
+                string temp_string      = GlobalPlanning::Parser::HumanVehFurtureVecWaypoint2json(all_path, predicting);
+                int    temp_string_size = temp_string.size();
+                cout << "temp_string_size:" << temp_string_size << endl;
+                GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+                cout << "执行完 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data())" << endl;
+                if (temp_string_size < 10) {
+                    cout << "temp_string还没接就被释放了" << endl;
+                    predicting.threadLogger_->info("出锁成功");
+                }
+                cout << "返回轨迹" << endl;
+                predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
+                predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 predicting.threadLogger_->info("出锁成功");
+                return GlobalVariable::getInstance()->GetReceivePtr();
             }
-            predicting.threadLogger_->info("VecWaypoint2json successfully");
-            predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            predicting.threadLogger_->info("出锁成功");
-            return GlobalVariable::getInstance()->GetReceivePtr();
-        }
-    }
+        } catch (const std::exception& e) {
+            cout << "规划库执行 HumanVehFurtureVecWaypoint2json 时出现 exception 抛出" << endl;
+            predicting.threadLogger_->info("规划库执行 HumanVehFurtureVecWaypoint2json 时出现 exception 抛出");
+            predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
+            {
+                std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+                predicting.threadLogger_->info("进锁成功");
+                string temp_string      = GlobalPlanning::Parser::HumanVehFurtureVecWaypoint2json(all_path, predicting);
+                int    temp_string_size = temp_string.size();
 
-    try {
-        cout << "最后一步，将规划结果转为json格式字符串并返回" << endl;
-        predicting.threadLogger_->info("最后一步，返回字符指针");
-        {
-            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            predicting.threadLogger_->info("进锁成功");
-            string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, predicting);
-            int    temp_string_size = temp_string.size();
-            cout << "temp_string_size:" << temp_string_size << endl;
-            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
-            cout << "执行完 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data())" << endl;
-            if (temp_string_size < 10) {
-                cout << "temp_string还没接就被释放了" << endl;
-                predicting.threadLogger_->info("出锁成功");
-            }
-            cout << "返回轨迹" << endl;
-            predicting.threadLogger_->info("VecWaypoint2json successfully");
-            predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            predicting.threadLogger_->info("出锁成功");
-            return GlobalVariable::getInstance()->GetReceivePtr();
-        }
-    } catch (const std::exception& e) {
-        cout << "规划库执行 VecWaypoint2json 时出现 exception 抛出" << endl;
-        predicting.threadLogger_->info("规划库执行 VecWaypoint2json 时出现 exception 抛出");
-        predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
-        {
-            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            predicting.threadLogger_->info("进锁成功");
-            string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, predicting);
-            int    temp_string_size = temp_string.size();
+                GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+                if (temp_string_size < 10) {
+                    cout << "temp_string还没接就被释放了" << endl;
+                    predicting.threadLogger_->info("出锁成功");
+                }
+                predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
 
-            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
-            if (temp_string_size < 10) {
-                cout << "temp_string还没接就被释放了" << endl;
+                predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 predicting.threadLogger_->info("出锁成功");
+                return GlobalVariable::getInstance()->GetReceivePtr();
             }
-            predicting.threadLogger_->info("VecWaypoint2json successfully");
-
-            predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            predicting.threadLogger_->info("出锁成功");
-            return GlobalVariable::getInstance()->GetReceivePtr();
-        }
-    } catch (const std::out_of_range& e) {
-        // 处理数组越界异常
-        cout << "规划库执行 VecWaypoint2json 时出现 out_of_range 抛出" << endl;
-        predicting.threadLogger_->info("规划库执行 VecWaypoint2json 时出现 out_of_range 抛出");
-        predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
-        {
-            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            predicting.threadLogger_->info("进锁成功");
-            string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, predicting);
-            int    temp_string_size = temp_string.size();
-            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
-            if (temp_string_size < 10) {
-                cout << "temp_string还没接就被释放了" << endl;
+        } catch (const std::out_of_range& e) {
+            // 处理数组越界异常
+            cout << "规划库执行 HumanVehFurtureVecWaypoint2json 时出现 out_of_range 抛出" << endl;
+            predicting.threadLogger_->info("规划库执行 HumanVehFurtureVecWaypoint2json 时出现 out_of_range 抛出");
+            predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
+            {
+                std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+                predicting.threadLogger_->info("进锁成功");
+                string temp_string      = GlobalPlanning::Parser::HumanVehFurtureVecWaypoint2json(all_path, predicting);
+                int    temp_string_size = temp_string.size();
+                GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+                if (temp_string_size < 10) {
+                    cout << "temp_string还没接就被释放了" << endl;
+                    predicting.threadLogger_->info("出锁成功");
+                }
+                predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
+                predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 predicting.threadLogger_->info("出锁成功");
+                return GlobalVariable::getInstance()->GetReceivePtr();
             }
-            predicting.threadLogger_->info("VecWaypoint2json successfully");
-            predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            predicting.threadLogger_->info("出锁成功");
-            return GlobalVariable::getInstance()->GetReceivePtr();
         }
     }
 }

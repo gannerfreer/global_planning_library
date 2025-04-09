@@ -13,6 +13,7 @@ Description: This is a collection of helper functions that are used throughout t
 #include "../common/common_struct.h"
 #include "../globalvariable.h"
 #include "../mine_global_planning/planning.h"
+#include "../mine_global_planning/predicting.h"
 namespace fs = std::filesystem;
 namespace GlobalPlanning {
 
@@ -907,10 +908,8 @@ _AllHumanVechicleInfos ParseHumanVehPredictingJson(char* str) {
 }
 
 
-string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<_TrajectoryPoint>>& vec_wp) {
+string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<std::vector<_TrajectoryPoint>>>& all_path, Predicting& obj) {
     cout << "enter VecWaypoint2json" << endl;
-    // this_thread::sleep_for(chrono::milliseconds(100));
-    // cout << "VecWaypoint2json..." << endl;
 
 
     time_t start_time, end_time;
@@ -918,77 +917,63 @@ string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<_TrajectoryP
     rapidjson::StringBuffer                    strbuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strbuf);
 
-    cout << "开始写json" << endl;
+    std::cout << "开始写json" << std::endl;
     writer.StartObject();
-    cout << "执行完代码 writer.StartObject();" << endl;
+    std::cout << "执行完代码 writer.StartObject();" << std::endl;
 
-    writer.Key("trajectory_info");
-    cout << "执行完代码 writer.Key(trajectory_info )" << endl;
+    writer.Key("pathInfo");
+    std::cout << "执行完代码 writer.Key(pathInfo )" << std::endl;
     writer.StartArray();
-    cout << "执行完代码 writer.StartArray();" << endl;
+    std::cout << "执行完代码 writer.StartArray();" << std::endl;
 
-    cout << "执行完代码 if (vec_wp.size() == 0)" << endl;
-
-    for (size_t i = 0; i < vec_wp.size(); i++) {
+    for (const auto& pair : all_path) {
         writer.StartObject();
-        writer.Key("x");
-        writer.Double(vec_wp.at(i).x);
+        writer.Key("vehicleCode");
+        writer.String(pair.first.c_str());
 
-        writer.Key("y");
-        writer.Double(vec_wp.at(i).y);
+        writer.Key("paths");
+        writer.StartArray();
+        for (const auto& path : pair.second) {
+            writer.StartObject();
+            writer.Key("pathPoints");
+            writer.StartArray();
+            for (const auto& point : path) {
+                writer.StartObject();
+                writer.Key("x");
+                writer.Double(point.x);
 
-        writer.Key("z");
-        writer.Double(0);
+                writer.Key("y");
+                writer.Double(point.y);
 
-        writer.Key("yaw");
-        writer.Double(vec_wp.at(i).yaw);
 
-        writer.Key("curvature");
-        writer.Double(vec_wp.at(i).curvature);
+                writer.Key("yaw");
+                writer.Double(point.yaw);
 
-        writer.Key("speed");
-        writer.Double(vec_wp.at(i).speed);
+                writer.Key("curvature");
+                writer.Double(point.curvature);
 
-        writer.Key("distance");
-        writer.Double(vec_wp.at(i).distance);
-
-        writer.Key("attribute");
-        writer.Uint(static_cast<int>(vec_wp.at(i).attribute));
-
-        writer.Key("speed_limit");
-        writer.Double(vec_wp.at(i).speed_limit);
-
-        writer.Key("direction");
-        writer.Int(vec_wp.at(i).direction);
+                writer.Key("direction");
+                writer.Int(point.direction);
+                writer.EndObject();
+            }
+            writer.EndArray();
+            writer.EndObject();
+        }
+        writer.EndArray();
         writer.EndObject();
     }
-    cout << "执行完代码  for (size_t i = 0; i < vec_wp.size(); i++)" << endl;
+    std::cout << "执行完代码  for (const auto& pair : all_path)" << std::endl;
     writer.EndArray();
-    cout << "执行完代码 writer.EndArray();" << endl;
+    std::cout << "执行完代码 writer.EndArray();" << std::endl;
 
-    writer.Key("vec_path");
-    cout << "执行完代码 writer.Key(vec_path);" << endl;
-    writer.StartArray();
-    cout << "执行完代码 writer.StartArray();" << endl;
-    if (plan_obj.road_sequence_.size() == 0) {
-        writer.Uint(999);
-        cout << "执行完代码 writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.start_key_))" << endl;
-    }
-    else {
-        for (size_t j = 0; j < plan_obj.road_sequence_.size(); j++) {
-            writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.road_sequence_.at(j)));
-        }
-        cout << "执行完代码 writer.Uint(plan_obj.sequence_mapping_.at(plan_obj.road_sequence_.at(j)));" << endl;
-    }
+    writer.EndObject();
 
-    writer.EndArray();
-    cout << "执行完代码 writer.EndArray();" << endl;
+    std::cout << "执行完代码 writer.EndObject();" << std::endl;
+
 
     writer.Key("error_type");
-    writer.Uint(static_cast<unsigned char>(plan_obj.error_type_));
+    writer.Uint(static_cast<unsigned char>(obj.error_type_));
     cout << "执行完代码 writer.Uint(static_cast<unsigned char>(plan_obj.error_type_));" << endl;
-
-
     writer.EndObject();
 
     cout << "执行完代码 writer.EndObject();" << endl;
@@ -1001,7 +986,7 @@ string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<_TrajectoryP
     string timeStr = ss.str();
 
     // 构造文件路径
-    string filePath = timeStr + "_" + plan_obj.vehicle_code_ + "_output.json";
+    string filePath = timeStr + "_" + obj.key_ + "_output.json";
 
     ofstream outputFile(filePath);
     cout << "执行完代码 ofstream outputFile(filePath);;" << endl;
