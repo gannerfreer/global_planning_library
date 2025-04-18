@@ -1098,6 +1098,9 @@ PlanResult Planning::HybirdAStarFitting() {
     // 如果代码运行到这里，表面没有规划出路径
     my_optimal_path_.DeleteVoronoiSpace(false);
     if (load_unload_start_flag) {
+        if (result == PlanResult::StartPoint_Collision) {
+            return result;
+        }
         return PlanResult::Leaving_Load_Point_Too_Close;
     }
     if (result == PlanResult::EndPoint_Collision) {
