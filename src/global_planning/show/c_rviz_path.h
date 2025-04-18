@@ -93,6 +93,7 @@ class CRvizPath {
 
 
     void PubGlobalPath(std::vector<_TrajectoryPoint>& path);
+    void PubHumanVehGlobalPath(std::vector<std::vector<_TrajectoryPoint>>& path);
     void PubRoadNode(vector<geometry_msgs::Point>& path);
 
     void PubStartPosition(double x, double y, double yaw_angle);

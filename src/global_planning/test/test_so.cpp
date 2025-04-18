@@ -87,11 +87,22 @@ int main() {
     if (!GlobalPathPlanning) {
         std::cerr << "Failed to load function: " << dlerror() << std::endl;
     }
+
+    typedef char* (*my_function_t3)(char*);
+    my_function_t3 HumanVehPredicting = (my_function_t3)dlsym(handle, "PathPredicting");
+    if (!HumanVehPredicting) {
+        std::cerr << "Failed to load function: " << dlerror() << std::endl;
+    }
+
+
     char* global_planning_parameters = "test_input.json";
     char* global_param               = ReadFile(global_planning_parameters);
+    char* human_veh_parameters       = "human_test_input.json";
+    char* human_veh_param            = ReadFile(human_veh_parameters);
 
     // char *out_put = GlobalPathPlanning(global_param);
     GlobalPathPlanning(global_param);
+    HumanVehPredicting(human_veh_param);
 
     std::string filename = "test_so_output.json"; // 要保存的 JSON 文件名
     cout << "hello world" << endl;

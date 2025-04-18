@@ -15,6 +15,9 @@ GetMapFunc getMap = nullptr;
 typedef char* (*PoseVerificationInterfaceForHoutaiFunc)(const char*);
 PoseVerificationInterfaceForHoutaiFunc PoseVerificationInterfaceForHoutai = nullptr;
 
+typedef char* (*HumanVehPredictingFunc)(const char*);
+HumanVehPredictingFunc PathPredicting = nullptr;
+
 int globalPathPlanning_handler(const httplib::Request& req, httplib::Response& res) {
     const std::string& input = req.body;
     if (!input.empty() && globalPathPlanning != nullptr) {
@@ -55,6 +58,21 @@ int PoseVerificationInterfaceForHoutai_handler(const httplib::Request& req, http
     }
     return res.status;
 }
+
+int PathPredicting_handler(const httplib::Request& req, httplib::Response& res) {
+    const std::string& input = req.body;
+    if (!input.empty() && PathPredicting != nullptr) {
+        const char* response_str = PathPredicting(input.c_str());
+        res.set_content(response_str, "application/json");
+        res.status = 200;
+    }
+    else {
+        res.set_content("Missing input data or function not loaded", "text/plain");
+        res.status = 400;
+    }
+    return res.status;
+}
+
 int main() {
     void* handle         = dlopen("./lib/libGlobalPlanning.so", RTLD_NOW);
     void* another_handle = dlopen("./lib/libPoseVerification.so", RTLD_NOW);
@@ -66,8 +84,9 @@ int main() {
         globalPathPlanning                 = (GlobalPathPlanningFunc)dlsym(handle, "GlobalPathPlanning");
         getMap                             = (GetMapFunc)dlsym(handle, "GetMap");
         PoseVerificationInterfaceForHoutai = (PoseVerificationInterfaceForHoutaiFunc)dlsym(another_handle, "PoseVerificationInterfaceForHoutai");
+        PathPredicting                     = (HumanVehPredictingFunc)dlsym(handle, "PathPredicting");
 
-        if (!globalPathPlanning || !getMap || !PoseVerificationInterfaceForHoutai) {
+        if (!globalPathPlanning || !getMap || !PoseVerificationInterfaceForHoutai || !PathPredicting) {
             cerr << "Failed to load function: " << dlerror() << endl;
         }
         else {
@@ -78,6 +97,7 @@ int main() {
             svr.Post("/globalPathPlanning", globalPathPlanning_handler);
             svr.Post("/getMap", getMap_handler);
             svr.Post("/PoseVerificationInterfaceForHoutai", PoseVerificationInterfaceForHoutai_handler);
+            svr.Post("/PathPredicting", PathPredicting_handler);
             // 启动服务器，监听端口8080
             svr.listen("0.0.0.0", 8080);
             // svr.listen("localhost", 8080);

@@ -812,7 +812,11 @@ bool GetMap(char* parea) {
             traj.trajectory.push_back(tp);
         }
         m_traj[traj.id] = traj;
-        if (traj_type == 0 || traj_type == 2) {
+        if (traj_type == 2) {
+            m_traj_self_driving[traj.id]  = traj;
+            m_traj_human_driving[traj.id] = traj;
+        }
+        if (traj_type == 0) {
             m_traj_self_driving[traj.id] = traj;
         }
         else if (traj_type == 1) {
@@ -858,6 +862,7 @@ _AllHumanVechicleInfos ParseHumanVehPredictingJson(char* str) {
     doc.GetAllocator();
 
     const Value& vehInfoArray = doc["veh_info"];
+    cout << "vehInfoArray.size():" << vehInfoArray.Size() << endl;
 
 
     for (SizeType i = 0; i < vehInfoArray.Size(); i++) {
@@ -904,6 +909,15 @@ _AllHumanVechicleInfos ParseHumanVehPredictingJson(char* str) {
 
         all_human_vehicle_infos.human_vechicle_infos.push_back(humanVechicleInfo);
     }
+    if (doc.HasMember("predicting_distance")) {
+        cout << "解析 predicting_distance 中" << endl;
+        all_human_vehicle_infos.predicting_distance = doc["predicting_distance"].GetUint();
+    }
+    if (doc.HasMember("key")) {
+        cout << "解析 key 中" << endl;
+        all_human_vehicle_infos.my_key = doc["key"].GetString();
+    }
+    cout << "收到" << all_human_vehicle_infos.human_vechicle_infos.size() << "个车辆信息" << endl;
     return all_human_vehicle_infos;
 }
 
@@ -968,13 +982,6 @@ string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<std::vector<
 
     writer.EndObject();
 
-    std::cout << "执行完代码 writer.EndObject();" << std::endl;
-
-
-    writer.Key("error_type");
-    writer.Uint(static_cast<unsigned char>(obj.error_type_));
-    cout << "执行完代码 writer.Uint(static_cast<unsigned char>(plan_obj.error_type_));" << endl;
-    writer.EndObject();
 
     cout << "执行完代码 writer.EndObject();" << endl;
 
@@ -1013,7 +1020,7 @@ string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<std::vector<
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << obj.key_ << "  库版本号:G_V1.4.0.20250310_beta" << endl;
         record.close();
     }
 

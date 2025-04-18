@@ -1,0 +1,209 @@
+[2025-04-17 16:58:50.722] [predicting] [info] 本地仿真环境日志
+[2025-04-17 16:59:02.823] [predicting] [info] start_point.x =202.56978335011252
+[2025-04-17 16:59:02.823] [predicting] [info] start_point.y =-668.909956492975
+[2025-04-17 16:59:02.823] [predicting] [info] start_point.yaw =75.41903077755084
+[2025-04-17 16:59:02.823] [predicting] [info] Enter PredictingIntface 
+[2025-04-17 16:59:02.823] [predicting] [info] referenceline_relation_.size():48
+[2025-04-17 16:59:02.823] [predicting] [info] all_referencelines_.size():51
+[2025-04-17 16:59:02.823] [predicting] [info] 进入 PreddictPath 函数
+[2025-04-17 16:59:02.823] [predicting] [info] 进入 findCurrentRoad 函数
+[2025-04-17 16:59:02.823] [predicting] [info] 当前路径id:7 最近距离：612.4539552952194 角度差：23.460969222449172 最近点纵向距离：571.5171976389156
+[2025-04-17 16:59:02.823] [predicting] [info] 当前路径id:8 最近距离：627.4607124891517 角度差：55.51096922244917 最近点纵向距离：610.9296984236981
+[2025-04-17 16:59:02.823] [predicting] [info] 当前路径id:30 最近距离：627.4607124119286 角度差：55.94096922244918 最近点纵向距离：609.8387012776609
+[2025-04-17 16:59:02.823] [predicting] [info] 当前路径id:52 最近距离：570.8306743924823 角度差：227.32096922244915 最近点纵向距离：174.0762346635201
+[2025-04-17 16:59:02.823] [predicting] [info] 当前路径id:53 最近距离：504.3891523977061 角度差：49.11903077755085 最近点纵向距离：503.5119339598738
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:54 最近距离：69.08929946425253 角度差：18.859030777550842 最近点纵向距离：0.30415825494286963
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:56 最近距离：567.3091869707437 角度差：51.45096922244916 最近点纵向距离：563.3401104599836
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:57 最近距离：563.8489353977628 角度差：238.20096922244917 最近点纵向距离：550.2206645255408
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:59 最近距离：509.33290401126163 角度差：129.75096922244913 最近点纵向距离：508.6261857075052
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:60 最近距离：564.6959053717475 角度差：43.63096922244914 最近点纵向距离：139.3067805299715
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:66 最近距离：405.30553506978373 角度差：256.5009692224492 最近点纵向距离：277.24483541367505
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:68 最近距离：75.60493576751804 角度差：159.81096922244913 最近点纵向距离：0.3436050682816614
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:69 最近距离：350.96834530959916 角度差：239.45096922244915 最近点纵向距离：260.73309875975065
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:70 最近距离：317.7209906889116 角度差：144.70096922244915 最近点纵向距离：195.81500349658194
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:71 最近距离：311.71817954829226 角度差：143.75096922244913 最近点纵向距离：191.11314647000475
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:72 最近距离：305.9893447306966 角度差：143.73096922244918 最近点纵向距离：190.59087797308734
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:73 最近距离：284.2767993729485 角度差：144.15096922244916 最近点纵向距离：191.41313494544966
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:74 最近距离：289.6792184184394 角度差：145.33096922244917 最近点纵向距离：196.18319338929723
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:75 最近距离：295.26452310164467 角度差：145.36096922244917 最近点纵向距离：196.69820653301005
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:76 最近距离：284.2767993729485 角度差：142.35096922244915 最近点纵向距离：184.71686955787982
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:77 最近距离：289.6792184184394 角度差：142.23096922244918 最近点纵向距离：184.37006600104462
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:78 最近距离：295.26452310164467 角度差：141.83096922244914 最近点纵向距离：182.7666349987205
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:79 最近距离：300.61682157926526 角度差：142.7709692224491 最近点纵向距离：186.26067856009678
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:80 最近距离：300.61682157926526 角度差：145.12096922244913 最近点纵向距离：195.77930129041727
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:81 最近距离：311.71817954829226 角度差：142.51096922244915 最近点纵向距离：185.73922814784785
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:82 最近距离：317.7209906889116 角度差：142.3109692224491 最近点纵向距离：185.21075403641024
+[2025-04-17 16:59:02.824] [predicting] [info] 当前路径id:83 最近距离：305.9893447306966 角度差：141.86096922244914 最近点纵向距离：182.67783784185772
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:84 最近距离：248.29177031959313 角度差：195.8709692224492 最近点纵向距离：245.8844924766709
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:85 最近距离：296.8115547780307 角度差：143.25096922244916 最近点纵向距离：177.39707491703388
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:86 最近距离：296.8115547780307 角度差：143.63096922244918 最近点纵向距离：178.97140594348943
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:87 最近距离：296.8115547780307 角度差：143.7709692224491 最近点纵向距离：179.54944186066035
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:88 最近距离：296.8115547780307 角度差：141.98096922244918 最近点纵向距离：172.07927141664035
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:89 最近距离：296.8115547780307 角度差：141.64096922244914 最近点纵向距离：170.64115196960563
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:90 最近距离：296.8115547780307 角度差：141.3309692224491 最近点纵向距离：169.32468711630656
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:91 最近距离：294.3788864046121 角度差：99.57096922244916 最近点纵向距离：8.879257255943909
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:92 最近距离：509.33290404589485 角度差：131.11096922244914 最近点纵向距离：507.8463113718483
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:93 最近距离：504.3891524297227 角度差：48.739030777550845 最近点纵向距离：503.3036538522958
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:99 最近距离：762.1475947046389 角度差：28.910969222449136 最近点纵向距离：133.6944117415814
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:102 最近距离：237.74927088248054 角度差：204.92096922244917 最近点纵向距离：236.2703180144384
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:103 最近距离：381.7100628956663 角度差：68.83096922244916 最近点纵向距离：279.6713789084374
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:105 最近距离：319.50019825415893 角度差：32.99096922244914 最近点纵向距离：313.0458748803044
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:107 最近距离：28.21548552664459 角度差：169.93096922244916 最近点纵向距离：0.05177286768496181
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:108 最近距离：2.319131762139375 角度差：15.710969222449142 最近点纵向距离：0.19893141928815378
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:109 最近距离：40.50435040036051 角度差：168.0909692224492 最近点纵向距离：29.208713274676633
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:117 最近距离：238.4900820324133 角度差：25.870969222449148 最近点纵向距离：235.70066892394246
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:119 最近距离：248.29177031959313 角度差：196.36096922244917 最近点纵向距离：246.17046686851327
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:121 最近距离：320.9228964046872 角度差：214.56096922244922 最近点纵向距离：314.3753591203614
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:122 最近距离：237.74927088248054 角度差：205.13096922244918 最近点纵向距离：236.17168651569443
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:126 最近距离：770.4018755175181 角度差：209.94096922244916 最近点纵向距离：155.74353276386054
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:127 最近距离：319.50019825415893 角度差：33.59096922244915 最近点纵向距离：312.35960869284236
+[2025-04-17 16:59:02.825] [predicting] [info] 当前路径id:129 最近距离：11.057668482070728 角度差：16.090969222449147 最近点纵向距离：10.816133483114038
+[2025-04-17 16:59:02.825] [predicting] [info] validRoads.size():1
+[2025-04-17 16:59:02.825] [predicting] [info] currentRoads.size():1 
+[2025-04-17 16:59:02.825] [predicting] [info] roadMap.size():51
+[2025-04-17 16:59:02.825] [predicting] [info] id:7 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:8 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:30 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:52 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:53 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:54 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:56 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:57 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:59 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:66 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:68 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:69 following_road.size():7
+[2025-04-17 16:59:02.826] [predicting] [info] id:70 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:71 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:72 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:73 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:74 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:75 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:76 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:77 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:78 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:79 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:80 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:81 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:82 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:83 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:84 following_road.size():1
+[2025-04-17 16:59:02.826] [predicting] [info] id:85 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:86 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:87 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:88 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:89 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:90 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:91 following_road.size():2
+[2025-04-17 16:59:02.826] [predicting] [info] id:92 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:93 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:102 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:103 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:105 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:107 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:108 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:117 following_road.size():2
+[2025-04-17 16:59:02.827] [predicting] [info] id:119 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:121 following_road.size():2
+[2025-04-17 16:59:02.827] [predicting] [info] id:122 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:126 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] id:127 following_road.size():7
+[2025-04-17 16:59:02.827] [predicting] [info] id:129 following_road.size():1
+[2025-04-17 16:59:02.827] [predicting] [info] roadMap.size():51
+[2025-04-17 16:59:02.827] [predicting] [info] road_map_.size():51 
+[2025-04-17 16:59:02.827] [predicting] [info] 更新road_map_信息,id:108,截断的位置：11 路段总长：251 更新后的路径:240
+[2025-04-17 16:59:02.827] [predicting] [info] 更新road_map_信息完毕
+[2025-04-17 16:59:02.827] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-17 16:59:02.827] [predicting] [info] dfs函数内部，当前push_back的路段id:108
+[2025-04-17 16:59:02.827] [predicting] [info] dfs函数内部，当前push_back的路段id:117
+[2025-04-17 16:59:02.827] [predicting] [info] dfs函数内部，当前push_back的路段id:105
+[2025-04-17 16:59:02.827] [predicting] [info] dfs函数内部，当前push_back的路段id:103
+[2025-04-17 16:59:02.827] [predicting] [info] dfs函数内部，当前push_back的路段id:56
+[2025-04-17 16:59:02.827] [predicting] [info] dfs函数内部，当前push_back的路段id:7
+[2025-04-17 16:59:02.827] [predicting] [info] dfs函数内部，当前push_back的路段id:30
+[2025-04-17 16:59:02.827] [predicting] [info] dfs函数内部，当前push_back的路段id:8
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:57
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:66
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前探索到的路id为 66,已经满足 1000 阈值
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:127
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:80
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:79
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:88
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:84
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:68
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前探索到的路id为 68,已经满足 1000 阈值
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:102
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:107
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:109
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:70
+[2025-04-17 16:59:02.828] [predicting] [info] dfs函数内部，当前push_back的路段id:82
+[2025-04-17 16:59:02.829] [predicting] [info] dfs函数内部，当前push_back的路段id:86
+[2025-04-17 16:59:02.829] [predicting] [info] dfs函数内部，当前push_back的路段id:84
+[2025-04-17 16:59:02.829] [predicting] [info] dfs函数内部，当前push_back的路段id:68
+[2025-04-17 16:59:02.829] [predicting] [info] dfs函数内部，当前探索到的路id为 68,已经满足 1000 阈值
+[2025-04-17 16:59:02.829] [predicting] [info] dfs函数内部，当前push_back的路段id:102
+[2025-04-17 16:59:02.829] [predicting] [info] dfs函数内部，当前push_back的路段id:107
+[2025-04-17 16:59:02.829] [predicting] [info] dfs函数内部，当前push_back的路段id:109
+[2025-04-17 16:59:02.829] [predicting] [info] dfs函数内部，当前push_back的路段id:71
+[2025-04-17 16:59:02.829] [predicting] [info] dfs函数内部，当前push_back的路段id:81
+[2025-04-17 16:59:02.830] [predicting] [info] dfs函数内部，当前push_back的路段id:87
+[2025-04-17 16:59:02.830] [predicting] [info] dfs函数内部，当前push_back的路段id:84
+[2025-04-17 16:59:02.830] [predicting] [info] dfs函数内部，当前push_back的路段id:68
+[2025-04-17 16:59:02.830] [predicting] [info] dfs函数内部，当前探索到的路id为 68,已经满足 1000 阈值
+[2025-04-17 16:59:02.830] [predicting] [info] dfs函数内部，当前push_back的路段id:102
+[2025-04-17 16:59:02.830] [predicting] [info] dfs函数内部，当前push_back的路段id:107
+[2025-04-17 16:59:02.830] [predicting] [info] dfs函数内部，当前push_back的路段id:109
+[2025-04-17 16:59:02.830] [predicting] [info] dfs函数内部，当前push_back的路段id:72
+[2025-04-17 16:59:02.831] [predicting] [info] dfs函数内部，当前push_back的路段id:83
+[2025-04-17 16:59:02.831] [predicting] [info] dfs函数内部，当前push_back的路段id:85
+[2025-04-17 16:59:02.831] [predicting] [info] dfs函数内部，当前push_back的路段id:84
+[2025-04-17 16:59:02.831] [predicting] [info] dfs函数内部，当前push_back的路段id:68
+[2025-04-17 16:59:02.831] [predicting] [info] dfs函数内部，当前探索到的路id为 68,已经满足 1000 阈值
+[2025-04-17 16:59:02.831] [predicting] [info] dfs函数内部，当前push_back的路段id:102
+[2025-04-17 16:59:02.831] [predicting] [info] dfs函数内部，当前push_back的路段id:107
+[2025-04-17 16:59:02.832] [predicting] [info] dfs函数内部，当前push_back的路段id:109
+[2025-04-17 16:59:02.832] [predicting] [info] dfs函数内部，当前push_back的路段id:73
+[2025-04-17 16:59:02.832] [predicting] [info] dfs函数内部，当前push_back的路段id:76
+[2025-04-17 16:59:02.832] [predicting] [info] dfs函数内部，当前push_back的路段id:91
+[2025-04-17 16:59:02.832] [predicting] [info] dfs函数内部，当前push_back的路段id:84
+[2025-04-17 16:59:02.832] [predicting] [info] dfs函数内部，当前push_back的路段id:68
+[2025-04-17 16:59:02.832] [predicting] [info] dfs函数内部，当前探索到的路id为 68,已经满足 1000 阈值
+[2025-04-17 16:59:02.832] [predicting] [info] dfs函数内部，当前push_back的路段id:102
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前push_back的路段id:107
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前push_back的路段id:109
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前push_back的路段id:74
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前push_back的路段id:77
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前push_back的路段id:90
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前push_back的路段id:84
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前push_back的路段id:68
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前探索到的路id为 68,已经满足 1000 阈值
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前push_back的路段id:102
+[2025-04-17 16:59:02.833] [predicting] [info] dfs函数内部，当前push_back的路段id:107
+[2025-04-17 16:59:02.834] [predicting] [info] dfs函数内部，当前push_back的路段id:109
+[2025-04-17 16:59:02.834] [predicting] [info] dfs函数内部，当前push_back的路段id:75
+[2025-04-17 16:59:02.834] [predicting] [info] dfs函数内部，当前push_back的路段id:78
+[2025-04-17 16:59:02.834] [predicting] [info] dfs函数内部，当前push_back的路段id:89
+[2025-04-17 16:59:02.834] [predicting] [info] dfs函数内部，当前push_back的路段id:84
+[2025-04-17 16:59:02.834] [predicting] [info] dfs函数内部，当前push_back的路段id:68
+[2025-04-17 16:59:02.834] [predicting] [info] dfs函数内部，当前探索到的路id为 68,已经满足 1000 阈值
+[2025-04-17 16:59:02.834] [predicting] [info] dfs函数内部，当前push_back的路段id:102
+[2025-04-17 16:59:02.835] [predicting] [info] dfs函数内部，当前push_back的路段id:107
+[2025-04-17 16:59:02.835] [predicting] [info] dfs函数内部，当前push_back的路段id:109
+[2025-04-17 16:59:02.835] [predicting] [info] temp_road_nodes.size():15
+[2025-04-17 16:59:02.836] [predicting] [info] final_result.size():15
+[2025-04-17 16:59:02.836] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.836] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.836] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.837] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.837] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.837] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.837] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.837] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.838] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.852] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.854] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.856] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.858] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.858] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.858] [predicting] [info] nearest_index:11
+[2025-04-17 16:59:02.859] [predicting] [info] 当前推入的路径大小:14456 path.size():1

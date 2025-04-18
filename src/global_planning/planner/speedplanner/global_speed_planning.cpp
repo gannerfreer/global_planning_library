@@ -108,16 +108,17 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
         bumpy_road_speed_limit        = b * vehicle_param.bumpy_road_speed_limit;
     }
 
-
-    if (vehicle_param.is_light == 0) {
+    reverse_speed = vehicle_param.reverse_speed;
+    if (vehicle_param.is_light == false) {
         threadLogger_->info("重载");
         regular_road_speed_limit      = c * regular_road_speed_limit;
         narrow_road_speed_limit       = c * narrow_road_speed_limit;
         intersection_road_speed_limit = c * intersection_road_speed_limit;
         slope_road_speed_limit        = c * slope_road_speed_limit;
         bumpy_road_speed_limit        = c * bumpy_road_speed_limit;
+        reverse_speed                 = 0.5;
     }
-    reverse_speed = vehicle_param.reverse_speed;
+
 
     // 先通过direction属性，将前进后退轨迹进行区分(direction 0:前进 1:后退),后退轨迹限速均为1m/s
     vector<_TrajectoryPoint>::iterator iter             = trajectory.begin();
@@ -156,8 +157,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
             last_speed_limit = iter->speed_limit;
         }
         else {
-            // 此时，该点为后退路径上的点,后退轨迹限速均为1m/s
-            iter->speed_limit = vehicle_param.reverse_speed;
+            iter->speed_limit = reverse_speed;
         }
     }
     std::ofstream file_out;
@@ -207,11 +207,15 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     file_out.close();
 
 
+    double coff = 0.4;
+    if (vehicle_param.is_light == false) {
+        coff = 0.3;
+    }
     // 曲率限速
     iter = trajectory.begin();
     for (; iter != trajectory.end(); iter++) {
-        if (iter->speed_limit > sqrt(0.4 / fabs(iter->curvature))) {
-            iter->speed_limit = sqrt(0.4 / fabs(iter->curvature));
+        if (iter->speed_limit > sqrt(coff / fabs(iter->curvature))) {
+            iter->speed_limit = sqrt(coff / fabs(iter->curvature));
         }
     }
 

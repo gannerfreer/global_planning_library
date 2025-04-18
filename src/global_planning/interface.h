@@ -22,6 +22,7 @@ namespace fs = std::filesystem;
 extern "C" {
 char* GlobalPathPlanning(char* point_veh_start_end); // 全局轨迹规划
 bool  GetMap(char* parea);                           // 初始化自动获取地图信息
+char* PathPredicting(char* input_info);              // 有人车路径预测
 }
 
 

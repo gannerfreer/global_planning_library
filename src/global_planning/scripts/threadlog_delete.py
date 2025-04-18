@@ -25,6 +25,19 @@ with open('../mine_global_planning/planning.h', 'r') as file, tempfile.NamedTemp
             tmpfile.write(line)  
 os.rename(tmpfile.name, '../mine_global_planning/planning.h')  
 
+with open('../mine_global_planning/predicting.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../mine_global_planning/predicting.cpp')  
+with open('../mine_global_planning/predicting.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../mine_global_planning/predicting.h')  
+
+
+
 with open('../planner/pathplanner/dijkstra/dijkstra.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
     for line in file:  
         if 'threadLogger_' not in line:  

@@ -26,6 +26,7 @@ TARGET = lib/libGlobalPlanning.so
 # 	  src/dijkstra.cpp
 SRC = interface.cpp \
       mine_global_planning/planning.cpp\
+	  mine_global_planning/predicting.cpp\
 	  globalvariable.cpp \
       planner/pathplanner/dijkstra/dijkstra.cpp\
 	  planner/pathplanner/dubins/dubins.cpp\

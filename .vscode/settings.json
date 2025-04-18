@@ -75,6 +75,9 @@
         "stop_token": "cpp",
         "cfenv": "cpp",
         "variant": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "rope": "cpp",
+        "span": "cpp",
+        "*.ipp": "cpp"
     }
 }

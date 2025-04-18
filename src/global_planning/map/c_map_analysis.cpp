@@ -12,6 +12,7 @@
 
 
 bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_BorderPoint>& map_border_, map<int, _SingleTraj>& all_referencelines_, vector<int>& sequence_mapping_, tarRviz& tar_rviz) {
+    cout << "进入 GetMap_GlobalPlanning 函数接口" << endl;
     char* buffer;
     int   length = 0;
 
@@ -69,11 +70,13 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
     map<int, _SingleTraj> m_traj;
     _SingleTraj           traj;
     _TrajectoryPoint      tp;
+    int                   traj_type = -1;
     cout << "trajsArray.Size():" << trajsArray.Size() << endl;
     for (int i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
         traj.id                      = trajsArray[i]["id"].GetInt();
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
+        traj_type                    = trajsArray[i]["type"].GetInt();
         cout << "trajPointsArray.Size()：" << trajPointsArray.Size() << endl;
         for (int j = 0; j < trajPointsArray.Size(); j++) {
             tp.x         = trajPointsArray[j]["x"].GetDouble();
@@ -85,7 +88,9 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
             tp.direction = static_cast<unsigned char>(trajPointsArray[j]["direction"].GetInt());
             traj.trajectory.push_back(tp);
         }
-        m_traj[traj.id] = traj;
+        if (traj_type == 0 || traj_type == 2) {
+            m_traj[traj.id] = traj;
+        }
     }
     all_referencelines_ = m_traj;
     cout << "解析reference_trajs完毕" << endl;
@@ -114,7 +119,7 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
     cout << "解析relation完毕,relation.size():" << m_relation.size() << endl;
 
     // 调用GlobalVariable类内部的CreateDirectedGraph来生成referenceline_graph_
-
+    GlobalVariable::getInstance()->SetReferencelineRelation(m_relation);
 
     GlobalVariable::getInstance()->CreateSequenceMapping(all_referencelines_);
     sequence_mapping_ = GlobalVariable::getInstance()->GetSequenceMapping();
@@ -149,6 +154,96 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
     }
 
 
+    cout << "生成tar_rviz.vec_point完毕" << endl;
+
+    return true;
+}
+
+
+bool CConfigureIO::GetMap_PathPredicting(map<int, _SingleTraj>& all_referencelines_, tarRviz& tar_rviz) {
+    cout << "进入 GetMap_PathPredicting 函数接口" << endl;
+    char* buffer;
+    int   length = 0;
+
+    char* file_name = (char*)"src/global_planning/map/map.json"; // 鲁南
+
+    FILE* file = fopen(file_name, "rb+");
+    if (!file) {
+        cout << "GetMap->open failed " << endl;
+
+        return false;
+    }
+    else {
+        cout << "open succeed " << endl;
+    }
+    fseek(file, 0, SEEK_END);
+    length = ftell(file);
+    buffer = new char[length + 1];
+    fseek(file, 0, SEEK_SET);
+    memset(buffer, 0, length + 1);
+    fread(buffer, length, 1, file);
+
+
+    rapidjson::Document doc;
+    doc.Parse(buffer);
+    if (doc.HasParseError()) {
+        doc.GetParseError();
+        doc.GetErrorOffset();
+        cout << "parse failed......" << endl;
+        // return false;
+    }
+    doc.GetAllocator();
+
+
+    // 解析reference_trajs
+    const Value&          trajsArray = doc["reference_trajs"];
+    map<int, _SingleTraj> m_traj;
+    _SingleTraj           traj;
+    _TrajectoryPoint      tp;
+    int                   traj_type = -1;
+    cout << "trajsArray.Size():" << trajsArray.Size() << endl;
+    for (int i = 0; i < trajsArray.Size(); i++) {
+        traj.trajectory.clear();
+        traj.id                      = trajsArray[i]["id"].GetInt();
+        traj_type                    = trajsArray[i]["type"].GetInt();
+        const Value& trajPointsArray = trajsArray[i]["trajectory"];
+        cout << "trajPointsArray.Size()：" << trajPointsArray.Size() << endl;
+        for (int j = 0; j < trajPointsArray.Size(); j++) {
+            tp.x         = trajPointsArray[j]["x"].GetDouble();
+            tp.y         = trajPointsArray[j]["y"].GetDouble();
+            tp.z         = trajPointsArray[j]["z"].GetDouble();
+            tp.yaw       = trajPointsArray[j]["yaw"].GetDouble() / 180.0 * M_PI;
+            tp.curvature = trajPointsArray[j]["curvature"].GetDouble();
+            tp.attribute = static_cast<PointAttribute>(trajPointsArray[j]["attribute"].GetInt());
+            tp.direction = static_cast<unsigned char>(trajPointsArray[j]["direction"].GetInt());
+            traj.trajectory.push_back(tp);
+        }
+        if (traj_type == 1 || traj_type == 2) {
+            m_traj[traj.id] = traj;
+        }
+    }
+
+
+    all_referencelines_ = m_traj;
+    cout << "解析reference_trajs完毕" << endl;
+    cout << "m_traj.size():" << m_traj.size() << endl;
+    for (auto iter : m_traj) {
+        cout << "id:" << iter.first << "数量：" << iter.second.trajectory.size() << endl;
+    }
+
+
+    for (const auto& pair : all_referencelines_) {
+        for (int i = 0; i < pair.second.trajectory.size(); i++) {
+            geometry_msgs::Point temp_referenceline_points;
+            temp_referenceline_points.x = pair.second.trajectory.at(i).x;
+            temp_referenceline_points.y = pair.second.trajectory.at(i).y;
+            temp_referenceline_points.z = pair.second.trajectory.at(i).z;
+            tar_rviz.vec_point.push_back(temp_referenceline_points);
+            if (i == 0 || i == pair.second.trajectory.size() - 1) {
+                tar_rviz.road_node.push_back(temp_referenceline_points);
+            }
+        }
+    }
     cout << "生成tar_rviz.vec_point完毕" << endl;
 
     return true;

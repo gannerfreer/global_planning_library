@@ -49,7 +49,7 @@ bool Planning::ReadAllMapFile() {
 
 #endif
 }
-void Planning::GlobalPathPlanningIntface(vector<_TrajectoryPoint>& path) {
+void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("Enter GlobalPathPlanningIntface");
     path.clear();
     global_path_.clear();
@@ -1010,9 +1010,9 @@ PlanResult Planning::HybirdAStarFitting() {
         if (load_unload_start_flag) {
             start_point_offset_distance = vehicle_param_.load_point_start_offset_distance;
         }
-        int end_point_offset_distance = 1;
+        int end_point_offset_distance = 0;
         while (start_point_offset_distance >= 0) {
-            end_point_offset_distance = 1;
+            end_point_offset_distance = 0;
             while (end_point_offset_distance >= 0) {
                 my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
                 my_optimal_path_.end_offset_distance_   = end_point_offset_distance;

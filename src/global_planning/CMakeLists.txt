@@ -141,6 +141,7 @@ add_executable(${PROJECT_NAME}
   smoother/path_opti.cpp
   smoother/dynamicvoronoi.cpp
   mine_global_planning/planning.cpp
+  mine_global_planning/predicting.cpp
   planner/pathplanner/dijkstra/dijkstra.cpp
   planner/pathplanner/dubins/dubins.cpp
   planner/pathplanner/hybirdastar/node2d.cpp

@@ -113,6 +113,8 @@ struct _TrajectoryPoint {
     inline void Clear() {
         x = y = z = yaw = curvature = speed = distance = speed_limit = direction = acc = t = 0;
     }
+    _TrajectoryPoint() : x(0), y(0), z(0), yaw(0), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false), t(0) {}
+    _TrajectoryPoint(double x_val, double y_val, double yaw_val) : x(x_val), y(y_val), z(0), yaw(yaw_val), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false), t(0) {}
 };
 
 struct _SingleTraj {
@@ -257,7 +259,8 @@ struct _HumanVechicleInfo {
 // 调用有人车未来路径预测时，需要传入的参数
 struct _AllHumanVechicleInfos {
     vector<_HumanVechicleInfo> human_vechicle_infos; // 有人车路位姿信息
-    string                     my_key = "test";
+    string                     my_key              = "human_test";
+    int                        predicting_distance = 100;
 };
 
 struct GridPoint {

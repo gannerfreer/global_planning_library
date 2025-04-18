@@ -72,6 +72,25 @@ void CRvizPath::PubGlobalPath(std::vector<_TrajectoryPoint>& path) {
     publisher_global_path_.publish(global_path_now_);
 }
 
+
+void CRvizPath::PubHumanVehGlobalPath(std::vector<std::vector<_TrajectoryPoint>>& path) {
+    // std::cout << "aapath.size = " << path.size() << std::endl;
+    global_path_now_.points.clear();
+    global_path_now_.header.stamp = ros ::Time ::now();
+    geometry_msgs::Point temp_point;
+    for (int i = 0; i < path.size(); i++) {
+        for (int j = 0; j < path.at(i).size(); j++) {
+            temp_point.x = path.at(i).at(j).x - x_o_;
+            temp_point.y = path.at(i).at(j).y - y_o_;
+            temp_point.z = 0; // info_router.path_point.at(i).z;
+            global_path_now_.points.push_back(temp_point);
+        }
+    }
+    // std::cout << "global_path_now_.points.size = " << global_path_now_.points.size() << std::endl;
+    publisher_global_path_.publish(global_path_now_);
+}
+
+
 void CRvizPath::PubExpandPoint(std::vector<Point>& path, Point midpoint_) {
     // std::cout << "aapath.size = " << path.size() << std::endl;
     expand_point_now_.points.clear();
@@ -104,6 +123,7 @@ void CRvizPath::PubStartPosition(double x, double y, double yaw_angle) {
     start.scale.y            = 1;
     start.scale.z            = 1;
     pub_start.publish(start);
+    cout << "PubStartPosition 函数" << endl;
 }
 
 

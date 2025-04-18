@@ -1,0 +1,17 @@
+[2025-04-17 16:52:06.515] [predicting] [info] 本地仿真环境日志
+[2025-04-17 16:52:18.818] [predicting] [info] start_point.x =144.34738649952658
+[2025-04-17 16:52:18.818] [predicting] [info] start_point.y =-627.0890946765687
+[2025-04-17 16:52:18.818] [predicting] [info] start_point.yaw =70.016842917691
+[2025-04-17 16:52:18.818] [predicting] [info] Enter PredictingIntface 
+[2025-04-17 16:52:18.818] [predicting] [info] referenceline_relation_.size():48
+[2025-04-17 16:52:18.818] [predicting] [info] all_referencelines_.size():51
+[2025-04-17 16:52:18.818] [predicting] [info] 进入 PreddictPath 函数
+[2025-04-17 16:52:18.818] [predicting] [info] 进入 findCurrentRoad 函数
+[2025-04-17 16:52:18.818] [predicting] [info] validRoads.size():0
+[2025-04-17 16:52:18.818] [predicting] [info] currentRoads.size():0 
+[2025-04-17 16:52:18.818] [predicting] [info] roadMap.size():0
+[2025-04-17 16:52:18.818] [predicting] [info] roadMap.size():0
+[2025-04-17 16:52:18.818] [predicting] [info] road_map_.size():0 
+[2025-04-17 16:52:18.819] [predicting] [info] 更新road_map_信息完毕
+[2025-04-17 16:52:18.819] [predicting] [info] final_result.size():0
+[2025-04-17 16:52:18.819] [predicting] [info] 当前推入的路径大小:0 path.size():1
