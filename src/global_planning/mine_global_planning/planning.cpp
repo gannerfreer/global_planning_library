@@ -952,6 +952,9 @@ void Planning::PathClipAndSplice() {
                 if (point.direction == 0) {
                     point.direction = 1; // 修改轨迹的direction
                 }
+                else {
+                    point.direction = 0;
+                }
             }
         }
     }

@@ -1,0 +1,446 @@
+[2025-04-21 09:19:07.602] [predicting] [info] 本地仿真环境日志
+[2025-04-21 09:19:29.104] [predicting] [info] start_point.x =24.475804468276564
+[2025-04-21 09:19:29.104] [predicting] [info] start_point.y =-32.10650495488906
+[2025-04-21 09:19:29.104] [predicting] [info] start_point.yaw =109.59857462966944
+[2025-04-21 09:19:29.104] [predicting] [info] Enter PredictingIntface,预测距离100m
+[2025-04-21 09:19:29.104] [predicting] [info] referenceline_relation_.size():23
+[2025-04-21 09:19:29.105] [predicting] [info] all_referencelines_.size():24
+[2025-04-21 09:19:29.105] [predicting] [info] 进入 PreddictPath 函数
+[2025-04-21 09:19:29.105] [predicting] [info] 进入 findCurrentRoad 函数
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:1 最近距离：7.113337724591315 角度差：35.651425370330564 最近点纵向距离：0.08920622948230195
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:2 最近距离：38.17373786075069 角度差：11.72142537033055 最近点纵向距离：36.594660672107324
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:4 最近距离：642.9430631676192 角度差：93.23857462966944 最近点纵向距离：10.298609947176317
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:5 最近距离：642.6455467238825 角度差：85.19142537033059 最近点纵向距离：6.14595474981158
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:6 最近距离：435.0413204229423 角度差：213.41142537033056 最近点纵向距离：423.4985259367512
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:7 最近距离：39.16294948631921 角度差：206.7514253703306 最近点纵向距离：38.14385608597598
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:8 最近距离：14.200782670843944 角度差：119.91142537033059 最近点纵向距离：0.16851944601522817
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:9 最近距离：14.237243454579023 角度差：118.43142537033054 最近点纵向距离：0.36319032023063613
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:12 最近距离：6.153592765995364 角度差：26.23142537033059 最近点纵向距离：0.1830429336851913
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:14 最近距离：6.044251330801961 角度差：160.0414253703306 最近点纵向距离：0.04298399661772292
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:15 最近距离：33.377069884032394 角度差：46.86142537033058 最近点纵向距离：0.19855981639676124
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:17 最近距离：23.881178490462485 角度差：61.391425370330566 最近点纵向距离：0.714373984790845
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:18 最近距离：9.231829073972888 角度差：19.208574629669435 最近点纵向距离：8.566471632380264
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:19 最近距离：9.231829073972888 角度差：16.358574629669434 最近点纵向距离：8.384772103306393
+[2025-04-21 09:19:29.105] [predicting] [info] 当前路径id:20 最近距离：3.7978646067723685 角度差：17.03857462966944 最近点纵向距离：0.43003120481910917
+[2025-04-21 09:19:29.106] [predicting] [info] 当前路径id:21 最近距离：650.1096182348296 角度差：250.12142537033063 最近点纵向距离：150.68411472996692
+[2025-04-21 09:19:29.106] [predicting] [info] 当前路径id:22 最近距离：23.154851411069448 角度差：199.0114253703306 最近点纵向距离：0.13033468293254025
+[2025-04-21 09:19:29.106] [predicting] [info] 当前路径id:23 最近距离：23.47124536964536 角度差：117.66142537033056 最近点纵向距离：0.563806336288355
+[2025-04-21 09:19:29.106] [predicting] [info] 当前路径id:24 最近距离：16.460535228978262 角度差：125.62142537033058 最近点纵向距离：0.6101713816550509
+[2025-04-21 09:19:29.106] [predicting] [info] 当前路径id:25 最近距离：16.9824993066367 角度差：122.63142537033059 最近点纵向距离：4.708149325419812
+[2025-04-21 09:19:29.106] [predicting] [info] 当前路径id:26 最近距离：432.5300054005326 角度差：42.43142537033055 最近点纵向距离：396.7837840648016
+[2025-04-21 09:19:29.106] [predicting] [info] 当前路径id:27 最近距离：648.7288445083419 角度差：231.24142537033052 最近点纵向距离：379.6208078729834
+[2025-04-21 09:19:29.106] [predicting] [info] 当前路径id:28 最近距离：650.1096182345344 角度差：249.8314253703306 最近点纵向距离：153.8830631891723
+[2025-04-21 09:19:29.106] [predicting] [info] 当前路径id:29 最近距离：642.0321575321283 角度差：82.84142537033055 最近点纵向距离：31.77545887497169
+[2025-04-21 09:19:29.106] [predicting] [info] validRoads.size():3
+[2025-04-21 09:19:29.106] [predicting] [info] currentRoads.size():3 
+[2025-04-21 09:19:29.106] [predicting] [info] roadMap.size():24
+[2025-04-21 09:19:29.106] [predicting] [info] id:1 following_road.size():1
+[2025-04-21 09:19:29.106] [predicting] [info] id:2 following_road.size():1
+[2025-04-21 09:19:29.106] [predicting] [info] id:4 following_road.size():2
+[2025-04-21 09:19:29.106] [predicting] [info] id:5 following_road.size():1
+[2025-04-21 09:19:29.106] [predicting] [info] id:6 following_road.size():1
+[2025-04-21 09:19:29.106] [predicting] [info] id:7 following_road.size():4
+[2025-04-21 09:19:29.106] [predicting] [info] id:8 following_road.size():1
+[2025-04-21 09:19:29.106] [predicting] [info] id:9 following_road.size():1
+[2025-04-21 09:19:29.106] [predicting] [info] id:12 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:14 following_road.size():2
+[2025-04-21 09:19:29.107] [predicting] [info] id:15 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:17 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:18 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:19 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:20 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:21 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:22 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:23 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:24 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:26 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:27 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:28 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] id:29 following_road.size():1
+[2025-04-21 09:19:29.107] [predicting] [info] roadMap.size():24
+[2025-04-21 09:19:29.107] [predicting] [info] road_map_.size():24 
+[2025-04-21 09:19:29.107] [predicting] [info] 更新road_map_信息,id:1,截断的位置：38 路段总长：74 更新后的路径:36
+[2025-04-21 09:19:29.107] [predicting] [info] 更新road_map_信息,id:12,截断的位置：46 路段总长：83 更新后的路径:37
+[2025-04-21 09:19:29.107] [predicting] [info] 更新road_map_信息,id:20,截断的位置：8 路段总长：47 更新后的路径:39
+[2025-04-21 09:19:29.107] [predicting] [info] 更新road_map_信息完毕
+[2025-04-21 09:19:29.107] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:19:29.107] [predicting] [info] dfs函数内部，当前push_back的路段id:1
+[2025-04-21 09:19:29.107] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:19:29.107] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:19:29.108] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:19:29.108] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:19:29.108] [predicting] [info] dfs函数内部，当前push_back的路段id:12
+[2025-04-21 09:19:29.108] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:19:29.108] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:19:29.108] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:19:29.108] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:19:29.108] [predicting] [info] dfs函数内部，当前push_back的路段id:20
+[2025-04-21 09:19:29.108] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:19:29.108] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:19:29.108] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:19:29.108] [predicting] [info] final_result.size():3
+[2025-04-21 09:19:29.108] [predicting] [info] nearest_index:38
+[2025-04-21 09:19:29.108] [predicting] [info] 当前推入的路径大小:101 path.size():1
+[2025-04-21 09:19:29.108] [predicting] [info] nearest_index:46
+[2025-04-21 09:19:29.108] [predicting] [info] 当前推入的路径大小:100 path.size():2
+[2025-04-21 09:19:29.108] [predicting] [info] nearest_index:8
+[2025-04-21 09:19:29.108] [predicting] [info] 当前推入的路径大小:100 path.size():3
+[2025-04-21 09:19:54.005] [predicting] [info] start_point.x =14.21765627491719
+[2025-04-21 09:19:54.005] [predicting] [info] start_point.y =-53.898634471490624
+[2025-04-21 09:19:54.005] [predicting] [info] start_point.yaw =71.34368229604684
+[2025-04-21 09:19:54.005] [predicting] [info] Enter PredictingIntface,预测距离100m
+[2025-04-21 09:19:54.005] [predicting] [info] referenceline_relation_.size():23
+[2025-04-21 09:19:54.005] [predicting] [info] all_referencelines_.size():24
+[2025-04-21 09:19:54.005] [predicting] [info] 进入 PreddictPath 函数
+[2025-04-21 09:19:54.005] [predicting] [info] 进入 findCurrentRoad 函数
+[2025-04-21 09:19:54.005] [predicting] [info] 当前路径id:1 最近距离：31.085642795504626 角度差：77.73631770395318 最近点纵向距离：1.0143085214163818
+[2025-04-21 09:19:54.005] [predicting] [info] 当前路径id:2 最近距离：58.704626062515295 角度差：49.97631770395315 最近点纵向距离：49.878821772726624
+[2025-04-21 09:19:54.005] [predicting] [info] 当前路径id:4 最近距离：661.4032246337982 角度差：54.98368229604684 最近点纵向距离：26.279639771721435
+[2025-04-21 09:19:54.005] [predicting] [info] 当前路径id:5 最近距离：661.120104419269 角度差：119.63631770395313 最近点纵向距离：35.61249808184682
+[2025-04-21 09:19:54.005] [predicting] [info] 当前路径id:6 最近距离：445.7590824436743 角度差：251.66631770395318 最近点纵向距离：428.41672033093903
+[2025-04-21 09:19:54.005] [predicting] [info] 当前路径id:7 最近距离：55.684403744308746 角度差：245.0063177039532 最近点纵向距离：45.763414489008255
+[2025-04-21 09:19:54.005] [predicting] [info] 当前路径id:8 最近距离：22.470726246764286 角度差：157.10631770395315 最近点纵向距离：21.202637475041865
+[2025-04-21 09:19:54.005] [predicting] [info] 当前路径id:9 最近距离：22.47072624798745 角度差：156.68631770395314 最近点纵向距离：21.256619224046872
+[2025-04-21 09:19:54.005] [predicting] [info] 当前路径id:12 最近距离：29.45423983666272 角度差：71.15631770395315 最近点纵向距离：0.2289096124082164
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:14 最近距离：3.71838011830478 角度差：161.48631770395318 最近点纵向距离：0.30697723113163966
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:15 最近距离：9.301332823419182 角度差：88.46631770395317 最近点纵向距离：0.6399000470454537
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:17 最近距离：1.562104638183397 角度差：118.52631770395315 最近点纵向距离：0.41223341632976984
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:18 最近距离：5.499771583799305 角度差：10.236317703953151 最近点纵向距离：0.07147169601910142
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:19 最近距离：9.456554710643317 角度差：41.076317703953144 最近点纵向距离：0.1740117083452586
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:20 最近距离：14.885353438896574 角度差：21.35631770395315 最近点纵向距离：12.863906100686929
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:21 最近距离：669.1706051109862 角度差：288.37631770395325 最近点纵向距离：140.53258504015372
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:22 最近距离：27.483352477631385 角度差：157.06631770395316 最近点纵向距离：21.86500528557538
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:23 最近距离：27.483352477631385 角度差：155.91631770395313 最近点纵向距离：22.194785998797677
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:24 最近距离：28.60280534045187 角度差：161.16631770395315 最近点纵向距离：18.906163923096745
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:25 最近距离：21.441517539408387 角度差：156.3163177039532 最近点纵向距离：0.05285295040488158
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:26 最近距离：443.69796937356153 角度差：80.68631770395315 最近点纵向距离：397.94456542115654
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:27 最近距离：666.8602980435865 角度差：269.49631770395314 最近点纵向距离：377.08323756976273
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:28 最近距离：669.1706051107194 角度差：288.0863177039532 最近点纵向距离：143.842215355388
+[2025-04-21 09:19:54.006] [predicting] [info] 当前路径id:29 最近距离：660.5365179531593 角度差：121.09631770395315 最近点纵向距离：17.063752390649597
+[2025-04-21 09:19:54.006] [predicting] [info] validRoads.size():3
+[2025-04-21 09:19:54.006] [predicting] [info] currentRoads.size():3 
+[2025-04-21 09:19:54.006] [predicting] [info] roadMap.size():24
+[2025-04-21 09:19:54.006] [predicting] [info] id:1 following_road.size():1
+[2025-04-21 09:19:54.006] [predicting] [info] id:2 following_road.size():1
+[2025-04-21 09:19:54.006] [predicting] [info] id:4 following_road.size():2
+[2025-04-21 09:19:54.006] [predicting] [info] id:5 following_road.size():1
+[2025-04-21 09:19:54.006] [predicting] [info] id:6 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:7 following_road.size():4
+[2025-04-21 09:19:54.007] [predicting] [info] id:8 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:9 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:12 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:14 following_road.size():2
+[2025-04-21 09:19:54.007] [predicting] [info] id:15 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:17 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:18 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:19 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:20 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:21 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:22 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:23 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:24 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:26 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:27 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:28 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] id:29 following_road.size():1
+[2025-04-21 09:19:54.007] [predicting] [info] roadMap.size():24
+[2025-04-21 09:19:54.007] [predicting] [info] road_map_.size():24 
+[2025-04-21 09:19:54.007] [predicting] [info] 更新road_map_信息,id:15,截断的位置：13 路段总长：32 更新后的路径:19
+[2025-04-21 09:19:54.007] [predicting] [info] 更新road_map_信息,id:18,截断的位置：20 路段总长：35 更新后的路径:15
+[2025-04-21 09:19:54.007] [predicting] [info] 更新road_map_信息,id:19,截断的位置：17 路段总长：28 更新后的路径:11
+[2025-04-21 09:19:54.008] [predicting] [info] 更新road_map_信息完毕
+[2025-04-21 09:19:54.008] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:15
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:18
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:20
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:19:54.008] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:19:54.008] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:18
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:20
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:19:54.008] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:19:54.008] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:19
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:20
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:19:54.008] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:19:54.008] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:19:54.009] [predicting] [info] final_result.size():3
+[2025-04-21 09:19:54.009] [predicting] [info] nearest_index:52
+[2025-04-21 09:19:54.009] [predicting] [info] 当前推入的路径大小:101 path.size():1
+[2025-04-21 09:19:54.009] [predicting] [info] nearest_index:20
+[2025-04-21 09:19:54.009] [predicting] [info] 当前推入的路径大小:101 path.size():2
+[2025-04-21 09:19:54.009] [predicting] [info] nearest_index:17
+[2025-04-21 09:19:54.009] [predicting] [info] 当前推入的路径大小:101 path.size():3
+[2025-04-21 09:20:11.704] [predicting] [info] start_point.x =12.02313723194844
+[2025-04-21 09:20:11.704] [predicting] [info] start_point.y =-27.96995405156875
+[2025-04-21 09:20:11.704] [predicting] [info] start_point.yaw =63.937489612948575
+[2025-04-21 09:20:11.704] [predicting] [info] Enter PredictingIntface,预测距离100m
+[2025-04-21 09:20:11.704] [predicting] [info] referenceline_relation_.size():23
+[2025-04-21 09:20:11.704] [predicting] [info] all_referencelines_.size():24
+[2025-04-21 09:20:11.704] [predicting] [info] 进入 PreddictPath 函数
+[2025-04-21 09:20:11.704] [predicting] [info] 进入 findCurrentRoad 函数
+[2025-04-21 09:20:11.704] [predicting] [info] 当前路径id:1 最近距离：13.473015319539819 角度差：55.54251038705143 最近点纵向距离：0.13225577012599832
+[2025-04-21 09:20:11.705] [predicting] [info] 当前路径id:2 最近距离：32.885719429910516 角度差：57.38251038705141 最近点纵向距离：26.587786198997392
+[2025-04-21 09:20:11.705] [predicting] [info] 当前路径id:4 最近距离：635.7335989862165 角度差：47.57748961294857 最近点纵向距离：21.08193013801997
+[2025-04-21 09:20:11.706] [predicting] [info] 当前路径id:5 最近距离：635.4493458491692 角度差：127.04251038705141 最近点纵向距离：38.39669313343724
+[2025-04-21 09:20:11.706] [predicting] [info] 当前路径id:6 最近距离：423.9508989702188 角度差：259.07251038705147 最近点纵向距离：411.0632140000737
+[2025-04-21 09:20:11.706] [predicting] [info] 当前路径id:7 最近距离：30.00279670669927 角度差：252.41251038705144 最近点纵向距离：26.27822301216907
+[2025-04-21 09:20:11.706] [predicting] [info] 当前路径id:8 最近距离：21.742275784061917 角度差：290.6225103870515 最近点纵向距离：1.4857775313005113
+[2025-04-21 09:20:11.706] [predicting] [info] 当前路径id:9 最近距离：26.482665913566706 角度差：164.09251038705142 最近点纵向距离：3.4463386603266475
+[2025-04-21 09:20:11.706] [predicting] [info] 当前路径id:12 最近距离：13.468177018377826 角度差：55.532510387051424 最近点纵向距离：0.30953275980122363
+[2025-04-21 09:20:11.706] [predicting] [info] 当前路径id:14 最近距离：6.046398491555884 角度差：214.40251038705136 最近点纵向距离：0.04538405123725475
+[2025-04-21 09:20:11.706] [predicting] [info] 当前路径id:15 最近距离：33.88116397791942 角度差：108.03251038705143 最近点纵向距离：0.2609495330059399
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:17 最近距离：27.534081551599954 角度差：122.84251038705143 最近点纵向距离：0.21493696256108175
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:18 最近距离：15.627498042523674 角度差：26.45251038705143 最近点纵向距离：12.787688670684691
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:19 最近距离：15.627498042523674 角度差：29.30251038705143 最近点纵向距离：13.218517439875662
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:20 最近距离：8.48336621033133 角度差：28.62251038705142 最近点纵向距离：0.1186546105734807
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:21 最近距离：643.3512935388779 角度差：295.7825103870515 最近点纵向距离：138.21138126991727
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:22 最近距离：21.757381216052067 角度差：288.0325103870515 最近点纵向距离：0.46096848686687997
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:23 最近距离：35.7204414472664 角度差：163.3225103870514 最近点纵向距离：4.641060648495602
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:24 最近距离：3.955266969549582 角度差：168.5725103870514 最近点纵向距离：0.3315612168268971
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:25 最近距离：3.955266969549582 角度差：168.29251038705144 最近点纵向距离：0.35081822841537735
+[2025-04-21 09:20:11.707] [predicting] [info] 当前路径id:26 最近距离：421.5924228001858 角度差：88.09251038705142 最近点纵向距离：383.8455915810198
+[2025-04-21 09:20:11.708] [predicting] [info] 当前路径id:27 最近距离：641.2867279742808 角度差：276.9025103870514 最近点纵向距离：366.50030094984675
+[2025-04-21 09:20:11.708] [predicting] [info] 当前路径id:28 最近距离：643.3512935386049 角度差：295.4925103870515 最近点纵向距离：141.38986088126774
+[2025-04-21 09:20:11.708] [predicting] [info] 当前路径id:29 最近距离：634.8546777724946 角度差：128.50251038705142 最近点纵向距离：20.506237666103885
+[2025-04-21 09:20:11.708] [predicting] [info] validRoads.size():3
+[2025-04-21 09:20:11.708] [predicting] [info] currentRoads.size():3 
+[2025-04-21 09:20:11.708] [predicting] [info] roadMap.size():24
+[2025-04-21 09:20:11.708] [predicting] [info] id:1 following_road.size():1
+[2025-04-21 09:20:11.708] [predicting] [info] id:2 following_road.size():1
+[2025-04-21 09:20:11.709] [predicting] [info] id:4 following_road.size():2
+[2025-04-21 09:20:11.709] [predicting] [info] id:5 following_road.size():1
+[2025-04-21 09:20:11.709] [predicting] [info] id:6 following_road.size():1
+[2025-04-21 09:20:11.709] [predicting] [info] id:7 following_road.size():4
+[2025-04-21 09:20:11.710] [predicting] [info] id:8 following_road.size():1
+[2025-04-21 09:20:11.710] [predicting] [info] id:9 following_road.size():1
+[2025-04-21 09:20:11.710] [predicting] [info] id:12 following_road.size():1
+[2025-04-21 09:20:11.710] [predicting] [info] id:14 following_road.size():2
+[2025-04-21 09:20:11.710] [predicting] [info] id:15 following_road.size():1
+[2025-04-21 09:20:11.710] [predicting] [info] id:17 following_road.size():1
+[2025-04-21 09:20:11.710] [predicting] [info] id:18 following_road.size():1
+[2025-04-21 09:20:11.711] [predicting] [info] id:19 following_road.size():1
+[2025-04-21 09:20:11.711] [predicting] [info] id:20 following_road.size():1
+[2025-04-21 09:20:11.711] [predicting] [info] id:21 following_road.size():1
+[2025-04-21 09:20:11.711] [predicting] [info] id:22 following_road.size():1
+[2025-04-21 09:20:11.711] [predicting] [info] id:23 following_road.size():1
+[2025-04-21 09:20:11.711] [predicting] [info] id:24 following_road.size():1
+[2025-04-21 09:20:11.711] [predicting] [info] id:26 following_road.size():1
+[2025-04-21 09:20:11.711] [predicting] [info] id:27 following_road.size():1
+[2025-04-21 09:20:11.711] [predicting] [info] id:28 following_road.size():1
+[2025-04-21 09:20:11.712] [predicting] [info] id:29 following_road.size():1
+[2025-04-21 09:20:11.712] [predicting] [info] roadMap.size():24
+[2025-04-21 09:20:11.712] [predicting] [info] road_map_.size():24 
+[2025-04-21 09:20:11.712] [predicting] [info] 更新road_map_信息,id:1,截断的位置：45 路段总长：74 更新后的路径:29
+[2025-04-21 09:20:11.712] [predicting] [info] 更新road_map_信息,id:12,截断的位置：54 路段总长：83 更新后的路径:29
+[2025-04-21 09:20:11.712] [predicting] [info] 更新road_map_信息,id:20,截断的位置：13 路段总长：47 更新后的路径:34
+[2025-04-21 09:20:11.712] [predicting] [info] 更新road_map_信息完毕
+[2025-04-21 09:20:11.712] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:11.713] [predicting] [info] dfs函数内部，当前push_back的路段id:1
+[2025-04-21 09:20:11.713] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:20:11.713] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:20:11.713] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:11.713] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:11.713] [predicting] [info] dfs函数内部，当前push_back的路段id:12
+[2025-04-21 09:20:11.714] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:20:11.714] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:20:11.714] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:11.714] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:11.714] [predicting] [info] dfs函数内部，当前push_back的路段id:20
+[2025-04-21 09:20:11.714] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:20:11.714] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:20:11.714] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:11.715] [predicting] [info] final_result.size():3
+[2025-04-21 09:20:11.715] [predicting] [info] nearest_index:45
+[2025-04-21 09:20:11.715] [predicting] [info] 当前推入的路径大小:101 path.size():1
+[2025-04-21 09:20:11.715] [predicting] [info] nearest_index:54
+[2025-04-21 09:20:11.715] [predicting] [info] 当前推入的路径大小:100 path.size():2
+[2025-04-21 09:20:11.715] [predicting] [info] nearest_index:13
+[2025-04-21 09:20:11.715] [predicting] [info] 当前推入的路径大小:100 path.size():3
+[2025-04-21 09:20:35.504] [predicting] [info] start_point.x =-86.84297452342265
+[2025-04-21 09:20:35.504] [predicting] [info] start_point.y =128.61463304559922
+[2025-04-21 09:20:35.504] [predicting] [info] start_point.yaw =129.40884846818525
+[2025-04-21 09:20:35.504] [predicting] [info] Enter PredictingIntface,预测距离100m
+[2025-04-21 09:20:35.504] [predicting] [info] referenceline_relation_.size():23
+[2025-04-21 09:20:35.504] [predicting] [info] all_referencelines_.size():24
+[2025-04-21 09:20:35.504] [predicting] [info] 进入 PreddictPath 函数
+[2025-04-21 09:20:35.504] [predicting] [info] 进入 findCurrentRoad 函数
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:1 最近距离：160.14794120098543 角度差：8.638848468185254 最近点纵向距离：158.3487203996771
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:2 最近距离：7.545154135416257 角度差：2.6488484681852444 最近点纵向距离：0.007344801460690942
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:4 最近距离：462.7580727931524 角度差：121.34884846818524 最近点纵向距离：2.6321307023825895
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:5 最近距离：462.5775839594354 角度差：57.73115153181472 最近点纵向距离：3.15247185995959
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:6 最近距离：240.92174552004315 角度差：193.60115153181476 最近点纵向距离：237.8817136291167
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:7 最近距离：11.793592901982688 角度差：180.16115153181474 最近点纵向距离：0.03424858116263518
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:8 最近距离：156.36030618867883 角度差：189.04115153181473 最近点纵向距离：152.11749805174605
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:9 最近距离：204.5840138728822 角度差：96.22115153181477 最近点纵向距离：0.14698678118506336
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:12 最近距离：160.1479411592632 角度差：8.618848468185229 最近点纵向距离：158.35706682396284
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:14 最近距离：156.36030618867883 角度差：187.66115153181477 最近点纵向距离：152.9446482057869
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:15 最近距离：209.74240318366617 角度差：76.06115153181474 最近点纵向距离：4.017428613857092
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:17 最近距离：208.7442779011466 角度差：77.84115153181473 最近点纵向距离：1.4374971375247156
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:18 最近距离：200.78924357360944 角度差：39.01884846818525 最近点纵向距离：170.04160339827902
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:19 最近距离：200.78924357360944 角度差：36.168848468185246 最近点纵向距离：175.14057966721163
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:20 最近距离：160.14794120098543 角度差：9.67884846818524 最近点纵向距离：157.88814345892644
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:21 最近距离：473.8037846798265 角度差：230.31115153181483 最近点纵向距离：38.58123646977204
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:22 最近距离：156.36030618867883 角度差：189.0111515318148 最近点纵向距离：152.13641969821822
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:23 最近距离：214.54634280145206 角度差：96.37115153181475 最近点纵向距离：0.3921799963398769
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:24 最近距离：156.36030618867883 角度差：188.82115153181476 最近点纵向距离：152.25528800225243
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:25 最近距离：181.60885577255726 角度差：102.82115153181476 最近点纵向距离：63.57232268255541
+[2025-04-21 09:20:35.505] [predicting] [info] 当前路径id:26 最近距离：237.83270764712157 角度差：22.621151531814736 最近点纵向距离：223.08809533625885
+[2025-04-21 09:20:35.506] [predicting] [info] 当前路径id:27 最近距离：465.2889467445616 角度差：3.261151531814744 最近点纵向距离：439.14343623415334
+[2025-04-21 09:20:35.506] [predicting] [info] 当前路径id:28 最近距离：473.8037846797269 角度差：230.02115153181478 最近点纵向距离：40.97090471662343
+[2025-04-21 09:20:35.506] [predicting] [info] 当前路径id:29 最近距离：462.14670537102654 角度差：55.391151531814785 最近点纵向距离：21.25030531818637
+[2025-04-21 09:20:35.506] [predicting] [info] validRoads.size():1
+[2025-04-21 09:20:35.506] [predicting] [info] currentRoads.size():1 
+[2025-04-21 09:20:35.506] [predicting] [info] roadMap.size():24
+[2025-04-21 09:20:35.506] [predicting] [info] id:1 following_road.size():1
+[2025-04-21 09:20:35.507] [predicting] [info] id:2 following_road.size():1
+[2025-04-21 09:20:35.507] [predicting] [info] id:4 following_road.size():2
+[2025-04-21 09:20:35.507] [predicting] [info] id:5 following_road.size():1
+[2025-04-21 09:20:35.507] [predicting] [info] id:6 following_road.size():1
+[2025-04-21 09:20:35.507] [predicting] [info] id:7 following_road.size():4
+[2025-04-21 09:20:35.507] [predicting] [info] id:8 following_road.size():1
+[2025-04-21 09:20:35.507] [predicting] [info] id:9 following_road.size():1
+[2025-04-21 09:20:35.507] [predicting] [info] id:12 following_road.size():1
+[2025-04-21 09:20:35.508] [predicting] [info] id:14 following_road.size():2
+[2025-04-21 09:20:35.508] [predicting] [info] id:15 following_road.size():1
+[2025-04-21 09:20:35.508] [predicting] [info] id:17 following_road.size():1
+[2025-04-21 09:20:35.508] [predicting] [info] id:18 following_road.size():1
+[2025-04-21 09:20:35.508] [predicting] [info] id:19 following_road.size():1
+[2025-04-21 09:20:35.508] [predicting] [info] id:20 following_road.size():1
+[2025-04-21 09:20:35.508] [predicting] [info] id:21 following_road.size():1
+[2025-04-21 09:20:35.508] [predicting] [info] id:22 following_road.size():1
+[2025-04-21 09:20:35.509] [predicting] [info] id:23 following_road.size():1
+[2025-04-21 09:20:35.509] [predicting] [info] id:24 following_road.size():1
+[2025-04-21 09:20:35.510] [predicting] [info] id:26 following_road.size():1
+[2025-04-21 09:20:35.510] [predicting] [info] id:27 following_road.size():1
+[2025-04-21 09:20:35.510] [predicting] [info] id:28 following_road.size():1
+[2025-04-21 09:20:35.510] [predicting] [info] id:29 following_road.size():1
+[2025-04-21 09:20:35.510] [predicting] [info] roadMap.size():24
+[2025-04-21 09:20:35.510] [predicting] [info] road_map_.size():24 
+[2025-04-21 09:20:35.510] [predicting] [info] 更新road_map_信息,id:2,截断的位置：160 路段总长：403 更新后的路径:243
+[2025-04-21 09:20:35.510] [predicting] [info] 更新road_map_信息完毕
+[2025-04-21 09:20:35.511] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:35.511] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:20:35.511] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:20:35.511] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:35.511] [predicting] [info] final_result.size():1
+[2025-04-21 09:20:35.511] [predicting] [info] nearest_index:160
+[2025-04-21 09:20:35.511] [predicting] [info] 当前推入的路径大小:100 path.size():1
+[2025-04-21 09:20:56.904] [predicting] [info] start_point.x =57.186253687026564
+[2025-04-21 09:20:56.904] [predicting] [info] start_point.y =-17.507963695123436
+[2025-04-21 09:20:56.904] [predicting] [info] start_point.yaw =227.32966790124198
+[2025-04-21 09:20:56.904] [predicting] [info] Enter PredictingIntface,预测距离100m
+[2025-04-21 09:20:56.904] [predicting] [info] referenceline_relation_.size():23
+[2025-04-21 09:20:56.904] [predicting] [info] all_referencelines_.size():24
+[2025-04-21 09:20:56.904] [predicting] [info] 进入 PreddictPath 函数
+[2025-04-21 09:20:56.904] [predicting] [info] 进入 findCurrentRoad 函数
+[2025-04-21 09:20:56.904] [predicting] [info] 当前路径id:1 最近距离：0.5922223578595487 角度差：1.9196679012419888 最近点纵向距离：0.11908468575268161
+[2025-04-21 09:20:56.904] [predicting] [info] 当前路径id:2 最近距离：47.95689954492879 角度差：106.00966790124197 最近点纵向距离：41.12691512697884
+[2025-04-21 09:20:56.904] [predicting] [info] 当前路径id:4 最近距离：638.5336391853152 角度差：151.63033209875798 最近点纵向距离：4.554457402614901
+[2025-04-21 09:20:56.904] [predicting] [info] 当前路径id:5 最近距离：638.2022041260243 角度差：32.53966790124197 最近点纵向距离：41.49931196279047
+[2025-04-21 09:20:56.904] [predicting] [info] 当前路径id:6 最近距离：446.0874133192452 角度差：95.68033209875802 最近点纵向距离：440.8421011786683
+[2025-04-21 09:20:56.904] [predicting] [info] 当前路径id:7 最近距离：57.1434699068786 角度差：89.02033209875803 最近点纵向距离：51.73548739417508
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:8 最近距离：15.653965075186928 角度差：52.120332098758034 最近点纵向距离：0.2023930207720941
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:9 最近距离：0.5247307882954219 角度差：0.2003320987580066 最近点纵向距离：0.09951721375319073
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:12 最近距离：9.45526803668828 角度差：0.7196679012419871 最近点纵向距离：0.2555356693037547
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:14 最近距离：40.27659365801211 角度差：54.110332098758015 最近点纵向距离：0.42169053867275874
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:15 最近距离：63.15703914479288 角度差：85.09966790124201 最近点纵向距离：0.45327369748632407
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:17 最近距离：50.75843939033072 角度差：81.70966790124196 最近点纵向距离：0.4008622550464338
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:18 最近距离：42.90013658953578 角度差：136.939667901242 最近点纵向距离：22.942023455636345
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:19 最近距离：42.90013658953578 角度差：134.08966790124197 最近点纵向距离：21.111231674293787
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:20 最近距离：37.08820162047603 角度差：134.889667901242 最近点纵向距离：0.3695665690540648
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:21 最近距离：644.2790684705217 角度差：132.39033209875808 最近点纵向距离：183.32283170681922
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:22 最近距离：12.273489760776531 角度差：69.43033209875803 最近点纵向距离：0.35765554352363793
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:23 最近距离：9.414497499902678 角度差：1.6596679012420048 最近点纵向距离：0.10106244850100854
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:24 最近距离：44.23378864535759 角度差：39.07033209875804 最近点纵向距离：0.9884339079854818
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:25 最近距离：49.20184323069437 角度差：4.900332098758019 最近点纵向距离：36.282872421839954
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:26 最近距离：442.87129351218687 角度差：75.299667901242 最近点纵向距离：418.82658323008377
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:27 最近距离：645.0968650392573 角度差：113.51033209875797 最近点纵向距离：405.7279383741545
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:28 最近距离：644.2790684701579 角度差：132.10033209875803 最近点纵向距离：186.44666434876456
+[2025-04-21 09:20:56.905] [predicting] [info] 当前路径id:29 最近距离：637.5165695538195 角度差：30.939667901242018 最近点纵向距离：22.030835701694087
+[2025-04-21 09:20:56.905] [predicting] [info] validRoads.size():6
+[2025-04-21 09:20:56.905] [predicting] [info] currentRoads.size():6 
+[2025-04-21 09:20:56.905] [predicting] [info] roadMap.size():24
+[2025-04-21 09:20:56.905] [predicting] [info] id:1 following_road.size():1
+[2025-04-21 09:20:56.905] [predicting] [info] id:2 following_road.size():1
+[2025-04-21 09:20:56.905] [predicting] [info] id:4 following_road.size():2
+[2025-04-21 09:20:56.905] [predicting] [info] id:5 following_road.size():1
+[2025-04-21 09:20:56.905] [predicting] [info] id:6 following_road.size():1
+[2025-04-21 09:20:56.905] [predicting] [info] id:7 following_road.size():4
+[2025-04-21 09:20:56.905] [predicting] [info] id:8 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:9 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:12 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:14 following_road.size():2
+[2025-04-21 09:20:56.906] [predicting] [info] id:15 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:17 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:18 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:19 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:20 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:21 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:22 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:23 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:24 following_road.size():1
+[2025-04-21 09:20:56.906] [predicting] [info] id:26 following_road.size():1
+[2025-04-21 09:20:56.907] [predicting] [info] id:27 following_road.size():1
+[2025-04-21 09:20:56.907] [predicting] [info] id:28 following_road.size():1
+[2025-04-21 09:20:56.907] [predicting] [info] id:29 following_road.size():1
+[2025-04-21 09:20:56.907] [predicting] [info] roadMap.size():24
+[2025-04-21 09:20:56.907] [predicting] [info] road_map_.size():24 
+[2025-04-21 09:20:56.907] [predicting] [info] 更新road_map_信息,id:1,截断的位置：5 路段总长：74 更新后的路径:69
+[2025-04-21 09:20:56.907] [predicting] [info] 更新road_map_信息,id:8,截断的位置：48 路段总长：74 更新后的路径:26
+[2025-04-21 09:20:56.907] [predicting] [info] 更新road_map_信息,id:9,截断的位置：34 路段总长：40 更新后的路径:6
+[2025-04-21 09:20:56.907] [predicting] [info] 更新road_map_信息,id:12,截断的位置：5 路段总长：83 更新后的路径:78
+[2025-04-21 09:20:56.908] [predicting] [info] 更新road_map_信息,id:22,截断的位置：53 路段总长：82 更新后的路径:29
+[2025-04-21 09:20:56.908] [predicting] [info] 更新road_map_信息,id:23,截断的位置：33 路段总长：39 更新后的路径:6
+[2025-04-21 09:20:56.908] [predicting] [info] 更新road_map_信息完毕
+[2025-04-21 09:20:56.908] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:56.908] [predicting] [info] dfs函数内部，当前push_back的路段id:1
+[2025-04-21 09:20:56.909] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:20:56.909] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:20:56.909] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:56.909] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:56.909] [predicting] [info] dfs函数内部，当前push_back的路段id:8
+[2025-04-21 09:20:56.910] [predicting] [info] dfs函数内部，当前push_back的路段id:9
+[2025-04-21 09:20:56.910] [predicting] [info] dfs函数内部，当前push_back的路段id:1
+[2025-04-21 09:20:56.910] [predicting] [info] dfs函数内部，当前探索到的路id为 1,已经满足 100 阈值
+[2025-04-21 09:20:56.910] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:56.910] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:56.910] [predicting] [info] dfs函数内部，当前push_back的路段id:9
+[2025-04-21 09:20:56.910] [predicting] [info] dfs函数内部，当前push_back的路段id:1
+[2025-04-21 09:20:56.910] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:20:56.911] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:20:56.911] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:56.911] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:56.911] [predicting] [info] dfs函数内部，当前push_back的路段id:12
+[2025-04-21 09:20:56.911] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:20:56.911] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:20:56.911] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:56.912] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:56.912] [predicting] [info] dfs函数内部，当前push_back的路段id:22
+[2025-04-21 09:20:56.912] [predicting] [info] dfs函数内部，当前push_back的路段id:23
+[2025-04-21 09:20:56.912] [predicting] [info] dfs函数内部，当前push_back的路段id:12
+[2025-04-21 09:20:56.912] [predicting] [info] dfs函数内部，当前探索到的路id为 12,已经满足 100 阈值
+[2025-04-21 09:20:56.912] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:56.912] [predicting] [info] 进入 findPathsToLeafRoads 函数
+[2025-04-21 09:20:56.912] [predicting] [info] dfs函数内部，当前push_back的路段id:23
+[2025-04-21 09:20:56.913] [predicting] [info] dfs函数内部，当前push_back的路段id:12
+[2025-04-21 09:20:56.913] [predicting] [info] dfs函数内部，当前push_back的路段id:2
+[2025-04-21 09:20:56.913] [predicting] [info] dfs函数内部，当前探索到的路id为 2,已经满足 100 阈值
+[2025-04-21 09:20:56.913] [predicting] [info] temp_road_nodes.size():1
+[2025-04-21 09:20:56.913] [predicting] [info] final_result.size():6
+[2025-04-21 09:20:56.913] [predicting] [info] nearest_index:5
+[2025-04-21 09:20:56.914] [predicting] [info] 当前推入的路径大小:101 path.size():1
+[2025-04-21 09:20:56.914] [predicting] [info] nearest_index:108
+[2025-04-21 09:20:56.914] [predicting] [info] 当前推入的路径大小:80 path.size():2
+[2025-04-21 09:20:56.914] [predicting] [info] nearest_index:34
+[2025-04-21 09:20:56.914] [predicting] [info] 当前推入的路径大小:102 path.size():3
+[2025-04-21 09:20:56.914] [predicting] [info] nearest_index:5
+[2025-04-21 09:20:56.914] [predicting] [info] 当前推入的路径大小:100 path.size():4
+[2025-04-21 09:20:56.914] [predicting] [info] nearest_index:115
+[2025-04-21 09:20:56.915] [predicting] [info] 当前推入的路径大小:89 path.size():5
+[2025-04-21 09:20:56.915] [predicting] [info] nearest_index:33
+[2025-04-21 09:20:56.915] [predicting] [info] 当前推入的路径大小:101 path.size():6

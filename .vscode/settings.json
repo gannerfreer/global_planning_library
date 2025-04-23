@@ -79,5 +79,6 @@
         "rope": "cpp",
         "span": "cpp",
         "*.ipp": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/home/yyf/global_planning_library/src/msgs/msg_lidar_shape"
 }
