@@ -798,8 +798,14 @@ bool GetMap(char* parea) {
     int                   traj_type = -1;
     for (SizeType i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
-        traj.id                      = trajsArray[i]["id"].GetInt();
-        traj_type                    = trajsArray[i]["type"].GetInt();
+        traj.id = trajsArray[i]["id"].GetInt();
+        if (trajsArray[i].HasMember("type")) {
+            traj_type = trajsArray[i]["type"].GetInt();
+        }
+        else {
+            traj_type = 2;
+        }
+
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
         for (SizeType j = 0; j < trajPointsArray.Size(); j++) {
             tp.x         = trajPointsArray[j]["x"].GetDouble();
