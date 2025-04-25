@@ -1,4 +1,3 @@
-
 /**
  * Created Time: 2024.07.10
  * File name:    interface.h
@@ -29,41 +28,34 @@ class GlobalVariable // 单例类
         }
         return instance;
     }
-    static int BinarySearch(const vector<int>& input_vec, int target);
+    static int BinarySearch(const std::vector<int>& input_vec, int target);
 
     const void ClearData() {
         map_border_.clear();
-        all_referencelines_.clear();
-        referenceline_relation_.clear();
-        referenceline_graph_.clear();
-        sequence_mapping_.clear(); // 序列映射关系
+        self_driving_referenceline_relation_.clear();
+        human_driving_referenceline_relation_.clear();
+        self_driving_referenceline_graph_.clear();
+        self_driving_sequence_mapping_.clear();
     }
 
     const std::vector<_BorderPoint>& GetMapBorder() const {
         return map_border_;
     }
 
-    const std::map<int, _SingleTraj>& GetAllReferencelines() const {
-        return all_referencelines_;
+    void SetAllSelfDrivingReferencelines(const std::map<int, _SingleTraj>& newAllReferencelines) {
+        all_self_driving_referencelines_ = newAllReferencelines;
     }
     const std::map<int, _SingleTraj>& GetAllSelfDrivingReferencelines() const {
         return all_self_driving_referencelines_;
     }
+
     const std::map<int, _SingleTraj>& GetAllHumanDrivingReferencelines() const {
         return all_human_driving_referencelines_;
     }
-
-    const std::map<int, std::vector<int>>& GetReferencelineRelation() const {
-        return referenceline_relation_;
+    void SetAllHumanDrivingReferencelines(const std::map<int, _SingleTraj>& newAllReferencelines) {
+        all_human_driving_referencelines_ = newAllReferencelines;
     }
 
-    const std::vector<std::vector<double>>& GetReferencelineGraph() const {
-        return referenceline_graph_;
-    }
-
-    const std::vector<int>& GetSequenceMapping() const {
-        return sequence_mapping_;
-    }
 
     int GetDispatchNums() const {
         return dispatch_nums;
@@ -78,33 +70,45 @@ class GlobalVariable // 单例类
         return receive_ptr;
     }
 
+    // 新增的 self_driving_referenceline_relation_ 的 get 和 set 方法
+    const std::map<int, std::vector<int>>& GetSelfDrivingReferencelineRelation() const {
+        return self_driving_referenceline_relation_;
+    }
+    void SetSelfDrivingReferencelineRelation(const std::map<int, std::vector<int>>& newRelation) {
+        self_driving_referenceline_relation_ = newRelation;
+    }
+
+    // 新增的 human_driving_referenceline_relation_ 的 get 和 set 方法
+    const std::map<int, std::vector<int>>& GetHumanDrivingReferencelineRelation() const {
+        return human_driving_referenceline_relation_;
+    }
+    void SetHumanDrivingReferencelineRelation(const std::map<int, std::vector<int>>& newRelation) {
+        human_driving_referenceline_relation_ = newRelation;
+    }
+
+    // 新增的 self_driving_referenceline_graph_ 的 get 和 set 方法
+    const std::vector<std::vector<double>>& GetSelfDrivingReferencelineGraph() const {
+        return self_driving_referenceline_graph_;
+    }
+    void SetSelfDrivingReferencelineGraph(const std::vector<std::vector<double>>& newGraph) {
+        self_driving_referenceline_graph_ = newGraph;
+    }
+
+
+    // 新增的 self_driving_sequence_mapping_ 的 get 和 set 方法
+    const std::vector<int>& GetSelfDrivingSequenceMapping() const {
+        return self_driving_sequence_mapping_;
+    }
+    void SetSelfDrivingSequenceMapping(const std::vector<int>& newMapping) {
+        self_driving_sequence_mapping_ = newMapping;
+    }
+
+
     // Setters
     void SetMapBorder(const std::vector<_BorderPoint>& newMapBorder) {
         map_border_ = newMapBorder;
     }
 
-    void SetAllReferencelines(const std::map<int, _SingleTraj>& newAllReferencelines) {
-        all_referencelines_ = newAllReferencelines;
-    }
-    void SetAllSelfDrivingReferencelines(const std::map<int, _SingleTraj>& newAllReferencelines) {
-        all_self_driving_referencelines_ = newAllReferencelines;
-    }
-    void SetAllHumanDrivingReferencelines(const std::map<int, _SingleTraj>& newAllReferencelines) {
-        all_human_driving_referencelines_ = newAllReferencelines;
-    }
-
-    void SetReferencelineRelation(const std::map<int, std::vector<int>>& newReferencelineRelation) {
-        referenceline_relation_ = newReferencelineRelation;
-    }
-
-
-    void SetReferencelineGraph(const std::vector<std::vector<double>>& newReferencelineGraph) {
-        referenceline_graph_ = newReferencelineGraph;
-    }
-
-    void SetSequenceMapping(const std::vector<int>& newSequenceMapping) {
-        sequence_mapping_ = newSequenceMapping;
-    }
 
     void SetDispatchNums(int newDispatchNums) {
         dispatch_nums = newDispatchNums;
@@ -124,20 +128,21 @@ class GlobalVariable // 单例类
     // 全局锁
     std::shared_mutex parse_func_write_lock, record_file_write_lock, return_write_lock, assignment_operation_lock;
 
-    void CreateDirectedGraph(const map<int, vector<int>>& referenceline_relation_);
-    void CreateSequenceMapping(const map<int, _SingleTraj> all_referencelines_);
+    void CreateSelfDrivingDirectedGraph(const std::map<int, std::vector<int>>& self_driving_referenceline_relation);
+
+    void CreateSelfDrivingSequenceMapping(const std::map<int, _SingleTraj> all_self_driving_referencelines);
+
 
   private:
-    vector<_BorderPoint>   map_border_;
-    map<int, _SingleTraj>  all_referencelines_;
-    map<int, _SingleTraj>  all_self_driving_referencelines_;
-    map<int, _SingleTraj>  all_human_driving_referencelines_;
-    map<int, vector<int>>  referenceline_relation_;
-    vector<vector<double>> referenceline_graph_;
-    vector<int>            sequence_mapping_; // 序列映射关系
-    int                    dispatch_nums;
-    string                 global_str;
-    char*                  receive_ptr;
+    std::vector<_BorderPoint>        map_border_;
+    std::map<int, _SingleTraj>       all_self_driving_referencelines_;
+    std::map<int, _SingleTraj>       all_human_driving_referencelines_;
+    std::map<int, std::vector<int>>  self_driving_referenceline_relation_, human_driving_referenceline_relation_;
+    std::vector<std::vector<double>> self_driving_referenceline_graph_;
+    std::vector<int>                 self_driving_sequence_mapping_; // 序列映射关系
+    int                              dispatch_nums;
+    std::string                      global_str;
+    char*                            receive_ptr;
     // 静态成员变量，存储类的唯一实例
     static GlobalVariable* instance;
     // 静态互斥锁，用于线程安全

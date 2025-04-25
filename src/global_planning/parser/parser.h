@@ -761,8 +761,9 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
     return GlobalVariable::getInstance()->GetGlobalStr();
 }
 
+
 bool GetMap(char* parea) {
-    rapidjson::Document doc;
+    Document doc;
     doc.Parse(parea);
     if (doc.HasParseError()) {
         doc.GetParseError();
@@ -771,7 +772,6 @@ bool GetMap(char* parea) {
     doc.GetAllocator();
 
     // 清空所有的地图边界、参考路径、relation、
-
     GlobalVariable::getInstance()->ClearData();
 
     // 解析border_points
@@ -788,14 +788,14 @@ bool GetMap(char* parea) {
         }
     }
     GlobalVariable::getInstance()->SetMapBorder(v_bp);
-    cout << "解析border_points完毕,边界点数量：" << v_bp.size() << endl;
+    std::cout << "解析border_points完毕,边界点数量：" << v_bp.size() << std::endl;
 
     // 解析reference_trajs
-    const Value&          trajsArray = doc["reference_trajs"];
-    map<int, _SingleTraj> m_traj, m_traj_self_driving, m_traj_human_driving;
-    _SingleTraj           traj;
-    _TrajectoryPoint      tp;
-    int                   traj_type = -1;
+    const Value&               trajsArray = doc["reference_trajs"];
+    std::map<int, _SingleTraj> m_traj_self_driving, m_traj_human_driving;
+    _SingleTraj                traj;
+    _TrajectoryPoint           tp;
+    int                        traj_type = -1;
     for (SizeType i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
         traj.id = trajsArray[i]["id"].GetInt();
@@ -817,7 +817,6 @@ bool GetMap(char* parea) {
             tp.direction = static_cast<unsigned char>(trajPointsArray[j]["direction"].GetInt());
             traj.trajectory.push_back(tp);
         }
-        m_traj[traj.id] = traj;
         if (traj_type == 2) {
             m_traj_self_driving[traj.id]  = traj;
             m_traj_human_driving[traj.id] = traj;
@@ -829,16 +828,15 @@ bool GetMap(char* parea) {
             m_traj_human_driving[traj.id] = traj;
         }
     }
-    GlobalVariable::getInstance()->SetAllReferencelines(m_traj);
     GlobalVariable::getInstance()->SetAllSelfDrivingReferencelines(m_traj_self_driving);
     GlobalVariable::getInstance()->SetAllHumanDrivingReferencelines(m_traj_human_driving);
 
-
     // 解析relation
-    const Value&          relationObj = doc["relation"];
-    map<int, vector<int>> m_relation;
-    int                   key;
-    vector<int>           relVec;
+    const Value&                    relationObj = doc["relation"];
+    std::map<int, std::vector<int>> m_relation_self_driving;  // 无人车专用relation
+    std::map<int, std::vector<int>> m_relation_human_driving; // 有人车专用relation
+    int                             key;
+    std::vector<int>                relVec;
     for (Value::ConstMemberIterator itr = relationObj.MemberBegin(); itr != relationObj.MemberEnd(); ++itr) {
         key                   = stoi(itr->name.GetString());
         const Value& relArray = itr->value;
@@ -846,13 +844,21 @@ bool GetMap(char* parea) {
         for (SizeType k = 0; k < relArray.Size(); k++) {
             relVec.push_back(relArray[k].GetInt());
         }
-        m_relation[key] = relVec;
-    }
-    GlobalVariable::getInstance()->SetReferencelineRelation(m_relation);
-    GlobalVariable::getInstance()->CreateSequenceMapping(GlobalVariable::getInstance()->GetAllReferencelines());
 
-    // 调用GlobalVariable类内部的CreateDirectedGraph来生成referenceline_graph_
-    GlobalVariable::getInstance()->CreateDirectedGraph(GlobalVariable::getInstance()->GetReferencelineRelation());
+        // 根据路径类型区分无人车和有人车专用的relation
+        if (m_traj_self_driving.find(key) != m_traj_self_driving.end()) {
+            m_relation_self_driving[key] = relVec;
+        }
+        if (m_traj_human_driving.find(key) != m_traj_human_driving.end()) {
+            m_relation_human_driving[key] = relVec;
+        }
+    }
+    GlobalVariable::getInstance()->SetSelfDrivingReferencelineRelation(m_relation_self_driving);
+    GlobalVariable::getInstance()->SetHumanDrivingReferencelineRelation(m_relation_human_driving);
+
+    GlobalVariable::getInstance()->CreateSelfDrivingSequenceMapping(GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines());
+    // 构建无人车的DirectedGraph
+    GlobalVariable::getInstance()->CreateSelfDrivingDirectedGraph(GlobalVariable::getInstance()->GetSelfDrivingReferencelineRelation());
 
     return true;
 }

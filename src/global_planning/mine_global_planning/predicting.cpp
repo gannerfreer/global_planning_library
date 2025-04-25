@@ -31,7 +31,7 @@ bool Predicting::ReadAllMapFile() {
     m_tar_rviz_data_.minx = std::numeric_limits<double>::infinity();
     m_tar_rviz_data_.miny = std::numeric_limits<double>::infinity();
     // 读取地图信息
-    if (!configio_.GetMap_PathPredicting(all_referencelines_, m_tar_rviz_data_)) {
+    if (!configio_.GetMap_PathPredicting(all_referencelines_, referenceline_relation_, m_tar_rviz_data_)) {
         return false;
     }
     else {
@@ -47,10 +47,10 @@ void Predicting::PredictingInterface(vector<vector<_TrajectoryPoint>>& path, int
     PlanResult result = PlanResult::Plan_OK;
     error_type_       = ErrorType::SUCCESS;
 
-    const map<int, vector<int>>& referenceline_relation_ = GlobalVariable::getInstance()->GetReferencelineRelation();
+
     threadLogger_->info("referenceline_relation_.size():{}", referenceline_relation_.size());
     threadLogger_->info("all_referencelines_.size():{}", all_referencelines_.size());
-    std::vector<std::vector<_TrajectoryPoint>> final_result = predictPath(all_referencelines_, referenceline_relation_, start_point_.x, start_point_.y, start_point_.yaw / 180.0 * M_PI, 20);
+    std::vector<std::vector<_TrajectoryPoint>> final_result = predictPath(start_point_.x, start_point_.y, start_point_.yaw / 180.0 * M_PI, 20);
 
     // 对final_result进行100m准确裁减
     std::vector<_TrajectoryPoint> temp_traj;
@@ -93,10 +93,10 @@ void Predicting::PredictingInterface(vector<vector<_TrajectoryPoint>>& path, int
 
 
 // 查找车辆一定阈值范围内的所有路径
-std::vector<_SingleTraj> Predicting::findCurrentRoad(const map<int, _SingleTraj>& roads, double x, double y, double yaw, double distance_threshold) {
+std::vector<_SingleTraj> Predicting::findCurrentRoad(double x, double y, double yaw, double distance_threshold) {
     threadLogger_->info("进入 findCurrentRoad 函数");
     std::vector<_SingleTraj> validRoads;
-    for (const auto& road : roads) {
+    for (const auto& road : all_referencelines_) {
         double           minDistance = std::numeric_limits<double>::max();
         _TrajectoryPoint nearestPoint;
 
@@ -130,14 +130,14 @@ double Predicting::calculateYawDifference(double yaw1, double yaw2) {
     return std::abs(diff);
 }
 // 预测车辆接下来 ${predicting_distance_} m 的路径
-std::vector<std::vector<_TrajectoryPoint>> Predicting::predictPath(const map<int, _SingleTraj>& roads, const std::map<int, std::vector<int>>& relation, double x, double y, double yaw, double distance_threshold) {
+std::vector<std::vector<_TrajectoryPoint>> Predicting::predictPath(double x, double y, double yaw, double distance_threshold) {
     threadLogger_->info("进入 PreddictPath 函数");
-    std::vector<_SingleTraj> currentRoads = findCurrentRoad(roads, x, y, yaw, distance_threshold);
+    std::vector<_SingleTraj> currentRoads = findCurrentRoad(x, y, yaw, distance_threshold);
     threadLogger_->info("currentRoads.size():{} ", currentRoads.size());
     double totalDistance = 0;
 
     // 基于relation来构建所有节点信息
-    road_map_ = buildRoadLists(roads, relation);
+    road_map_ = buildRoadLists();
     threadLogger_->info("road_map_.size():{} ", road_map_.size());
 
     // 更新road_map_信息
@@ -172,7 +172,7 @@ std::vector<std::vector<_TrajectoryPoint>> Predicting::predictPath(const map<int
         for (const auto& path : temp_road_nodes) {
             temp_single_traj.clear();
             for (const auto& part_path : path) {
-                temp_single_traj.insert(temp_single_traj.end(), roads.at(part_path->id).trajectory.begin(), roads.at(part_path->id).trajectory.end());
+                temp_single_traj.insert(temp_single_traj.end(), all_referencelines_.at(part_path->id).trajectory.begin(), all_referencelines_.at(part_path->id).trajectory.end());
             }
 
             final_result.push_back(temp_single_traj);
@@ -231,11 +231,11 @@ double Predicting::calculateTrajectoryLength(const std::vector<_TrajectoryPoint>
 }
 
 // 构建 road_lists_
-std::map<int, Road*> Predicting::buildRoadLists(const std::map<int, _SingleTraj>& roads, const std::map<int, std::vector<int>>& relation) {
+std::map<int, Road*> Predicting::buildRoadLists() {
     std::map<int, Road*> roadMap;
 
     // 第一步：为每个 _SingleTraj 创建对应的 Road 对象，并计算长度
-    for (const auto& roadPair : roads) {
+    for (const auto& roadPair : all_referencelines_) {
         int                roadId     = roadPair.first;
         const _SingleTraj& singleTraj = roadPair.second;
         double             length     = calculateTrajectoryLength(singleTraj.trajectory);
@@ -245,7 +245,7 @@ std::map<int, Road*> Predicting::buildRoadLists(const std::map<int, _SingleTraj>
     threadLogger_->info("roadMap.size():{}", roadMap.size());
 
     // 第二步：根据 relation 为每个 Road 对象设置 following_nodes
-    for (const auto& relationPair : relation) {
+    for (const auto& relationPair : referenceline_relation_) {
         int  currentRoadId = relationPair.first;
         auto it            = roadMap.find(currentRoadId);
         if (it != roadMap.end()) {

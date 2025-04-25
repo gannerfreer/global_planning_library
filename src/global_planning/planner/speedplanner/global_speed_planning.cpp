@@ -22,7 +22,9 @@ void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
     speed_smooth_term = m_veh_param.speed_smooth_term;
     reverse_speed     = m_veh_param.reverse_speed;
 
-
+    if (m_veh_param.is_light == false) {
+        max_acceleration = m_veh_param.heavy_load_max_acceleration;
+    }
     threadLogger_->info("max_acceleration ={} ", max_acceleration);
     threadLogger_->info("min_acceleration ={} ", min_acceleration);
     threadLogger_->info("speed_error_term ={} ", speed_error_term);

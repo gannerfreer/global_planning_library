@@ -31,21 +31,22 @@ class Predicting {
     void                                       PredictingInterface(vector<vector<_TrajectoryPoint>>& path, int predicting_distance);
     PlanResult                                 PathPlanning();
     void                                       FillErrorCode(PlanResult result);
-    std::vector<_SingleTraj>                   findCurrentRoad(const map<int, _SingleTraj>& roads, double x, double y, double yaw, double distance_threshold);
+    std::vector<_SingleTraj>                   findCurrentRoad(double x, double y, double yaw, double distance_threshold);
     double                                     calculateDistance(const _TrajectoryPoint& p1, const _TrajectoryPoint& p2);
     double                                     calculateYawDifference(double yaw1, double yaw2);
-    std::vector<std::vector<_TrajectoryPoint>> predictPath(const map<int, _SingleTraj>& roads, const std::map<int, std::vector<int>>& relation, double x, double y, double yaw, double distance_threshold);
+    std::vector<std::vector<_TrajectoryPoint>> predictPath(double x, double y, double yaw, double distance_threshold);
     std::vector<std::vector<Road*>>            findPathsToLeafRoads(Road* startRoad, int threshold);
     void                                       dfs(Road* Current_Road, int currentWeight, int threshold, std::vector<Road*>& currentPath, std::vector<std::vector<Road*>>& allPaths);
     double                                     calculateTrajectoryLength(const std::vector<_TrajectoryPoint>& trajectory);
-    std::map<int, Road*>                       buildRoadLists(const std::map<int, _SingleTraj>& roads, const std::map<int, std::vector<int>>& relation);
+    std::map<int, Road*>                       buildRoadLists();
     void                                       freeRoadLists(std::vector<Road*>& road_lists_);
 
   public:
     _SinglePoint               start_point_;                                                                       // 起点坐标
     int                        start_key_, start_index_;                                                           // 起点匹配上的参考路径id以及在在参考路径上的具体索引
     double                     start_lat_dis_ = 0, start_lon_dis_ = 0, start_distance_ = 0, start_angle_diff_ = 0; // 起点匹配上的参考路径的横纵向距离
-    map<int, _SingleTraj>      all_referencelines_;                                                                // 所有可供有人车行驶的参考路段
+    map<int, _SingleTraj>      all_referencelines_;
+    map<int, vector<int>>      referenceline_relation_; // 所有可供有人车行驶的参考路段
     ErrorType                  error_type_ = ErrorType::SUCCESS;
     shared_ptr<spdlog::logger> threadLogger_;
     string                     vehicle_code_;

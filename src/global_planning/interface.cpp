@@ -120,8 +120,8 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
 
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
-        planning.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllReferencelines().size());
-        if (GlobalVariable::getInstance()->GetReferencelineGraph().size() == 0) {
+        planning.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size());
+        if (GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0) {
             planning.error_type_ = ErrorType::NO_MAP;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
@@ -141,10 +141,10 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
         }
 
         // 给planning对象的有向图、地图边界、路段进行赋值
-        planning.road_directed_graph_ = GlobalVariable::getInstance()->GetReferencelineGraph();
+        planning.road_directed_graph_ = GlobalVariable::getInstance()->GetSelfDrivingReferencelineGraph();
         planning.map_border_          = GlobalVariable::getInstance()->GetMapBorder();
         planning.all_referencelines_  = GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines();
-        planning.sequence_mapping_    = GlobalVariable::getInstance()->GetSequenceMapping();
+        planning.sequence_mapping_    = GlobalVariable::getInstance()->GetSelfDrivingSequenceMapping();
         planning.threadLogger_->info("road_directed_graph_:{}", planning.road_directed_graph_.size());
         planning.threadLogger_->info("map_border_:{}", planning.map_border_.size());
         planning.threadLogger_->info("all_referencelines_:{}", planning.all_referencelines_.size());
@@ -360,8 +360,8 @@ char* PathPredicting(char* input_info) {
 
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
-        predicting.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllReferencelines().size());
-        if (GlobalVariable::getInstance()->GetReferencelineGraph().size() == 0) {
+        predicting.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines().size());
+        if (GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines().size() == 0) {
             predicting.error_type_ = ErrorType::NO_MAP;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
@@ -381,7 +381,8 @@ char* PathPredicting(char* input_info) {
         }
 
         // 给predicting对象的有向图、地图边界、路段进行赋值
-        predicting.all_referencelines_ = GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines();
+        predicting.all_referencelines_     = GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines();
+        predicting.referenceline_relation_ = GlobalVariable::getInstance()->GetHumanDrivingReferencelineRelation();
         predicting.threadLogger_->info("all_referencelines_:{}", predicting.all_referencelines_.size());
 
     } // 获取传入的内边界并将其存入对应的区域内

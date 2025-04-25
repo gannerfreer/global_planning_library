@@ -54,6 +54,7 @@
     "max_steering_wheel_speed": 0.174,
     "max_search_distance": 51,
     "cost_ratio": 4,
-    "sample_num": 7
+    "sample_num": 7,
+    "heavy_load_max_acceleration": 0.2
   }
 }

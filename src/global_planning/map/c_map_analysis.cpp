@@ -12,22 +12,19 @@
 
 
 bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_BorderPoint>& map_border_, map<int, _SingleTraj>& all_referencelines_, vector<int>& sequence_mapping_, tarRviz& tar_rviz) {
-    cout << "进入 GetMap_GlobalPlanning 函数接口" << endl;
+    std::cout << "进入 GetMap_GlobalPlanning 函数接口" << std::endl;
     char* buffer;
     int   length = 0;
 
-    // char *file_name = (char *)"src/global_planning/map/map_shulan.json"; // 舒南
-    // char* file_name = (char*)"src/global_planning/map/map.json"; // 鲁南
     char* file_name = (char*)"src/global_planning/map/map.json"; // 鲁南
 
     FILE* file = fopen(file_name, "rb+");
     if (!file) {
-        cout << "GetMap->open failed " << endl;
-
+        std::cout << "GetMap->open failed " << std::endl;
         return false;
     }
     else {
-        cout << "open succeed " << endl;
+        std::cout << "open succeed " << std::endl;
     }
     fseek(file, 0, SEEK_END);
     length = ftell(file);
@@ -36,20 +33,16 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
     memset(buffer, 0, length + 1);
     fread(buffer, length, 1, file);
 
-
     rapidjson::Document doc;
     doc.Parse(buffer);
     if (doc.HasParseError()) {
         doc.GetParseError();
         doc.GetErrorOffset();
-        cout << "parse failed......" << endl;
-        // return false;
+        std::cout << "parse failed......" << std::endl;
     }
     doc.GetAllocator();
 
-
     // 解析border_points
-    // const Value&         borderPointsArray = doc["external_border"]["border_points"];
     const Value&         borderPointsArray = doc["external_border"];
     _BorderPoint         bp;
     vector<_BorderPoint> v_bp;
@@ -63,21 +56,20 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
         }
     }
     map_border_ = v_bp;
-    cout << "解析border_points完毕,边界点数量：" << map_border_.size() << endl;
+    std::cout << "解析border_points完毕,边界点数量：" << map_border_.size() << endl;
 
     // 解析reference_trajs
-    const Value&          trajsArray = doc["reference_trajs"];
-    map<int, _SingleTraj> m_traj;
-    _SingleTraj           traj;
-    _TrajectoryPoint      tp;
-    int                   traj_type = -1;
-    cout << "trajsArray.Size():" << trajsArray.Size() << endl;
+    const Value&               trajsArray = doc["reference_trajs"];
+    std::map<int, _SingleTraj> m_traj_self_driving;
+    _SingleTraj                traj;
+    _TrajectoryPoint           tp;
+    int                        traj_type = -1;
     for (int i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
         traj.id                      = trajsArray[i]["id"].GetInt();
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
         traj_type                    = trajsArray[i]["type"].GetInt();
-        cout << "trajPointsArray.Size()：" << trajPointsArray.Size() << endl;
+        std::cout << "id:" << traj.id << "  路径点数量：" << trajPointsArray.Size() << endl;
         for (int j = 0; j < trajPointsArray.Size(); j++) {
             tp.x         = trajPointsArray[j]["x"].GetDouble();
             tp.y         = trajPointsArray[j]["y"].GetDouble();
@@ -88,51 +80,60 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
             tp.direction = static_cast<unsigned char>(trajPointsArray[j]["direction"].GetInt());
             traj.trajectory.push_back(tp);
         }
-        if (traj_type == 0 || traj_type == 2) {
-            m_traj[traj.id] = traj;
+        switch (traj_type) {
+            case 0:
+                m_traj_self_driving[traj.id] = traj;
+                break;
+            case 1:
+                break;
+            case 2:
+                m_traj_self_driving[traj.id] = traj;
+                break;
+            default:
+                // 处理其他可能的 traj_type 值，例如记录日志或采取默认操作
+                break;
         }
     }
-    all_referencelines_ = m_traj;
-    cout << "解析reference_trajs完毕" << endl;
-    cout << "m_traj.size():" << m_traj.size() << endl;
-    for (auto iter : m_traj) {
-        cout << "id:" << iter.first << "数量：" << iter.second.trajectory.size() << endl;
-    }
+    all_referencelines_ = m_traj_self_driving; // 将所有无人车路径赋值返回
+    std::cout << "解析reference_trajs完毕" << std::endl;
+    std::cout << "共" << trajsArray.Size() << "条路径," << m_traj_self_driving.size() << "条无人车可走路径" << std::endl;
 
 
     // 解析relation
-    const Value&          relationObj = doc["relation"];
-    map<int, vector<int>> m_relation;
-    int                   key;
-    vector<int>           relVec;
+    const Value&                    relationObj = doc["relation"];
+    std::map<int, std::vector<int>> m_relation_self_driving; // 无人车专用relation
+    int                             key;
+    std::vector<int>                relVec;
     for (Value::ConstMemberIterator itr = relationObj.MemberBegin(); itr != relationObj.MemberEnd(); ++itr) {
-        key = stoi(itr->name.GetString());
-        cout << "key:" << key << endl;
+        key                   = stoi(itr->name.GetString());
         const Value& relArray = itr->value;
         relVec.clear();
         for (int k = 0; k < relArray.Size(); k++) {
             relVec.push_back(relArray[k].GetInt());
         }
-        m_relation[key] = relVec;
+        // 无人车专用的relation
+        if (m_traj_self_driving.find(key) != m_traj_self_driving.end()) {
+            m_relation_self_driving[key] = relVec;
+        }
     }
 
-    cout << "解析relation完毕,relation.size():" << m_relation.size() << endl;
+    std::cout << "解析relation完毕" << endl;
 
-    // 调用GlobalVariable类内部的CreateDirectedGraph来生成referenceline_graph_
-    GlobalVariable::getInstance()->SetReferencelineRelation(m_relation);
+    // 设置无人车专用的relation
+    GlobalVariable::getInstance()->SetSelfDrivingReferencelineRelation(m_relation_self_driving);
 
-    GlobalVariable::getInstance()->CreateSequenceMapping(all_referencelines_);
-    sequence_mapping_ = GlobalVariable::getInstance()->GetSequenceMapping();
-    cout << "sequence_mapping_.size():" << sequence_mapping_.size() << endl;
+    // 构建无人车的SequenceMapping
+    GlobalVariable::getInstance()->CreateSelfDrivingSequenceMapping(m_traj_self_driving);
+    sequence_mapping_ = GlobalVariable::getInstance()->GetSelfDrivingSequenceMapping();
+    std::cout << "sequence_mapping_.size():" << sequence_mapping_.size() << endl;
 
+    // 构建无人车的DirectedGraph
+    GlobalVariable::getInstance()->CreateSelfDrivingDirectedGraph(m_relation_self_driving);
 
-    GlobalVariable::getInstance()->CreateDirectedGraph(m_relation);
+    road_directed_graph_ = GlobalVariable::getInstance()->GetSelfDrivingReferencelineGraph();
 
-    road_directed_graph_ = GlobalVariable::getInstance()->GetReferencelineGraph();
-
-    cout << "生成sequence_mapping_和referenceline_graph_完毕" << endl;
+    std::cout << "生成sequence_mapping_和referenceline_graph_完毕" << endl;
     // 将地图边界和参考路径放进tar_rviz.vec_point中
-
     for (int i = 0; i < map_border_.size(); i++) {
         geometry_msgs::Point temp_border_points;
         temp_border_points.x = map_border_.at(i).x;
@@ -153,15 +154,14 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
         }
     }
 
-
-    cout << "生成tar_rviz.vec_point完毕" << endl;
+    std::cout << "生成tar_rviz.vec_point完毕" << endl;
 
     return true;
 }
 
 
-bool CConfigureIO::GetMap_PathPredicting(map<int, _SingleTraj>& all_referencelines_, tarRviz& tar_rviz) {
-    cout << "进入 GetMap_PathPredicting 函数接口" << endl;
+bool CConfigureIO::GetMap_PathPredicting(map<int, _SingleTraj>& all_referencelines, map<int, vector<int>>& referenceline_relation, tarRviz& tar_rviz) {
+    std::cout << "进入 GetMap_GlobalPlanning 函数接口" << std::endl;
     char* buffer;
     int   length = 0;
 
@@ -169,12 +169,11 @@ bool CConfigureIO::GetMap_PathPredicting(map<int, _SingleTraj>& all_referencelin
 
     FILE* file = fopen(file_name, "rb+");
     if (!file) {
-        cout << "GetMap->open failed " << endl;
-
+        std::cout << "GetMap->open failed " << std::endl;
         return false;
     }
     else {
-        cout << "open succeed " << endl;
+        std::cout << "open succeed " << std::endl;
     }
     fseek(file, 0, SEEK_END);
     length = ftell(file);
@@ -183,31 +182,29 @@ bool CConfigureIO::GetMap_PathPredicting(map<int, _SingleTraj>& all_referencelin
     memset(buffer, 0, length + 1);
     fread(buffer, length, 1, file);
 
-
     rapidjson::Document doc;
     doc.Parse(buffer);
     if (doc.HasParseError()) {
         doc.GetParseError();
         doc.GetErrorOffset();
-        cout << "parse failed......" << endl;
-        // return false;
+        std::cout << "parse failed......" << std::endl;
     }
     doc.GetAllocator();
 
 
     // 解析reference_trajs
-    const Value&          trajsArray = doc["reference_trajs"];
-    map<int, _SingleTraj> m_traj;
-    _SingleTraj           traj;
-    _TrajectoryPoint      tp;
-    int                   traj_type = -1;
-    cout << "trajsArray.Size():" << trajsArray.Size() << endl;
+    const Value&               trajsArray = doc["reference_trajs"];
+    std::map<int, _SingleTraj> m_traj_human_driving;
+    _SingleTraj                traj;
+    _TrajectoryPoint           tp;
+    int                        traj_type = -1;
+
     for (int i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
         traj.id                      = trajsArray[i]["id"].GetInt();
-        traj_type                    = trajsArray[i]["type"].GetInt();
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
-        cout << "trajPointsArray.Size()：" << trajPointsArray.Size() << endl;
+        traj_type                    = trajsArray[i]["type"].GetInt();
+        std::cout << "id:" << traj.id << "路径点数量：" << trajPointsArray.Size() << endl;
         for (int j = 0; j < trajPointsArray.Size(); j++) {
             tp.x         = trajPointsArray[j]["x"].GetDouble();
             tp.y         = trajPointsArray[j]["y"].GetDouble();
@@ -218,21 +215,53 @@ bool CConfigureIO::GetMap_PathPredicting(map<int, _SingleTraj>& all_referencelin
             tp.direction = static_cast<unsigned char>(trajPointsArray[j]["direction"].GetInt());
             traj.trajectory.push_back(tp);
         }
-        if (traj_type == 1 || traj_type == 2) {
-            m_traj[traj.id] = traj;
+        switch (traj_type) {
+            case 0:
+                break;
+            case 1:
+                m_traj_human_driving[traj.id] = traj;
+                break;
+            case 2:
+                m_traj_human_driving[traj.id] = traj;
+                break;
+            default:
+                // 处理其他可能的 traj_type 值，例如记录日志或采取默认操作
+                break;
         }
     }
+    all_referencelines = m_traj_human_driving; // 将所有无人车路径赋值返回
+
+    std::cout << "解析reference_trajs完毕" << std::endl;
+    std::cout << "共" << trajsArray.Size() << "条路径," << m_traj_human_driving.size() << "条有人车可走路径" << std::endl;
 
 
-    all_referencelines_ = m_traj;
-    cout << "解析reference_trajs完毕" << endl;
-    cout << "m_traj.size():" << m_traj.size() << endl;
-    for (auto iter : m_traj) {
-        cout << "id:" << iter.first << "数量：" << iter.second.trajectory.size() << endl;
+    // 解析relation
+    const Value&                    relationObj = doc["relation"];
+    std::map<int, std::vector<int>> m_relation_human_driving; // 有人车专用relation
+    int                             key;
+    std::vector<int>                relVec;
+    for (Value::ConstMemberIterator itr = relationObj.MemberBegin(); itr != relationObj.MemberEnd(); ++itr) {
+        key = stoi(itr->name.GetString());
+        std::cout << "key:" << key << endl;
+        const Value& relArray = itr->value;
+        relVec.clear();
+        for (int k = 0; k < relArray.Size(); k++) {
+            relVec.push_back(relArray[k].GetInt());
+        }
+
+        // 根据路径类型构建有人车专用的relation
+
+        if (m_traj_human_driving.find(key) != m_traj_human_driving.end()) {
+            m_relation_human_driving[key] = relVec;
+        }
     }
+    referenceline_relation = m_relation_human_driving;
 
 
-    for (const auto& pair : all_referencelines_) {
+    // 将地图边界和参考路径放进tar_rviz.vec_point中
+
+
+    for (const auto& pair : all_referencelines) {
         for (int i = 0; i < pair.second.trajectory.size(); i++) {
             geometry_msgs::Point temp_referenceline_points;
             temp_referenceline_points.x = pair.second.trajectory.at(i).x;
@@ -244,7 +273,8 @@ bool CConfigureIO::GetMap_PathPredicting(map<int, _SingleTraj>& all_referencelin
             }
         }
     }
-    cout << "生成tar_rviz.vec_point完毕" << endl;
+
+    std::cout << "生成tar_rviz.vec_point完毕" << endl;
 
     return true;
 }
@@ -530,6 +560,15 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.max_acceleration = 0.3;
                 cout << "无法找到车参 max_acceleration ，即将赋予默认值" << endl;
             }
+
+            if (val.HasMember("heavy_load_max_acceleration")) {
+                veh_start_end.veh_param.heavy_load_max_acceleration = val["heavy_load_max_acceleration"].GetFloat();
+            }
+            else {
+                veh_start_end.veh_param.heavy_load_max_acceleration = 0.2;
+                cout << "无法找到车参 heavy_load_max_acceleration ，即将赋予默认值" << endl;
+            }
+
 
             if (val.HasMember("min_acceleration")) {
                 veh_start_end.veh_param.min_acceleration = val["min_acceleration"].GetFloat();
