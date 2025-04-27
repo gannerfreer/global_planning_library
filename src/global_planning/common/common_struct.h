@@ -213,7 +213,6 @@ struct _VehicleParam {
     // 速度规划参数
     /* 最大加速度 单位(m/s^2) */
     float max_acceleration;
-    float heavy_load_max_acceleration;
     /* 最小加速度 单位(m/s^2) */
     float min_acceleration;
 

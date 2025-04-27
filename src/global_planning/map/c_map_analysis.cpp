@@ -561,14 +561,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 max_acceleration ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("heavy_load_max_acceleration")) {
-                veh_start_end.veh_param.heavy_load_max_acceleration = val["heavy_load_max_acceleration"].GetFloat();
-            }
-            else {
-                veh_start_end.veh_param.heavy_load_max_acceleration = 0.2;
-                cout << "无法找到车参 heavy_load_max_acceleration ，即将赋予默认值" << endl;
-            }
-
 
             if (val.HasMember("min_acceleration")) {
                 veh_start_end.veh_param.min_acceleration = val["min_acceleration"].GetFloat();

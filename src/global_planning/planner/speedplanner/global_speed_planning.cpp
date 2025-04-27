@@ -211,7 +211,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
 
     double coff = 0.4;
     if (vehicle_param.is_light == false) {
-        coff = 0.3;
+        coff = 0.2;
     }
     // 曲率限速
     iter = trajectory.begin();
