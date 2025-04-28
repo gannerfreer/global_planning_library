@@ -85,13 +85,7 @@ class Planning {
      * @return float 偏移量
      */
     float CalculateOffSetWithoutCuravture(int index, int sum, float weight);
-    /**
-     * @brief 均匀碾压
-     *
-     * @param path 输入路径
-     * @return 偏移后的输出路径
-     */
-    bool RandomOffsetWithoutCuravture();
+
     /**
      * @brief 基于车辆几何尺寸，检查Path是否碰撞
      *
@@ -164,11 +158,12 @@ class Planning {
 
     vector<vector<double>>       road_directed_graph_; // 路段有向图
     vector<_BorderPoint>         map_border_;          // 地图外边界
-    vector<vector<_BorderPoint>> inner_borders_;       // 内边界
-    map<int, _SingleTraj>        all_referencelines_;  // 所有可供无人车行使的参考路段
-    vector<_TrajectoryPoint>     global_path_;         // 全局路径
-    vector<int>                  road_sequence_;       // 路段拓扑结果
-    vector<int>                  sequence_mapping_;    // 序列映射关系
+    Bound                        map_border_t_;
+    vector<vector<_BorderPoint>> inner_borders_;      // 内边界
+    map<int, _SingleTraj>        all_referencelines_; // 所有可供无人车行使的参考路段
+    vector<_TrajectoryPoint>     global_path_;        // 全局路径
+    vector<int>                  road_sequence_;      // 路段拓扑结果
+    vector<int>                  sequence_mapping_;   // 序列映射关系
 
     Dijkstra            dijkstra_;        // dijkstra对象
     OptimalPath         my_optimal_path_; // hibrid A star类的实例对象

@@ -323,179 +323,6 @@ PlanResult Planning::ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint
 }
 
 
-// 成功：true，失败：false
-bool Planning::RandomOffsetWithoutCuravture() {
-    vector<_TrajectoryPoint> input_points, temp_path, global_path_copy;
-    global_path_copy = global_path_;
-    random_device rd;
-    mt19937       gen(rd());
-
-    // 定义您想要生成的浮点数的集合
-    vector<float> weights = {-1.0, 0, 1.0};
-
-    // 使用uniform_int_distribution从集合中随机选择一个索引
-    uniform_int_distribution<size_t> dis(0, weights.size() - 1);
-    float                            weight = 0.0;
-
-
-    global_path_.clear();
-    temp_path = global_path_copy;
-    // 从集合中随机选择一个权重
-    weight = weights[dis(gen)];
-    threadLogger_->info("weight：{}", weight);
-
-    vector<pair<int, int>> reverse_section, forward_section;
-
-    int  start = 0, end = 0;
-    bool flag1;
-
-    if (temp_path.front().offset_flag == true) // 起步就是需要偏移的路段
-    {
-        threadLogger_->info("起步就是需要偏移的路段");
-
-        flag1 = true;
-        for (int i = 0; i < temp_path.size() - 1; i++) {
-            if (temp_path.at(i + 1).offset_flag != temp_path.at(i).offset_flag) {
-                end = i;
-                if (flag1 == true) {
-                    forward_section.push_back(make_pair(start, end));
-                    flag1 = false;
-                }
-                else {
-                    reverse_section.push_back(make_pair(start, end));
-                    flag1 = true;
-                }
-                start = i + 1;
-            }
-        }
-    }
-    else // 起步就是不需要偏移的路段
-    {
-        threadLogger_->info("起步就是不需要偏移的路段");
-        flag1 = false;
-        for (int i = 0; i < temp_path.size() - 1; i++) {
-            if (temp_path.at(i + 1).offset_flag != temp_path.at(i).offset_flag) {
-                end = i;
-                if (flag1 == true) {
-                    forward_section.push_back(make_pair(start, end));
-                    flag1 = false;
-                }
-                else {
-                    reverse_section.push_back(make_pair(start, end));
-                    flag1 = true;
-                }
-                start = i + 1;
-            }
-        }
-    }
-    if (temp_path.back().offset_flag == true) // 最后一段为需要偏移的道路
-    {
-        forward_section.push_back(make_pair(start, temp_path.size() - 1));
-    }
-    else {
-        reverse_section.push_back(make_pair(start, temp_path.size() - 1));
-    }
-
-    threadLogger_->info("规划出的路径包含{}个偏移路段，{}个不偏移路段", forward_section.size(), reverse_section.size());
-
-    for (int i = 0; i < forward_section.size(); i++) {
-        threadLogger_->info("偏移路段索引：({},{})", forward_section.at(i).first, forward_section.at(i).second);
-    }
-
-    for (int i = 0; i < reverse_section.size(); i++) {
-        threadLogger_->info("不偏移路段索引：({},{})", reverse_section.at(i).first, reverse_section.at(i).second);
-    }
-
-    bool  start_need_offset = true; // 判断起步是否需要偏移标志位，默认可以偏移
-    float off_set           = 0.0;
-    if (reverse_section.size()) {
-        if (reverse_section.front().first == 0) {
-            // 起步不需要偏移
-            start_need_offset = false;
-        }
-    }
-    if (start_need_offset) {
-        int j = 0;
-        for (int i = 0; i < forward_section.size(); i++) {
-            start = forward_section.at(i).first;
-            end   = forward_section.at(i).second;
-            int a = 0, sum = 0;
-            input_points.clear();
-            for (int m = start; m <= end; m = m + 1) {
-                sum++;
-            }
-            int           m;
-            vector<float> vec_off_set;
-            for (m = start; m <= end; m = m + 1) {
-                a++;
-                if (end - start > 21) {
-                    off_set = CalculateOffSetWithoutCuravture(a, sum + 1, weight); //
-                    threadLogger_->info("索引：{}  off_set:{}", m, off_set);
-                }
-                else // 如果改段路太短，不进行偏移
-                {
-                    off_set = 0.0;
-                }
-
-                temp_path.at(m).x = temp_path.at(m).x + off_set * cos(temp_path.at(m).yaw + M_PI / 2);
-                temp_path.at(m).y = temp_path.at(m).y + off_set * sin(temp_path.at(m).yaw + M_PI / 2);
-
-
-                input_points.push_back(temp_path.at(m));
-                vec_off_set.push_back(off_set);
-            }
-
-
-            global_path_.insert(global_path_.end(), input_points.begin(), input_points.end());
-
-
-            if (j < reverse_section.size()) {
-                global_path_.insert(global_path_.end(), temp_path.begin() + reverse_section.at(j).first, temp_path.begin() + reverse_section.at(j).second + 1);
-                j++;
-            }
-        }
-    }
-    else {
-        int i = 0;
-        for (int j = 0; j < reverse_section.size(); j++) {
-            global_path_.insert(global_path_.end(), temp_path.begin() + reverse_section.at(j).first, temp_path.begin() + reverse_section.at(j).second + 1);
-            if (i < forward_section.size()) {
-                start = forward_section.at(i).first;
-                end   = forward_section.at(i).second;
-                int a = 0, sum = 0;
-                input_points.clear();
-                for (int m = start; m <= end; m = m + 1) {
-                    sum++;
-                }
-
-                int m;
-                for (m = start; m <= end; m = m + 1) {
-                    a++;
-                    off_set = CalculateOffSetWithoutCuravture(a, sum + 1, weight);
-
-                    temp_path.at(m).x = temp_path.at(m).x + off_set * cos(temp_path.at(m).yaw + M_PI / 2);
-                    temp_path.at(m).y = temp_path.at(m).y + off_set * sin(temp_path.at(m).yaw + M_PI / 2);
-
-                    input_points.push_back(temp_path.at(m));
-                }
-
-                if (m != end + 1) {
-                    input_points.push_back(temp_path.at(end));
-                }
-                threadLogger_->info("输入点的数量：{}", input_points.size());
-
-                threadLogger_->info("当前偏移的权重：{}", weight);
-
-                global_path_.insert(global_path_.end(), input_points.begin(), input_points.end());
-                threadLogger_->info("input_points.size():{}", input_points.size());
-                i++;
-            }
-        }
-    }
-    threadLogger_->info("当前权重：{}", weight);
-    return true;
-}
-
 float Planning::CalculateOffSetWithoutCuravture(int index, int sum, float weight) {
     float L = vehicle_param_.offset_distance * weight; // 控制默认偏移量
     L       = L * WeightFunction(index, sum);
@@ -912,6 +739,23 @@ void Planning::StartEndPointProcess() {
 }
 bool Planning::PathOffset() {
     threadLogger_->info("均匀碾压功能开启");
+    vector<_TrajectoryPoint> path_before_offset, path_after_offset, input_points;
+
+
+    collison_check_.InitParam(vehicle_param_);
+    map_border_t_.clear();
+    vector<Coordinate> vC;
+    for (unsigned int i = 0; i < map_border_.size(); ++i) {
+        Coordinate temp_point;
+        temp_point.z = 0;
+        temp_point.x = map_border_.at(i).x;
+        temp_point.y = map_border_.at(i).y;
+        vC.push_back(temp_point);
+    }
+    map_border_t_.push_back(vC);
+    collison_check_.InitBoundMap(map_border_t_);
+
+
     for (int i = 0; i < global_path_.size(); i++) {
         global_path_.at(i).offset_flag = true; // 先将所有路径点的offset_flag属性设置为true
     }
@@ -929,11 +773,354 @@ bool Planning::PathOffset() {
         }
     }
 
-    if (!RandomOffsetWithoutCuravture()) // 不基于曲率的轨迹偏移
+    path_before_offset = global_path_;
+
+
+    // 定义您想要生成的浮点数的集合
+    random_device rd;
+    mt19937       gen(rd());
+    vector<float> weights = {-1.0, 0, 1.0};
+    // 使用uniform_int_distribution从集合中随机选择一个索引
+    uniform_int_distribution<size_t> dis(0, weights.size() - 1);
+    float                            weight = 0.0;
+    // 从集合中随机选择一个权重
+    weight = weights[dis(gen)];
+    threadLogger_->info("weight：{}", weight);
+
+    // 下属代码逻辑为先对路径偏移一次，找出碰撞检测失败的点的index
+    set<int> record_where_is_collision; // 记录哪些index点碰撞检测会失败
+    record_where_is_collision.clear();
+
+    vector<pair<int, int>> reverse_section, forward_section;
+    int                    start = 0, end = 0;
+    bool                   flag1;
+    if (path_before_offset.front().offset_flag == true) // 起步就是需要偏移的路段
     {
-        return false;
+        threadLogger_->info("起步就是需要偏移的路段");
+
+        flag1 = true;
+        for (int i = 0; i < path_before_offset.size() - 1; i++) {
+            if (path_before_offset.at(i + 1).offset_flag != path_before_offset.at(i).offset_flag) {
+                end = i;
+                if (flag1 == true) {
+                    forward_section.push_back(make_pair(start, end));
+                    flag1 = false;
+                }
+                else {
+                    reverse_section.push_back(make_pair(start, end));
+                    flag1 = true;
+                }
+                start = i + 1;
+            }
+        }
     }
+    else // 起步就是不需要偏移的路段
+    {
+        threadLogger_->info("起步就是不需要偏移的路段");
+        flag1 = false;
+        for (int i = 0; i < path_before_offset.size() - 1; i++) {
+            if (path_before_offset.at(i + 1).offset_flag != path_before_offset.at(i).offset_flag) {
+                end = i;
+                if (flag1 == true) {
+                    forward_section.push_back(make_pair(start, end));
+                    flag1 = false;
+                }
+                else {
+                    reverse_section.push_back(make_pair(start, end));
+                    flag1 = true;
+                }
+                start = i + 1;
+            }
+        }
+    }
+    if (path_before_offset.back().offset_flag == true) // 最后一段为需要偏移的道路
+    {
+        forward_section.push_back(make_pair(start, path_before_offset.size() - 1));
+    }
+    else {
+        reverse_section.push_back(make_pair(start, path_before_offset.size() - 1));
+    }
+
+    threadLogger_->info("规划出的路径包含{}个偏移路段，{}个不偏移路段", forward_section.size(), reverse_section.size());
+
+    for (int i = 0; i < forward_section.size(); i++) {
+        threadLogger_->info("偏移路段索引：({},{})", forward_section.at(i).first, forward_section.at(i).second);
+    }
+
+    for (int i = 0; i < reverse_section.size(); i++) {
+        threadLogger_->info("不偏移路段索引：({},{})", reverse_section.at(i).first, reverse_section.at(i).second);
+    }
+
+
+    bool  start_need_offset = true; // 判断起步是否需要偏移标志位，默认可以偏移
+    float off_set           = 0.0;
+    if (reverse_section.size()) {
+        if (reverse_section.front().first == 0) {
+            // 起步不需要偏移
+            start_need_offset = false;
+        }
+    }
+    if (start_need_offset) {
+        int j = 0;
+        for (int i = 0; i < forward_section.size(); i++) {
+            start = forward_section.at(i).first;
+            end   = forward_section.at(i).second;
+            int a = 0, sum = 0;
+            input_points.clear();
+            for (int m = start; m <= end; m = m + 1) {
+                sum++;
+            }
+            int           m;
+            vector<float> vec_off_set;
+            for (m = start; m <= end; m = m + 1) {
+                a++;
+                if (end - start > 21) {
+                    off_set = CalculateOffSetWithoutCuravture(a, sum + 1, weight); //
+                    threadLogger_->info("索引：{}  off_set:{}", m, off_set);
+                }
+                else // 如果改段路太短，不进行偏移
+                {
+                    off_set = 0.0;
+                }
+
+                path_before_offset.at(m).x = path_before_offset.at(m).x + off_set * cos(path_before_offset.at(m).yaw + M_PI / 2);
+                path_before_offset.at(m).y = path_before_offset.at(m).y + off_set * sin(path_before_offset.at(m).yaw + M_PI / 2);
+
+
+                input_points.push_back(path_before_offset.at(m));
+                vec_off_set.push_back(off_set);
+            }
+
+
+            path_after_offset.insert(path_after_offset.end(), input_points.begin(), input_points.end());
+
+
+            if (j < reverse_section.size()) {
+                path_after_offset.insert(path_after_offset.end(), path_before_offset.begin() + reverse_section.at(j).first, path_before_offset.begin() + reverse_section.at(j).second + 1);
+                j++;
+            }
+        }
+    }
+    else {
+        int i = 0;
+        for (int j = 0; j < reverse_section.size(); j++) {
+            path_after_offset.insert(path_after_offset.end(), path_before_offset.begin() + reverse_section.at(j).first, path_before_offset.begin() + reverse_section.at(j).second + 1);
+            if (i < forward_section.size()) {
+                start = forward_section.at(i).first;
+                end   = forward_section.at(i).second;
+                int a = 0, sum = 0;
+                input_points.clear();
+                for (int m = start; m <= end; m = m + 1) {
+                    sum++;
+                }
+
+                int m;
+                for (m = start; m <= end; m = m + 1) {
+                    a++;
+                    off_set = CalculateOffSetWithoutCuravture(a, sum + 1, weight);
+
+                    path_before_offset.at(m).x = path_before_offset.at(m).x + off_set * cos(path_before_offset.at(m).yaw + M_PI / 2);
+                    path_before_offset.at(m).y = path_before_offset.at(m).y + off_set * sin(path_before_offset.at(m).yaw + M_PI / 2);
+
+                    input_points.push_back(path_before_offset.at(m));
+                }
+
+                if (m != end + 1) {
+                    input_points.push_back(path_before_offset.at(end));
+                }
+                threadLogger_->info("输入点的数量：{}", input_points.size());
+
+                threadLogger_->info("当前偏移的权重：{}", weight);
+
+                path_after_offset.insert(path_after_offset.end(), input_points.begin(), input_points.end());
+                i++;
+            }
+        }
+    }
+    // 对global_path进行碰撞检测，碰撞检测失败的点，其offset标志位置为false，曲率超标的点，其offset标志为也置为false
+    for (int i = 0; i < path_after_offset.size(); i++) {
+        if (collison_check_.IsVehicleCollision(Point(path_after_offset.at(i).x, path_after_offset.at(i).y, path_after_offset.at(i).z, path_after_offset.at(i).yaw, static_cast<GlobalPlanning::MotionDirection>(path_after_offset.at(i).direction)))) {
+            record_where_is_collision.insert(i);
+            threadLogger_->info("偏移后路径点存在碰撞 {}", i);
+        }
+    }
+    for (const auto i : record_where_is_collision) {
+        threadLogger_->info("i:{}", i);
+        global_path_.at(i).offset_flag = false; // 将倒车的路段offset_flag也设置为false,即不需要进行偏移
+    }
+
+
+    input_points.clear();
+
+
+    set<int> record_where_is_curvature_exceed; // 记录global_path_中不需要进行偏移的点的index
+    do {
+        for (const auto i : record_where_is_curvature_exceed) {
+            threadLogger_->info("i:{}", i);
+            global_path_.at(i).offset_flag = false; // 将倒车的路段offset_flag也设置为false,即不需要进行偏移
+        }
+        record_where_is_curvature_exceed.clear();
+        path_after_offset.clear();
+        path_before_offset = global_path_;
+
+        vector<pair<int, int>> reverse_section, forward_section;
+        int                    start = 0, end = 0;
+        bool                   flag1;
+        if (path_before_offset.front().offset_flag == true) // 起步就是需要偏移的路段
+        {
+            threadLogger_->info("起步就是需要偏移的路段");
+
+            flag1 = true;
+            for (int i = 0; i < path_before_offset.size() - 1; i++) {
+                if (path_before_offset.at(i + 1).offset_flag != path_before_offset.at(i).offset_flag) {
+                    end = i;
+                    if (flag1 == true) {
+                        forward_section.push_back(make_pair(start, end));
+                        flag1 = false;
+                    }
+                    else {
+                        reverse_section.push_back(make_pair(start, end));
+                        flag1 = true;
+                    }
+                    start = i + 1;
+                }
+            }
+        }
+        else // 起步就是不需要偏移的路段
+        {
+            threadLogger_->info("起步就是不需要偏移的路段");
+            flag1 = false;
+            for (int i = 0; i < path_before_offset.size() - 1; i++) {
+                if (path_before_offset.at(i + 1).offset_flag != path_before_offset.at(i).offset_flag) {
+                    end = i;
+                    if (flag1 == true) {
+                        forward_section.push_back(make_pair(start, end));
+                        flag1 = false;
+                    }
+                    else {
+                        reverse_section.push_back(make_pair(start, end));
+                        flag1 = true;
+                    }
+                    start = i + 1;
+                }
+            }
+        }
+        if (path_before_offset.back().offset_flag == true) // 最后一段为需要偏移的道路
+        {
+            forward_section.push_back(make_pair(start, path_before_offset.size() - 1));
+        }
+        else {
+            reverse_section.push_back(make_pair(start, path_before_offset.size() - 1));
+        }
+
+        threadLogger_->info("规划出的路径包含{}个偏移路段，{}个不偏移路段", forward_section.size(), reverse_section.size());
+
+        for (int i = 0; i < forward_section.size(); i++) {
+            threadLogger_->info("偏移路段索引：({},{})", forward_section.at(i).first, forward_section.at(i).second);
+        }
+
+        for (int i = 0; i < reverse_section.size(); i++) {
+            threadLogger_->info("不偏移路段索引：({},{})", reverse_section.at(i).first, reverse_section.at(i).second);
+        }
+
+
+        bool  start_need_offset = true; // 判断起步是否需要偏移标志位，默认可以偏移
+        float off_set           = 0.0;
+        if (reverse_section.size()) {
+            if (reverse_section.front().first == 0) {
+                // 起步不需要偏移
+                start_need_offset = false;
+            }
+        }
+        if (start_need_offset) {
+            int j = 0;
+            for (int i = 0; i < forward_section.size(); i++) {
+                start = forward_section.at(i).first;
+                end   = forward_section.at(i).second;
+                int a = 0, sum = 0;
+                input_points.clear();
+                for (int m = start; m <= end; m = m + 1) {
+                    sum++;
+                }
+                int           m;
+                vector<float> vec_off_set;
+                for (m = start; m <= end; m = m + 1) {
+                    a++;
+                    if (end - start > 21) {
+                        off_set = CalculateOffSetWithoutCuravture(a, sum + 1, weight); //
+                        threadLogger_->info("索引：{}  off_set:{}", m, off_set);
+                    }
+                    else // 如果改段路太短，不进行偏移
+                    {
+                        off_set = 0.0;
+                    }
+
+                    path_before_offset.at(m).x = path_before_offset.at(m).x + off_set * cos(path_before_offset.at(m).yaw + M_PI / 2);
+                    path_before_offset.at(m).y = path_before_offset.at(m).y + off_set * sin(path_before_offset.at(m).yaw + M_PI / 2);
+
+
+                    input_points.push_back(path_before_offset.at(m));
+                    vec_off_set.push_back(off_set);
+                }
+
+
+                path_after_offset.insert(path_after_offset.end(), input_points.begin(), input_points.end());
+
+
+                if (j < reverse_section.size()) {
+                    path_after_offset.insert(path_after_offset.end(), path_before_offset.begin() + reverse_section.at(j).first, path_before_offset.begin() + reverse_section.at(j).second + 1);
+                    j++;
+                }
+            }
+        }
+        else {
+            int i = 0;
+            for (int j = 0; j < reverse_section.size(); j++) {
+                path_after_offset.insert(path_after_offset.end(), path_before_offset.begin() + reverse_section.at(j).first, path_before_offset.begin() + reverse_section.at(j).second + 1);
+                if (i < forward_section.size()) {
+                    start = forward_section.at(i).first;
+                    end   = forward_section.at(i).second;
+                    int a = 0, sum = 0;
+                    input_points.clear();
+                    for (int m = start; m <= end; m = m + 1) {
+                        sum++;
+                    }
+
+                    int m;
+                    for (m = start; m <= end; m = m + 1) {
+                        a++;
+                        off_set = CalculateOffSetWithoutCuravture(a, sum + 1, weight);
+
+                        path_before_offset.at(m).x = path_before_offset.at(m).x + off_set * cos(path_before_offset.at(m).yaw + M_PI / 2);
+                        path_before_offset.at(m).y = path_before_offset.at(m).y + off_set * sin(path_before_offset.at(m).yaw + M_PI / 2);
+
+                        input_points.push_back(path_before_offset.at(m));
+                    }
+
+                    if (m != end + 1) {
+                        input_points.push_back(path_before_offset.at(end));
+                    }
+                    threadLogger_->info("输入点的数量：{}", input_points.size());
+
+                    threadLogger_->info("当前偏移的权重：{}", weight);
+
+                    path_after_offset.insert(path_after_offset.end(), input_points.begin(), input_points.end());
+                    threadLogger_->info("input_points.size():{}", input_points.size());
+                    i++;
+                }
+            }
+        }
+
+        CurvatureCal(path_after_offset);
+        for (int i = 0; i < path_after_offset.size(); i++) {
+            if (path_after_offset.at(i).curvature > 0.1) {
+                record_where_is_curvature_exceed.insert(i);
+                threadLogger_->info("偏移后路径点曲率超标 {}", i);
+            }
+        }
+    } while (!record_where_is_curvature_exceed.empty());
     threadLogger_->info("均匀碾压功能完毕");
+    global_path_ = path_after_offset;
     return true;
 }
 void Planning::PathClipAndSplice() {
