@@ -553,7 +553,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 cout << "无法找到车参 sample_num ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.sample_num = 8;
+                veh_start_end.veh_param.sample_num = 40;
             }
         }
     }

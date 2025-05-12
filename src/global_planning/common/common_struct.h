@@ -52,7 +52,8 @@ enum class PlanResult {
     Map_Infeasible                  = 8,  // 地图不可行
     Leaving_Load_Point_Too_Close    = 9,  // 驶离装载点距离装载点太近
     Load_Queue_Point_Unreasonable   = 10, // 装载排队点不合理，距离装载点太近且无调整空间
-    Unload_Queue_Point_Unreasonable = 11
+    Unload_Queue_Point_Unreasonable = 11,
+    Start_Point_Too_Far             = 12
 };
 enum struct ErrorType : unsigned int {
     SUCCESS                                           = 0,
@@ -73,7 +74,8 @@ enum struct ErrorType : unsigned int {
     ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_BREAK      = 15, // 全局规划算法运行异常-路径校验异常，路径断裂
     ALGORITHM_ERROR_TRAJECTORY_VERIFY_SPEED_OVER      = 16, // 全局规划算法运行异常-路径校验异常,轨迹超速
     ALGORITHM_ERROR_TRAJECTORY_VERIFY_DIRECTION_ERROR = 17, // 全局规划算法运行异常-路径校验异常,倒车路段direction错误
-    ALGORITHM_ERROR_TRY_CATCH_ERROR                   = 18  // try_catch捕获异常
+    ALGORITHM_ERROR_TRY_CATCH_ERROR                   = 18, // try_catch捕获异常
+    Start_Point_Too_Far                               = 19  // Start_Point_Too_Far 任务起点远离所有参考路径，目前支持最大范围100m
 
 };
 
