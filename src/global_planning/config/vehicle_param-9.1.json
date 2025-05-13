@@ -26,7 +26,6 @@
     "safe_margin_obstacle": 2,
     "cusp_extension_distance": 2,
     "veh_center_2_rear_bound": 0.0,
-    "veh_center_2_rear_obstacle": 2.77,
     "max_acceleration": 0.3,
     "min_acceleration": -0.4,
     "reverse_speed": 1.0,

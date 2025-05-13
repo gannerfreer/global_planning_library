@@ -56,7 +56,6 @@
         "regular_road_speed_limit": 6.0,
         "linear_preferred_distance": 3,
         "uniform_compaction_enable": false,
-        "veh_center_2_rear_obstacle": 2.77,
         "intersection_road_speed_limit": 1.0,
         "load_point_end_offset_distance": 8,
         "load_point_start_offset_distance": 8,
