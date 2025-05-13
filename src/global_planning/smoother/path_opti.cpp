@@ -40,111 +40,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     }
     file_out.close();
 
-    // threadLogger_->info("尖点直线延伸后路径点信息");
-    // for (auto i : path_) {
-    //     threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
-    // }
 
-    // original_path = path_;
-    // path_.clear();
-    // Path temp_input_path, temp_output_path;
-    // int  start_index = 0, end_index = 0;
-    // bool forward_or_backward = false; // forward:true，backward:false
-    // threadLogger_->info("original_path.size()：{}", original_path.size());
-    // for (int i = 0; i < original_path.size() - 1; i++) {
-    //     if (original_path.at(i).direction != original_path.at(i + 1).direction) {
-    //         if (original_path.at(i).direction == MotionDirection::Forward) {
-    //             forward_or_backward = true;
-    //         }
-    //         else {
-    //             forward_or_backward = false;
-    //         }
-    //         end_index = i;
-    //         threadLogger_->info("start_index:{} end_index：{}", start_index, end_index);
-
-    //         temp_input_path.insert(temp_input_path.end(), original_path.begin() + start_index, original_path.begin() + end_index + 1);
-    //         threadLogger_->info("temp_input_path信息");
-    //         for (auto i : temp_input_path) {
-    //             threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
-    //         }
-    //         if (temp_input_path.size() > 2) {
-    //             CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
-    //         }
-    //         else {
-    //             temp_output_path = temp_input_path;
-    //         }
-
-    //         path_.insert(path_.end(), temp_output_path.begin(), temp_output_path.end());
-    //         threadLogger_->info("temp_output_path信息");
-    //         for (auto i : temp_output_path) {
-    //             threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
-    //         }
-
-    //         temp_output_path.clear();
-    //         start_index = i + 1;
-    //         temp_input_path.clear();
-    //     }
-    // }
-    // if (original_path.at(start_index).direction == MotionDirection::Forward) {
-    //     forward_or_backward = true;
-    // }
-    // else {
-    //     forward_or_backward = false;
-    // }
-    // threadLogger_->info("start_index:{} end_index：{}", start_index, original_path.size() - 1);
-    // temp_input_path.insert(temp_input_path.end(), original_path.begin() + start_index, original_path.end());
-    // threadLogger_->info("temp_input_path信息");
-    // for (auto i : temp_input_path) {
-    //     threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
-    // }
-    // if (temp_input_path.size() > 2) {
-    //     CalculateCubicSplineCurve(forward_or_backward, temp_input_path, temp_output_path);
-    // }
-    // else {
-    //     temp_output_path = temp_input_path;
-    // }
-    // path_.insert(path_.end(), temp_output_path.begin(), temp_output_path.end());
-    // threadLogger_->info("temp_output_path信息");
-    // for (auto i : temp_output_path) {
-    //     threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", i.x, i.y, i.curvature, i.angle / M_PI * 180, i.direction);
-    // }
-
-    // threadLogger_->info("插值后路径点信息（待平滑）");
-    // for (int i = 0; i < path_.size() - 1; i++) {
-    //     threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", path_.at(i).x, path_.at(i).y, path_.at(i).curvature, path_.at(i).angle / M_PI * 180, path_.at(i).direction);
-    //     threadLogger_->info("😍s:{}", hypot(path_.at(i).x - path_.at(i + 1).x, path_.at(i).y - path_.at(i + 1).y));
-    // }
-    // file_out.open("path_smooth_before_ideal.txt");
-    // for (size_t index = 0; index < path_.size(); index++) {
-    //     file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
-    // }
-    // file_out.close();
-
-
-    // // 在这里加入一个去除重复点逻辑,应用类似的快慢指针逻辑，但这次保留的是从最后一个点开始不重复的点
-    // std::reverse(path_.begin(), path_.end());
-    // int slow = 0, fast = 0;
-    // while (fast < path_.size()) {
-    //     if (slow == 0 || hypot(path_.at(fast).x - path_.at(slow - 1).x, path_.at(fast).y - path_.at(slow - 1).y) > 0.2) {
-    //         path_.at(slow) = path_.at(fast);
-    //         slow++;
-    //     }
-    //     fast++;
-    // }
-    // // 保留不重复的部分
-    // path_.resize(slow);
-    // // 再次反转以恢复原始顺序
-    // std::reverse(path_.begin(), path_.end());
-
-
-    // // Spline插值后的曲率发现偏差，不予采用，故通过三点式曲率计算方式重新计算路径点曲率
-    // CurvatureCal(path_);
-
-    // threadLogger_->info("插值后路径点信息-曲率采用离散点计算（待平滑）");
-    // for (int i = 0; i < path_.size() - 1; i++) {
-    //     threadLogger_->info("x:{} y:{} curvature:{} angle:{} direction:{}", path_.at(i).x, path_.at(i).y, path_.at(i).curvature, path_.at(i).angle / M_PI * 180, path_.at(i).direction);
-    //     threadLogger_->info("❤s:{}", hypot(path_.at(i + 1).x - path_.at(i).x, path_.at(i + 1).y - path_.at(i).y));
-    // }
     file_out.open("path_smooth_before.txt");
     for (size_t index = 0; index < path_.size(); index++) {
         file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
@@ -236,18 +132,6 @@ void Path_Opti::GetFixPointIndex() {
     for (auto it = cusp_set_.begin(); it != cusp_set_.end(); ++it) {
         fixpoint_set_.insert(*it - 1);
         fixpoint_set_.insert(*it);
-        // for(unsigned int index = *it; index < path_.size()-1; index++)
-        // {
-        //     if(fabs(path_.at(index+1)angle - path_.at(index).angle) < 1e-3)
-        //     {
-        //         continue;
-        //     }
-        //     else
-        //     {
-        //         fixpoint_set_.insert(index+1);
-        //     }
-        // }
-
         fixpoint_set_.insert(*it + 1);
     }
     fixpoint_set_.insert(0);
@@ -334,32 +218,6 @@ void Path_Opti::SmoothPath() {
             gradient_smoothness_term = SmoothnessTerm(xim2, xim1, xi, xip1, xip2);
             if (!isinf(gradient_smoothness_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_smoothness_term.x;
             if (!isinf(gradient_smoothness_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_smoothness_term.y;
-
-            // Vonoroi项
-            // 需要满足两个条件才会利用voronoi项进行平滑，1、需要使用voronoi图，2、当前传入的路径坐标xi位于voronoi图范围内
-            if (use_voronoi) {
-                bool in_x_range = false;
-                bool in_y_range = false;
-                if (static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->getSizeX()) {
-                    in_x_range = true;
-                }
-                if (static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) >= 0 && static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist)) <= voronoiDiagram->getSizeY()) {
-                    in_y_range = true;
-                }
-                if (use_voronoi && in_x_range && in_y_range) {
-                    // cout << "计算voronoiterm" << endl;
-                    threadLogger_->info("第 {} 轮，准备计算第{}个点- ({},{})的Voronoi值", iterations, i, floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist));
-                    gradient_vonoroi_term = VoronoiTerm(xi);
-                    threadLogger_->info("Voronoi值结果为：({},{})", gradient_vonoroi_term.x, gradient_vonoroi_term.y);
-                    // cout << "算出的梯度为：" << gradient_vonoroi_term.getX() << " " << gradient_vonoroi_term.getY() << endl;
-                    if (!isinf(gradient_vonoroi_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_vonoroi_term.x;
-                    if (!isinf(gradient_vonoroi_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_vonoroi_term.y;
-                    // cout << "delta_x:" << coeff.at(i) * gradient_vonoroi_term.x << " delta_y:" << coeff.at(i) * gradient_vonoroi_term.y << endl;
-                }
-                else {
-                    // cout << "跳过voronoiterm" << endl;
-                }
-            }
         }
     }
 }
@@ -382,125 +240,6 @@ inline Vector2D Path_Opti::ErrorTerm(Vector2D xi, Vector2D xoi) {
  * Dolgov D, Thrun S, Montemerlo M, et al. Practical search techniques in path planning for
  * autonomous driving[J]. Ann Arbor, 2008, 1001(48105): 18-80.
  */
-// inline Vector2D Path_Opti::CurvatureTerm(Vector2D x_im2, Vector2D x_im1, Vector2D x_i, Vector2D x_ip1, Vector2D x_ip2) {
-//     // Vector2D gradient;
-//     // Vector2D delta_xi;   // Δxi
-//     // Vector2D delta_xip1; // Δxi+1
-//     // double   norm_delta_xi, norm_delta_xip1, d, dphi, kappa;
-//     // delta_xi.x      = xi.x - xim1.x;
-//     // delta_xi.y      = xi.y - xim1.y;
-//     // delta_xip1.x    = xip1.x - xi.x;
-//     // delta_xip1.y    = xip1.y - xi.y;
-//     // norm_delta_xi   = sqrt(pow(delta_xi.x, 2) + pow(delta_xi.y, 2));     // |Δxi|
-//     // norm_delta_xip1 = sqrt(pow(delta_xip1.x, 2) + pow(delta_xip1.y, 2)); // |Δxi+1|
-//     // d               = norm_delta_xi * norm_delta_xip1;
-//     // dphi            = acos((delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d); // 通过向量积求出两向量之间夹角
-//     // kappa           = dphi / norm_delta_xi;
-
-//     // if (kappa >= m_vehicle_param_.max_kappa) {
-//     //     double pdphi_pcosdphi = -1 / sqrt(1 - pow(cos(dphi), 2));
-//     //     double u              = pdphi_pcosdphi / norm_delta_xi;
-//     //     double s              = dphi / pow(norm_delta_xi, 2);
-
-//     //     Vector2D m_delta_xip1; // -Δxi+1
-//     //     m_delta_xip1.x = -delta_xip1.x;
-//     //     m_delta_xip1.y = -delta_xip1.y;
-//     //     Vector2D oc1   = OrthogonalComplements(delta_xi, m_delta_xip1);
-//     //     Vector2D oc2   = OrthogonalComplements(m_delta_xip1, delta_xi);
-
-//     //     Vector2D p1, p2, k0, k1, k2;
-//     //     p1.x = oc1.x / d;
-//     //     p1.y = oc1.y / d;
-//     //     p2.x = oc2.x / d;
-//     //     p2.y = oc2.y / d;
-//     //     k1.x = u * (-p1.x - p2.x) - s * delta_xi.x / norm_delta_xi;
-//     //     k1.y = u * (-p1.y - p2.y) - s * delta_xi.y / norm_delta_xi;
-//     //     k0.x = u * p2.x + s * delta_xi.x / norm_delta_xi;
-//     //     k0.y = u * p2.y + s * delta_xi.y / norm_delta_xi;
-//     //     k2.x = u * p1.x;
-//     //     k2.y = u * p1.y;
-
-//     //     gradient.x = m_vehicle_param_.path_curvature_term * (0.25 * k0.x + 0.5 * k1.x + 0.25 * k2.x);
-//     //     gradient.y = m_vehicle_param_.path_curvature_term * (0.25 * k0.y + 0.5 * k1.y + 0.25 * k2.y);
-//     // }
-//     // else {
-//     //     gradient.x = 0;
-//     //     gradient.y = 0;
-//     // }
-//     // return gradient;
-
-//     Vector2D gradient;
-//     // the vectors between the nodes
-//     Vector2D delta_x_im1 = x_im1 - x_im2;
-//     Vector2D delta_x_i   = x_i - x_im1;
-//     Vector2D delta_x_ip1 = x_ip1 - x_i;
-//     Vector2D delta_x_ip2 = x_ip2 - x_ip1;
-//     // cout << "delta_x_im1" << delta_x_im1.x << " " << delta_x_im1.y << endl;
-//     // cout << "delta_x_i" << delta_x_i.x << " " << delta_x_i.y << endl;
-//     // cout << "delta_x_ip1" << delta_x_ip1.x << " " << delta_x_ip1.y << endl;
-//     // cout << "delta_x_ip2" << delta_x_ip2.x << " " << delta_x_ip2.y << endl;
-
-//     // ensure that the absolute values are not null
-//     if (delta_x_im1.length() > 0 && delta_x_i.length() > 0 && delta_x_ip1.length() > 0 && delta_x_ip2.length() > 0) {
-//         // the angular change at the node
-//         auto compute_kappa = [](const Vector2D& delta_x_0, const Vector2D& delta_x_1, float& delta_phi, float& kappa) {
-//             delta_phi = std::acos(Helper::clamp(delta_x_0.dot(delta_x_1) / (delta_x_0.length() * delta_x_1.length()), -1, 1));
-//             kappa     = delta_phi / delta_x_0.length();
-//         };
-//         float delta_phi_im1, kappa_im1;
-//         compute_kappa(delta_x_im1, delta_x_i, delta_phi_im1, kappa_im1);
-//         float delta_phi_i, kappa_i;
-//         compute_kappa(delta_x_i, delta_x_ip1, delta_phi_i, kappa_i);
-//         float delta_phi_ip1, kappa_ip1;
-//         compute_kappa(delta_x_ip1, delta_x_ip2, delta_phi_ip1, kappa_ip1);
-
-//         // if the curvature is smaller then the maximum do nothing
-//         if (kappa_i <= m_vehicle_param_.max_kappa) {
-//             Vector2D zeros;
-//             return zeros;
-//         }
-//         else {
-//             auto compute_d_delta_phi = [](const float delta_phi) { return -1. / std::sqrt(1. - std::pow(std::cos(delta_phi), 2)); };
-
-//             const float&    d_delta_phi_im1     = compute_d_delta_phi(delta_phi_im1);
-//             const Vector2D& d_cos_delta_phi_im1 = delta_x_im1.ort(delta_x_i) / (delta_x_im1.length() * delta_x_i.length());
-//             const Vector2D& d_kappa_im1         = 1. / delta_x_im1.length() * d_delta_phi_im1 * d_cos_delta_phi_im1;
-//             const Vector2D& kim1                = 2. * (kappa_im1 - m_vehicle_param_.max_kappa) * d_kappa_im1;
-
-//             const float&    d_delta_phi_i     = compute_d_delta_phi(delta_phi_i);
-//             const Vector2D& d_cos_delta_phi_i = delta_x_ip1.ort(delta_x_i) / (delta_x_ip1.length() * delta_x_i.length()) - delta_x_i.ort(delta_x_ip1) / (delta_x_i.length() * delta_x_ip1.length());
-//             const Vector2D& d_kappa_i         = 1. / delta_x_i.length() * d_delta_phi_i * d_cos_delta_phi_i - delta_phi_i / std::pow(delta_x_i.length(), 3) * delta_x_i;
-//             const Vector2D& ki                = 2. * (kappa_i - m_vehicle_param_.max_kappa) * d_kappa_i;
-
-//             const float&    d_delta_phi_ip1     = compute_d_delta_phi(delta_phi_ip1);
-//             const Vector2D& d_cos_delta_phi_ip1 = -delta_x_ip2.ort(delta_x_ip1) / (delta_x_ip2.length() * delta_x_ip1.length());
-//             const Vector2D& d_kappa_ip1         = 1. / delta_x_ip1.length() * d_delta_phi_ip1 * d_cos_delta_phi_ip1 + delta_phi_ip1 / std::pow(delta_x_ip1.length(), 3) * delta_x_ip1;
-//             const Vector2D& kip1                = 2. * (kappa_ip1 - m_vehicle_param_.max_kappa) * d_kappa_ip1;
-
-//             // calculate the gradient
-//             gradient = m_vehicle_param_.path_curvature_term * (0.25 * kim1 + 0.5 * ki + 0.25 * kip1);
-
-//             if (std::isinf(gradient.getX()) || std::isinf(gradient.getY())) {
-//                 std::cout << "nan values in curvature term" << std::endl;
-//                 Vector2D zeros;
-//                 return zeros;
-//             }
-//             // return gradient of 0
-//             else {
-//                 return gradient;
-//             }
-//         }
-//     }
-//     // return gradient of 0
-//     else {
-//         std::cout << "abs values not larger than 0-----delta_x_im1.length(): " << delta_x_im1.length() << " delta_x_i.length():" << delta_x_i.length() << " delta_x_ip1.length():" << delta_x_ip1.length() << " delta_x_ip2.length():" << delta_x_ip2.length() << std::endl;
-//         Vector2D zeros;
-//         zeros.x = 0;
-//         zeros.y = 0;
-//         return zeros;
-//     }
-// }
-
 inline Vector2D Path_Opti::CurvatureTerm(Vector2D xim1, Vector2D xi, Vector2D xip1) {
     Vector2D gradient;
     Vector2D delta_xi;   // Δxi
@@ -559,61 +298,6 @@ inline Vector2D Path_Opti::SmoothnessTerm(Vector2D xim2, Vector2D xim1, Vector2D
     Vector2D gradient;
     gradient.x = m_vehicle_param_.path_smoothness_term * (xip2.x - 4 * xip1.x + 6 * xi.x - 4 * xim1.x + xim2.x);
     gradient.y = m_vehicle_param_.path_smoothness_term * (xip2.y - 4 * xip1.y + 6 * xi.y - 4 * xim1.y + xim2.y);
-    return gradient;
-}
-
-
-Vector2D Path_Opti::VoronoiTerm(Vector2D xi) {
-    Vector2D gradient(0, 0);
-    int      index_x = static_cast<int>(floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist));
-    int      index_y = static_cast<int>(floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist));
-    std::cout << "line642" << std::endl;
-    float obsDst = voronoiDiagram->getDistance(index_x, index_y) * m_vehicle_param_.vonoroi_grid_dist;
-    std::cout << "line644" << std::endl;
-    Vector2D obsVct(voronoiDiagram->getData()[index_x][index_y].obstX - index_x, voronoiDiagram->getData()[index_x][index_y].obstY - index_y);
-    std::cout << "line646" << std::endl;
-    threadLogger_->info("坐标({},{})最近的障碍物距离为：{},向量坐标为:({},{})", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), obsDst, obsVct.x, obsVct.y);
-
-
-    // float    edgDst          = 0; // todo
-    // Vec2i    closest_edge_pt = voronoiDiagram->GetClosestVoronoiEdgePoint({index_x, index_y}, edgDst);
-    // Vector2D edgVct(closest_edge_pt.x() - index_x, closest_edge_pt.y() - index_y);
-    // edgDst = hypot(edgVct.getX(), edgVct.getY()) * m_vehicle_param_.vonoroi_grid_dist;
-
-    // cout << "节点{" << index_x << "," << index_y << "}距离最近障碍物的距离 obsDst: " << obsDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
-    // cout << "节点{" << index_x << "," << index_y << "}距离最近voronoi边的距离 edgDst: " << edgDst * m_vehicle_param_.vonoroi_grid_dist << "m" << endl;
-    // threadLogger_->info("坐标({},{})最近的voronoi边距离为：{}，向量坐标：({},{})", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), edgDst, edgVct.x, edgVct.y);
-    // float a = alpha / (alpha + obsDst);
-    // float b = edgDst / (obsDst + edgDst);
-    // float c = pow(obsDst - vorObsDMax, 2) / pow(vorObsDMax, 2);
-    // threadLogger_->info("坐标({},{})的voronoi场为：{}", floor((xi.getX() - voronoi_origin_x) / m_vehicle_param_.vonoroi_grid_dist), floor((xi.getY() - voronoi_origin_y) / m_vehicle_param_.vonoroi_grid_dist), a * b * c);
-    // if (obsDst < vorObsDMax) {
-    //     // calculate the distance to the closest GVD edge from the current node
-    //     //  the node is away from the optimal free space area
-    //     if (edgDst > 0) {
-    //         // cout << "edgDst>0" << endl;
-    //         // float PobsDst_Pxi; // todo = obsVct / obsDst;
-    //         // float PedgDst_Pxi; // todo = edgVct / edgDst;
-    //         Vector2D PobsDst_Pxi     = obsVct / obsDst * m_vehicle_param_.vonoroi_grid_dist;
-    //         Vector2D PedgDst_Pxi     = edgVct / edgDst * m_vehicle_param_.vonoroi_grid_dist;
-    //         float    PvorPtn_PedgDst = alpha * obsDst * pow(obsDst - vorObsDMax, 2) / (pow(vorObsDMax, 2) * (obsDst + alpha) * pow(edgDst + obsDst, 2));
-
-    //         float PvorPtn_PobsDst = (alpha * edgDst * (obsDst - vorObsDMax) * ((edgDst + 2 * vorObsDMax + alpha) * obsDst + (vorObsDMax + 2 * alpha) * edgDst + alpha * vorObsDMax)) / (pow(vorObsDMax, 2) * pow(obsDst + alpha, 2) * pow(obsDst + edgDst, 2));
-    //         // threadLogger_->info("PvorPtn_PobsDst：{}   PvorPtn_PedgDst:{}", PvorPtn_PobsDst, PvorPtn_PedgDst);
-    //         // threadLogger_->info("向量PobsDst_Pxi为:({},{})   PedgDst_Pxi:({},{})", PobsDst_Pxi.x, PobsDst_Pxi.y, PedgDst_Pxi.x, PedgDst_Pxi.y);
-
-    //         gradient = m_vehicle_param_.path_voronoi_term * (PvorPtn_PobsDst * PobsDst_Pxi + PvorPtn_PedgDst * PedgDst_Pxi);
-
-    //         return gradient;
-    //     }
-    //     return gradient;
-    // }
-    if (obsDst < vorObsDMax) {
-        Vector2D PobsDst_Pxi     = obsVct / obsDst * m_vehicle_param_.vonoroi_grid_dist;
-        float    PvorPtn_PobsDst = 2 * (obsDst - vorObsDMax);
-        gradient                 = m_vehicle_param_.path_voronoi_term * PvorPtn_PobsDst * PobsDst_Pxi;
-        return gradient;
-    }
     return gradient;
 }
 
@@ -714,41 +398,6 @@ void Path_Opti::CalculatePathAngle() {
         }
     }
 }
-
-/**
- *@brief: 插值接口函数
- *@param
- *return
- */
-// void Path_Opti::InterpolatePath(Path &opti_path)
-// {
-//     // 两两之间调用CubicInterpolate2Point函数进行插值
-//     Path tem_interpolatepath;
-//     // for (int i = 0; i < new_path_.size(); i++)
-//     // {
-//     //     cout << "i: " << new_path_.at(i).x << " " << new_path_.at(i).y << endl;
-//     // }
-
-//     for (unsigned int i = 0; i < new_path_.size() - 1; i++)
-//     {
-//         CubicInterpolate2Point(new_path_.at(i),
-//                                new_path_.at(i + 1),
-//                                m_vehicle_param_.delta_s,
-//                                tem_interpolatepath);
-//         opti_path.insert(opti_path.end(), tem_interpolatepath.begin(), tem_interpolatepath.end());
-//         Path().swap(tem_interpolatepath);
-//         // cout << "*" << endl;
-//     }
-//     // 存入最后一点
-//     Point last_point;
-//     int index = new_path_.size() - 1;
-//     last_point.x = new_path_.at(index).x;
-//     last_point.y = new_path_.at(index).y;
-//     last_point.z = 0;
-//     last_point.angle = new_path_.at(index).angle;
-//     last_point.direction = new_path_.at(index).direction;
-//     opti_path.push_back(last_point);
-// }
 
 
 void Path_Opti::CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path) {

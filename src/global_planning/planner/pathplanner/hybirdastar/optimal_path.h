@@ -19,12 +19,10 @@ Description: The header file for C++ class OptimalPath.
 #include <ctime>
 #include <set>
 
-#include "../../../smoother/dynamicvoronoi.h"
 #include "../../../time/StringHelper.h"
 #include "../../../time/TimeHelper.h"
 #include "node2d.h"
 #include "r_s_curve.h"
-#include "r_s_curve_for_h.h"
 
 namespace GlobalPlanning {
 /**
@@ -82,8 +80,7 @@ class OptimalPath {
      * 返回规划结果
      */
     PlanResult    SearchGlobalPath(const Point start, const Point end, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule& plan_path_rule);
-    void          InitVoronoiAndBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders, const _VehicleParam& m_vehicle_param, bool enable_voronoi);
-    void          DeleteVoronoiSpace(bool enable_voronoi);
+    void          InitBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders, const _VehicleParam& m_vehicle_param);
     _VehicleParam m_vehicle_param_;
 
   private:
@@ -349,17 +346,13 @@ class OptimalPath {
     bool**                          binMap = nullptr;
     int                             width;
     int                             height;
-    bool                            use_voronoi            = false;
-    float                           obsMax                 = 1.0;
     int                             start_offset_distance_ = 0; // 起点直线延长距离
     int                             end_offset_distance_   = 0; // HybridA*终点直线延长距离
 
 
   private:
-    RSCurve   my_r_s_curve;
-    RSCurve_H my_r_s_curve_h;
+    RSCurve my_r_s_curve;
 
-    double           voronoi_origin_x, voronoi_origin_y; // 记录voronoi图的原点
     Path_Opti        my_path_opti;
     CollisonCheck    collison_check_;
     PlanRule         plan_path_rule_;
@@ -375,7 +368,6 @@ class OptimalPath {
     Bound              init_road_bound_, init_obstacle_bound_;
     Bound              offset_road_bound_, offset_obstacle_bound_;
     Bound              voronoi_bound_;
-    DynamicVoronoi*    voronoiDiagram;
 
     MotionDirection start_d_, end_d_; // 结束拓展方向
 

@@ -144,10 +144,8 @@ struct _SinglePoint {
 struct _VehicleParam {
     // 后轴中心到车头距离
     double veh_center_2_front;
-    // 后轴中心到车尾距离（地图边界）
+    // 后轴中心到车尾距离
     double veh_center_2_rear_bound;
-    // 后轴中心到车尾距离（障碍物）
-    double veh_center_2_rear_obstacle;
     // 后轴中心到两侧距离
     double veh_center_2_side;
     // 轴距
@@ -224,24 +222,20 @@ struct _VehicleParam {
     float speed_smooth_term;
     /* 倒车速度 */
     float reverse_speed;
-    /* 维诺图*/
-    float vonoroi_grid_dist;
-    float path_voronoi_term;
+
+
     /*曲率校验阈值*/
     float curvature_threshold;
     bool  is_light;
 
-    SpeedLimitLevel speed_limit_level                = SpeedLimitLevel::three;
-    int             load_point_end_offset_distance   = 8;
-    int             load_point_start_offset_distance = 4;
-    float           obsMax                           = 0;
-    float           rs_min_length                    = 2;
-    float           load_start_straight_length       = 1.0;
-    float           offset_distance                  = 0.3;
-    float           max_steering_wheel_speed         = 0.1396;
-    int             max_search_distance              = 50;
-    int             cost_ratio                       = 3;
-    int             sample_num                       = 8;
+    SpeedLimitLevel speed_limit_level        = SpeedLimitLevel::three;
+    int             L2                       = 8;
+    int             L3                       = 4;
+    float           rs_min_length            = 2;
+    float           L1                       = 1.0;
+    float           offset_distance          = 0.3;
+    float           max_steering_wheel_speed = 0.1396;
+    int             sample_num               = 40;
 };
 
 // 调用全局规划时，需要传入的参数

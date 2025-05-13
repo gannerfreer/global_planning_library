@@ -17,8 +17,6 @@
 #include "../common/common_struct.h"
 #include "../math/helper.h"
 #include "../planner/pathplanner/spline/spline.h"
-#include "dynamicvoronoi.h"
-// #include "../os/os.h"
 #include "vector2d.h"
 
 using namespace GlobalPlanning;
@@ -60,11 +58,6 @@ class Path_Opti {
     vector<unsigned int>            CurvatureCheck();
     void                            CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
     void                            CalculateStation(const std::vector<double>& xs, const std::vector<double>& ys);
-    DynamicVoronoi*                 voronoiDiagram;
-    float                           vorObsDMax = 0.0;
-    float                           alpha      = 0.1;
-    bool                            use_voronoi;
-    float                           voronoi_origin_x, voronoi_origin_y;
     std::shared_ptr<spdlog::logger> threadLogger_;
 
   private:
@@ -124,7 +117,6 @@ class Path_Opti {
      * 返回梯度求解结果
      */
     inline Vector2D SmoothnessTerm(Vector2D xim2, Vector2D xim1, Vector2D xi, Vector2D xip1, Vector2D xip2);
-    Vector2D        VoronoiTerm(Vector2D xi);
     /**
      * @brief 平滑项梯度求解函数
      * @param[in]  a,b 输入的两个向量
@@ -137,12 +129,7 @@ class Path_Opti {
      * @return 返回说明：无
      */
     void CalculatePathAngle();
-    /**
-     * @brief 路径插值接口函数
-     * @param[in & out]  opti_path 待插值路径
-     * @return 返回说明：无
-     */
-    void InterpolatePath(Path& opti_path);
+
     /**
      * @brief 三次样条曲线插值函数
      * @param[in]  start_point      插值段起点

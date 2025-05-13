@@ -13,7 +13,6 @@
         "endPointId": 56
     },
     "m_Veh_Param": {
-        "obsMax": 1,
         "radious": 12.5,
         "is_light": true,
         "grid_dist": 1,
@@ -32,13 +31,11 @@
         "min_acceleration": -0.4,
         "speed_error_term": 0.1,
         "turnning_penalty": 2.468,
-        "path_voronoi_term": 1,
         "safe_margin_bound": 0.2,
         "safe_margin_error": 0,
         "speed_limit_level": 1,
         "speed_smooth_term": 0.01,
         "veh_center_2_side": 1.800,
-        "vonoroi_grid_dist": 0.1,
         "angle_discrete_num": 3,
         "max_fitting_radius": 100,
         "veh_center_2_front": 7.102,
@@ -57,8 +54,8 @@
         "linear_preferred_distance": 3,
         "uniform_compaction_enable": false,
         "intersection_road_speed_limit": 1.0,
-        "load_point_end_offset_distance": 8,
-        "load_point_start_offset_distance": 8,
+        "R2": 8,
+        "R3": 8,
         "vehicle_code": 616
     },
     "task_type": 2,

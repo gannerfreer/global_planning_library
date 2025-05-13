@@ -19,7 +19,7 @@ bool Planning::InitialFunction() {
     task_type_ = TaskType::RESERVED;
 
 
-#ifdef SKIP_HEADER
+#ifdef SKIP_HEADER // 此宏在采用makefile方式进行编译时会使用
 #else
     if (ReadAllMapFile()) {
         printf(" The map file is readed \n");
@@ -403,7 +403,7 @@ PlanResult Planning::PathPlanning() {
 PlanResult Planning::NotFollowReferencelinePlanning() {
     my_optimal_path_.threadLogger_ = threadLogger_;
 
-    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
+    my_optimal_path_.InitBound(start_point_, map_border_, inner_borders_, vehicle_param_);
     vector<_TrajectoryPoint> temp_traj;
     long long                time_threshold = 2 * 1000 * 1000;
     PlanRule                 rule_id_1 = PlanRule::Forward_All_Time, rule_id_2 = PlanRule::Backward_All_Time, rule_id_3 = PlanRule::Start_Front_End_Back;
@@ -423,9 +423,9 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
     }
     else if (task_type_ == TaskType::LOAD) { // 装载任务，先纯倒车，纯倒车不行再往前开，再倒车
         threadLogger_->info("装载");
-        int load_point_end_offset_distance = vehicle_param_.load_point_end_offset_distance;
+        int load_point_end_offset_distance = vehicle_param_.L2;
         while (load_point_end_offset_distance >= 1) {
-            my_optimal_path_.start_offset_distance_ = vehicle_param_.load_start_straight_length;
+            my_optimal_path_.start_offset_distance_ = vehicle_param_.L1;
             my_optimal_path_.end_offset_distance_   = load_point_end_offset_distance;
             threadLogger_->info("当前装载任务，起点直线延长:    {} m", my_optimal_path_.start_offset_distance_);
             threadLogger_->info("当前装载任务，终点直线延长:    {} m", my_optimal_path_.end_offset_distance_);
@@ -444,10 +444,10 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
         if (success_flag == false) {
             threadLogger_->info("更换规则，采用Start_Front_End_Back规划方式");
             my_optimal_path_.start_offset_distance_ = 3;
-            my_optimal_path_.end_offset_distance_   = vehicle_param_.load_point_end_offset_distance;
+            my_optimal_path_.end_offset_distance_   = vehicle_param_.L2;
             result                                  = ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Start_Front_End_Back, time_threshold);
             if (result != PlanResult::Plan_OK) {
-                threadLogger_->error("装载任务，PlanRule::Start_Front_End_Back规则，装载点直线延伸 {} m，Hybird A*无法规划出当前起点至终点的路径", vehicle_param_.load_point_end_offset_distance);
+                threadLogger_->error("装载任务，PlanRule::Start_Front_End_Back规则，装载点直线延伸 {} m，Hybird A*无法规划出当前起点至终点的路径", vehicle_param_.L2);
             }
             else {
                 global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
@@ -462,7 +462,7 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
     }
     else { // 卸载任务，先前进，后倒退进入卸载点
         threadLogger_->info("卸载");
-        int unload_point_end_offset_distance = vehicle_param_.load_point_end_offset_distance;
+        int unload_point_end_offset_distance = vehicle_param_.L2;
         while (unload_point_end_offset_distance >= 1) {
             my_optimal_path_.start_offset_distance_ = 3;
             my_optimal_path_.end_offset_distance_   = unload_point_end_offset_distance;
@@ -484,7 +484,6 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
         }
     }
 
-    my_optimal_path_.DeleteVoronoiSpace(false);
     return result;
 }
 
@@ -640,8 +639,6 @@ void Planning::StartEndPointProcess() {
 bool Planning::PathOffset() {
     threadLogger_->info("均匀碾压功能开启");
     vector<_TrajectoryPoint> path_before_offset, path_after_offset, input_points;
-
-
     collison_check_.InitParam(vehicle_param_);
     map_border_t_.clear();
     vector<Coordinate> vC;
@@ -1072,7 +1069,7 @@ PlanResult Planning::HybirdAStarFitting() {
     //  初始化HybrdiA*算法地图边界及voronoi图
     PlanResult result              = PlanResult::Plan_OK;
     my_optimal_path_.threadLogger_ = threadLogger_;
-    my_optimal_path_.InitVoronoiAndBound(start_point_, map_border_, inner_borders_, vehicle_param_, false);
+    my_optimal_path_.InitBound(start_point_, map_border_, inner_borders_, vehicle_param_);
     // 基于横纵向距离来判断是否进行hybirdA*拟合
     threadLogger_->info("Enter HybirdAStarFitting");
     bool   start_need_fitting     = false;
@@ -1098,7 +1095,7 @@ PlanResult Planning::HybirdAStarFitting() {
     {
         int start_point_offset_distance = 4;
         if (load_unload_start_flag) {
-            start_point_offset_distance = vehicle_param_.load_point_start_offset_distance;
+            start_point_offset_distance = vehicle_param_.L3;
         }
         int end_point_offset_distance = 0;
         while (start_point_offset_distance >= 0) {
@@ -1141,7 +1138,7 @@ PlanResult Planning::HybirdAStarFitting() {
                                 // 成功规划出路径
                                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
-                                my_optimal_path_.DeleteVoronoiSpace(false);
+
                                 return result;
                             }
                         }
@@ -1150,7 +1147,7 @@ PlanResult Planning::HybirdAStarFitting() {
                         // 成功规划出路径
                         global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                         global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
-                        my_optimal_path_.DeleteVoronoiSpace(false);
+
                         return result;
                     }
                 }
@@ -1167,7 +1164,7 @@ PlanResult Planning::HybirdAStarFitting() {
                             // 成功规划出路径
                             global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                             global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
-                            my_optimal_path_.DeleteVoronoiSpace(false);
+
                             return result;
                         }
                     }
@@ -1175,7 +1172,7 @@ PlanResult Planning::HybirdAStarFitting() {
                         // 成功规划出路径
                         global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                         global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
-                        my_optimal_path_.DeleteVoronoiSpace(false);
+
                         return result;
                     }
                 }
@@ -1186,7 +1183,6 @@ PlanResult Planning::HybirdAStarFitting() {
         }
     }
     // 如果代码运行到这里，表面没有规划出路径
-    my_optimal_path_.DeleteVoronoiSpace(false);
     if (load_unload_start_flag) {
         if (result == PlanResult::StartPoint_Collision) {
             return result;
@@ -1294,128 +1290,6 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
     threadLogger_->info("dubins radius:{}", dubis.GetRadius());
     return dubis.GetDubinsPath(dubins_start, dubins_end, path);
 }
-
-float Planning::ReferencelineTotalDis(pair<int, int>& input_pair, int start_index, int end_index) {
-    // threadLogger_->info("计算{}到{}之间的路径", sequence_mapping_.at(input_pair.first), sequence_mapping_.at(input_pair.second));
-    dijkstra_.searchpath(input_pair.first, input_pair.second);
-    road_sequence_   = dijkstra_.GetPath();
-    int total_length = 0;
-    if (road_sequence_.size() > 1) {
-        for (int i = 0; i < road_sequence_.size(); i++) {
-            int temp_key = sequence_mapping_.at(road_sequence_.at(i));
-            if (i == 0) {
-                total_length += all_referencelines_.at(temp_key).trajectory.size() - start_index;
-                // threadLogger_->info("i:{}  total_length:{} all_referencelines_.at(temp_key).trajectory.size():{} start_index:{}", i, total_length, all_referencelines_.at(temp_key).trajectory.size(), start_index);
-            }
-            else if (i == road_sequence_.size() - 1) {
-                total_length += end_index;
-                // threadLogger_->info("i:{}  total_length:{} end_index:{}", i, total_length, end_index);
-            }
-            else {
-                total_length += all_referencelines_.at(temp_key).trajectory.size();
-                // threadLogger_->info("i:{}  total_length:{} all_referencelines_.at(temp_key).trajectory.size():{}", i, total_length, all_referencelines_.at(temp_key).trajectory.size());
-            }
-        }
-        return total_length;
-    }
-    else {
-        if (start_index > end_index) { // 不允许倒车
-            return 100000;
-        }
-        else {
-            return end_index - start_index;
-        }
-    }
-}
-
-void Planning::CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path) {
-    vector<double> x_set;
-    vector<double> y_set;
-    x_set.reserve(points.size());
-    y_set.reserve(points.size());
-    for (const auto& pt : points) {
-        x_set.push_back(pt.x);
-        y_set.push_back(pt.y);
-    }
-
-    CalculateStation(x_set, y_set);
-    sx_.set_points(s_, x_set);
-    sy_.set_points(s_, y_set);
-    kDeltaS = 1;
-
-    float  epsilon = 0.0001; // 容差值
-    double s       = 0.0;
-    for (s = 0.0; s <= s_.back(); s += kDeltaS) {
-        kDeltaS   = 1;
-        double dx = sx_.deriv(1, s);
-        double dy = sy_.deriv(1, s);
-
-        double ddx = sx_.deriv(2, s);
-        double ddy = sy_.deriv(2, s);
-
-        // float angle = atan(dy / dx);
-        // if (dx < 0)
-        //     angle = angle + M_PI;
-        // else if (dx >= 0 && dy < 0)
-        //     angle = angle + 2 * M_PI;
-        float angle = atan2(dy, dx);
-        if (angle < 0) {
-            angle += 2 * M_PI;
-        }
-        double cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
-        Point  temp_point;
-        temp_point.x         = sx_(s);
-        temp_point.y         = sy_(s);
-        temp_point.angle     = angle;
-        temp_point.curvature = cur;
-        if (flag == true)
-            temp_point.direction = MotionDirection::Forward;
-        else
-            temp_point.direction = MotionDirection::Backward;
-        cubicspline_path.emplace_back(temp_point);
-    }
-    s        = s_.back();
-    float dx = sx_.deriv(1, s);
-    float dy = sy_.deriv(1, s);
-
-    float ddx   = sx_.deriv(2, s);
-    float ddy   = sy_.deriv(2, s);
-    float angle = atan2(dy, dx);
-    if (angle < 0) {
-        angle += 2 * M_PI;
-    }
-    float cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
-    Point temp_point;
-    temp_point.x         = sx_(s);
-    temp_point.y         = sy_(s);
-    temp_point.angle     = angle;
-    temp_point.curvature = cur;
-    if (flag == true)
-        temp_point.direction = MotionDirection::Forward;
-    else
-        temp_point.direction = MotionDirection::Backward;
-    cubicspline_path.emplace_back(temp_point);
-
-    if (flag == false) {
-        for (auto& i : cubicspline_path) {
-            i.angle += M_PI;
-            if (i.angle > 2 * M_PI) i.angle -= 2 * M_PI;
-        }
-    }
-}
-void Planning::CalculateStation(const vector<double>& xs, const vector<double>& ys) {
-    double cum = 0.0;
-    s_.clear();
-    s_.push_back(cum);
-
-    for (unsigned int i = 1; i < xs.size(); i++) {
-        double dx = xs.at(i) - xs.at(i - 1);
-        double dy = ys.at(i) - ys.at(i - 1);
-        cum += hypot(dx, dy);
-        s_.push_back(cum);
-    }
-}
-
 
 void Planning::CurvatureCal(vector<_TrajectoryPoint>& input_path) {
     _TrajectoryPoint p1, p2, p3;

@@ -68,7 +68,9 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
         traj.trajectory.clear();
         traj.id                      = trajsArray[i]["id"].GetInt();
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
-        traj_type                    = trajsArray[i]["type"].GetInt();
+
+
+        traj_type = trajsArray[i]["type"].GetInt();
         std::cout << "id:" << traj.id << "  路径点数量：" << trajPointsArray.Size() << endl;
         for (int j = 0; j < trajPointsArray.Size(); j++) {
             tp.x         = trajPointsArray[j]["x"].GetDouble();
@@ -387,13 +389,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("veh_center_2_rear_obstacle")) {
-                veh_start_end.veh_param.veh_center_2_rear_obstacle = val["veh_center_2_rear_obstacle"].GetDouble();
-            }
-            else {
-                veh_start_end.veh_param.veh_center_2_rear_obstacle = 2.77;
-                cout << "无法找到车参 veh_center_2_rear_obstacle ，即将赋予默认值" << endl;
-            }
 
             if (val.HasMember("delta_dist")) {
                 veh_start_end.veh_param.delta_dist = val["delta_dist"].GetDouble();
@@ -643,21 +638,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.is_light = false;
             }
 
-            if (val.HasMember("path_voronoi_term")) {
-                veh_start_end.veh_param.path_voronoi_term = val["path_voronoi_term"].GetFloat();
-            }
-            else {
-                cout << "无法找到车参 path_voronoi_term ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.path_voronoi_term = 0.1;
-            }
-
-            if (val.HasMember("vonoroi_grid_dist")) {
-                veh_start_end.veh_param.vonoroi_grid_dist = val["vonoroi_grid_dist"].GetFloat();
-            }
-            else {
-                cout << "无法找到车参 vonoroi_grid_dist ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.vonoroi_grid_dist = 0.1;
-            }
 
             if (val.HasMember("curvature_threshold")) {
                 veh_start_end.veh_param.curvature_threshold = val["curvature_threshold"].GetFloat();
@@ -683,30 +663,22 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.speed_limit_level = SpeedLimitLevel::three;
             }
 
-            if (val.HasMember("load_point_end_offset_distance")) {
-                veh_start_end.veh_param.load_point_end_offset_distance = val["load_point_end_offset_distance"].GetUint();
+            if (val.HasMember("L2")) {
+                veh_start_end.veh_param.L2 = val["L2"].GetUint();
             }
             else {
-                cout << "无法找到车参 load_point_end_offset_distance ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.load_point_end_offset_distance = 8;
+                cout << "无法找到车参 L2 ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.L2 = 8;
             }
 
-            if (val.HasMember("load_point_start_offset_distance") && val["load_point_start_offset_distance"].IsNumber()) {
-                veh_start_end.veh_param.load_point_start_offset_distance = val["load_point_start_offset_distance"].GetUint();
+            if (val.HasMember("L3") && val["L3"].IsNumber()) {
+                veh_start_end.veh_param.L3 = val["L3"].GetUint();
             }
             else {
-                cout << "无法找到车参 load_point_start_offset_distance ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.load_point_start_offset_distance = 3;
+                cout << "无法找到车参 L3 ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.L3 = 3;
             }
 
-
-            if (val.HasMember("obsMax") && val["obsMax"].IsNumber()) {
-                veh_start_end.veh_param.obsMax = val["obsMax"].GetFloat();
-            }
-            else {
-                cout << "无法找到车参 obsMax ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.obsMax = 2.5;
-            }
 
             if (val.HasMember("rs_min_length") && val["rs_min_length"].IsNumber()) {
                 veh_start_end.veh_param.rs_min_length = val["rs_min_length"].GetFloat();
@@ -716,12 +688,12 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.rs_min_length = 2;
             }
 
-            if (val.HasMember("load_start_straight_length") && val["load_start_straight_length"].IsNumber()) {
-                veh_start_end.veh_param.load_start_straight_length = val["load_start_straight_length"].GetFloat();
+            if (val.HasMember("L1") && val["L1"].IsNumber()) {
+                veh_start_end.veh_param.L1 = val["L1"].GetFloat();
             }
             else {
-                cout << "无法找到车参 load_start_straight_length ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.load_start_straight_length = 3;
+                cout << "无法找到车参 L1 ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.L1 = 3;
             }
 
             if (val.HasMember("offset_distance") && val["offset_distance"].IsNumber()) {
@@ -740,21 +712,7 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 max_steering_wheel_speed ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.max_steering_wheel_speed = 0.1396;
             }
-            if (val.HasMember("max_search_distance") && val["max_search_distance"].IsNumber()) {
-                veh_start_end.veh_param.max_search_distance = val["max_search_distance"].GetUint();
-            }
-            else {
-                cout << "无法找到车参 max_search_distance ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.max_search_distance = 50;
-            }
 
-            if (val.HasMember("cost_ratio") && val["cost_ratio"].IsNumber()) {
-                veh_start_end.veh_param.cost_ratio = val["cost_ratio"].GetUint();
-            }
-            else {
-                cout << "无法找到车参 cost_ratio ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.cost_ratio = 3;
-            }
 
             if (val.HasMember("sample_num") && val["sample_num"].IsNumber()) {
                 veh_start_end.veh_param.sample_num = val["sample_num"].GetUint();

@@ -16,7 +16,7 @@
 using namespace GlobalPlanning;
 
 
-void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders, const _VehicleParam& m_vehicle_param, bool enable_voronoi) {
+void OptimalPath::InitBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders, const _VehicleParam& m_vehicle_param) {
     // 初始化当前任务HybridA*所需要的地图边界和障碍物边界
     //  区域外边界、区域内边界转换
     threadLogger_->info("初始化当前任务HybridA*所需要的地图边界、障碍物边界及Voronoi图");
@@ -56,149 +56,6 @@ void OptimalPath::InitVoronoiAndBound(const _SinglePoint start_point, const vect
 
     init_road_bound_.emplace_back(v_road_outer_bound_);
     init_obstacle_bound_.emplace_back(v_road_inner_bound_); // 这里填充好的road_inner_bound_和road_outer_bound_会在调用globalPlanning()函数时作为入参传入
-    // 结合当前任务的起点位置，地图边界及障碍物边界，申请相应大小的二维空间用于构建voronoi图
-    if (enable_voronoi) {
-        voronoi_bound_ = init_road_bound_;
-        voronoi_bound_.insert(voronoi_bound_.end(), init_obstacle_bound_.begin(), init_obstacle_bound_.end());
-
-
-        threadLogger_->info("计算构建的栅格地图的长宽");
-        // 计算构建的栅格地图的长宽
-        double min_x = DBL_MAX, min_y = DBL_MAX, max_x = -DBL_MAX, max_y = -DBL_MAX;
-        // 计算地图边界栅格
-
-        for (int i = 0; i < voronoi_bound_.size(); ++i) {
-            for (int j = 0; j < voronoi_bound_.at(i).size(); ++j) {
-                if (voronoi_bound_.at(i).at(j).x > max_x) {
-                    max_x = voronoi_bound_.at(i).at(j).x;
-                }
-                if (voronoi_bound_.at(i).at(j).x < min_x) {
-                    min_x = voronoi_bound_.at(i).at(j).x;
-                }
-                if (voronoi_bound_.at(i).at(j).y > max_y) {
-                    max_y = voronoi_bound_.at(i).at(j).y;
-                }
-                if (voronoi_bound_.at(i).at(j).y < min_y) {
-                    min_y = voronoi_bound_.at(i).at(j).y;
-                }
-            }
-        }
-        if (min_x == DBL_MAX) {
-            width            = 0;
-            height           = 0;
-            use_voronoi      = false;
-            voronoi_origin_x = DBL_MAX;
-            voronoi_origin_y = DBL_MAX;
-        }
-        else {
-            max_x += 2;
-            min_x -= 2;
-            max_y += 2;
-            min_y -= 2; // 对Voronoi图在原有基础上膨胀2m
-            int up_bound_x   = static_cast<int>(floor((max_x) / m_vehicle_param.vonoroi_grid_dist));
-            int down_bound_x = static_cast<int>(floor((min_x) / m_vehicle_param.vonoroi_grid_dist));
-            int up_bound_y   = static_cast<int>(floor((max_y) / m_vehicle_param.vonoroi_grid_dist));
-            int down_bound_y = static_cast<int>(floor((min_y) / m_vehicle_param.vonoroi_grid_dist));
-            width            = up_bound_x - down_bound_x + 1;
-            height           = up_bound_y - down_bound_y + 1;
-            voronoi_origin_x = min_x;
-            voronoi_origin_y = min_y;
-            threadLogger_->info("width:{},height:{}", width, height);
-            threadLogger_->info("开始申请地图内存");
-
-            binMap = new bool*[width];
-            for (int x = 0; x < width; x++) {
-                binMap[x] = new bool[height];
-            }
-            for (int x = 0; x < width; ++x) {
-                for (int y = 0; y < height; ++y) {
-                    binMap[x][y] = false;
-                }
-            }
-            threadLogger_->info("申请地图内存成功");
-
-            // 将有地图边界和障碍物所在的栅格置true
-            int temp_index_x = 0, temp_index_y = 0;
-            for (int i = 0; i < voronoi_bound_.size(); ++i) {
-                for (int j = 0; j < voronoi_bound_.at(i).size(); ++j) {
-                    temp_index_x                       = static_cast<int>(floor((voronoi_bound_.at(i).at(j).x - min_x) / m_vehicle_param.vonoroi_grid_dist));
-                    temp_index_y                       = static_cast<int>(floor((voronoi_bound_.at(i).at(j).y - min_y) / m_vehicle_param.vonoroi_grid_dist));
-                    binMap[temp_index_x][temp_index_y] = true;
-                }
-            }
-            threadLogger_->info("初始化内存成功");
-
-            // std::ofstream pgmFile("output.pgm");
-            // pgmFile << "P5\n" << width << " " << height << "\n255\n";
-            // for (int x = 0; x < width; ++x) {
-            //     for (int y = 0; y < height; ++y) {
-            //         char pixelValue = binMap[x][y] ? 0 : 255;
-            //         pgmFile.put(pixelValue);
-            //     }
-            // }
-            // pgmFile.close();
-            std::ofstream file("output.ppm");
-            if (file.is_open()) {
-                file << "P3\n" << width << " " << height << "\n255\n";
-                for (int y = height - 1; y >= 0; --y) {
-                    for (int x = 0; x < width; ++x) {
-                        int color = binMap[x][y] ? 0 : 255;
-                        file << color << " " << color << " " << color << " ";
-                    }
-                    file << "\n";
-                }
-                file.close();
-            }
-            else {
-                std::cerr << "无法打开文件进行写入。" << std::endl;
-            }
-
-
-            // 初始化vonoroi图
-            // DynamicVoronoi voronoiDiagram;
-            // voronoiDiagram.initializeMap(width, height, binMap);
-            // threadLogger_->info("initializeMap结束");
-            // voronoiDiagram.update();
-            // threadLogger_->info("update结束");
-            // // voronoiDiagram->CollectVoronoiEdgePoints();
-            // threadLogger_->info("CollectVoronoiEdgePoints结束");
-            // voronoiDiagram.visualize("../voronoi_graph.ppm");
-            // use_voronoi = true;
-            // threadLogger_->info("visualize结束");
-
-            threadLogger_->info("初始化vonoroi图");
-            // 初始化vonoroi图
-            voronoiDiagram = new DynamicVoronoi();
-            voronoiDiagram->initializeMap(width, height, binMap);
-            threadLogger_->info("initializeMap结束");
-            voronoiDiagram->update();
-            threadLogger_->info("update结束");
-            voronoiDiagram->prune();
-            voronoiDiagram->CollectVoronoiEdgePoints();
-            threadLogger_->info("CollectVoronoiEdgePoints结束");
-            voronoiDiagram->visualize("../voronoi_graph.ppm");
-            use_voronoi = true;
-            obsMax      = m_vehicle_param.obsMax;
-            threadLogger_->info("visualize结束");
-        }
-        threadLogger_->info("voronoi栅格地图长{}宽{}", height, width);
-    }
-}
-
-void OptimalPath::DeleteVoronoiSpace(bool enable_voronoi) {
-    if (enable_voronoi) {
-        if (binMap) {
-            for (int x = 0; x < width; x++) {
-                delete[] binMap[x];
-            }
-            delete[] binMap;
-            binMap = nullptr;
-            threadLogger_->info("删除本次规划所使用的vonoroi空间");
-        }
-        else {
-            threadLogger_->error("error,空间未申请或已经被释放");
-        }
-    }
 }
 
 
@@ -210,11 +67,9 @@ void OptimalPath::DeleteVoronoiSpace(bool enable_voronoi) {
 PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule& plan_path_rule) {
     m_vehicle_param_ = m_vehicle_param;
     my_r_s_curve.Init(m_vehicle_param_);
-    my_r_s_curve_h.Init(m_vehicle_param_);
 
-    my_r_s_curve.threadLogger_   = threadLogger_;
-    my_r_s_curve_h.threadLogger_ = threadLogger_;
-    plan_path_rule_              = plan_path_rule;
+    my_r_s_curve.threadLogger_ = threadLogger_;
+    plan_path_rule_            = plan_path_rule;
 
     utility::CTimeLog timelog("SearchGlobalPath");
     InitData(start, end);
@@ -397,14 +252,7 @@ void OptimalPath::InitData(Point start, Point end) {
  */
 PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     // 以下3行代码用于超时退出
-    threadLogger_->info("开始给路径平滑赋予voronoi图");
-    my_path_opti.voronoiDiagram   = voronoiDiagram;
-    my_path_opti.use_voronoi      = use_voronoi;
-    my_path_opti.vorObsDMax       = obsMax;
-    my_path_opti.voronoi_origin_x = voronoi_origin_x - midpoint_.x;
-    my_path_opti.voronoi_origin_y = voronoi_origin_y - midpoint_.y;
-    my_path_opti.threadLogger_    = threadLogger_;
-    threadLogger_->info("给路径平滑赋予voronoi图结束，Voronoi图原点坐标：({},{})", my_path_opti.voronoi_origin_x, my_path_opti.voronoi_origin_y);
+    my_path_opti.threadLogger_ = threadLogger_;
 
 
     utility::CTimeClock init_time;
@@ -1059,31 +907,14 @@ void OptimalPath::CalGValue(const Vertex3D& start_point, Vertex3D& end_point) {
  *return
  */
 void OptimalPath::CalHValue(Vertex3D& point) {
-    double a_start_h = 0, rs_h = 0;
+    double a_start_h = 0;
 
-    // 使用rs曲线来评估当前point距离终点的启发值
-    Point temp_start_point;
-    temp_start_point.x         = point.x;
-    temp_start_point.y         = point.y;
-    temp_start_point.z         = point.z;
-    temp_start_point.angle     = point.angle;
-    temp_start_point.direction = point.direction;
 
-    Point temp_end_point;
-    temp_end_point.x     = end_.x;
-    temp_end_point.y     = end_.y;
-    temp_end_point.z     = end_.z;
-    temp_end_point.angle = end_.angle;
-
-    if (!my_r_s_curve_h.PlanRSPath(temp_start_point, temp_end_point)) {
-        // threadLogger_->info("采用RS曲线进行估算h值失败");
-    }
-    rs_h = my_r_s_curve_h.opti_rs_path.length * m_vehicle_param_.radious;
     utility::CTimeClock init_time;
     // 以A*搜索结果为启发值
     Node2D current2D(static_cast<short>(floor(point.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(point.y / m_vehicle_param_.grid_dist)), 0, 0);
     auto   iter = nodes2D_map_.find(current2D.getIdx());
-    if (iter == nodes2D_map_.end()) {
+    if (iter == nodes2D_map_.end() || nodes2D_map_[current2D.getIdx()].isOpen()) {
         Node2D        goal2D(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
         int           total = 0;
         IntCoordinate temp_point;
@@ -1110,7 +941,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
     // Node2D goal2D_(static_cast<short>(floor(end_.x / m_vehicle_param_.grid_dist)), static_cast<short>(floor(end_.y / m_vehicle_param_.grid_dist)), 0, 0);
     // point.h = hypot(goal2D_.getX() - current2D_.getX(), goal2D_.getY() - current2D_.getY());
 
-    point.h = max(a_start_h, rs_h);
+    point.h = a_start_h;
 }
 
 /**

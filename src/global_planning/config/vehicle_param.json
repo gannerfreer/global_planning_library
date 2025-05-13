@@ -38,20 +38,16 @@
     "slope_road_speed_limit": 1.5,
     "narrow_road_speed_limit": 3.5,
     "intersection_road_speed_limit": 1.0,
-    "task_type": 2,
-    "path_voronoi_term": 1,
-    "vonoroi_grid_dist": 0.1,
+    "task_type": 3,
     "curvature_threshold": 0.1,
     "is_light": false,
     "speed_limit_level": 3,
-    "load_point_end_offset_distance": 4,
-    "load_point_start_offset_distance": 4,
-    "obsMax": 2,
+    "L2": 4,
+    "L3": 4,
     "rs_min_length": 2,
-    "load_start_straight_length": 8,
+    "L1": 8,
     "offset_distance": 0.25,
     "max_steering_wheel_speed": 0.174,
-    "cost_ratio": 4,
-    "sample_num": 7
+    "sample_num": 40
   }
 }

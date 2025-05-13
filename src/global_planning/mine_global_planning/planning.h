@@ -8,7 +8,6 @@
 #include "../planner/pathplanner/dijkstra/dijkstra.h"
 #include "../planner/pathplanner/hybirdastar/optimal_path.h"
 #include "../planner/speedplanner/global_speed_planning.h"
-#include "../smoother/dynamicvoronoi.h"
 #ifdef SKIP_HEADER
 #else
 #include "../map/c_map_analysis.h"
@@ -59,15 +58,7 @@ class Planning {
      */
     PlanResult ApplyHibridAStarWithTime(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, const PlanRule& plan_rule_id, long long time_threshold);
 
-    /**
-     * @brief  去除轨迹中重复点
-     *
-     * @param input 输入轨迹
-     * @param result 删除重复点后的输出轨迹
-     * @return true
-     * @return false
-     */
-    bool removeDuplicates(vector<_TrajectoryPoint>& input, vector<_TrajectoryPoint>& result);
+
     /**
      * @brief 均匀碾压，每个路径点偏移权重
      *
@@ -85,15 +76,6 @@ class Planning {
      * @return float 偏移量
      */
     float CalculateOffSetWithoutCuravture(int index, int sum, float weight);
-
-    /**
-     * @brief 基于车辆几何尺寸，检查Path是否碰撞
-     *
-     * @param Path 待检测路径
-     * @return true 碰撞
-     * @return false 不碰撞
-     */
-    bool PathCollisionCheck(vector<_TrajectoryPoint> Path);
 
 
     /**
@@ -142,19 +124,15 @@ class Planning {
     bool                 IsShortDistance();
     bool                 HasSearched(int start, int end);
     bool                 PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag);
-    float                ReferencelineTotalDis(pair<int, int>& input_pair, int start_index, int end_index);
-    void                 CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
-    void                 CalculateStation(const vector<double>& xs, const vector<double>& ys);
     void                 CurvatureCal(vector<_TrajectoryPoint>& input_path);
     void                 SmoothPath(vector<_TrajectoryPoint>& input_path);
     void                 FillErrorCode(PlanResult result);
     vector<unsigned int> CurvatureCheck(vector<_TrajectoryPoint>& input_path);
 
   public:
-    _SinglePoint start_point_,
-        end_point_;                                                                                                                                                        // 起、终点坐标
-    int    start_key_, end_key_, start_index_, end_index_;                                                                                                                 // 起点、终点匹配上的参考路径id以及在在参考路径上的具体索引
-    double start_lat_dis_ = 0, start_lon_dis_ = 0, start_distance_ = 0, start_angle_diff_ = 0, end_lat_dis_ = 0, end_lon_dis_ = 0, end_distance_ = 0, end_angle_diff_ = 0; // 起点、终点与匹配上的参考路径的横纵向距离
+    _SinglePoint start_point_, end_point_;                                                                                                                                       // 起、终点坐标
+    int          start_key_, end_key_, start_index_, end_index_;                                                                                                                 // 起点、终点匹配上的参考路径id以及在在参考路径上的具体索引
+    double       start_lat_dis_ = 0, start_lon_dis_ = 0, start_distance_ = 0, start_angle_diff_ = 0, end_lat_dis_ = 0, end_lon_dis_ = 0, end_distance_ = 0, end_angle_diff_ = 0; // 起点、终点与匹配上的参考路径的横纵向距离
 
     vector<vector<double>>       road_directed_graph_; // 路段有向图
     vector<_BorderPoint>         map_border_;          // 地图外边界
@@ -179,11 +157,6 @@ class Planning {
     shared_ptr<spdlog::logger> threadLogger_;
     string                     vehicle_code_;
     string                     key_;
-    std::vector<double>        s_;
-    curve::spline              sx_;
-    curve::spline              sy_;
-    double                     kDeltaS = 0.1;
-
 
 #ifdef SKIP_HEADER
 #else

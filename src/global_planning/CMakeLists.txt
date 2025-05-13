@@ -139,7 +139,6 @@ add_executable(${PROJECT_NAME}
   collision_check/collision_check.cpp
   map/c_map_analysis.cpp
   smoother/path_opti.cpp
-  smoother/dynamicvoronoi.cpp
   mine_global_planning/planning.cpp
   mine_global_planning/predicting.cpp
   planner/pathplanner/dijkstra/dijkstra.cpp
@@ -147,7 +146,6 @@ add_executable(${PROJECT_NAME}
   planner/pathplanner/hybirdastar/node2d.cpp
   planner/pathplanner/hybirdastar/optimal_path.cpp
   planner/pathplanner/hybirdastar/r_s_curve.cpp
-  planner/pathplanner/hybirdastar/r_s_curve_for_h.cpp
   planner/pathplanner/spline/spline.cpp
   planner/speedplanner/global_speed_planning.cpp
   globalvariable.cpp
