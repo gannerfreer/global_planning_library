@@ -398,8 +398,8 @@ char* PathPredicting(char* input_info) {
             predicting.PredictingInterface(path, all_human_vechicle_infos.predicting_distance);
             all_path[veh_info.id] = path;
         } catch (const std::exception& e) {
-            cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;
-            predicting.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 exception 抛出");
+            cout << "预测库执行PredictingInterface时出现 exception 抛出" << endl;
+            predicting.threadLogger_->info("预测库执行PredictingInterface时出现 exception 抛出");
             predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
@@ -420,8 +420,8 @@ char* PathPredicting(char* input_info) {
             }
         } catch (const std::out_of_range& e) {
             // 处理数组越界异常
-            cout << "规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出" << endl;
-            predicting.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出");
+            cout << "预测库执行PredictingInterface时出现 out_of_range 抛出" << endl;
+            predicting.threadLogger_->info("预测库执行PredictingInterface时出现 out_of_range 抛出");
             predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
@@ -462,8 +462,8 @@ char* PathPredicting(char* input_info) {
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::exception& e) {
-        cout << "规划库执行 HumanVehFurtureVecWaypoint2json 时出现 exception 抛出" << endl;
-        predicting.threadLogger_->info("规划库执行 HumanVehFurtureVecWaypoint2json 时出现 exception 抛出");
+        cout << "预测库执行 HumanVehFurtureVecWaypoint2json 时出现 exception 抛出" << endl;
+        predicting.threadLogger_->info("预测库执行 HumanVehFurtureVecWaypoint2json 时出现 exception 抛出");
         predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
@@ -484,8 +484,8 @@ char* PathPredicting(char* input_info) {
         }
     } catch (const std::out_of_range& e) {
         // 处理数组越界异常
-        cout << "规划库执行 HumanVehFurtureVecWaypoint2json 时出现 out_of_range 抛出" << endl;
-        predicting.threadLogger_->info("规划库执行 HumanVehFurtureVecWaypoint2json 时出现 out_of_range 抛出");
+        cout << "预测库执行 HumanVehFurtureVecWaypoint2json 时出现 out_of_range 抛出" << endl;
+        predicting.threadLogger_->info("预测库执行 HumanVehFurtureVecWaypoint2json 时出现 out_of_range 抛出");
         predicting.error_type_ = ErrorType::ALGORITHM_ERROR_TRY_CATCH_ERROR;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);

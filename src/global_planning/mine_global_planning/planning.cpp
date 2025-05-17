@@ -184,7 +184,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
 
 PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id, int max_search_index) {
-    long long    time_threshold    = 0.2 * 1000 * 1000;
+    long long    time_threshold    = 0.1 * 1000 * 1000;
     int          counter           = 0;
     bool         success_flag      = false;
     bool         verification_flag = false;
@@ -405,7 +405,7 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
 
     my_optimal_path_.InitBound(start_point_, map_border_, inner_borders_, vehicle_param_);
     vector<_TrajectoryPoint> temp_traj;
-    long long                time_threshold = 2 * 1000 * 1000;
+    long long                time_threshold = 0.2 * 1000 * 1000;
     PlanRule                 rule_id_1 = PlanRule::Forward_All_Time, rule_id_2 = PlanRule::Backward_All_Time, rule_id_3 = PlanRule::Start_Front_End_Back;
     bool                     success_flag = false;
     PlanResult               result;
@@ -443,6 +443,7 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
         }
         if (success_flag == false) {
             threadLogger_->info("更换规则，采用Start_Front_End_Back规划方式");
+            time_threshold                          = 10 * 1000 * 1000;
             my_optimal_path_.start_offset_distance_ = 3;
             my_optimal_path_.end_offset_distance_   = vehicle_param_.L2;
             result                                  = ApplyHibridAStarWithTime(start_point_, end_point_, temp_traj, PlanRule::Start_Front_End_Back, time_threshold);
@@ -1093,57 +1094,69 @@ PlanResult Planning::HybirdAStarFitting() {
     // 只看起点
     if (start_need_fitting) // 起点需要进行HybirdA*拟合
     {
+        int max_search_index = std::numeric_limits<int>::max();
+        // 需要先找到global_path_中排队点、过磅、洗车点的具体索引，hybrida*做路径拟合不能越过这些点
+        for (int i = 0; i < global_path_.size(); i++) {
+            if (global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
+                threadLogger_->info("找到过磅、洗车点，索引为{}", i);
+                max_search_index = i;
+                break;
+            }
+        }
+
+        max_search_index = std::min(max_search_index - 10, (int)global_path_.size() - 1);
+        if (max_search_index <= 0) {
+            max_search_index = 0;
+        }
         int start_point_offset_distance = 4;
         if (load_unload_start_flag) {
             start_point_offset_distance = vehicle_param_.L3;
         }
-        int end_point_offset_distance = 0;
+        int                      end_point_offset_distance = 0;
+        int                      search_index              = 0;
+        vector<_TrajectoryPoint> temp_traj;
         while (start_point_offset_distance >= 0) {
-            end_point_offset_distance = 0;
-            while (end_point_offset_distance >= 0) {
-                my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
-                my_optimal_path_.end_offset_distance_   = end_point_offset_distance;
-                threadLogger_->info("起点需要拟合，当前直线延伸配置：{} {}", my_optimal_path_.start_offset_distance_, my_optimal_path_.end_offset_distance_);
+            my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
+            my_optimal_path_.end_offset_distance_   = end_point_offset_distance;
+            threadLogger_->info("起点需要拟合，当前直线延伸配置：{} {}", my_optimal_path_.start_offset_distance_, my_optimal_path_.end_offset_distance_);
+            threadLogger_->info("结合特殊点位置，最终确定hybridA*前向搜索截至距离为{}", max_search_index);
+            temp_traj.clear();
+            search_index = 0;
+            // 判断拟合模式，JudgeFittingDirection()返回true，表示车辆在参考路径后方，需要先采用Bcack_Fitting模式，不行再采用Start_Front_End_Back模式，反之同理
+            if (JudgeFittingDirection()) {
+                threadLogger_->info("参考路径位于车头前方，这种情况下采用 Forward_All_Time模式，不行再采用Start_Back_End_Front模式");
+                result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time, max_search_index);
+                if (result == PlanResult::Plan_OK) {
+                    // 成功规划出路径
+                    global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
+                    global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
 
-
-                int max_search_index = std::numeric_limits<int>::max();
-                // 需要先找到global_path_中排队点、过磅、洗车点的具体索引，hybrida*做路径拟合不能越过这些点
-                for (int i = 0; i < global_path_.size(); i++) {
-                    if (global_path_.at(i).attribute == PointAttribute::weight_point || global_path_.at(i).attribute == PointAttribute::clean_point) {
-                        threadLogger_->info("找到过磅、洗车点，索引为{}", i);
-                        max_search_index = i;
-                        break;
-                    }
+                    return result;
                 }
-
-                max_search_index = std::min(max_search_index - 10, (int)global_path_.size() - 1);
-                if (max_search_index <= 0) {
-                    max_search_index = 0;
+            }
+            else {
+                threadLogger_->info("参考路径位于车头后方，这种情况下先采用Back_Fitting模式，不行再采用Start_Front_End_Back模式");
+                result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Backward_All_Time, max_search_index);
+                if (result == PlanResult::Plan_OK) {
+                    // 成功规划出路径
+                    global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
+                    global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                    return result;
                 }
-                threadLogger_->info("结合特殊点位置，最终确定hybridA*前向搜索截至距离为{}", max_search_index);
-                vector<_TrajectoryPoint> temp_traj;
-                int                      search_index = 0;
-                // 判断拟合模式，JudgeFittingDirection()返回true，表示车辆在参考路径后方，需要先采用Bcack_Fitting模式，不行再采用Start_Front_End_Back模式，反之同理
+            }
+            //   如果代码运行到这里,表明起点直线延伸太长了，得降低直线延长距离
+            start_point_offset_distance--;
+        }
+        // 对于不是从装载点或卸载点出来的调度，如果上述规划都失败，可以采用下述策略再进行规划
+        if (!load_unload_start_flag) {
+            start_point_offset_distance = 4;
+            while (start_point_offset_distance >= 0) {
+                search_index = 0;
+                temp_traj.clear();
                 if (JudgeFittingDirection()) {
-                    threadLogger_->info("参考路径位于车头前方，这种情况下采用 Forward_All_Time模式，不行再采用Start_Back_End_Front模式");
-                    result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time, max_search_index);
-                    if (result != PlanResult::Plan_OK) {
-                        if (!load_unload_start_flag) {
-                            threadLogger_->error("Forward_All_Time模式不行，即将调整拟合规则为 Start_Back_End_Front模式");
-                            result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front, max_search_index);
-                            if (result != PlanResult::Plan_OK) {
-                                threadLogger_->error("两种拟合模式都试过，依旧拟合失败，准备降低起点终点的直线延长距离");
-                            }
-                            else {
-                                // 成功规划出路径
-                                global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
-                                global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
-
-                                return result;
-                            }
-                        }
-                    }
-                    else {
+                    threadLogger_->error("Forward_All_Time模式不行，即将调整拟合规则为 Start_Back_End_Front模式");
+                    result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front, max_search_index);
+                    if (result == PlanResult::Plan_OK) {
                         // 成功规划出路径
                         global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                         global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
@@ -1152,34 +1165,19 @@ PlanResult Planning::HybirdAStarFitting() {
                     }
                 }
                 else {
-                    threadLogger_->info("参考路径位于车头后方，这种情况下先采用Back_Fitting模式，不行再采用Start_Front_End_Back模式");
-                    result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Backward_All_Time, max_search_index);
-                    if (result != PlanResult::Plan_OK) {
-                        threadLogger_->error("Backward_All_Time模式不行，即将调整拟合规则为 Start_Front_End_Back模式");
-                        result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Front_End_Back, max_search_index);
-                        if (result != PlanResult::Plan_OK) {
-                            threadLogger_->error("两种拟合模式都试过，依旧拟合失败，准备降低起点终点的直线延长距离");
-                        }
-                        else {
-                            // 成功规划出路径
-                            global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
-                            global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
-
-                            return result;
-                        }
-                    }
-                    else {
+                    threadLogger_->error("Forward_All_Time模式不行，即将调整拟合规则为 Start_Back_End_Front模式");
+                    result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Front_End_Back, max_search_index);
+                    if (result == PlanResult::Plan_OK) {
                         // 成功规划出路径
                         global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                         global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
 
                         return result;
                     }
+
+                    start_point_offset_distance--;
                 }
-                //   如果代码运行到这里，表示这种{start_point_offset_distance,start_point_offset_distance}模式没有成功归规划出轨迹，得降低直线延长距离
-                end_point_offset_distance--;
             }
-            start_point_offset_distance--;
         }
     }
     // 如果代码运行到这里，表面没有规划出路径

@@ -48,6 +48,6 @@
     "L1": 8,
     "offset_distance": 0.25,
     "max_steering_wheel_speed": 0.174,
-    "sample_num": 40
+    "sample_num": 30
   }
 }
