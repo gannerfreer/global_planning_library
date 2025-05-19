@@ -1175,8 +1175,9 @@ PlanResult Planning::HybirdAStarFitting() {
                         return result;
                     }
 
-                    start_point_offset_distance--;
+                   
                 }
+                start_point_offset_distance--;
             }
         }
     }
