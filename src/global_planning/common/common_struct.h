@@ -51,7 +51,7 @@ enum class PlanResult {
     EndPoint_Infeasible             = 7,  // 终点不可达
     Map_Infeasible                  = 8,  // 地图不可行
     Leaving_Load_Point_Too_Close    = 9,  // 驶离装载点距离装载点太近
-    Load_Queue_Point_Unreasonable   = 10, // 装载排队点不合理，距离装载点太近且无调整空间
+    Load_Queue_Point_Unreasonable   = 10, // 装载点角度不合理
     Unload_Queue_Point_Unreasonable = 11,
     Start_Point_Too_Far             = 12
 };
@@ -66,7 +66,7 @@ enum struct ErrorType : unsigned int {
     EndPoint_Infeasible                               = 7,  // EndPoint_Infeasible 当前任务终点距离边界太近，无法成功规划到此位置的轨迹，请调整目标点角度或位置
     ROAD_GRAPH_ERROR                                  = 8,  // Map_Infeasible 地图文件中，参考路径联通关系数据异常，请后台人员排查问题
     Leaving_Load_Point_Too_Close                      = 9,  // Leaving_Load_Point_Too_Close 驶离装载点距离装载点太近
-    Load_Queue_Point_Unreasonable                     = 10, // Load_Queue_Point_Unreasonable 装载排队点不合理，距离装载点太近且无调整空间
+    Load_Queue_Point_Unreasonable                     = 10, // Load_Queue_Point_Unreasonable 装载点角度不合理
     Unload_Queue_Point_Unreasonable                   = 11, // Unload_Queue_Point_Unreasonable 卸载排队点不合理，距离卸载点太近且无调整空间
     NO_MAP                                            = 12, // 规划库所在容器未加载地图
     ALGORITHM_ERROR_PARAS_PARSE_FAIL                  = 13, // 全局规划算法运行异常-入参解析功能异常
@@ -76,7 +76,6 @@ enum struct ErrorType : unsigned int {
     ALGORITHM_ERROR_TRAJECTORY_VERIFY_DIRECTION_ERROR = 17, // 全局规划算法运行异常-路径校验异常,倒车路段direction错误
     ALGORITHM_ERROR_TRY_CATCH_ERROR                   = 18, // try_catch捕获异常
     Start_Point_Too_Far                               = 19  // Start_Point_Too_Far 任务起点远离所有参考路径，目前支持最大范围100m
-
 };
 
 enum struct PointAttribute : unsigned int {

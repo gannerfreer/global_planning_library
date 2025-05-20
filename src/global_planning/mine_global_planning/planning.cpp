@@ -405,7 +405,7 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
 
     my_optimal_path_.InitBound(start_point_, map_border_, inner_borders_, vehicle_param_);
     vector<_TrajectoryPoint> temp_traj;
-    long long                time_threshold = 0.2 * 1000 * 1000;
+    long long                time_threshold = 0.3 * 1000 * 1000;
     PlanRule                 rule_id_1 = PlanRule::Forward_All_Time, rule_id_2 = PlanRule::Backward_All_Time, rule_id_3 = PlanRule::Start_Front_End_Back;
     bool                     success_flag = false;
     PlanResult               result;
@@ -1174,8 +1174,6 @@ PlanResult Planning::HybirdAStarFitting() {
 
                         return result;
                     }
-
-                   
                 }
                 start_point_offset_distance--;
             }

@@ -134,13 +134,13 @@ inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _Sing
         nearest_dis = numeric_limits<double>::max();
         // cout << "轨迹id：" << pair.first << "轨迹点数量：" << pair.second.trajectory.size() << endl;
         for (unsigned int i = 0; i < pair.second.trajectory.size(); i++) {
-            if (calculateAngleDifference(point.yaw, pair.second.trajectory.at(i).yaw) < 1.58) {
-                temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) + pow(point.y - pair.second.trajectory.at(i).y, 2));
-                if (temp_dis < nearest_dis) {
-                    nearest_dis = temp_dis;
-                    index       = i;
-                }
+            // if (calculateAngleDifference(point.yaw, pair.second.trajectory.at(i).yaw) < 1.58) {
+            temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) + pow(point.y - pair.second.trajectory.at(i).y, 2));
+            if (temp_dis < nearest_dis) {
+                nearest_dis = temp_dis;
+                index       = i;
             }
+            // }
         }
         // cout << "nearest_dis:" << nearest_dis << "            id:" << pair.first << endl;
         if (nearest_dis < radius) {
@@ -200,12 +200,12 @@ inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest
     for (int i = 0; i < traj.trajectory.size(); i++) {
         _TrajectoryPoint temp_point;
         temp_point = traj.trajectory.at(i);
-        if (calculateAngleDifference(point.yaw, temp_point.yaw) < 1.58) {
-            temp_dis = sqrt(pow(point.x - temp_point.x, 2) + pow(point.y - temp_point.y, 2));
-            if (temp_dis < min_distance) {
-                min_distance  = temp_dis;
-                nearest_index = i;
-            }
+        // if (calculateAngleDifference(point.yaw, temp_point.yaw) < 1.58) {
+        temp_dis = sqrt(pow(point.x - temp_point.x, 2) + pow(point.y - temp_point.y, 2));
+        if (temp_dis < min_distance) {
+            min_distance  = temp_dis;
+            nearest_index = i;
+            // }
         }
     }
     nearest_point = traj.trajectory.at(nearest_index);
