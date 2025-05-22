@@ -16,6 +16,7 @@ bool Planning::InitialFunction() {
     all_referencelines_.clear();
     global_path_.clear();
     v_has_calculate_pair_.clear();
+
     task_type_ = TaskType::RESERVED;
 
 
@@ -184,7 +185,8 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
 
 PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id, int max_search_index) {
-    long long    time_threshold    = 0.1 * 1000 * 1000;
+    long long time_threshold = vehicle_param_.plan_time * 1000 * 1000;
+    threadLogger_->info("规划时间：{} ms", vehicle_param_.plan_time * 1000);
     int          counter           = 0;
     bool         success_flag      = false;
     bool         verification_flag = false;
@@ -207,7 +209,7 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
                 verification_flag = true;
             }
 
-            if (PoseVerificationInterface(input_point, temp_end, verification_flag)) { // false表示默认由起点向终点拟合
+            if (PoseVerificationInterface(input_point, temp_end, verification_flag, dubins_straight_distance_)) { // false表示默认由起点向终点拟合
                 threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{},经过dubins曲线预先校验，合格", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id));
                 result = ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id, time_threshold);
                 if (result == PlanResult::Plan_OK) {
@@ -640,7 +642,7 @@ void Planning::StartEndPointProcess() {
 bool Planning::PathOffset() {
     threadLogger_->info("均匀碾压功能开启");
     vector<_TrajectoryPoint> path_before_offset, path_after_offset, input_points;
-    collison_check_.InitParam(vehicle_param_);
+
     map_border_t_.clear();
     vector<Coordinate> vC;
     for (unsigned int i = 0; i < map_border_.size(); ++i) {
@@ -651,6 +653,7 @@ bool Planning::PathOffset() {
         vC.push_back(temp_point);
     }
     map_border_t_.push_back(vC);
+    collison_check_.InitParam(vehicle_param_);
     collison_check_.InitBoundMap(map_border_t_);
 
 
@@ -860,6 +863,10 @@ bool Planning::PathOffset() {
         record_where_is_curvature_exceed.clear();
         path_after_offset.clear();
         path_before_offset = global_path_;
+        threadLogger_->info("path_before_offset = global_path_");
+        for (int i = 0; i < path_before_offset.size(); i++) {
+            threadLogger_->info("i:{} curvature:{} radius:{}", i, path_before_offset.at(i).curvature, 1.0 / fabs(path_before_offset.at(i).curvature));
+        }
 
         vector<pair<int, int>> reverse_section, forward_section;
         int                    start = 0, end = 0;
@@ -1010,10 +1017,20 @@ bool Planning::PathOffset() {
         }
 
         CurvatureCal(path_after_offset);
+        double curvature_threshold = -1;
+        if (vehicle_param_.is_light) {
+            curvature_threshold = tan(vehicle_param_.light_forward_max_steering) / vehicle_param_.wheel_base;
+        }
+        else {
+            curvature_threshold = tan(vehicle_param_.heavy_forward_max_steering) / vehicle_param_.wheel_base;
+        }
+        threadLogger_->info("radius_threshold: {}", 1.0 / fabs(curvature_threshold));
         for (int i = 0; i < path_after_offset.size(); i++) {
-            if (path_after_offset.at(i).curvature > 0.1) {
+            if (1.0 / fabs(path_after_offset.at(i).curvature) < 1.0 / fabs(curvature_threshold) - eps) {
+                if (i > 0) record_where_is_curvature_exceed.insert(i - 1);
                 record_where_is_curvature_exceed.insert(i);
-                threadLogger_->info("偏移后路径点曲率超标 {}", i);
+                if (i < path_after_offset.size() - 1) record_where_is_curvature_exceed.insert(i + 1);
+                threadLogger_->info("偏移后路径点曲率超标 {} radius:{}", i, 1.0 / fabs(path_after_offset.at(i).curvature));
             }
         }
     } while (!record_where_is_curvature_exceed.empty());
@@ -1071,6 +1088,21 @@ PlanResult Planning::HybirdAStarFitting() {
     PlanResult result              = PlanResult::Plan_OK;
     my_optimal_path_.threadLogger_ = threadLogger_;
     my_optimal_path_.InitBound(start_point_, map_border_, inner_borders_, vehicle_param_);
+    map_border_for_dubins_.clear();
+    vector<Coordinate> vC;
+    for (unsigned int i = 0; i < map_border_.size(); ++i) {
+        Coordinate temp_point;
+        temp_point.z = 0;
+        temp_point.x = map_border_.at(i).x;
+        temp_point.y = map_border_.at(i).y;
+        if (hypot(start_point_.x - temp_point.x, start_point_.y - temp_point.y) < 100) {
+            vC.push_back(temp_point);
+        }
+    }
+    threadLogger_->info("map_border_for_dubins_边界大小:{}", vC.size());
+    map_border_for_dubins_.push_back(vC);
+    collison_check_.InitParam(vehicle_param_);
+    collison_check_.InitBoundMap(map_border_for_dubins_);
     // 基于横纵向距离来判断是否进行hybirdA*拟合
     threadLogger_->info("Enter HybirdAStarFitting");
     bool   start_need_fitting     = false;
@@ -1117,6 +1149,7 @@ PlanResult Planning::HybirdAStarFitting() {
         vector<_TrajectoryPoint> temp_traj;
         while (start_point_offset_distance >= 0) {
             my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
+            dubins_straight_distance_               = start_point_offset_distance;
             my_optimal_path_.end_offset_distance_   = end_point_offset_distance;
             threadLogger_->info("起点需要拟合，当前直线延伸配置：{} {}", my_optimal_path_.start_offset_distance_, my_optimal_path_.end_offset_distance_);
             threadLogger_->info("结合特殊点位置，最终确定hybridA*前向搜索截至距离为{}", max_search_index);
@@ -1151,7 +1184,10 @@ PlanResult Planning::HybirdAStarFitting() {
         if (!load_unload_start_flag) {
             start_point_offset_distance = 4;
             while (start_point_offset_distance >= 0) {
-                search_index = 0;
+                my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
+                dubins_straight_distance_               = start_point_offset_distance;
+                my_optimal_path_.end_offset_distance_   = 0;
+                search_index                            = 0;
                 temp_traj.clear();
                 if (JudgeFittingDirection()) {
                     threadLogger_->error("Forward_All_Time模式不行，即将调整拟合规则为 Start_Back_End_Front模式");
@@ -1250,12 +1286,12 @@ bool Planning::IsShortDistance() {
     threadLogger_->info("不是超短距离规划");
     return false;
 }
-bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag) {
+bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag, const int L) {
     threadLogger_->info("PoseVerificationInterface--start_pose:{},{},{}     end_pose:{} ,{},{}", start_pose.x, start_pose.y, start_pose.yaw, end_pose.x, end_pose.y, end_pose.yaw);
     curve::Point dubins_start, dubins_end;
     if (flag == 0) {
-        auto x = start_pose.x + 4.0 * std::cos(start_pose.yaw);
-        auto y = start_pose.y + 4.0 * std::sin(start_pose.yaw);
+        auto x = start_pose.x + L * std::cos(start_pose.yaw);
+        auto y = start_pose.y + L * std::sin(start_pose.yaw);
         dubins_start.SetX(x);
         dubins_start.SetY(y);
         dubins_start.SetAngle(start_pose.yaw / M_PI * 180.0);
@@ -1271,8 +1307,8 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
         dubins_start.SetX(x);
         dubins_start.SetY(y);
         dubins_start.SetAngle(end_pose.yaw / M_PI * 180.0);
-        x = start_pose.x - 4.0 * std::cos(start_pose.yaw);
-        y = start_pose.y - 4.0 * std::sin(start_pose.yaw);
+        x = start_pose.x - L * std::cos(start_pose.yaw);
+        y = start_pose.y - L * std::sin(start_pose.yaw);
         dubins_end.SetX(x);
         dubins_end.SetY(y);
         dubins_end.SetAngle(start_pose.yaw / M_PI * 180.0);
@@ -1281,11 +1317,24 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
         std::cout << "入参有误！！！" << std::endl;
         return false;
     }
-    curve::Dubins             dubis;
+    curve::Dubins             dubins;
     std::vector<curve::Point> path;
-    dubis.SetRadius(vehicle_param_.radious);
-    threadLogger_->info("dubins radius:{}", dubis.GetRadius());
-    return dubis.GetDubinsPath(dubins_start, dubins_end, path);
+    if (vehicle_param_.is_light) {
+        dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.light_forward_max_steering));
+    }
+    else {
+        dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.heavy_forward_max_steering));
+    }
+    threadLogger_->info("dubins_start:({},{},{})   L:{}   dubins radius:{}", dubins_start.GetX(), dubins_start.GetY(), dubins_start.GetAngle(), L, dubins.GetRadius());
+    bool is_reasonable = dubins.GetDubinsPath(dubins_start, dubins_end, path);
+    if (is_reasonable == false) return false;
+    for (int i = 0; i < path.size(); i++) {
+        if (collison_check_.IsVehicleCollision(Point(path.at(i).GetX(), path.at(i).GetY(), 0, path.at(i).GetAngle(), static_cast<GlobalPlanning::MotionDirection>(0)))) {
+            threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, path.at(i).GetX(), path.at(i).GetY(), path.at(i).GetAngle());
+            break;
+        }
+    }
+    return true;
 }
 
 void Planning::CurvatureCal(vector<_TrajectoryPoint>& input_path) {

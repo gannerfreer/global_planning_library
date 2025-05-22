@@ -153,10 +153,14 @@ struct _VehicleParam {
     double safe_margin_bound;
     // 前后左右的安全距离（障碍物）
     double safe_margin_obstacle;
-    // 最小车轮转角
-    double min_steering;
-    // 最大车轮转角
-    double max_steering;
+    // 重载向后开最大车轮转角
+    double heavy_backward_max_steering;
+    // 重载向前开最大车轮转角
+    double heavy_forward_max_steering;
+    // 轻载向前开最大车轮转角
+    double light_forward_max_steering;
+    // 轻载向后开最大车轮转角
+    double light_backward_max_steering;
     // 车辆后轴最小转弯半径(用于RS曲线拟合)
     double radious;
     // 前轮转角离散数量(奇数)
@@ -235,6 +239,7 @@ struct _VehicleParam {
     float           offset_distance          = 0.3;
     float           max_steering_wheel_speed = 0.1396;
     int             sample_num               = 40;
+    float           plan_time                = 0.2;
 };
 
 // 调用全局规划时，需要传入的参数

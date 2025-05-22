@@ -72,6 +72,7 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
         path.emplace_back(pt);
     }
 
+
     if (DubinsPathSelfIntersectCheck(path)) {
         cout << "路径绕圈，不合理" << endl;
         return false;
@@ -222,7 +223,7 @@ bool Dubins::DubinsPathSelfIntersectCheck(std::vector<Point>& path) {
         }
     }
     double percent = sum / 36.0;
-    if (percent < 0.8) {
+    if (percent < 0.5) {
         cout << "路径未构成圈" << endl;
         return false;
     }

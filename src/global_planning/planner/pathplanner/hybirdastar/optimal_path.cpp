@@ -30,7 +30,7 @@ void OptimalPath::InitBound(const _SinglePoint start_point, const vector<_Border
         temp_Coordinate.x = map_border.at(index).x;
         temp_Coordinate.y = map_border.at(index).y;
         temp_Coordinate.z = map_border.at(index).z;
-        if (hypot(start_point.x - temp_Coordinate.x, start_point.y - temp_Coordinate.y) < 200) {
+        if (hypot(start_point.x - temp_Coordinate.x, start_point.y - temp_Coordinate.y) < 100) {
             v_road_outer_bound_.emplace_back(temp_Coordinate);
         }
     }
@@ -42,7 +42,9 @@ void OptimalPath::InitBound(const _SinglePoint start_point, const vector<_Border
             temp_Coordinate.y = inner_borders.at(index).at(j).y;
             temp_Coordinate.z = inner_borders.at(index).at(j).z;
             // cout << "x:" << temp_Coordinate.x << "  y:" << temp_Coordinate.y << "  z:" << temp_Coordinate.z << endl;
-            v_road_inner_bound_.emplace_back(temp_Coordinate);
+            if (hypot(start_point.x - temp_Coordinate.x, start_point.y - temp_Coordinate.y) < 100) {
+                v_road_inner_bound_.emplace_back(temp_Coordinate);
+            }
         }
     }
     threadLogger_->info("v_road_outer_bound_.size():{}", v_road_outer_bound_.size());
@@ -617,14 +619,38 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
         end_d_   = Backward;
     }
     // 计算转向角离散增量
-    const double delta_angle = (m_vehicle_param_.max_steering - m_vehicle_param_.min_steering) / (m_vehicle_param_.angle_discrete_num - 1);
+    double delta_angle1 = 0, delta_angle2 = 0;
+    if (m_vehicle_param_.is_light) {
+        delta_angle1 = 2 * m_vehicle_param_.light_forward_max_steering / (m_vehicle_param_.angle_discrete_num - 1);
+        delta_angle2 = 2 * m_vehicle_param_.light_backward_max_steering / (m_vehicle_param_.angle_discrete_num - 1);
+    }
+    else {
+        delta_angle1 = 2 * m_vehicle_param_.heavy_forward_max_steering / (m_vehicle_param_.angle_discrete_num - 1);
+        delta_angle2 = 2 * m_vehicle_param_.heavy_backward_max_steering / (m_vehicle_param_.angle_discrete_num - 1);
+    }
     for (unsigned int i = 0; i < m_vehicle_param_.angle_discrete_num; ++i) {
-        double   temp_steering = m_vehicle_param_.min_steering + i * delta_angle;
+        double temp_steering1 = 0, temp_steering2 = 0;
+        if (m_vehicle_param_.is_light) {
+            temp_steering1 = -1.0 * m_vehicle_param_.light_forward_max_steering + i * delta_angle1;
+            temp_steering2 = -1.0 * m_vehicle_param_.light_backward_max_steering + i * delta_angle2;
+        }
+        else {
+            temp_steering1 = -1.0 * m_vehicle_param_.heavy_forward_max_steering + i * delta_angle1;
+            temp_steering2 = -1.0 * m_vehicle_param_.heavy_backward_max_steering + i * delta_angle2;
+        }
+
         Vertex3D end_point;
 
         for (MotionDirection direction = start_d_; direction <= end_d_; direction = (MotionDirection)(direction + 1)) {
             // 根据车辆当前点位置、拓展方向和角度，得到拓展终点消息
             utility::CTimeClock start_time_rs_;
+            double              temp_steering = 0;
+            if (MotionDirection::Forward == direction) {
+                temp_steering = temp_steering1;
+            }
+            else {
+                temp_steering = temp_steering2;
+            }
             VehDynam(current_point, direction, temp_steering, end_point);
             time1 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs_);
             end_point.id = Vertex2Hash(end_point); // 计算哈希值索引

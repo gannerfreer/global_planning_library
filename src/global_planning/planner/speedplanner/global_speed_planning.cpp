@@ -381,38 +381,43 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory)
 
 
 void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
+    vector<_TrajectoryPoint> trajectory_copy = trajectory;
     // 确保起始和终止速度为0
-    trajectory.front().speed_limit = 0.0;
-    trajectory.back().speed_limit  = 0.0;
-    trajectory.front().speed       = 0.0;
-    trajectory.back().speed        = 0.0;
+    trajectory_copy.front().speed_limit = 0.0;
+    trajectory_copy.back().speed_limit  = 0.0;
+    trajectory_copy.front().speed       = 0.0;
+    trajectory_copy.back().speed        = 0.0;
 
     // 在方向改变的点设置速度限制为0（换档点）
-    for (size_t i = 1; i < trajectory.size(); ++i) {
-        if (trajectory[i].direction != trajectory[i - 1].direction) {
+    for (size_t i = 1; i < trajectory_copy.size(); ++i) {
+        if (trajectory_copy[i].direction != trajectory_copy[i - 1].direction) {
             threadLogger_->info("planSpeed-换档点");
-            trajectory[i - 1].speed_limit = 0.0;
+            trajectory_copy[i - 1].speed_limit = 0.0;
         }
     }
 
     // 前向扫描：考虑加速度限制和速度限制
-    for (size_t i = 1; i < trajectory.size(); ++i) {
-        double ds = trajectory[i].distance - trajectory[i - 1].distance;
+    for (size_t i = 1; i < trajectory_copy.size(); ++i) {
+        double ds = trajectory_copy[i].distance - trajectory_copy[i - 1].distance;
         // 根据方向选择加速度限制
-        double current_max_acc    = trajectory[i].direction == 0 ? max_acceleration : max_acceleration * 0.5;
-        double max_possible_speed = std::sqrt(trajectory[i - 1].speed * trajectory[i - 1].speed + 2 * current_max_acc * ds);
-        trajectory[i].speed       = std::min(max_possible_speed, trajectory[i].speed_limit);
-        // threadLogger_->info("i:{} speed:{}", i, trajectory[i].speed);
+        double current_max_acc    = trajectory_copy[i].direction == 0 ? max_acceleration : max_acceleration * 0.5;
+        double max_possible_speed = std::sqrt(trajectory_copy[i - 1].speed * trajectory_copy[i - 1].speed + 2 * current_max_acc * ds);
+        trajectory_copy[i].speed  = std::min(max_possible_speed, trajectory_copy[i].speed_limit);
+        // threadLogger_->info("i:{} speed:{}", i, trajectory_copy[i].speed);
     }
 
     // 后向扫描：确保能够及时减速到0
-    for (size_t i = trajectory.size() - 2; i > 0; --i) {
-        double ds = trajectory[i + 1].distance - trajectory[i].distance;
+    for (size_t i = trajectory_copy.size() - 2; i > 0; --i) {
+        double ds = trajectory_copy[i + 1].distance - trajectory_copy[i].distance;
         // 根据方向选择减速度限制
-        double current_min_acc    = trajectory[i].direction == 0 ? min_acceleration * 0.5 : min_acceleration * 0.5;
-        double max_possible_speed = std::sqrt(trajectory[i + 1].speed * trajectory[i + 1].speed + 2 * std::abs(current_min_acc) * ds);
-        trajectory[i].speed       = std::min(trajectory[i].speed, max_possible_speed);
-        // threadLogger_->info("i:{} speed:{}", i, trajectory[i].speed);
+        double current_min_acc    = trajectory_copy[i].direction == 0 ? min_acceleration * 0.5 : min_acceleration * 0.5;
+        double max_possible_speed = std::sqrt(trajectory_copy[i + 1].speed * trajectory_copy[i + 1].speed + 2 * std::abs(current_min_acc) * ds);
+        trajectory_copy[i].speed  = std::min(trajectory_copy[i].speed, max_possible_speed);
+        // threadLogger_->info("i:{} speed:{}", i, trajectory_copy[i].speed);
+    }
+
+    for (int i = 0; i < trajectory_copy.size(); i++) {
+        trajectory.at(i).speed = trajectory_copy.at(i).speed;
     }
 }
 void GlobalSpeedPlanning::AdjustSpeedLimit(vector<_TrajectoryPoint>& trajectory) {

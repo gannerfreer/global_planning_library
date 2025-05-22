@@ -29,7 +29,7 @@ class Point {
     }
     /// 两点相加
     inline Point operator+(const Point& point) const {
-        return Point(x + point.x, y + point.y, angle + point.angle);
+        return Point(x + point.x, y + point.y, angle);
     }
     /// 两点相减
     inline Point operator-(const Point& point) const {

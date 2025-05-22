@@ -123,7 +123,7 @@ class Planning {
     bool                 JudgeFittingDirection();
     bool                 IsShortDistance();
     bool                 HasSearched(int start, int end);
-    bool                 PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag);
+    bool                 PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag, const int L);
     void                 CurvatureCal(vector<_TrajectoryPoint>& input_path);
     void                 SmoothPath(vector<_TrajectoryPoint>& input_path);
     void                 FillErrorCode(PlanResult result);
@@ -136,7 +136,7 @@ class Planning {
 
     vector<vector<double>>       road_directed_graph_; // 路段有向图
     vector<_BorderPoint>         map_border_;          // 地图外边界
-    Bound                        map_border_t_;
+    Bound                        map_border_t_, map_border_for_dubins_;
     vector<vector<_BorderPoint>> inner_borders_;      // 内边界
     map<int, _SingleTraj>        all_referencelines_; // 所有可供无人车行使的参考路段
     vector<_TrajectoryPoint>     global_path_;        // 全局路径
@@ -157,6 +157,7 @@ class Planning {
     shared_ptr<spdlog::logger> threadLogger_;
     string                     vehicle_code_;
     string                     key_;
+    int dubins_straight_distance_=0;
 
 #ifdef SKIP_HEADER
 #else

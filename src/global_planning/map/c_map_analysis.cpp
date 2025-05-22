@@ -333,20 +333,36 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 wheel_base ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("max_steering")) {
-                veh_start_end.veh_param.max_steering = val["max_steering"].GetDouble() * M_PI / 180.0;
+            if (val.HasMember("heavy_forward_max_steering")) {
+                veh_start_end.veh_param.heavy_forward_max_steering = val["heavy_forward_max_steering"].GetDouble() * M_PI / 180.0;
             }
             else {
-                veh_start_end.veh_param.max_steering = 28;
-                cout << "无法找到车参 max_steering ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.heavy_forward_max_steering = 27.24 * M_PI / 180.0;
+                cout << "无法找到车参 heavy_forward_max_steering ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("min_steering")) {
-                veh_start_end.veh_param.min_steering = val["min_steering"].GetDouble() * M_PI / 180.0;
+            if (val.HasMember("heavy_backward_max_steering")) {
+                veh_start_end.veh_param.heavy_backward_max_steering = val["heavy_backward_max_steering"].GetDouble() * M_PI / 180.0;
             }
             else {
-                veh_start_end.veh_param.min_steering = -28;
-                cout << "无法找到车参 min_steering ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.heavy_backward_max_steering = 22.39 * M_PI / 180.0;
+                cout << "无法找到车参 heavy_backward_max_steering ，即将赋予默认值" << endl;
+            }
+
+            if (val.HasMember("light_backward_max_steering")) {
+                veh_start_end.veh_param.light_backward_max_steering = val["light_backward_max_steering"].GetDouble() * M_PI / 180.0;
+            }
+            else {
+                veh_start_end.veh_param.light_backward_max_steering = 27.24 * M_PI / 180.0;
+                cout << "无法找到车参 light_backward_max_steering ，即将赋予默认值" << endl;
+            }
+
+            if (val.HasMember("light_forward_max_steering")) {
+                veh_start_end.veh_param.light_forward_max_steering = val["light_forward_max_steering"].GetDouble() * M_PI / 180.0;
+            }
+            else {
+                veh_start_end.veh_param.light_forward_max_steering = 30.63 * M_PI / 180.0;
+                cout << "无法找到车参 light_forward_max_steering ，即将赋予默认值" << endl;
             }
 
             if (val.HasMember("safe_margin_bound")) {
@@ -720,6 +736,14 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
             else {
                 cout << "无法找到车参 sample_num ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.sample_num = 8;
+            }
+
+            if (val.HasMember("plan_time") && val["plan_time"].IsNumber()) {
+                veh_start_end.veh_param.plan_time = val["plan_time"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 plan_time ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.plan_time = 0.2;
             }
         }
     }
