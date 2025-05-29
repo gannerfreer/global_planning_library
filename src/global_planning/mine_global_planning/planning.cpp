@@ -1191,9 +1191,12 @@ PlanResult Planning::HybirdAStarFitting() {
                 threadLogger_->info("Path3 拟合成功");
                 return PlanResult::Plan_OK;
             }
+            else if (IsPath2Success(path2) == PlanResult::Plan_OK) {
+                threadLogger_->info("Path 拟合成功");
+            }
             else {
-                threadLogger_->info("启动最后的path2拟合");
-                auto result = IsPath2Success(path2);
+                threadLogger_->info("启动最后的path1拟合，策略更换");
+                auto result = IsPath4Success(path1);
                 return result;
             }
         }
@@ -1308,10 +1311,11 @@ bool Planning::JudgeFittingDirection(vector<_TrajectoryPoint>& input_path) {
             return true;
         }
         else {
-            threadLogger_->info("倒车起步 point:({},{})  input_path.at( 10):({},{},{})  lon_dis:{}", start_point_.x, start_point_.y, input_path.at(10).x, input_path.at(10).y, input_path.at(10).yaw / M_PI * 180.0, lon_dis);
+            threadLogger_->info("倒车起步 point:({},{})  input_path.at(1):({},{},{})  lon_dis:{}", start_point_.x, start_point_.y, input_path.at(1).x, input_path.at(1).y, input_path.at(1).yaw / M_PI * 180.0, lon_dis);
             return false;
         }
     }
+
     return true;
 }
 
@@ -1769,6 +1773,54 @@ PlanResult Planning::IsPath3Success(vector<_TrajectoryPoint>& input_path) {
             if (result == PlanResult::Plan_OK) {
                 // 成功规划出路径
                 global_path_ = input_path;
+                global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
+                global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                return result;
+            }
+        }
+        //   如果代码运行到这里,表明起点直线延伸太长了，得降低直线延长距离
+        start_point_offset_distance--;
+    }
+    return result;
+}
+PlanResult Planning::IsPath4Success(vector<_TrajectoryPoint>& input_path) {
+    threadLogger_->info("");
+    threadLogger_->info("enter IsPath4Success function");
+    PlanResult result           = PlanResult::Plan_OK;
+    int        max_search_index = std::numeric_limits<int>::max();
+    max_search_index            = std::min(max_search_index - 10, (int)input_path.size() - 1);
+    if (max_search_index <= 0) {
+        max_search_index = 0;
+    }
+    int start_point_offset_distance = 4;
+
+    int                      end_point_offset_distance = 0;
+    int                      search_index              = 0;
+    vector<_TrajectoryPoint> temp_traj;
+    while (start_point_offset_distance >= 0) {
+        my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
+        dubins_straight_distance_               = start_point_offset_distance;
+        my_optimal_path_.end_offset_distance_   = end_point_offset_distance;
+        threadLogger_->info("起点需要拟合，当前直线延伸配置：{} {}", my_optimal_path_.start_offset_distance_, my_optimal_path_.end_offset_distance_);
+        threadLogger_->info("结合特殊点位置，最终确定hybridA*前向搜索截至距离为{}", max_search_index);
+        temp_traj.clear();
+        search_index = 0;
+        // 判断拟合模式，JudgeFittingDirection()返回true，表示车辆在参考路径后方，需要先采用Bcack_Fitting模式，不行再采用Start_Front_End_Back模式，反之同理
+        if (JudgeFittingDirection(input_path)) {
+            threadLogger_->info("车头位于参考路径后方，这种情况下采用 Start_Back_End_Front 模式");
+            result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front, max_search_index, input_path);
+            if (result == PlanResult::Plan_OK) {
+                // 成功规划出路径
+                global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
+                global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                return result;
+            }
+        }
+        else {
+            threadLogger_->info("车头位于参考路径前方，这种情况下采用 Start_Front_End_Back 模式");
+            result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Front_End_Back, max_search_index, input_path);
+            if (result == PlanResult::Plan_OK) {
+                // 成功规划出路径
                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
                 return result;

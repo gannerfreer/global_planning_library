@@ -131,6 +131,7 @@ class Planning {
     PlanResult           IsPath3Success(vector<_TrajectoryPoint>& input_path);
     PlanResult           IsPath2Success(vector<_TrajectoryPoint>& input_path);
     PlanResult           IsPath1Success(vector<_TrajectoryPoint>& input_path);
+    PlanResult           IsPath4Success(vector<_TrajectoryPoint>& input_path);
     bool                 IsForwardAndBackwardReferencePath();
 
   public:
