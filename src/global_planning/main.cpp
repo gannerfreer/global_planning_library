@@ -45,12 +45,12 @@ void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::Const
 
 
 void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-    // end_point.x   = msg->pose.position.x;
-    // end_point.y   = msg->pose.position.y;
-    // end_point.yaw = tf::getYaw(msg->pose.orientation);
-    end_point.x   = -89.73190293681377 - x_o_;
-    end_point.y   = -113.4785600086 - y_o_;
-    end_point.yaw = 133.16681854952625 / 180.0 * M_PI;
+    end_point.x   = msg->pose.position.x;
+    end_point.y   = msg->pose.position.y;
+    end_point.yaw = tf::getYaw(msg->pose.orientation);
+    // end_point.x   = -89.73190293681377 - x_o_;
+    // end_point.y   = -113.4785600086 - y_o_;
+    // end_point.yaw = 133.16681854952625 / 180.0 * M_PI;
 
 
     is_receive_end = true;

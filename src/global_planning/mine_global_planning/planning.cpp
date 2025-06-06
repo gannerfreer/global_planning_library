@@ -1201,6 +1201,7 @@ PlanResult Planning::HybirdAStarFitting() {
             }
         }
         else {
+            // 非特殊构型参考路径采用以下处理逻辑
             int max_search_index = std::numeric_limits<int>::max();
             // 需要先找到global_path_中排队点、过磅、洗车点的具体索引，hybrida*做路径拟合不能越过这些点
             for (int i = 0; i < global_path_.size(); i++) {
@@ -1304,17 +1305,49 @@ PlanResult Planning::HybirdAStarFitting() {
     return result;
 }
 bool Planning::JudgeFittingDirection(vector<_TrajectoryPoint>& input_path) {
-    if (1 < input_path.size()) {
-        double lon_dis = (start_point_.x - input_path.at(1).x) * cos(input_path.at(1).yaw) + (start_point_.y - input_path.at(1).y) * sin(input_path.at(1).yaw);
-        if (lon_dis <= 0) {
-            threadLogger_->info("lon_dis:{} 正向起步", lon_dis);
-            return true;
+    // if (1 < input_path.size()) {
+    //     double lon_dis = (start_point_.x - input_path.at(1).x) * cos(input_path.at(1).yaw) + (start_point_.y - input_path.at(1).y) * sin(input_path.at(1).yaw);
+    //     if (lon_dis <= 0) {
+    //         threadLogger_->info("lon_dis:{} 正向起步", lon_dis);
+    //         return true;
+    //     }
+    //     else {
+    //         threadLogger_->info("倒车起步 point:({},{})  input_path.at(1):({},{},{})  lon_dis:{}", start_point_.x, start_point_.y, input_path.at(1).x, input_path.at(1).y, input_path.at(1).yaw / M_PI * 180.0, lon_dis);
+    //         return false;
+    //     }
+    // }
+    // return true;
+
+    // 采用dubins预校验来判断start_point_到input_path的拟合逻辑
+
+
+    int  start_point_offset_distance = 4;
+    bool is_reasonable               = true;
+    int  max_sample_num              = min(int(input_path.size()), 40);
+    while (start_point_offset_distance >= 0) {
+        for (int i = 0; i < max_sample_num; i++) {
+            // 先测试false，即正向拟合是否可以
+            _SinglePoint temp_end;
+            temp_end.x    = input_path.at(i).x;
+            temp_end.y    = input_path.at(i).y;
+            temp_end.z    = input_path.at(i).z;
+            temp_end.yaw  = input_path.at(i).yaw;
+            is_reasonable = PoseVerificationInterface(start_point_, temp_end, false, start_point_offset_distance);
+            if (is_reasonable) {
+                threadLogger_->info("第 {} 个点正向起步", i);
+                return true;
+            }
+            else {
+                is_reasonable = PoseVerificationInterface(start_point_, temp_end, true, start_point_offset_distance);
+                if (is_reasonable) {
+                    threadLogger_->info("第 {} 个点倒车起步", i);
+                    return false;
+                }
+            }
         }
-        else {
-            threadLogger_->info("倒车起步 point:({},{})  input_path.at(1):({},{},{})  lon_dis:{}", start_point_.x, start_point_.y, input_path.at(1).x, input_path.at(1).y, input_path.at(1).yaw / M_PI * 180.0, lon_dis);
-            return false;
-        }
+        start_point_offset_distance--;
     }
+
 
     return true;
 }
@@ -1404,7 +1437,10 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
     }
     threadLogger_->info("dubins_start:({},{},{})   L:{}   dubins radius:{}", dubins_start.GetX(), dubins_start.GetY(), dubins_start.GetAngle(), L, dubins.GetRadius());
     bool is_reasonable = dubins.GetDubinsPath(dubins_start, dubins_end, path);
-    if (is_reasonable == false) return false;
+    if (is_reasonable == false) {
+        threadLogger_->info("第 {} 个路径点({},{},{})dubins预校验失败", i, path.at(i).GetX(), path.at(i).GetY(), path.at(i).GetAngle());
+        return false;
+    }
     for (int i = 0; i < path.size(); i++) {
         if (collison_check_.IsVehicleCollision(Point(path.at(i).GetX(), path.at(i).GetY(), 0, path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(0)))) {
             threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, path.at(i).GetX(), path.at(i).GetY(), path.at(i).GetAngle());
