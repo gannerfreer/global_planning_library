@@ -47,6 +47,16 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
     auto opt_path = C[min_length_index];
     auto type     = dubins_path_type_[min_length_index];
 
+    if (min_length_index == 0 || min_length_index == 1 || min_length_index == 2 || min_length_index == 3) {
+        if (std::get<1>(opt_path)*radius_ <15) {
+            cout<<"路径长度小于15m，不合理"<<endl;
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+
     std::vector<Point> cp;
     cp.emplace_back(0, 0, start_pose.GetAngle());
     cp.emplace_back(CalNextPoint(std::get<0>(opt_path), cp[0].GetX(), cp[0].GetY(), cp[0].GetAngle(), type[0]));
@@ -207,6 +217,7 @@ bool Dubins::DubinsPathSelfIntersectCheck(std::vector<Point>& path) {
     // 通过判断yaw的变化了分析是否画圈
     // 判断方法，设置36个if else，36个标志位，如果超过24个标志为被置为true，即被判定为绕圈
     cout << "进入检测绕圈函数" << endl;
+
     vector<int> vec(36, 0);
     int         index = 0;
     for (int i = 0; i < path.size(); i++) {
@@ -223,6 +234,7 @@ bool Dubins::DubinsPathSelfIntersectCheck(std::vector<Point>& path) {
         }
     }
     double percent = sum / 36.0;
+    cout << "percent: " << percent << endl;
     if (percent < 0.5) {
         cout << "路径未构成圈" << endl;
         return false;

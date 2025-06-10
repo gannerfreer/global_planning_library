@@ -240,6 +240,9 @@ struct _VehicleParam {
     float           max_steering_wheel_speed = 0.1396;
     int             sample_num               = 40;
     float           plan_time                = 0.2;
+    float           w_curvature              = 1.0;
+    float           w_length                 = 0.0;
+    float           dis_threshold            = 2.0;
 };
 
 // 调用全局规划时，需要传入的参数

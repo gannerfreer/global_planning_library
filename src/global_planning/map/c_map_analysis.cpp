@@ -745,6 +745,30 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 plan_time ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.plan_time = 0.2;
             }
+
+            if (val.HasMember("w_curvature") && val["w_curvature"].IsNumber()) {
+                veh_start_end.veh_param.w_curvature = val["w_curvature"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 w_curvature ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_curvature = 1.0;
+            }
+
+            if (val.HasMember("w_length") && val["w_length"].IsNumber()) {
+                veh_start_end.veh_param.w_length = val["w_length"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 w_length ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_length = 0.0;
+            }
+
+            if (val.HasMember("dis_threshold") && val["dis_threshold"].IsNumber()) {
+                veh_start_end.veh_param.dis_threshold = val["dis_threshold"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 dis_threshold ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.dis_threshold = 2.0;
+            }
         }
     }
     vehicle_param = veh_start_end.veh_param;

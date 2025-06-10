@@ -50,7 +50,10 @@
     "L1": 1,
     "offset_distance": 0.25,
     "max_steering_wheel_speed": 0.174,
-    "sample_num": 30,
-    "plan_time": 0.2
+    "sample_num": 40,
+    "plan_time": 0.2,
+    "w_curvature": 1.0,
+    "w_length": 0.001,
+    "dis_threshold": 2.0
   }
 }

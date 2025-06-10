@@ -42,8 +42,7 @@ class Planning {
     bool ApplyHibridAStar(_SinglePoint s_point, _SinglePoint e_point, vector<_TrajectoryPoint>& traj, int plan_rule_id);
 
 
-    PlanResult ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id, int max_search_index, vector<_TrajectoryPoint>& input_path);
-
+    PlanResult ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id, int max_search_index, double start_point_offset_distance, vector<_TrajectoryPoint>& input_path);
     /**
      * @brief
      *
@@ -123,7 +122,7 @@ class Planning {
     bool                 JudgeFittingDirection(vector<_TrajectoryPoint>& input_path);
     bool                 IsShortDistance();
     bool                 HasSearched(int start, int end);
-    bool                 PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag, const int L);
+    bool                 PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag, const int L, std::vector<curve::Point>& output_path);
     void                 CurvatureCal(vector<_TrajectoryPoint>& input_path);
     void                 SmoothPath(vector<_TrajectoryPoint>& input_path);
     void                 FillErrorCode(PlanResult result);
