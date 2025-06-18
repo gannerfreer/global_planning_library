@@ -124,6 +124,8 @@ class Dubins {
      */
     Point CalNextPoint(float v, float x, float y, float theta, DubinsPathSegmentType type);
     bool  DubinsPathSelfIntersectCheck(std::vector<Point>& path);
+    public: 
+    std::shared_ptr<spdlog::logger> threadLogger_;
 
   private:
     const DubinsPathSegmentType dubins_path_type_[6][3] = {

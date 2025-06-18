@@ -1383,38 +1383,15 @@ bool Planning::JudgeFittingDirection(vector<_TrajectoryPoint>& input_path) {
     // }
     // return true;
 
-    // 采用dubins预校验来判断start_point_到input_path的拟合逻辑
-    threadLogger_->info("JudgeFittingDirection 开始");
-    std::vector<curve::Point> dubins_path;
-    int                       start_point_offset_distance = 4;
-    bool                      is_reasonable               = true;
-    int                       max_sample_num              = min(int(input_path.size()), 40);
-    threadLogger_->info("max_sample_num:{}", max_sample_num);
-    while (start_point_offset_distance >= 0) {
-        for (int i = 0; i < max_sample_num; i++) {
-            // 先测试false，即正向拟合是否可以
-            _SinglePoint temp_end;
-            temp_end.x    = input_path.at(i).x;
-            temp_end.y    = input_path.at(i).y;
-            temp_end.z    = input_path.at(i).z;
-            temp_end.yaw  = input_path.at(i).yaw;
-            is_reasonable = PoseVerificationInterface(start_point_, temp_end, false, start_point_offset_distance, dubins_path);
-            if (is_reasonable) {
-                threadLogger_->info("第 {} 个点正向起步", i);
-                return true;
-            }
-            else {
-                threadLogger_->info("第 {} 个点正向起步失败", i);
-                is_reasonable = PoseVerificationInterface(start_point_, temp_end, true, start_point_offset_distance, dubins_path);
-                if (is_reasonable) {
-                    threadLogger_->info("第 {} 个点倒车起步", i);
-                    return false;
-                }
-            }
-        }
-        start_point_offset_distance--;
+   
+   
+    if(input_path.front().direction==0){
+        threadLogger_->info("正向起步");
+        return true;
+    }else{
+        threadLogger_->info("倒车起步");
+        return false;
     }
-    threadLogger_->info("JudgeFittingDirection 结束");
 
 
     return true;
@@ -1497,6 +1474,7 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
         return false;
     }
     curve::Dubins dubins;
+    dubins.threadLogger_ = threadLogger_;
     if (vehicle_param_.is_light) {
         dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.light_forward_max_steering));
     }

@@ -98,3 +98,15 @@ with open('../smoother/path_opti.h', 'r') as file, tempfile.NamedTemporaryFile(m
         if 'threadLogger_' not in line:  
             tmpfile.write(line)  
 os.rename(tmpfile.name, '../smoother/path_opti.h') 
+
+with open('../planner/pathplanner/dubins/dubins.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../planner/pathplanner/dubins/dubins.cpp') 
+
+with open('../planner/pathplanner/dubins/dubins.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../planner/pathplanner/dubins/dubins.h') 
