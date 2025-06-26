@@ -132,6 +132,8 @@ class Planning {
     PlanResult           IsPath1Success(vector<_TrajectoryPoint>& input_path);
     PlanResult           IsPath4Success(vector<_TrajectoryPoint>& input_path);
     bool                 IsForwardAndBackwardReferencePath();
+    // 检查全局路径是否与所有地图边界发生碰撞
+    bool                 IsGlobalPathCollision();
 
   public:
     _SinglePoint start_point_,

@@ -8,7 +8,7 @@
     "grid_angle": 1,
     "wheel_base": 5.15,
     "hybridastar_step_length": 1,
-    "heavy_forward_max_steering": 27.24,
+    "heavy_forward_max_steering": 25,
     "heavy_backward_max_steering": 22.39,
     "light_forward_max_steering": 30.63,
     "light_backward_max_steering": 27.24,

@@ -131,21 +131,21 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
 
     // 对进行速度规划前的路径基于梯度下降进行平滑
-    std::ofstream file_out;
-    file_out.open("total_path_smooth_before.txt");
-    for (size_t index = 0; index < global_path_.size(); index++) {
-        file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("total_path_smooth_before.txt");
+    // for (size_t index = 0; index < global_path_.size(); index++) {
+    //     file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
+    // }
+    // file_out.close();
     SmoothPath(global_path_);
     // 计算累计s
     Helper::CalDistance(global_path_);
     CurvatureCal(global_path_);
-    file_out.open("total_path_smooth_after.txt");
-    for (size_t index = 0; index < global_path_.size(); index++) {
-        file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
-    }
-    file_out.close();
+    // file_out.open("total_path_smooth_after.txt");
+    // for (size_t index = 0; index < global_path_.size(); index++) {
+    //     file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
+    // }
+    // file_out.close();
 
     threadLogger_->info("执行均匀碾压后路径点曲率");
     for (auto i : global_path_) {
@@ -195,6 +195,13 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     Helper::calculateAcceleration(global_path_);
     threadLogger_->info("CalAcc");
 
+    // 检查全局路径是否与地图边界发生碰撞
+    // if (!IsGlobalPathCollision()) {
+    //     threadLogger_->error("全局路径与地图边界发生碰撞，放弃此次规划结果");
+    //     error_type_ = ErrorType::ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_COLLISION;
+    //     return;
+    // }
+
     path = global_path_;
     threadLogger_->info("规划成功，即将返回轨迹  轨迹总长:{}", global_path_.size());
     return;
@@ -208,20 +215,20 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
     _SinglePoint               temp_start, temp_end;
     int                        cal = 0;
     PlanResult                 result;
-    std::vector<curve::Point>  dubins_path;
+    std::vector<curve::Point>  dubins_path, total_dubins_path;
     curve::Point               xip2, xip1, xi, xim1, xim2;
     double                     score = 0.0;
-    std::multimap<double, int> mul_score_index; // 存储dubins预拟合的路径得分和对应的拟合点在global_path_中的index
-    double                     w_curvature = 0.0, w_length = 0.0;
+    std::multimap<double, int> mul_score_index;                                                                                                                                             // 存储dubins预拟合的路径得分和对应的拟合点在global_path_中的index
     double                     lat_dis = fabs((input_point.y - input_path.front().y) * cos(input_path.front().yaw) - (input_point.x - input_path.front().x) * sin(input_path.front().yaw)); // 横向距离先不区分左正右负
 
-    if (fabs(lat_dis) >= vehicle_param_.dis_threshold) {
-        threadLogger_->info("横向距离大于{}m，加大曲率权重", vehicle_param_.dis_threshold);
-    }
-    else {
-        threadLogger_->info("横向距离小于{}m，加大长度权重", vehicle_param_.dis_threshold);
-        vehicle_param_.w_curvature = 1.0;
-        vehicle_param_.w_length    = 0.0;
+    std::vector<curve::Point> temp_path;
+    temp_path.clear();
+    // 将input_path拷贝一份到temp_path
+    curve::Point temp_point;
+    for (int i = 0; i < min((int)input_path.size(), vehicle_param_.sample_num + 10); i++) {
+        temp_point.SetX(input_path[i].x);
+        temp_point.SetY(input_path[i].y);
+        temp_path.push_back(temp_point);
     }
     max_search_index = min(max_search_index, vehicle_param_.sample_num);
     for (int i = 0; i <= max_search_index; i += 1) {
@@ -242,34 +249,34 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
 
             // 如果flag==0，则表示默认由起点向终点拟合，否则由终点向起点拟合
             if (PoseVerificationInterface(input_point, temp_end, verification_flag, start_point_offset_distance, dubins_path)) {
+                // // 将dubins_path保存到txt文件中，文件名后缀用i
+                // std::ofstream outfile("dubins_path_" + std::to_string(i) + ".txt");
+                // for (int i = 0; i < dubins_path.size(); i++) {
+                //     outfile << dubins_path[i].GetX() << " " << dubins_path[i].GetY() << std::endl;
+                // }
+                // outfile.close();
+
                 threadLogger_->info("索引 {} 拟合成功 dubins_path.size():{}", i, dubins_path.size());
-                score = 0.0;
-
-                // 计算total_path的得分,基于平滑度打分
-                double score = 0.0;
-                double a, b = 0.0;
-
-                for (int i = 2; i < dubins_path.size() - 2; i++) {
-                    xip2 = dubins_path.at(i - 2);
-                    xip1 = dubins_path.at(i - 1);
-                    xi   = dubins_path.at(i);
-                    xim1 = dubins_path.at(i + 1);
-                    xim2 = dubins_path.at(i + 2);
-                    a    = 0.1 * (xip2.GetX() - 4 * xip1.GetX() + 6 * xi.GetX() - 4 * xim1.GetX() + xim2.GetX());
-                    b    = 0.1 * (xip2.GetY() - 4 * xip1.GetY() + 6 * xi.GetY() - 4 * xim1.GetY() + xim2.GetY());
-                    score += sqrt(a * a + b * b);
-                }
+                total_dubins_path.clear();
+                total_dubins_path = dubins_path;
+                total_dubins_path.insert(total_dubins_path.end(), temp_path.begin() + i + 1, temp_path.end());
+                // 计算total_dubins_path的累积长度
                 double total_length = 0;
-                for (int i = 1; i < dubins_path.size(); i++) {
-                    total_length += std::hypot(dubins_path[i].GetX() - dubins_path[i - 1].GetX(), dubins_path[i].GetY() - dubins_path[i - 1].GetY());
+                for (int i = 1; i < total_dubins_path.size(); i++) {
+                    total_length += std::hypot(total_dubins_path[i].GetX() - total_dubins_path[i - 1].GetX(), total_dubins_path[i].GetY() - total_dubins_path[i - 1].GetY());
                 }
-                score           = score / total_length;
-                double result_a = score;
-                double result_b = total_length;
+                if (fabs(lat_dis) >= vehicle_param_.dis_threshold) {
+                    
+                    score = total_length;
+                }
+                else {
+                    threadLogger_->info("横向距离小于{} m，采用优先从最近点切入参考路径策略", vehicle_param_.dis_threshold);
+                    score = 1.0 / total_length;
+                }
 
-                score = result_a * vehicle_param_.w_curvature + result_b * vehicle_param_.w_length;
                 mul_score_index.insert({score, i});
-                threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{},经过dubins曲线预先校验，合格,得分：{} {} {}", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id), result_a * vehicle_param_.w_curvature, result_b * vehicle_param_.w_length, score);
+                threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{},经过dubins曲线预先校验，合格,得分：{} ", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id), score);
+
             }
             else {
                 threadLogger_->info("索引 {} dubins拟合失败", i);
@@ -299,12 +306,7 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
     for (auto it = mul_score_index.begin(); it != mul_score_index.end(); ++it) {
         threadLogger_->info("score:{} index:{}", it->first, it->second);
     }
-    //将mul_score_index保存到txt中
-    std::ofstream outfile("mul_score_index.txt");
-    for (auto it = mul_score_index.begin(); it != mul_score_index.end(); ++it) {
-        outfile << it->first << " " << it->second << std::endl;
-    }
-    outfile.close();
+
 
     // 从mul_score_index中挑选出得分最低的轨迹，并获得对应的index
     double best_score;
@@ -1383,12 +1385,12 @@ bool Planning::JudgeFittingDirection(vector<_TrajectoryPoint>& input_path) {
     // }
     // return true;
 
-   
-   
-    if(input_path.front().direction==0){
+
+    if (input_path.front().direction == 0) {
         threadLogger_->info("正向起步");
         return true;
-    }else{
+    }
+    else {
         threadLogger_->info("倒车起步");
         return false;
     }
@@ -1486,17 +1488,17 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
     // 将path和直线延长的部分拼接到一起
     curve::Point temp_point;
     if (flag == 0) {
-        for (int i = L - 1; i >= 0; i--) {
-            temp_point.SetX(dubins_start.GetX() + i * std::cos(start_pose.yaw));
-            temp_point.SetY(dubins_start.GetY() + i * std::sin(start_pose.yaw));
+        for (int i = 1; i <= L; i++) {
+            temp_point.SetX(dubins_start.GetX() - i * std::cos(start_pose.yaw));
+            temp_point.SetY(dubins_start.GetY() - i * std::sin(start_pose.yaw));
             temp_point.SetAngle(start_pose.yaw / M_PI * 180.0);
             output_path.insert(output_path.begin(), temp_point);
         }
     }
     else {
-        for (int i = L - 1; i >= 0; i--) {
-            temp_point.SetX(dubins_end.GetX() - i * std::cos(start_pose.yaw));
-            temp_point.SetY(dubins_end.GetY() - i * std::sin(start_pose.yaw));
+        for (int i = 1; i <= L; i++) {
+            temp_point.SetX(dubins_end.GetX() + i * std::cos(start_pose.yaw));
+            temp_point.SetY(dubins_end.GetY() + i * std::sin(start_pose.yaw));
             temp_point.SetAngle(dubins_end.GetAngle() / M_PI * 180.0);
             output_path.push_back(temp_point);
         }
@@ -1516,6 +1518,7 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
             return false;
         }
     }
+    threadLogger_->info("dubins碰撞检测成功");
     return true;
 }
 
@@ -1561,6 +1564,8 @@ void Planning::CurvatureCal(vector<_TrajectoryPoint>& input_path) {
         input_path.back().curvature  = input_path.at(input_path.size() - 2).curvature;
     }
 }
+
+
 void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
     // 得到节点和固定点索引
     vector<_TrajectoryPoint>    origin_path = input_path;
@@ -1934,4 +1939,35 @@ PlanResult Planning::IsPath4Success(vector<_TrajectoryPoint>& input_path) {
         start_point_offset_distance--;
     }
     return result;
+}
+
+// 检查全局路径是否与所有地图边界发生碰撞
+bool Planning::IsGlobalPathCollision() {
+    // 1. 构造Bound类型边界
+    Bound all_map_borders;
+    std::vector<Coordinate> border_coords;
+    for (const auto& bp : map_border_) {
+        Coordinate temp_point;
+        temp_point.x = bp.x;
+        temp_point.y = bp.y;
+        temp_point.z = bp.z;
+        border_coords.push_back(temp_point);
+    }
+    all_map_borders.push_back(border_coords);
+
+    // 2. 初始化碰撞检测参数和边界
+    collison_check_.InitParam(vehicle_param_);
+    collison_check_.InitBoundMap(all_map_borders);
+
+    // 3. 检查global_path_每个点
+    for (size_t i = 0; i < global_path_.size(); ++i) {
+        const auto& pt = global_path_[i];
+        Point check_point(pt.x, pt.y, pt.z, pt.yaw, static_cast<MotionDirection>(pt.direction));
+        if (collison_check_.IsVehicleCollision(check_point)) {
+            threadLogger_->info("全局路径与地图边界发生碰撞，碰撞点索引：{}", i);
+            return false;
+        }
+    }
+    threadLogger_->info("全局路径与地图边界未发生碰撞");
+    return true;
 }

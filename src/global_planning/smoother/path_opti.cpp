@@ -25,27 +25,27 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     path_            = original_path;
 
 
-    std::ofstream file_out;
-    file_out.open("cusp_path_before.txt");
-    for (size_t index = 0; index < path_.size(); index++) {
-        file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("cusp_path_before.txt");
+    // for (size_t index = 0; index < path_.size(); index++) {
+    //     file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
+    // }
+    // file_out.close();
 
     CuspPointExtension(collison_check); // 尖点延伸
 
-    file_out.open("cusp_path_after.txt");
-    for (size_t index = 0; index < path_.size(); index++) {
-        file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
-    }
-    file_out.close();
+    // file_out.open("cusp_path_after.txt");
+    // for (size_t index = 0; index < path_.size(); index++) {
+    //     file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
+    // }
+    // file_out.close();
 
 
-    file_out.open("path_smooth_before.txt");
-    for (size_t index = 0; index < path_.size(); index++) {
-        file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
-    }
-    file_out.close();
+    // file_out.open("path_smooth_before.txt");
+    // for (size_t index = 0; index < path_.size(); index++) {
+    //     file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
+    // }
+    // file_out.close();
 
 
     // 得到节点和固定点索引
@@ -77,19 +77,19 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     opti_path = new_path_;
 
     // std::ofstream file_out;
-    file_out.open("path_smooth_after.txt");
-    for (size_t index = 0; index < opti_path.size(); index++) {
-        file_out << setprecision(4) << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
-    }
-    file_out.close();
+    // file_out.open("path_smooth_after.txt");
+    // for (size_t index = 0; index < opti_path.size(); index++) {
+    //     file_out << setprecision(4) << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
+    // }
+    // file_out.close();
 
     InterpolationPath(new_path_);
     CurvatureCal(new_path_);
-    file_out.open("interpolation_path.txt");
-    for (size_t index = 0; index < new_path_.size(); index++) {
-        file_out << setprecision(4) << new_path_.at(index).x << " " << new_path_.at(index).y << " " << new_path_.at(index).angle / M_PI * 180 << " " << new_path_.at(index).direction << " " << new_path_.at(index).curvature << endl;
-    }
-    file_out.close();
+    // file_out.open("interpolation_path.txt");
+    // for (size_t index = 0; index < new_path_.size(); index++) {
+    //     file_out << setprecision(4) << new_path_.at(index).x << " " << new_path_.at(index).y << " " << new_path_.at(index).angle / M_PI * 180 << " " << new_path_.at(index).direction << " " << new_path_.at(index).curvature << endl;
+    // }
+    // file_out.close();
 }
 vector<unsigned int> Path_Opti::CurvatureCheck() {
     CurvatureCal(new_path_);

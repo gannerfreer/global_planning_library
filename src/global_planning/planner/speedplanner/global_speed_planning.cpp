@@ -45,11 +45,11 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
     planSpeed(trajectory);
     std::ofstream file;
     // 保存平滑前的速度
-    file.open("speed_before_smooth.txt");
-    for (const auto& point : trajectory) {
-        file << point.distance << " " << point.speed << std::endl;
-    }
-    file.close();
+    // file.open("speed_before_smooth.txt");
+    // for (const auto& point : trajectory) {
+    //     file << point.distance << " " << point.speed << std::endl;
+    // }
+    // file.close();
 
     // 速度曲线平滑
     SpeedCurveSmooth(trajectory);
@@ -61,11 +61,11 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
         }
     }
     // 保存平滑后的速度
-    file.open("speed_after_smooth.txt");
-    for (const auto& point : trajectory) {
-        file << point.distance << " " << point.speed << std::endl;
-    }
-    file.close();
+    // file.open("speed_after_smooth.txt");
+    // for (const auto& point : trajectory) {
+    //     file << point.distance << " " << point.speed << std::endl;
+    // }
+    // file.close();
 }
 
 
@@ -158,12 +158,12 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
             iter->speed_limit = reverse_speed;
         }
     }
-    std::ofstream file_out;
-    file_out.open("speed_limit0.txt");
-    for (size_t index = 0; index < trajectory.size(); index++) {
-        file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("speed_limit0.txt");
+    // for (size_t index = 0; index < trajectory.size(); index++) {
+    //     file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
+    // }
+    // file_out.close();
 
     // 遍历整个trajectory，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
     float L_vehicle                = vehicle_param.wheel_base;
@@ -198,11 +198,11 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
         }
     }
 
-    file_out.open("speed_limit1.txt");
-    for (size_t index = 0; index < trajectory.size(); index++) {
-        file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
-    }
-    file_out.close();
+    // file_out.open("speed_limit1.txt");
+    // for (size_t index = 0; index < trajectory.size(); index++) {
+    //     file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
+    // }
+    // file_out.close();
 
 
     double coff = 0.4;
@@ -221,11 +221,11 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     for (size_t index = 0; index < trajectory.size(); index++) {
         // threadLogger_->info("index:{}  speed_limit:{}", index, trajectory.at(index).speed_limit);
     }
-    file_out.open("speed_limit2.txt");
-    for (size_t index = 0; index < trajectory.size(); index++) {
-        file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
-    }
-    file_out.close();
+    // file_out.open("speed_limit2.txt");
+    // for (size_t index = 0; index < trajectory.size(); index++) {
+    //     file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
+    // }
+    // file_out.close();
 }
 
 

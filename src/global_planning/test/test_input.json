@@ -1,24 +1,24 @@
 {
     "m_Start_Point": {
-        "x": -280.3888955104101,
-        "y": 564.5033630984389,
-        "z": 26.051713943481445,
-        "yaw": 135.12583923339844
+        "x": -161.27100211981184,
+        "y": 667.9044856040988,
+        "z": 53.47876739501953,
+        "yaw": 290.4248352050781
     },
     "m_End_Point": {
-        "x": -286.2977683205,
-        "y": 570.8195318235,
+        "x": -146.356208853,
+        "y": 611.1607985096,
         "z": 0.0,
-        "yaw": 132.7627695609,
-        "endPointId": 19
+        "yaw": 330.058039002,
+        "endPointId": 1375
     },
     "m_Veh_Param": {
         "L1": 1,
         "L2": 4,
         "L3": 4,
         "radious": 12.5,
-        "is_light": true,
-        "w_length": 0.0001,
+        "is_light": false,
+        "w_length": 0.0,
         "grid_dist": 0.7,
         "max_kappa": 0.07,
         "plan_time": 0.2,
@@ -49,13 +49,13 @@
         "path_curvature_term": 0.0,
         "path_smoothness_term": 0.2,
         "safe_margin_obstacle": 1.4,
-        "bumpy_road_speed_limit": 1.5,
-        "slope_road_speed_limit": 3.0,
+        "bumpy_road_speed_limit": 2.0,
+        "slope_road_speed_limit": 3.5,
         "cusp_extension_distance": 3,
         "hybridastar_step_length": 1,
         "narrow_road_speed_limit": 3.0,
         "veh_center_2_rear_bound": 2.85,
-        "regular_road_speed_limit": 5.0,
+        "regular_road_speed_limit": 5.5,
         "linear_preferred_distance": 3,
         "uniform_compaction_enable": true,
         "heavy_forward_max_steering": 25,
@@ -64,9 +64,9 @@
         "heavy_backward_max_steering": 22.39,
         "light_backward_max_steering": 27.24,
         "intersection_road_speed_limit": 3.5,
-        "vehicle_code": 1008
+        "vehicle_code": 1002
     },
     "task_type": 2,
     "Inner_Borders": [],
-    "key": "ids:mine:dispatch:planPath:result:1934820051603472384"
+    "key": "ids:mine:dispatch:planPath:result:1937338219574071296"
 }

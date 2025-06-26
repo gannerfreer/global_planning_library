@@ -75,7 +75,8 @@ enum struct ErrorType : unsigned int {
     ALGORITHM_ERROR_TRAJECTORY_VERIFY_SPEED_OVER      = 16, // 全局规划算法运行异常-路径校验异常,轨迹超速
     ALGORITHM_ERROR_TRAJECTORY_VERIFY_DIRECTION_ERROR = 17, // 全局规划算法运行异常-路径校验异常,倒车路段direction错误
     ALGORITHM_ERROR_TRY_CATCH_ERROR                   = 18, // try_catch捕获异常
-    Start_Point_Too_Far                               = 19  // Start_Point_Too_Far 任务起点远离所有参考路径，目前支持最大范围100m
+    Start_Point_Too_Far                               = 19, // Start_Point_Too_Far 任务起点远离所有参考路径，目前支持最大范围100m
+    ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_COLLISION  = 20  // 全局规划算法运行异常-路径校验异常,全局路径与地图边界发生碰撞
 };
 
 enum struct PointAttribute : unsigned int {
