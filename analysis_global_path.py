@@ -5,6 +5,7 @@ file_path = 'global_path.txt'
 
 # 初始化用于存储数据的列表
 angles = []
+speeds=[]
 speed_limits = []
 curvatures = []
 directions=[]
@@ -16,11 +17,13 @@ with open(file_path, 'r') as file:
         data = line.strip().split()
         # 提取所需的数据
         angle = float(data[4])
+        speed=float(data[6])
         speed_limit = float(data[9])
         curvature = float(data[5])
         direction = float(data[10])
         # 将数据添加到相应的列表中
         angles.append(angle)
+        speeds.append(speed)
         speed_limits.append(speed_limit)
         curvatures.append(curvature)
         directions.append(direction)
@@ -33,10 +36,12 @@ axes[0].plot(angles)
 axes[0].set_title('Angle Variation')
 axes[0].set_ylabel('Angle')
 
-# 绘制speed_limit曲线图
+# 将speed和speed_limit绘制在同一张图中
+axes[1].plot(speeds)
 axes[1].plot(speed_limits)
-axes[1].set_title('Speed Limit Variation')
-axes[1].set_ylabel('Speed Limit')
+axes[1].set_title('Speed and Speed Limit Variation')
+axes[1].set_ylabel('Speed')
+axes[1].legend(['Speed', 'Speed Limit'])
 
 # 绘制curvature曲线图
 axes[2].plot(curvatures)

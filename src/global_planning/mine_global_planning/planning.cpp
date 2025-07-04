@@ -18,6 +18,7 @@ bool Planning::InitialFunction() {
     v_has_calculate_pair_.clear();
 
     task_type_ = TaskType::RESERVED;
+    hybridAstar_path_length_=0;
 
 
 #ifdef SKIP_HEADER // 此宏在采用makefile方式进行编译时会使用
@@ -83,12 +84,14 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
         path = global_path_;
         return;
     }
-    for (int i = 0; i < global_path_.size() - 1; i++) {
-        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} delta_s:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).direction, global_path_.at(i).curvature, global_path_.at(i).yaw / M_PI * 180, static_cast<int>(global_path_.at(i).attribute), hypot(global_path_.at(i + 1).x - global_path_.at(i).x, global_path_.at(i + 1).y - global_path_.at(i).y));
-    }
+
     threadLogger_->info("执行RemoveAfterSamePoint");
 
+
     Helper::RemoveAfterSamePoint(global_path_);
+    for (int i = 0; i < global_path_.size(); i++) {
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).direction, global_path_.at(i).curvature, global_path_.at(i).yaw / M_PI * 180, static_cast<int>(global_path_.at(i).attribute));
+    }
 
     threadLogger_->info("StartEndPointProcess global_path_.size():{}", global_path_.size());
     // 将起点、终点放入全局路径
@@ -98,9 +101,16 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("global_path_.size():{}", global_path_.size());
     CurvatureCal(global_path_);
     threadLogger_->info("执行均匀碾压前路径点曲率");
-    for (int i = 0; i < global_path_.size() - 1; i++) {
-        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} delta_s:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).direction, global_path_.at(i).curvature, global_path_.at(i).yaw / M_PI * 180, static_cast<int>(global_path_.at(i).attribute), hypot(global_path_.at(i + 1).x - global_path_.at(i).x, global_path_.at(i + 1).y - global_path_.at(i).y));
+    for (int i = 0; i < global_path_.size(); i++) {
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).direction, global_path_.at(i).curvature, global_path_.at(i).yaw / M_PI * 180, static_cast<int>(global_path_.at(i).attribute));
     }
+    //将global_path_保存到 before_uniform_compaction.txt文件中
+    // std::ofstream file_out;
+    // file_out.open("before_uniform_compaction.txt");
+    // for (auto i : global_path_) {
+    //     file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
+    // }
+    // file_out.close();
 
 
     // 均匀碾压：对除了过磅、洗车和倒车之外的路段进行横向偏移
@@ -128,6 +138,12 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
             }
         }
     }
+    //将global_path_保存到 after_uniform_compaction.txt文件中
+    // file_out.open("after_uniform_compaction.txt");
+    // for (auto i : global_path_) {
+    //     file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
+    // }
+    // file_out.close();
 
 
     // 对进行速度规划前的路径基于梯度下降进行平滑
@@ -151,6 +167,12 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     for (auto i : global_path_) {
         threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute));
     }
+    //将global_path_保存到 after_smooth.txt文件中
+    // file_out.open("after_smooth.txt");
+    // for (auto i : global_path_) {
+    //     file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
+    // }
+    // file_out.close();
 
 
     // 角度转换
@@ -159,6 +181,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
     // 速度规划：限速设置、梯形速度规划
     my_speed_planning_.threadLogger_ = threadLogger_;
+    my_speed_planning_.hybridAstar_path_length_ = hybridAstar_path_length_;
     my_speed_planning_.SpeedPlanning(global_path_, vehicle_param_);
     threadLogger_->info("梯形速度规划完成");
 
@@ -279,7 +302,7 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
 
             }
             else {
-                threadLogger_->info("索引 {} dubins拟合失败", i);
+                // threadLogger_->info("索引 {} dubins拟合失败", i);
                 result = PlanResult::StartPoint_Unreasonable;
             }
         } // 这种规划规则，不采用dubins进行预先校验
@@ -697,7 +720,7 @@ void Planning::StartEndPointProcess() {
     if (end_point_last_point_angle_diff < 0) {
         end_point_last_point_angle_diff += 2 * M_PI; // 将终点与全局路径最后一个点的角度偏差规范[0,2π）
     }
-    threadLogger_->info("路径最后一个点与终点的角度:{}", end_point_last_point_angle_diff / M_PI * 180.0);
+    threadLogger_->info("路径最后一个点与终点的角度:{}  几何距离:{}", end_point_last_point_angle_diff / M_PI * 180.0, hypot(end_point_.x - global_path_.back().x, end_point_.y - global_path_.back().y));
     float last_angle_diff = fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180.0 / M_PI >= 180 ? 360 - fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI : fabs(end_point_last_point_angle_diff - global_path_.back().yaw) * 180 / M_PI;
     threadLogger_->info("路径最后一个点direction：{}，角度差：{}", global_path_.back().direction, last_angle_diff);
     if ((last_angle_diff > 90 && global_path_.back().direction == 0) || (fabs(end_point_.x - global_path_.back().x) <= 0.3 && fabs(end_point_.y - global_path_.back().y) <= 0.3) || (last_angle_diff < 90 && global_path_.back().direction == 1)) {
@@ -707,6 +730,7 @@ void Planning::StartEndPointProcess() {
     else {
         threadLogger_->info("路径最后一个点无需剔除");
     }
+
     _TrajectoryPoint last_point;
     last_point.x           = end_point_.x;
     last_point.y           = end_point_.y;
@@ -715,11 +739,12 @@ void Planning::StartEndPointProcess() {
     last_point.speed_limit = 0;
 
     last_point.speed     = 0;
-    last_point.curvature = 0;
+    last_point.curvature = global_path_.back().curvature;
     last_point.distance  = 0;
     last_point.direction = global_path_.back().direction;
     last_point.attribute = global_path_.back().attribute;
     global_path_.push_back(last_point);
+
     threadLogger_->info("将规划终点作为最后一个点添加进global_path的末尾");
     threadLogger_->info("StartEndPointProcess 结束");
 }
@@ -1155,7 +1180,7 @@ void Planning::PathClipAndSplice() {
                 global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin() + start_index_, all_referencelines_.at(temp_key).trajectory.end());
             }
             else if (i == road_sequence_.size() - 1) {
-                global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin(), all_referencelines_.at(temp_key).trajectory.begin() + end_index_);
+                global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin(), all_referencelines_.at(temp_key).trajectory.begin() + end_index_ + 1);
             }
             else {
                 global_path_.insert(global_path_.end(), all_referencelines_.at(temp_key).trajectory.begin(), all_referencelines_.at(temp_key).trajectory.end());
@@ -1306,6 +1331,7 @@ PlanResult Planning::HybirdAStarFitting() {
                         // 成功规划出路径
                         global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                         global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                        hybridAstar_path_length_=temp_traj.size();
 
                         return result;
                     }
@@ -1317,6 +1343,8 @@ PlanResult Planning::HybirdAStarFitting() {
                         // 成功规划出路径
                         global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                         global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                        hybridAstar_path_length_=temp_traj.size();
+
                         return result;
                     }
                 }
@@ -1339,7 +1367,7 @@ PlanResult Planning::HybirdAStarFitting() {
                             // 成功规划出路径
                             global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                             global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
-
+                            hybridAstar_path_length_=temp_traj.size();
                             return result;
                         }
                     }
@@ -1350,7 +1378,7 @@ PlanResult Planning::HybirdAStarFitting() {
                             // 成功规划出路径
                             global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                             global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
-
+                            hybridAstar_path_length_=temp_traj.size();
                             return result;
                         }
                     }
@@ -1372,21 +1400,8 @@ PlanResult Planning::HybirdAStarFitting() {
     return result;
 }
 bool Planning::JudgeFittingDirection(vector<_TrajectoryPoint>& input_path) {
-    // if (1 < input_path.size()) {
-    //     double lon_dis = (start_point_.x - input_path.at(1).x) * cos(input_path.at(1).yaw) + (start_point_.y - input_path.at(1).y) * sin(input_path.at(1).yaw);
-    //     if (lon_dis <= 0) {
-    //         threadLogger_->info("lon_dis:{} 正向起步", lon_dis);
-    //         return true;
-    //     }
-    //     else {
-    //         threadLogger_->info("倒车起步 point:({},{})  input_path.at(1):({},{},{})  lon_dis:{}", start_point_.x, start_point_.y, input_path.at(1).x, input_path.at(1).y, input_path.at(1).yaw / M_PI * 180.0, lon_dis);
-    //         return false;
-    //     }
-    // }
-    // return true;
-
-
-    if (input_path.front().direction == 0) {
+   
+    if(input_path.front().direction==0){
         threadLogger_->info("正向起步");
         return true;
     }
@@ -1445,7 +1460,7 @@ bool Planning::IsShortDistance() {
 }
 bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag, const int L, std::vector<curve::Point>& output_path) {
     output_path.clear();
-    threadLogger_->info("PoseVerificationInterface--start_pose:{},{},{}     end_pose:{} ,{},{}", start_pose.x, start_pose.y, start_pose.yaw / M_PI * 180.0, end_pose.x, end_pose.y, end_pose.yaw / M_PI * 180.0);
+    // threadLogger_->info("PoseVerificationInterface--start_pose:{},{},{}     end_pose:{} ,{},{}", start_pose.x, start_pose.y, start_pose.yaw / M_PI * 180.0, end_pose.x, end_pose.y, end_pose.yaw / M_PI * 180.0);
     curve::Point dubins_start, dubins_end;
     if (flag == 0) {
         auto x = start_pose.x + L * std::cos(start_pose.yaw);
@@ -1483,7 +1498,7 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
     else {
         dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.heavy_forward_max_steering));
     }
-    threadLogger_->info("dubins_start:({},{},{})   L:{}   dubins radius:{}", dubins_start.GetX(), dubins_start.GetY(), dubins_start.GetAngle(), L, dubins.GetRadius());
+    // threadLogger_->info("dubins_start:({},{},{})   L:{}   dubins radius:{}", dubins_start.GetX(), dubins_start.GetY(), dubins_start.GetAngle(), L, dubins.GetRadius());
     bool is_reasonable = dubins.GetDubinsPath(dubins_start, dubins_end, output_path);
     // 将path和直线延长的部分拼接到一起
     curve::Point temp_point;
@@ -1508,12 +1523,12 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
 
 
     if (is_reasonable == false) {
-        threadLogger_->info("dubins预校验失败");
+        // threadLogger_->info("dubins预校验失败");
         return false;
     }
     for (int i = 0; i < output_path.size(); i++) {
         if (collison_check_.IsVehicleCollision(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(0)))) {
-            threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
+            // threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
             // break;
             return false;
         }
@@ -1666,6 +1681,7 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
             input_path.at(i).yaw = Helper::NormalizeAngleRad(angle);
         }
     }
+
 }
 
 void Planning::FillErrorCode(PlanResult result) {
@@ -1772,6 +1788,7 @@ PlanResult Planning::IsPath1Success(vector<_TrajectoryPoint>& input_path) {
                 // 成功规划出路径
                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                hybridAstar_path_length_=temp_traj.size();
                 return result;
             }
         }
@@ -1782,6 +1799,7 @@ PlanResult Planning::IsPath1Success(vector<_TrajectoryPoint>& input_path) {
                 // 成功规划出路径
                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                hybridAstar_path_length_=temp_traj.size();
                 return result;
             }
         }
@@ -1821,6 +1839,7 @@ PlanResult Planning::IsPath2Success(vector<_TrajectoryPoint>& input_path) {
                 global_path_ = input_path;
                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                hybridAstar_path_length_=temp_traj.size();
                 return result;
             }
         }
@@ -1832,6 +1851,7 @@ PlanResult Planning::IsPath2Success(vector<_TrajectoryPoint>& input_path) {
                 global_path_ = input_path;
                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                hybridAstar_path_length_=temp_traj.size();
                 return result;
             }
         }
@@ -1873,6 +1893,7 @@ PlanResult Planning::IsPath3Success(vector<_TrajectoryPoint>& input_path) {
                 global_path_ = input_path;
                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                hybridAstar_path_length_=temp_traj.size();
                 return result;
             }
         }
@@ -1884,6 +1905,7 @@ PlanResult Planning::IsPath3Success(vector<_TrajectoryPoint>& input_path) {
                 global_path_ = input_path;
                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                hybridAstar_path_length_=temp_traj.size();
                 return result;
             }
         }
@@ -1922,6 +1944,7 @@ PlanResult Planning::IsPath4Success(vector<_TrajectoryPoint>& input_path) {
                 // 成功规划出路径
                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                hybridAstar_path_length_=temp_traj.size();
                 return result;
             }
         }
@@ -1932,6 +1955,7 @@ PlanResult Planning::IsPath4Success(vector<_TrajectoryPoint>& input_path) {
                 // 成功规划出路径
                 global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
                 global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                hybridAstar_path_length_=temp_traj.size();
                 return result;
             }
         }

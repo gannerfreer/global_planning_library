@@ -37,6 +37,7 @@ class GlobalSpeedPlanning {
      */
     void                       SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param);
     shared_ptr<spdlog::logger> threadLogger_;
+    double hybridAstar_path_length_ = 0;
 
   private:
     /**

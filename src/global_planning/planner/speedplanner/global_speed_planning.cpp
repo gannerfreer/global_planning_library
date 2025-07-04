@@ -165,6 +165,18 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     // }
     // file_out.close();
 
+    //计算trajectory前hybridAstar_path_length_个路径点的曲率变化率,如果曲率变化率大于0.06，则将对应路径点的限速设置为1
+    threadLogger_->info("速度规划，hybridAstar_path_length_：{}", hybridAstar_path_length_);
+    vector<double> curvature_change_rate;
+    for (int i = 1; i < hybridAstar_path_length_; i++) {
+        curvature_change_rate.push_back(fabs(trajectory.at(i).curvature - trajectory.at(i - 1).curvature));
+    }
+    for (int i = 0; i < curvature_change_rate.size(); i++) {
+        if (curvature_change_rate.at(i) > 0.06) {
+            trajectory.at(i).speed_limit = 1;
+        }
+    }
+
     // 遍历整个trajectory，检核每个点的限速是否合理；根据方向盘最大转速以及每个点的瞬时曲率来确定每个点的合理限速
     float L_vehicle                = vehicle_param.wheel_base;
     float max_Steering_wheel_speed = vehicle_param.max_steering_wheel_speed;

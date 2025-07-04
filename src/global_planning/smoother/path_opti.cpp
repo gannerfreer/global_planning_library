@@ -48,57 +48,143 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     // file_out.close();
 
 
-    // 得到节点和固定点索引
-    GetCuspIndex();     // 得到尖点索引查询表cuspLookup
-    GetFixPointIndex(); // 得到固定点索引查询表fixpLookup
+    if (!OsqpSmooth(path_, opti_path, collison_check)) {
+        threadLogger_->info("osqp优化失败，继续采用传统平滑方案");
+        // 采用优化方案失败，则继续采用传统平滑方案
+        // 得到节点和固定点索引
+        GetCuspIndex();     // 得到尖点索引查询表cuspLookup
+        GetFixPointIndex(); // 得到固定点索引查询表fixpLookup
 
-    unsigned int opti_num     = 0;
-    unsigned int max_opti_num = 10;
+        unsigned int opti_num     = 0;
+        unsigned int max_opti_num = 10;
 
 
-    while (opti_num++ < path_.size() + 1) {
-        threadLogger_->info("第 {} 次优化,fixpoint_set_.size():{}", opti_num, fixpoint_set_.size());
-        SmoothPath();
-        CalculatePathAngle();
-        auto collision_point  = collison_check.OptiPathCollisionCheck(new_path_); // 判断优化路径是否碰撞
-        auto curvature_exceed = CurvatureCheck();
-        threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
-        if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
-        {
-            break;
+        while (opti_num++ < path_.size() + 1) {
+            threadLogger_->info("第 {} 次优化,fixpoint_set_.size():{}", opti_num, fixpoint_set_.size());
+            SmoothPath();
+            CalculatePathAngle();
+            auto collision_point  = collison_check.OptiPathCollisionCheck(new_path_); // 判断优化路径是否碰撞
+            auto curvature_exceed = CurvatureCheck(new_path_);
+            threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
+            if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
+            {
+                break;
+            }
+            else // 否则固定碰撞点和曲率超标点，继续优化
+            {
+                UpdateFixPointSet(collision_point);
+                UpdateFixPointSet(curvature_exceed);
+            }
         }
-        else // 否则固定碰撞点和曲率超标点，继续优化
-        {
-            UpdateFixPointSet(collision_point);
-            UpdateFixPointSet(curvature_exceed);
-        }
+        Helper::CalDistance(new_path_);
+
+        opti_path = new_path_;
+
+        // std::ofstream file_out;
+        // file_out.open("path_smooth_after.txt");
+        // for (size_t index = 0; index < opti_path.size(); index++) {
+        //     file_out << setprecision(4) << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
+        // }
+        // file_out.close();
+
+        InterpolationPath(new_path_);
+        CurvatureCal(new_path_);
+        // file_out.open("interpolation_path.txt");
+        // for (size_t index = 0; index < new_path_.size(); index++) {
+        //     file_out << setprecision(4) << new_path_.at(index).x << " " << new_path_.at(index).y << " " << new_path_.at(index).angle / M_PI * 180 << " " << new_path_.at(index).direction << " " << new_path_.at(index).curvature << endl;
+        // }
+        // file_out.close();
+    }
+}
+void Path_Opti::SmoothPath() {
+    int            L     = path_.size();
+    double         x_sat = 6;
+    vector<double> coeff;
+    for (int i = 0; i < L; i++) {
+        double x    = (i < L / 2) ? i : (L - 1.0 - i);
+        double temp = 1 / (1 + exp(-x + x_sat));
+        coeff.push_back(temp);
     }
 
-    opti_path = new_path_;
+    unsigned int iterations = 0;
+    Vector2D     xim2, xim1, xi, xip1, xip2, xoi;
+    Vector2D     gradient_error_term;
+    Vector2D     gradient_curvature_term;
+    Vector2D     gradient_smoothness_term;
+    Vector2D     gradient_vonoroi_term;
+    new_path_ = path_;
 
-    // std::ofstream file_out;
-    // file_out.open("path_smooth_after.txt");
-    // for (size_t index = 0; index < opti_path.size(); index++) {
-    //     file_out << setprecision(4) << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
-    // }
-    // file_out.close();
+    // 梯度下降法迭代优化
+    while (iterations++ < m_vehicle_param_.max_iterations_opti) {
+        // cout << "梯度下降，第 " << iterations << " 轮" << endl;
+        for (unsigned int i = 2; i < new_path_.size() - 2; i++) {
+            if (IsCusp(i) || IsFixPoint(i)) {
+                // cout << "点" << i << "属于anchor点，予以跳过" << endl;
+                continue;
+            }
+            // 优化路径的当前点前两点、当前点、当前点后两点及原路径当前点
+            xim2.x = new_path_.at(i - 2).x;
+            xim2.y = new_path_.at(i - 2).y;
+            xim1.x = new_path_.at(i - 1).x;
+            xim1.y = new_path_.at(i - 1).y;
+            xi.x   = new_path_.at(i).x;
+            xi.y   = new_path_.at(i).y;
+            xip1.x = new_path_.at(i + 1).x;
+            xip1.y = new_path_.at(i + 1).y;
+            xip2.x = new_path_.at(i + 2).x;
+            xip2.y = new_path_.at(i + 2).y;
+            xoi.x  = path_.at(i).x;
+            xoi.y  = path_.at(i).y;
 
-    InterpolationPath(new_path_);
-    CurvatureCal(new_path_);
-    // file_out.open("interpolation_path.txt");
-    // for (size_t index = 0; index < new_path_.size(); index++) {
-    //     file_out << setprecision(4) << new_path_.at(index).x << " " << new_path_.at(index).y << " " << new_path_.at(index).angle / M_PI * 180 << " " << new_path_.at(index).direction << " " << new_path_.at(index).curvature << endl;
-    // }
-    // file_out.close();
+
+            // 与原路径偏差项
+            gradient_error_term = ErrorTerm(xi, xoi);
+            if (!isinf(gradient_error_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_error_term.x;
+            if (!isinf(gradient_error_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_error_term.y;
+
+
+            // 曲率项
+            gradient_curvature_term = CurvatureTerm(xim1, xi, xip1);
+            // gradient_curvature_term = CurvatureTerm(xim2, xim1, xi, xip1, xip2);
+            if (!isinf(gradient_curvature_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_curvature_term.x;
+            if (!isinf(gradient_curvature_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_curvature_term.y;
+
+
+            // 平滑项
+            gradient_smoothness_term = SmoothnessTerm(xim2, xim1, xi, xip1, xip2);
+            if (!isinf(gradient_smoothness_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_smoothness_term.x;
+            if (!isinf(gradient_smoothness_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_smoothness_term.y;
+        }
+    }
 }
-vector<unsigned int> Path_Opti::CurvatureCheck() {
-    CurvatureCal(new_path_);
+
+
+
+vector<unsigned int> Path_Opti::CurvatureCheck(const Path& input_path) {
+    double curvature_threshold = 1.0;
+
     vector<unsigned int> curvature_exceed_point;
     curvature_exceed_point.clear();
-    for (unsigned int i = 1; i < new_path_.size() - 1; i++) {
-        double curvature = new_path_.at(i).curvature;
-        if (fabs(curvature) > m_vehicle_param_.curvature_threshold) {
-            threadLogger_->info("第 {} 个点曲率超标，点坐标为({},{}),曲率为{},此点将被列为anchor点", i, new_path_.at(i).x, new_path_.at(i).y, new_path_.at(i).curvature);
+    for (unsigned int i = 1; i < input_path.size() - 1; i++) {
+        double curvature = input_path.at(i).curvature;
+        if (input_path.at(i).direction == MotionDirection::Forward) {
+            if (m_vehicle_param_.is_light) {
+                curvature_threshold = tan(m_vehicle_param_.light_forward_max_steering) / m_vehicle_param_.wheel_base;
+            }
+            else {
+                curvature_threshold = tan(m_vehicle_param_.heavy_forward_max_steering) / m_vehicle_param_.wheel_base;
+            }
+        }
+        else {
+            if (m_vehicle_param_.is_light) {
+                curvature_threshold = tan(m_vehicle_param_.light_backward_max_steering) / m_vehicle_param_.wheel_base;
+            }
+            else {
+                curvature_threshold = tan(m_vehicle_param_.heavy_backward_max_steering) / m_vehicle_param_.wheel_base;
+            }
+        }
+        if (fabs(curvature) > curvature_threshold + 1e-2) {
+            threadLogger_->info("第 {} 个点曲率超标，点坐标为({},{}),曲率为{},此点将被列为anchor点,> {}", i, input_path.at(i).x, input_path.at(i).y, input_path.at(i).curvature, curvature_threshold);
             curvature_exceed_point.push_back(i);
             curvature_exceed_point.push_back(i - 1);
             curvature_exceed_point.push_back(i + 1);
@@ -160,66 +246,86 @@ void Path_Opti::UpdateFixPointSet(const vector<unsigned int> points) {
  *@param
  *return
  */
-void Path_Opti::SmoothPath() {
-    int            L     = path_.size();
-    double         x_sat = 6;
-    vector<double> coeff;
-    for (int i = 0; i < L; i++) {
-        double x    = (i < L / 2) ? i : (L - 1.0 - i);
-        double temp = 1 / (1 + exp(-x + x_sat));
-        coeff.push_back(temp);
+bool Path_Opti::SmoothSegmentPath(const Path& input_path, Path& output_path, CollisonCheck& collison_check) {
+    TensionSmoother2 smoother(input_path, m_vehicle_param_);
+    smoother.threadLogger_ = threadLogger_;
+
+    if (!smoother.smooth(output_path)) {
+        return false;
     }
+    threadLogger_->info("优化方案优化成功");
 
-    unsigned int iterations = 0;
-    Vector2D     xim2, xim1, xi, xip1, xip2, xoi;
-    Vector2D     gradient_error_term;
-    Vector2D     gradient_curvature_term;
-    Vector2D     gradient_smoothness_term;
-    Vector2D     gradient_vonoroi_term;
-    new_path_ = path_;
+    // 计算曲率
+    CurvatureCal(output_path);
+    // 循环结束后，计算角度并保存原始属性
+    for (unsigned int i = 0; i < output_path.size() - 1; i++) {
+        double dx    = (output_path.at(i + 1).x - output_path.at(i).x);
+        double dy    = (output_path.at(i + 1).y - output_path.at(i).y);
+        double angle = atan2(dy, dx);
 
-    // 梯度下降法迭代优化
-    while (iterations++ < m_vehicle_param_.max_iterations_opti) {
-        // cout << "梯度下降，第 " << iterations << " 轮" << endl;
-        for (unsigned int i = 2; i < new_path_.size() - 2; i++) {
-            if (IsCusp(i) || IsFixPoint(i)) {
-                // cout << "点" << i << "属于anchor点，予以跳过" << endl;
-                continue;
+        if (angle < 0) {
+            angle += 2 * M_PI;
+        }
+
+        if (input_path.at(i).direction == MotionDirection::Backward) {
+            output_path.at(i).angle = Helper::NormalizeAngleRad(angle + M_PI);
+        }
+        else {
+            output_path.at(i).angle = Helper::NormalizeAngleRad(angle);
+        }
+
+        // 保存原始属性信息
+        output_path.at(i).direction = input_path.at(i).direction;
+    }
+    // 处理最后一个点
+    if (!output_path.empty()) {
+        output_path.back().angle     = output_path[output_path.size() - 2].angle;
+        output_path.back().direction = input_path.back().direction;
+    }
+    Helper::CalDistance(output_path);
+
+    // 检查碰撞和曲率
+    auto collision_points = collison_check.OptiPathCollisionCheck(output_path);
+    threadLogger_->info("碰撞点数量: {}", collision_points.size());
+    auto curvature_exceed = CurvatureCheck(output_path);
+    threadLogger_->info("曲率超标点数量: {}", curvature_exceed.size());
+    // 只要存在碰撞点或曲率超标点，均认定优化失败
+    if (!collision_points.empty() || !curvature_exceed.empty()) {
+        return false;
+    }
+    return true;
+}
+
+bool Path_Opti::OsqpSmooth(const Path& path_, Path& opti_path, CollisonCheck& collison_check) {
+    // 清空输出路径
+    opti_path.clear();
+    // 对路径进行分段
+    vector<Path>  segments;
+    vector<Point> current_segment;
+    for (size_t i = 0; i < path_.size(); ++i) {
+        current_segment.push_back(path_[i]);
+        if (i == path_.size() - 1 || (i < path_.size() - 1 && path_[i].direction != path_[i + 1].direction)) {
+            if (!current_segment.empty()) {
+                segments.push_back(current_segment);
+                current_segment.clear();
             }
-            // 优化路径的当前点前两点、当前点、当前点后两点及原路径当前点
-            xim2.x = new_path_.at(i - 2).x;
-            xim2.y = new_path_.at(i - 2).y;
-            xim1.x = new_path_.at(i - 1).x;
-            xim1.y = new_path_.at(i - 1).y;
-            xi.x   = new_path_.at(i).x;
-            xi.y   = new_path_.at(i).y;
-            xip1.x = new_path_.at(i + 1).x;
-            xip1.y = new_path_.at(i + 1).y;
-            xip2.x = new_path_.at(i + 2).x;
-            xip2.y = new_path_.at(i + 2).y;
-            xoi.x  = path_.at(i).x;
-            xoi.y  = path_.at(i).y;
-
-
-            // 与原路径偏差项
-            gradient_error_term = ErrorTerm(xi, xoi);
-            if (!isinf(gradient_error_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_error_term.x;
-            if (!isinf(gradient_error_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_error_term.y;
-
-
-            // 曲率项
-            gradient_curvature_term = CurvatureTerm(xim1, xi, xip1);
-            // gradient_curvature_term = CurvatureTerm(xim2, xim1, xi, xip1, xip2);
-            if (!isinf(gradient_curvature_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_curvature_term.x;
-            if (!isinf(gradient_curvature_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_curvature_term.y;
-
-
-            // 平滑项
-            gradient_smoothness_term = SmoothnessTerm(xim2, xim1, xi, xip1, xip2);
-            if (!isinf(gradient_smoothness_term.x)) new_path_.at(i).x -= coeff.at(i) * gradient_smoothness_term.x;
-            if (!isinf(gradient_smoothness_term.y)) new_path_.at(i).y -= coeff.at(i) * gradient_smoothness_term.y;
         }
     }
+    threadLogger_->info("准备对hybridA*路径进行优化，一共分 {} 段", segments.size());
+    // 对每一段进行优化
+    for (const auto& segment : segments) {
+        Path segment_path(segment);
+        Path opti_segment;
+        // 使用OSQP/ipopt求解器优化当前段
+
+        if (!SmoothSegmentPath(segment_path, opti_segment, collison_check)) {
+            return false;
+        }
+
+        // 将优化后的段添加到最终路径中
+        opti_path.insert(opti_path.end(), opti_segment.begin(), opti_segment.end());
+    }
+    return true;
 }
 
 /**

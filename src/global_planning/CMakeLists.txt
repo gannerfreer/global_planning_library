@@ -3,6 +3,9 @@ project(n_global_planning)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++17 -O3)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/global_planning/cmake")
+
+message(STATUS "CMAKE SOURCE DIR:" ${CMAKE_MODULE_PATH})
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -12,8 +15,14 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   msg_global_planning
-  message_generation
 )
+find_package(IPOPT REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(OsqpEigen REQUIRED)
+set(CppAD_INCLUDE_DIRS "/usr/local/include/cppad")
+set(CppAD_LIBRARIES "/usr/local/lib/libcppad_lib.so")  # 指向具体的库文件
+# find_package(CppAD REQUIRED)
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -119,7 +128,12 @@ catkin_package(
 include_directories(
   include()
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
+  ${OsqpEigen_INCLUDE_DIR}
+  ${IPOPT_INCLUDE_DIRS}
+  ${CppAD_INCLUDE_DIRS}
 )
+
 
 
 ## Declare a C++ library
@@ -139,6 +153,7 @@ add_executable(${PROJECT_NAME}
   collision_check/collision_check.cpp
   map/c_map_analysis.cpp
   smoother/path_opti.cpp
+  smoother/tension_smoother_2.cpp
   mine_global_planning/planning.cpp
   mine_global_planning/predicting.cpp
   planner/pathplanner/dijkstra/dijkstra.cpp
@@ -173,8 +188,12 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
  ${catkin_LIBRARIES}
+ ${IPOPT_LIBRARIES}
+ ${CppAD_LIBRARIES}
+ OsqpEigen::OsqpEigen osqp::osqp
  #libglog.so
  )
+
 
 #############
 ## Install ##

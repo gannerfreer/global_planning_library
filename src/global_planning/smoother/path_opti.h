@@ -18,6 +18,7 @@
 #include "../math/helper.h"
 #include "../planner/pathplanner/spline/spline.h"
 #include "vector2d.h"
+#include "tension_smoother_2.hpp"
 
 using namespace GlobalPlanning;
 using namespace std;
@@ -55,9 +56,16 @@ class Path_Opti {
      * false: 优化失败
      */
     void                            OptimizePath(Path& original_path, Path& opti_path, CollisonCheck& collisonCheck, _VehicleParam m_vehicle_param);
-    vector<unsigned int>            CurvatureCheck();
+    vector<unsigned int>            CurvatureCheck(const Path& input_path);
     void                            CalculateCubicSplineCurve(bool flag, const Path& points, Path& cubicspline_path);
     void                            CalculateStation(const std::vector<double>& xs, const std::vector<double>& ys);
+    /**
+     * @brief 基于方向的路径分段优化函数
+     * @param[in] path_ 输入路径
+     * @param[out] opti_path 优化后的路径
+     */
+    bool                            OsqpSmooth(const Path& path_, Path& opti_path, CollisonCheck& collison_check);
+    bool SmoothSegmentPath(const Path& input_path, Path& output_path, CollisonCheck& collison_check);
     std::shared_ptr<spdlog::logger> threadLogger_;
 
   private:

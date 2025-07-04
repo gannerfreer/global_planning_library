@@ -13,9 +13,9 @@ using namespace curve;
  * @brief 获取dubins路径代价接口函数实现
  */
 bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::vector<Point>& path) {
-    threadLogger_->info("采用Dubins曲线预校验 ");
-    threadLogger_->info("start_pose.x = {},start_pose.y = {},start_pose.angle = {}", start_pose.GetX(), start_pose.GetY(), start_pose.GetAngle());
-    threadLogger_->info("end_pose.x = {},end_pose.y = {},end_pose.angle = {}", end_pose.GetX(), end_pose.GetY(), end_pose.GetAngle());
+    // threadLogger_->info("采用Dubins曲线预校验 ");
+    // threadLogger_->info("start_pose.x = {},start_pose.y = {},start_pose.angle = {}", start_pose.GetX(), start_pose.GetY(), start_pose.GetAngle());
+    // threadLogger_->info("end_pose.x = {},end_pose.y = {},end_pose.angle = {}", end_pose.GetX(), end_pose.GetY(), end_pose.GetAngle());
     float dx    = end_pose.GetX() - start_pose.GetX();
     float dy    = end_pose.GetY() - start_pose.GetY();
     float theta = mod(std ::atan2(dy, dx), twopi);
@@ -48,12 +48,12 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
     auto type     = dubins_path_type_[min_length_index];
 
     if (min_length_index == 0 || min_length_index == 1 || min_length_index == 2 || min_length_index == 3) {
-        threadLogger_->info("dubins lsl lsr rsl rsr {},{},{}", std::get<0>(opt_path) * radius_, std::get<1>(opt_path) * radius_, std::get<2>(opt_path) * radius_);
+        // threadLogger_->info("dubins lsl lsr rsl rsr {},{},{}", std::get<0>(opt_path) * radius_, std::get<1>(opt_path) * radius_, std::get<2>(opt_path) * radius_);
         if ((std::get<1>(opt_path) * radius_ < 15 && std::get<0>(opt_path) * radius_ > 3.7) || (std::get<1>(opt_path) * radius_ < 15 && std::get<2>(opt_path) * radius_ > 3.7)) {
-            threadLogger_->info("路径长度小于15m，不合理");
+            // threadLogger_->info("路径长度小于15m，不合理");
             return false;
         }
-        threadLogger_->info("达标");
+        // threadLogger_->info("达标");
     }
     else {
         return false;
@@ -86,7 +86,7 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
 
 
     if (DubinsPathSelfIntersectCheck(path)) {
-        threadLogger_->info("路径绕圈，不合理");
+        // threadLogger_->info("路径绕圈，不合理");
         return false;
     }
 

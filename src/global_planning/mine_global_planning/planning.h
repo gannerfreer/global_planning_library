@@ -133,7 +133,7 @@ class Planning {
     PlanResult           IsPath4Success(vector<_TrajectoryPoint>& input_path);
     bool                 IsForwardAndBackwardReferencePath();
     // 检查全局路径是否与所有地图边界发生碰撞
-    bool                 IsGlobalPathCollision();
+    bool IsGlobalPathCollision();
 
   public:
     _SinglePoint start_point_,
@@ -163,8 +163,8 @@ class Planning {
     ErrorType                  error_type_ = ErrorType::SUCCESS;
     shared_ptr<spdlog::logger> threadLogger_;
     string                     vehicle_code_;
-    string                     key_;
     int                        dubins_straight_distance_ = 0;
+    double                     hybridAstar_path_length_  = 0;
 
 #ifdef SKIP_HEADER
 #else

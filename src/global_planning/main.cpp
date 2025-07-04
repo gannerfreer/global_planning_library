@@ -24,8 +24,8 @@ bool                         is_receive_start = false;
 bool                         is_receive_end   = false;
 
 
-const double x_o_ = -94.5797527827; // 园区偏移参数
-const double y_o_ = 173.6083540539; // 园区偏移参数
+const double x_o_ = 0; // 园区偏移参数
+const double y_o_ = 0; // 园区偏移参数
 
 vector<_TrajectoryPoint>         auto_vehicle_global_path, road_nodes;
 vector<vector<_TrajectoryPoint>> human_vehicle_global_path;
@@ -193,7 +193,7 @@ int main(int argc, char** argv) {
 
             cout << "main-auto_vehicle_global_path.size():" << auto_vehicle_global_path.size() << endl;
 
-            msg_global_planning::msg_global_planning temp_path;
+msg_global_planning::msg_global_planning temp_path;
             temp_path.way_point.clear();
             for (size_t jndex = 0; jndex < auto_vehicle_global_path.size(); jndex++) {
                 msg_common::WayPoint temp_point;
@@ -208,6 +208,9 @@ int main(int argc, char** argv) {
                 temp_path.way_point.emplace_back(temp_point);
             }
             pub_global_path.publish(temp_path);
+
+          
+
 
             ofstream file_out;
             file_out.open("global_path.txt", ios::out);

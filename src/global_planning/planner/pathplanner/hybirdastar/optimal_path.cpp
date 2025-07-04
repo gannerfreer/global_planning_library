@@ -9,10 +9,7 @@
 
 #include "optimal_path.h"
 
-#include "../../../math/helper.h"
-#include "../../../smoother/path_opti.h"
-#include "../../../time/StringHelper.h"
-#include "../../../time/TimeHelper.h"
+
 using namespace GlobalPlanning;
 
 
@@ -338,63 +335,34 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         threadLogger_->info("Cannot find feasible path!");
         return PlanResult::Plan_Infeasible;
     }
-    threadLogger_->info("Find feasible path Successfuly!");
 
     TracePath(current_point); // 混合A*路径回溯
-    threadLogger_->info("TracePath() Successfuly!");
-    PathIntegration(); // 将混合A*搜索路径、RS曲线拟合路径与终点补偿的直线路径整合
-    threadLogger_->info("PathIntegration() Successfuly!");
-
-    // 保存路点，并打印出来
-    // std::ofstream file_out;
-    // file_out.open("yaw.txt", std::ios::app);
-    // for (size_t index = 0; index < path_a_star_.size(); index++) {
-    //     file_out << path_a_star_.at(index).angle << endl;
-    // }
-    // file_out.close();
-
+    PathIntegration();        // 将混合A*搜索路径、RS曲线拟合路径与终点补偿的直线路径整合
     Path temp_path;
     temp_path = path_a_star_; // 弧度
     removeDuplicates(temp_path, path_a_star_);
-    threadLogger_->info("removeDuplicates() Successfuly!");
-
-
-    // 保存路点，并打印出来
-    // std::ofstream file_out;
-    // file_out.open("init_path.txt", std::ios::out);
-    // for (size_t index = 0; index < path_a_star_.size(); index++)
-    // {
-    //     file_out << path_a_star_.at(index).x << " " << path_a_star_.at(index).y << endl;
-    // }
-    // file_out.close();
-
     utility::CTimeClock start_time_opti;
-
-    // // 平滑前打印路径曲率
-    // Helper::CalCurv(path_a_star_);
-    // // CalCurv(path_a_star_);
-
-    // threadLogger_->info("HybridA_star规划出的原始路径（无尖点延伸）,曲率通过三点式原理计算得来");
-    // for (int i = 0; i < path_a_star_.size() - 1; i++) {
-    //     threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} del_s:{} ", path_a_star_.at(i).x, path_a_star_.at(i).y, path_a_star_.at(i).angle / M_PI * 180.0, path_a_star_.at(i).curvature, path_a_star_.at(i).direction, hypot(path_a_star_.at(i).x - path_a_star_.at(i + 1).x, path_a_star_.at(i).y - path_a_star_.at(i + 1).y));
-    // }
-    // threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{}", path_a_star_.back().x, path_a_star_.back().y, path_a_star_.back().angle / M_PI * 180.0, path_a_star_.back().curvature, path_a_star_.back().direction);
-
-
     CurvatureCal(path_a_star_);
-    threadLogger_->info("HybridA_star规划出的原始路径（无尖点延伸）,曲率通过外接圆原理计算得来");
-    for (int i = 0; i < path_a_star_.size() - 1; i++) {
-        threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} del_s:{} ", path_a_star_.at(i).x, path_a_star_.at(i).y, path_a_star_.at(i).angle / M_PI * 180.0, path_a_star_.at(i).curvature, path_a_star_.at(i).direction, hypot(path_a_star_.at(i).x - path_a_star_.at(i + 1).x, path_a_star_.at(i).y - path_a_star_.at(i + 1).y));
+    Helper::CalDistance(path_a_star_);
+    threadLogger_->info("优化前路径点信息");
+    for (int i = 0; i < path_a_star_.size(); i++) {
+        threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} s:{} ", path_a_star_.at(i).x, path_a_star_.at(i).y, path_a_star_.at(i).angle / M_PI * 180.0, path_a_star_.at(i).curvature, path_a_star_.at(i).direction, path_a_star_.at(i).distance);
     }
-    threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{}", path_a_star_.back().x, path_a_star_.back().y, path_a_star_.back().angle / M_PI * 180.0, path_a_star_.back().curvature, path_a_star_.back().direction);
-
+    
+    
 
     // 路径优化，得到最终的path
     my_path_opti.OptimizePath(path_a_star_, path, collison_check_, m_vehicle_param_);
-    threadLogger_->info("平滑后路径点信息");
+    threadLogger_->info("优化后路径点信息");
     for (auto i : path) {
-        threadLogger_->info("x:{} y:{} angle:{} curvature:{} direction:{} ", i.x, i.y, i.angle / M_PI * 180.0, i.curvature, i.direction);
+        threadLogger_->info("x:{} y:{} angle:{} curvature:{} direction:{} s:{} ", i.x, i.y, i.angle / M_PI * 180.0, i.curvature, i.direction, i.distance);
     }
+    //保存优化后路径点信息
+    // file_out.open("path_after_opti.txt");
+    // for (int i = 0; i < path.size(); i++) {
+    //     file_out << path.at(i).x << " " << path.at(i).y << " " << path.at(i).angle << " " << path.at(i).curvature << " " << path.at(i).direction << " " << path.at(i).distance << endl;
+    // }
+    // file_out.close();
 
     long long cal_time2 = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_opti);
     threadLogger_->info("路径优化完成，用时: {} ms ", 0.001 * cal_time2);
@@ -415,6 +383,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
     return PlanResult::Plan_OK;
 }
+// 删除input中重合的前一个点
 void OptimalPath::removeDuplicates(Path& input, Path& result) {
     result.clear();
     result.push_back(input.front());
@@ -551,7 +520,7 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                             if (i.angle < 0) i.angle += 2 * M_PI;
                         }
                         for (int i = 0; i < path_r_s_.size() - 1; i++) {
-                            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", path_r_s_.at(i).x, path_r_s_.at(i).y, path_r_s_.at(i).angle / M_PI * 180.0, path_r_s_.at(i).direction);
+                            threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {} ", path_r_s_.at(i).x, path_r_s_.at(i).y, path_r_s_.at(i).angle / M_PI * 180.0, path_r_s_.at(i).direction);
                             threadLogger_->info("delta_s:{}", hypot(path_r_s_.at(i).x - path_r_s_.at(i + 1).x, path_r_s_.at(i).y - path_r_s_.at(i + 1).y));
                         }
                         return true;
@@ -818,19 +787,13 @@ void OptimalPath::PathIntegration() {
     {
         Point temp_point;
         temp_point.angle = end_r_.angle;
-        // cout << "temp_point.angle:" << temp_point.angle << endl;
         for (double i = m_vehicle_param_.hybridastar_step_length; i <= end_offset_distance_; i += m_vehicle_param_.hybridastar_step_length) {
             temp_point.x         = end_r_.x + i * cos(end_r_.angle);
             temp_point.y         = end_r_.y + i * sin(end_r_.angle);
             temp_point.z         = 0;
             temp_point.direction = MotionDirection::Forward;
-            // cout << "temp_point.angle" << temp_point.angle << endl;
             path_a_star_.push_back(temp_point);
         }
-        // threadLogger_->info("拼接完成终点的路径");
-        // for (auto i : path_a_star_) {
-        //     threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
-        // }
     }
     else // 倒退直线拼接
     {
@@ -843,15 +806,11 @@ void OptimalPath::PathIntegration() {
             temp_point.direction = MotionDirection::Backward;
             path_a_star_.push_back(temp_point);
         }
-        // threadLogger_->info("拼接完成终点的路径");
-        // for (auto i : path_a_star_) {
-        //     threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
-        // }
     }
 
     threadLogger_->info("拼接完成终点的路径");
     for (auto i : path_a_star_) {
-        threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}  curvature:{}", i.x, i.y, i.angle / M_PI * 180.0, i.direction, i.curvature);
+        threadLogger_->info("x: {}  y: {}  yaw: {}  direction: {}  ", i.x, i.y, i.angle / M_PI * 180.0, i.direction);
     }
 }
 
@@ -1484,7 +1443,7 @@ void OptimalPath::CurvatureCal(Path& input_path) {
                 double s     = (a + b + c) / 2.0;
                 double area  = std::sqrt(fabs(s * (s - a) * (s - b) * (s - c)));
 
-                threadLogger_->info("点信息({},{})  a:{} b:{} c:{} s:{} area:{}", input_path.at(i).x, input_path.at(i).y, a, b, c, s, area);
+                // threadLogger_->info("点信息({},{})  a:{} b:{} c:{} s:{} area:{}", input_path.at(i).x, input_path.at(i).y, a, b, c, s, area);
                 double r = (a * b * c) / (4.0 * area);
                 if (r == 0 || area == 0) {
                     input_path.at(i).curvature = 0;

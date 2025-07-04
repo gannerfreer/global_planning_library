@@ -36,19 +36,19 @@ class CRvizPath {
     CRvizPath() {
         publisher_global_path_  = n.advertise<visualization_msgs::Marker>("path_global", 1);
         publisher_expand_point_ = n.advertise<visualization_msgs::Marker>("point_expand", 1);
-        m_Publisher_road_node_  = n.advertise<sensor_msgs ::PointCloud>("road_node", 1);
+        m_Publisher_road_node_  = n.advertise<sensor_msgs::PointCloud>("road_node", 1);
 
-        pub_area_path   = n.advertise<sensor_msgs ::PointCloud>("area_points", 1);
+        pub_area_path   = n.advertise<sensor_msgs::PointCloud>("area_points", 1);
         pub_start       = n.advertise<visualization_msgs::Marker>("start", 1);
         pub_end         = n.advertise<visualization_msgs::Marker>("end", 1);
         pub_h_value_map = n.advertise<visualization_msgs::MarkerArray>("/h_value_map", 1);
-        pub_obstacle_   = n.advertise<sensor_msgs ::PointCloud>("obstacle_points", 1);
+        pub_obstacle_   = n.advertise<sensor_msgs::PointCloud>("obstacle_points", 1);
 
 
         global_path_now_.header.frame_id = "map";
         global_path_now_.ns              = "my_namespace";
-        global_path_now_.type            = visualization_msgs::Marker ::POINTS;
-        global_path_now_.action          = visualization_msgs::Marker ::ADD;
+        global_path_now_.type            = visualization_msgs::Marker::POINTS;
+        global_path_now_.action          = visualization_msgs::Marker::ADD;
         global_path_now_.scale.x         = 0.5;
         global_path_now_.scale.y         = 0.5;
         global_path_now_.scale.z         = 0.5;
@@ -60,8 +60,8 @@ class CRvizPath {
 
         expand_point_now_.header.frame_id = "map";
         expand_point_now_.ns              = "my_namespace";
-        expand_point_now_.type            = visualization_msgs::Marker ::POINTS;
-        expand_point_now_.action          = visualization_msgs::Marker ::ADD;
+        expand_point_now_.type            = visualization_msgs::Marker::POINTS;
+        expand_point_now_.action          = visualization_msgs::Marker::ADD;
         expand_point_now_.scale.x         = 0.5;
         expand_point_now_.scale.y         = 0.5;
         expand_point_now_.scale.z         = 0.5;
@@ -103,8 +103,8 @@ class CRvizPath {
     void PubObstacles(vector<geometry_msgs::Point>& vec_msga);
 
   public:
-    const double x_o_ = -94.5797527827; // 园区偏移参数
-    const double y_o_ = 173.6083540539; // 园区偏移参数
+    const double x_o_ = 0; // 园区偏移参数
+    const double y_o_ = 0; // 园区偏移参数
 
   private:
     ros::NodeHandle                 n;

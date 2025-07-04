@@ -282,6 +282,16 @@ inline void CalDistance(vector<_TrajectoryPoint>& traj) {
         traj.at(i).distance = s;
     }
 }
+inline void CalDistance(vector<Point>& path) {
+    path.at(0).distance = 0;
+    double s            = 0;
+    for (unsigned int i = 1; i < path.size(); i++) {
+        double dx = path.at(i).x - path.at(i - 1).x;
+        double dy = path.at(i).y - path.at(i - 1).y;
+        s += sqrt(dx * dx + dy * dy);
+        path.at(i).distance = s;
+    }
+}
 // inline void CalCurv(vector<_TrajectoryPoint>& traj) {
 //     Point  delta_xi;   // Δxi
 //     Point  delta_xip1; // Δxi+1
@@ -541,7 +551,7 @@ inline void calculateAcceleration(const std::vector<_TrajectoryPoint>& v_points)
 
         double acceleration = speedSquaredDiff / 2 * distance;
 
-        std::cout << "点(" << currentPoint.x << ", " << currentPoint.y << ") 的加速度为: " << acceleration << std::endl;
+        // std::cout << "点(" << currentPoint.x << ", " << currentPoint.y << ") 的加速度为: " << acceleration << std::endl;
     }
 }
 
