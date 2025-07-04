@@ -1,51 +1,55 @@
 #rules
-#如果这个工程没有编译过，那么我们的所有c文件都要编译并被链接。
-#如果这个工程的某几个c文件被修改，那么我们只编译被修改的c文件，并链接目标程序。
-#如果这个工程的头文件被改变了，那么我们需要编译引用了这几个头文件的c文件，并链接目标程序。
-CC = gcc # C 编译器
-CXX = g++ # C++ 编译器
-CXXFLAGS = -fPIC -shared -std=c++17   -D SKIP_HEADER   -lstdc++fs  -O3  # C++ 编译选项，g 选项表示要将调试信息编译到可执行文件中
-# LDFLAGS = -lhiredis 
-# STATICLIBS = -lhiredis
-# LDFLAGS += -leasylogging++
-# LDFLAGS = -shared -Wl,--whole-archive $(STATICLIBS) -Wl,--no-whole-archive  
-LDFLAGS = -L/usr/local/lib -ldl -pthread -Wl,-rpath,/usr/local/lib
+# 如果工程未编译，编译所有C文件；若文件修改，仅编译修改文件；若头文件修改，编译引用该头文件的C文件
+CC = gcc 
+CXX = g++
+CXXFLAGS = -fPIC -shared -std=c++17 -D SKIP_HEADER -D OSQP_EIGEN_OSQP_IS_V1 -D OSQP_EIGEN_OSQP_IS_V1_FINAL -lstdc++fs -O3 -I/usr/include/eigen3  -I/usr/local/include/osqp -I/usr/local/include/OsqpEigen
+LDFLAGS = -L/usr/local/lib -Wl,-rpath,$(CURDIR)/lib/deps -Wl,-rpath,/usr/local/lib -ldl -pthread
 
-
-# TARGET = ./lib/libGlobalPlanning-G_V1.0.0.20240702_RC.so
 TARGET = lib/libGlobalPlanning.so
-# SRC = src/shenyan.cpp \
-#       src/collision_check.cpp \
-#       src/path_opti.cpp \
-# 	  src/optimal_path.cpp \
-# 	  src/dubins.cpp \
-# 	  src/r_s_curve.cpp \
-# 	  src/c_global_speed_planning_test.cpp \
-# 	  src/node2d.cpp \
-# 	  src/spline.cpp\
-# 	  src/dijkstra.cpp
+
 SRC = interface.cpp \
       mine_global_planning/planning.cpp\
-	  mine_global_planning/predicting.cpp\
-	  globalvariable.cpp \
+      mine_global_planning/predicting.cpp\
+      globalvariable.cpp \
       planner/pathplanner/dijkstra/dijkstra.cpp\
-	  planner/pathplanner/dubins/dubins.cpp\
-	  planner/pathplanner/hybirdastar/node2d.cpp\
-	  planner/pathplanner/hybirdastar/optimal_path.cpp\
-	  planner/pathplanner/hybirdastar/r_s_curve.cpp\
-	  planner/speedplanner/global_speed_planning.cpp\
+      planner/pathplanner/dubins/dubins.cpp\
+      planner/pathplanner/hybirdastar/node2d.cpp\
+      planner/pathplanner/hybirdastar/optimal_path.cpp\
+      planner/pathplanner/hybirdastar/r_s_curve.cpp\
+      planner/speedplanner/global_speed_planning.cpp\
       smoother/path_opti.cpp\
-	  collision_check/collision_check.cpp\
-	  planner/pathplanner/spline/spline.cpp
+      smoother/tension_smoother_2.cpp\
+      collision_check/collision_check.cpp\
+      planner/pathplanner/spline/spline.cpp
 
-	  
-OBJS = $(SRC:.cpp = .o)
+OBJS = $(SRC:.cpp=.o)
 
+# 确保目录存在
+$(shell mkdir -p lib lib/deps)
+
+# 主目标：链接动态库
 $(TARGET): $(OBJS)  
-	$(CXX) $(CXXFLAGS)  $^ $(LDFLAGS)  -o $@
+	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -lipopt -lcppad_lib -losqp -lOsqpEigen -o $@
+	@echo "已生成动态库: $@"
 
-	
+# 通用编译规则：包含依赖检测
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+	@echo "已编译: $< -> $@"
 
-.PHONY: clean
+# 包含依赖文件
+-include $(SRC:.cpp=.d)
+
+.PHONY: clean package
 clean: 
-	-rm $(TARGET) $(OBJS)
+	-rm -f $(TARGET) $(OBJS) $(SRC:.cpp=.d)
+	-rm -rf lib
+	@echo "清理完成"
+
+package: $(TARGET)
+	# 打包依赖库
+	cp /usr/local/lib/libipopt.so* lib/deps/ || true
+	cp /usr/local/lib/libcppad_lib.so lib/deps/ || true
+	cp /usr/local/lib/libosqp.so* lib/deps/ || true
+	cp /usr/local/lib/libOsqpEigen.so* lib/deps/ || true
+	@echo "打包完成，依赖库已复制到lib/deps目录"

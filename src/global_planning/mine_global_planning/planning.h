@@ -164,7 +164,8 @@ class Planning {
     shared_ptr<spdlog::logger> threadLogger_;
     string                     vehicle_code_;
     int                        dubins_straight_distance_ = 0;
-    double                     hybridAstar_path_length_  = 0;
+    string                     key_;
+    double                     hybridAstar_path_length_ = 0;
 
 #ifdef SKIP_HEADER
 #else
