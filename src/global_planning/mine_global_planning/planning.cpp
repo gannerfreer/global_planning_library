@@ -736,7 +736,7 @@ void Planning::StartEndPointProcess() {
     last_point.y           = end_point_.y;
     last_point.z           = end_point_.z;
     last_point.yaw         = end_point_.yaw;
-    last_point.speed_limit = 0;
+    last_point.speed_limit = global_path_.back().speed_limit;
 
     last_point.speed     = 0;
     last_point.curvature = global_path_.back().curvature;

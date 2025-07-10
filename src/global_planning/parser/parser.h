@@ -446,14 +446,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
 
 
-            if (val.HasMember("curvature_threshold") && val["curvature_threshold"].IsNumber()) {
-                veh_start_end.veh_param.curvature_threshold = val["curvature_threshold"].GetFloat();
-                cout << "veh_start_end.veh_param.curvature_threshold " << veh_start_end.veh_param.curvature_threshold << endl;
-            }
-            else {
-                cout << "无法找到车参 curvature_threshold ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.curvature_threshold = 0.1;
-            }
+            
 
             if (val.HasMember("speed_limit_level") && val["speed_limit_level"].IsNumber() && val["speed_limit_level"].GetUint() >= 1 && val["speed_limit_level"].GetUint() <= 3) {
                 veh_start_end.veh_param.speed_limit_level = static_cast<SpeedLimitLevel>(val["speed_limit_level"].GetUint());

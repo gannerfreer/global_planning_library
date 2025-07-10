@@ -119,43 +119,52 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
 
 
     // 先通过direction属性，将前进后退轨迹进行区分(direction 0:前进 1:后退),后退轨迹限速均为1m/s
-    vector<_TrajectoryPoint>::iterator iter             = trajectory.begin();
-    double                             last_speed_limit = 0;
-    for (; iter != trajectory.end(); iter++) {
-        if (iter->direction == 0) {
-            if (iter->attribute == PointAttribute::regular_road) // 正常路
-            {
-                iter->speed_limit = regular_road_speed_limit;
+    vector<_TrajectoryPoint>::iterator iter = trajectory.begin();
+    if (trajectory.end()->speed_limit == -1) {
+        //speed_limit=-1表示没有设置限速，说明地图中没有提供限速信息，说明这是矿区版本的地图
+        double last_speed_limit = 0;
+        for (; iter != trajectory.end(); iter++) {
+            if (iter->direction == 0) {
+                if (iter->attribute == PointAttribute::regular_road) // 正常路
+                {
+                    iter->speed_limit = regular_road_speed_limit;
+                }
+                else if (iter->attribute == PointAttribute::narrow_road) // 会车路
+                {
+                    iter->speed_limit = narrow_road_speed_limit;
+                }
+                else if (iter->attribute == PointAttribute::intersection_road) // 路口
+                {
+                    iter->speed_limit = intersection_road_speed_limit;
+                }
+                else if (iter->attribute == PointAttribute::slope_road) // 坡路
+                {
+                    iter->speed_limit = slope_road_speed_limit;
+                }
+                else if (iter->attribute == PointAttribute::dump_road) // 颠簸路
+                {
+                    iter->speed_limit = bumpy_road_speed_limit;
+                }
+                else if (iter->attribute == PointAttribute::queue_point) // 装载排队点
+                {
+                    // 排队点限速为上一个点的限速
+                    iter->speed_limit = last_speed_limit;
+                }
+                else // 其他特殊点一律限速为0
+                {
+                    iter->speed_limit = 0;
+                }
+                last_speed_limit = iter->speed_limit;
             }
-            else if (iter->attribute == PointAttribute::narrow_road) // 会车路
-            {
-                iter->speed_limit = narrow_road_speed_limit;
+            else {
+                iter->speed_limit = reverse_speed;
             }
-            else if (iter->attribute == PointAttribute::intersection_road) // 路口
-            {
-                iter->speed_limit = intersection_road_speed_limit;
-            }
-            else if (iter->attribute == PointAttribute::slope_road) // 坡路
-            {
-                iter->speed_limit = slope_road_speed_limit;
-            }
-            else if (iter->attribute == PointAttribute::dump_road) // 颠簸路
-            {
-                iter->speed_limit = bumpy_road_speed_limit;
-            }
-            else if (iter->attribute == PointAttribute::queue_point) // 装载排队点
-            {
-                // 排队点限速为上一个点的限速
-                iter->speed_limit = last_speed_limit;
-            }
-            else // 其他特殊点一律限速为0
-            {
-                iter->speed_limit = 0;
-            }
-            last_speed_limit = iter->speed_limit;
         }
-        else {
-            iter->speed_limit = reverse_speed;
+    }else{
+        // 如果speed_limit!=-1，说明地图中提供了限速信息，说明这是光伏/园区版本的地图
+        //对hybrid*astar规划的路径进行限速
+        for (int i = 1; i <= hybridAstar_path_length_; i++) {
+            trajectory.at(i).speed_limit = 10;
         }
     }
     // std::ofstream file_out;
@@ -165,7 +174,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     // }
     // file_out.close();
 
-    //计算trajectory前hybridAstar_path_length_个路径点的曲率变化率,如果曲率变化率大于0.06，则将对应路径点的限速设置为1
+    // 计算trajectory前hybridAstar_path_length_个路径点的曲率变化率,如果曲率变化率大于0.06，则将对应路径点的限速设置为1
     threadLogger_->info("速度规划，hybridAstar_path_length_：{}", hybridAstar_path_length_);
     vector<double> curvature_change_rate;
     for (int i = 1; i < hybridAstar_path_length_; i++) {

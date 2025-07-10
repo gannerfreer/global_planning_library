@@ -64,11 +64,14 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
     _SingleTraj                traj;
     _TrajectoryPoint           tp;
     int                        traj_type = -1;
+    double speed_limit=-1;
     for (int i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
         traj.id                      = trajsArray[i]["id"].GetInt();
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
-
+        if(trajsArray[i].HasMember("speed_limit")){
+            speed_limit=trajsArray[i]["speed_limit"].GetDouble();
+        }
 
         traj_type = trajsArray[i]["type"].GetInt();
         std::cout << "id:" << traj.id << "  路径点数量：" << trajPointsArray.Size() << endl;
@@ -80,6 +83,7 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
             tp.curvature = trajPointsArray[j]["curvature"].GetDouble();
             tp.attribute = static_cast<PointAttribute>(trajPointsArray[j]["attribute"].GetInt());
             tp.direction = static_cast<unsigned char>(trajPointsArray[j]["direction"].GetInt());
+            tp.speed_limit=speed_limit;
             traj.trajectory.push_back(tp);
         }
         switch (traj_type) {
@@ -655,13 +659,7 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
             }
 
 
-            if (val.HasMember("curvature_threshold")) {
-                veh_start_end.veh_param.curvature_threshold = val["curvature_threshold"].GetFloat();
-            }
-            else {
-                cout << "无法找到车参 curvature_threshold ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.curvature_threshold = 0.1;
-            }
+           
 
             if (val.HasMember("task_type")) {
                 veh_start_end.veh_param.task_type = val["task_type"].GetUint();

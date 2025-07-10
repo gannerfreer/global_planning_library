@@ -228,8 +228,6 @@ struct _VehicleParam {
     float reverse_speed;
 
 
-    /*曲率校验阈值*/
-    float curvature_threshold;
     bool  is_light;
 
     SpeedLimitLevel speed_limit_level        = SpeedLimitLevel::three;
