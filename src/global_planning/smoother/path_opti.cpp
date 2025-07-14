@@ -159,7 +159,6 @@ void Path_Opti::SmoothPath() {
 }
 
 
-
 vector<unsigned int> Path_Opti::CurvatureCheck(const Path& input_path) {
     double curvature_threshold = 1.0;
 
@@ -251,12 +250,17 @@ bool Path_Opti::SmoothSegmentPath(const Path& input_path, Path& output_path, Col
     smoother.threadLogger_ = threadLogger_;
 
     if (!smoother.smooth(output_path)) {
+        threadLogger_->info("优化方案优化失败");
         return false;
     }
     threadLogger_->info("优化方案优化成功");
 
     // 计算曲率
     CurvatureCal(output_path);
+    // 如果input_path为后退路段，则将output_path反向
+    if (input_path.at(0).direction == MotionDirection::Backward) {
+        std::reverse(output_path.begin(), output_path.end());
+    }
     // 循环结束后，计算角度并保存原始属性
     for (unsigned int i = 0; i < output_path.size() - 1; i++) {
         double dx    = (output_path.at(i + 1).x - output_path.at(i).x);
@@ -317,7 +321,12 @@ bool Path_Opti::OsqpSmooth(const Path& path_, Path& opti_path, CollisonCheck& co
         Path segment_path(segment);
         Path opti_segment;
         // 使用OSQP/ipopt求解器优化当前段
-
+        // 判断segment_path为前进还是后退路段，如果为后退，则将segment_path反向,否则会因为角度反向问题导致优化失败
+        if (segment_path.at(0).direction == MotionDirection::Backward) {
+            std::reverse(segment_path.begin(), segment_path.end());
+        }
+        //重新计算segment_path的累积s
+        Helper::CalDistance(segment_path);
         if (!SmoothSegmentPath(segment_path, opti_segment, collison_check)) {
             return false;
         }

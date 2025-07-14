@@ -116,12 +116,14 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
         bumpy_road_speed_limit        = c * bumpy_road_speed_limit;
         reverse_speed                 = 0.5;
     }
+   
 
 
     // 先通过direction属性，将前进后退轨迹进行区分(direction 0:前进 1:后退),后退轨迹限速均为1m/s
     vector<_TrajectoryPoint>::iterator iter = trajectory.begin();
-    if (trajectory.end()->speed_limit == -1) {
-        //speed_limit=-1表示没有设置限速，说明地图中没有提供限速信息，说明这是矿区版本的地图
+    threadLogger_->info("trajectory.end()->speed_limit:{}", trajectory.end()->speed_limit);
+    if (trajectory.back().speed_limit == -1) {
+        // speed_limit=-1表示没有设置限速，说明地图中没有提供限速信息，说明这是矿区版本的地图
         double last_speed_limit = 0;
         for (; iter != trajectory.end(); iter++) {
             if (iter->direction == 0) {
@@ -160,11 +162,18 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
                 iter->speed_limit = reverse_speed;
             }
         }
-    }else{
+    }
+    else {
         // 如果speed_limit!=-1，说明地图中提供了限速信息，说明这是光伏/园区版本的地图
-        //对hybrid*astar规划的路径进行限速
-        for (int i = 1; i <= hybridAstar_path_length_; i++) {
+        // 对hybrid*astar规划的路径进行限速
+        threadLogger_->info("地图中提供了限速信息，hybridAstar_path_length_：{}", hybridAstar_path_length_);
+        for (int i = 0; i < hybridAstar_path_length_; i++) {
             trajectory.at(i).speed_limit = 10;
+        }
+        for (int i = 0; i < trajectory.size(); i++) {
+            if (trajectory.at(i).direction == 1) {
+                trajectory.at(i).speed_limit = reverse_speed;
+            }
         }
     }
     // std::ofstream file_out;

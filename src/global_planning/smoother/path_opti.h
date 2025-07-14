@@ -12,6 +12,7 @@
 #define PATH_OPTI_H
 
 #include <unordered_set>
+#include <algorithm>
 
 #include "../collision_check/collision_check.h"
 #include "../common/common_struct.h"

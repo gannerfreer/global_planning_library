@@ -166,7 +166,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
     threadLogger_->info("执行均匀碾压后路径点曲率");
     for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute));
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} speed_limit:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute),i.speed_limit);
     }
     // 将global_path_保存到 after_smooth.txt文件中
     //  file_out.open("after_smooth.txt");
@@ -635,6 +635,9 @@ PlanResult Planning::FollowReferencelinePlanning() {
     Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec);
     threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
     cout << "终点搜索半径:" << end_search_radius << "  搜索到路径数量:  " << end_path_vec.size() << endl;
+    if (end_path_vec.empty()) {
+        return PlanResult::EndPoint_Deviation;
+    }
     threadLogger_->info("搜索到的路径ID信息如下");
     cout << "搜索到的路径ID信息如下:" << endl;
     for (auto i : end_path_vec) {
@@ -1217,8 +1220,8 @@ void Planning::PathClipAndSplice() {
         }
     }
     threadLogger_->info("从参考路径中截取的路段信息如下，全长大约 {} m", global_path_.size());
-    for (int i = 0; i < global_path_.size() - 1; i++) {
-        threadLogger_->info("x:{} y:{} yaw:{} direction:{} delta_s:{} attribute:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).yaw / M_PI * 180.0, static_cast<int>(global_path_.at(i).direction), hypot(global_path_.at(i + 1).y - global_path_.at(i).y, global_path_.at(i + 1).x - global_path_.at(i).x), static_cast<int>(global_path_.at(i).attribute));
+    for (int i = 0; i < global_path_.size(); i++) {
+        threadLogger_->info("x:{} y:{} yaw:{} direction:{} attribute:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).yaw / M_PI * 180.0, static_cast<int>(global_path_.at(i).direction), static_cast<int>(global_path_.at(i).attribute));
     }
 }
 PlanResult Planning::HybirdAStarFitting() {
