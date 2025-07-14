@@ -193,8 +193,9 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     // 起点
     planning.start_point_ = veh_start_end.start_point;
     // 终点
-    planning.end_point_ = veh_start_end.end_point;
-
+    planning.end_point_       = veh_start_end.end_point;
+    planning.reference_paths_ = veh_start_end.reference_paths;
+    planning.threadLogger_->info("第三通道 reference_paths_:{}", planning.reference_paths_.size());
     try {
         planning.GlobalPathPlanningInterface(path);
     } catch (const std::exception& e) {

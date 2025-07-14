@@ -219,6 +219,32 @@ inline void CalNearestIndex(_SinglePoint& point, _SingleTraj& traj, int& nearest
     //      << nearest_point.yaw << endl;
     // cout << "lon_dis:" << lon_dis << endl;
 }
+inline void CalNearestIndex(_SinglePoint& point, vector<_TrajectoryPoint>& traj, int& nearest_index, double& lat_dis, double& lon_dis, double& distance, double& angle_diff) {
+    double           temp_dis;
+    double           min_distance = numeric_limits<double>::max();
+    _TrajectoryPoint nearest_point;
+    for (int i = 0; i < traj.size(); i++) {
+        _TrajectoryPoint temp_point;
+        temp_point = traj.at(i);
+        // if (calculateAngleDifference(point.yaw, temp_point.yaw) < 1.58) {
+        temp_dis = sqrt(pow(point.x - temp_point.x, 2) + pow(point.y - temp_point.y, 2));
+        if (temp_dis < min_distance) {
+            min_distance  = temp_dis;
+            nearest_index = i;
+            // }
+        }
+    }
+    nearest_point = traj.at(nearest_index);
+
+    lat_dis    = fabs((point.y - nearest_point.y) * cos(nearest_point.yaw) - (point.x - nearest_point.x) * sin(nearest_point.yaw)); // 横向距离先不区分左正右负
+    lon_dis    = (point.x - nearest_point.x) * cos(nearest_point.yaw) + (point.y - nearest_point.y) * sin(nearest_point.yaw);
+    distance   = hypot(point.x - nearest_point.x, point.y - nearest_point.y);
+    angle_diff = fabs(point.yaw - nearest_point.yaw) > M_PI ? 2 * M_PI - fabs(point.yaw - nearest_point.yaw) : fabs(point.yaw - nearest_point.yaw);
+    // cout << "计算纵向距离" << endl;
+    // cout << "x偏差： " << point.x - nearest_point.x << "   y偏差： " << point.y - nearest_point.y << "最近点角度："
+    //      << nearest_point.yaw << endl;
+    // cout << "lon_dis:" << lon_dis << endl;
+}
 
 inline bool OverSpeedCheck(vector<_TrajectoryPoint>& traj, float L) {
     bool flag = false;

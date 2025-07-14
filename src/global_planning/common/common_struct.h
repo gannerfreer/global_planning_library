@@ -110,13 +110,12 @@ struct _TrajectoryPoint {
     unsigned char  direction; // 路点方向(0:前进，1:倒退)
     double         acc;
     bool           offset_flag;
-    double         t; // 到达改点的时间
 
     inline void Clear() {
-        x = y = z = yaw = curvature = speed = distance = speed_limit = direction = acc = t = 0;
+        x = y = z = yaw = curvature = speed = distance = speed_limit = direction = acc = 0;
     }
-    _TrajectoryPoint() : x(0), y(0), z(0), yaw(0), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false), t(0) {}
-    _TrajectoryPoint(double x_val, double y_val, double yaw_val) : x(x_val), y(y_val), z(0), yaw(yaw_val), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false), t(0) {}
+    _TrajectoryPoint() : x(0), y(0), z(0), yaw(0), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false) {}
+    _TrajectoryPoint(double x_val, double y_val, double yaw_val) : x(x_val), y(y_val), z(0), yaw(yaw_val), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false) {}
 };
 
 struct _SingleTraj {
@@ -228,7 +227,7 @@ struct _VehicleParam {
     float reverse_speed;
 
 
-    bool  is_light;
+    bool is_light;
 
     SpeedLimitLevel speed_limit_level        = SpeedLimitLevel::three;
     int             L2                       = 8;
@@ -239,18 +238,19 @@ struct _VehicleParam {
     float           max_steering_wheel_speed = 0.1396;
     int             sample_num               = 40;
     float           plan_time                = 0.2;
-  
-    float           dis_threshold            = 2.0;
+
+    float dis_threshold = 2.0;
 };
 
 // 调用全局规划时，需要传入的参数
 struct _TarStartEnd {
-    _SinglePoint                 start_point;   // 起点
-    _SinglePoint                 end_point;     // 终点
-    _VehicleParam                veh_param;     // 车辆参数
-    TaskType                     task_type;     // 当前车辆任务类型
-    vector<vector<_BorderPoint>> inner_borders; // 区域内边界
-    string                       my_key;
+    _SinglePoint                     start_point;     // 起点
+    _SinglePoint                     end_point;       // 终点
+    _VehicleParam                    veh_param;       // 车辆参数
+    TaskType                         task_type;       // 当前车辆任务类型
+    vector<vector<_BorderPoint>>     inner_borders;   // 区域内边界
+    vector<vector<_TrajectoryPoint>> reference_paths; // 参考路径
+    string                           my_key;
 };
 
 struct _HumanVechicleInfo {

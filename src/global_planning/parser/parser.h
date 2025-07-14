@@ -446,8 +446,6 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
 
 
-            
-
             if (val.HasMember("speed_limit_level") && val["speed_limit_level"].IsNumber() && val["speed_limit_level"].GetUint() >= 1 && val["speed_limit_level"].GetUint() <= 3) {
                 veh_start_end.veh_param.speed_limit_level = static_cast<SpeedLimitLevel>(val["speed_limit_level"].GetUint());
                 cout << "veh_start_end.veh_param.speed_limit_level " << static_cast<int>(veh_start_end.veh_param.speed_limit_level) << endl;
@@ -569,6 +567,26 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
         cout << "解析 key 中" << endl;
         veh_start_end.my_key = doc["key"].GetString();
     }
+
+    _TrajectoryPoint pp;
+    if (doc.HasMember("reference_paths")) {
+        cout << "解析 reference_paths 中" << endl;
+        Value& val = doc["reference_paths"];
+        for (size_t i = 0; i < val.Size(); i++) {
+            Value&                   pathPointsArray = val[i]["reference_path"];
+            vector<_TrajectoryPoint> temp_reference_path;
+            for (SizeType j = 0; j < pathPointsArray.Size(); j++) {
+                pp.x         = pathPointsArray[j]["x"].GetDouble();
+                pp.y         = pathPointsArray[j]["y"].GetDouble();
+                pp.yaw       = pathPointsArray[j]["yaw"].GetDouble();
+                pp.direction = pathPointsArray[j]["direction"].GetInt();
+                pp.attribute = PointAttribute::dump_road;
+                temp_reference_path.push_back(pp);
+            }
+            veh_start_end.reference_paths.push_back(temp_reference_path);
+        }
+    }
+
     return veh_start_end;
 }
 
@@ -771,7 +789,8 @@ bool GetMap(char* parea) {
     std::map<int, _SingleTraj> m_traj_self_driving, m_traj_human_driving;
     _SingleTraj                traj;
     _TrajectoryPoint           tp;
-    int                        traj_type = -1;
+    int                        traj_type   = -1;
+    double                     speed_limit = -1;
     for (SizeType i = 0; i < trajsArray.Size(); i++) {
         traj.trajectory.clear();
         traj.id = trajsArray[i]["id"].GetInt();
@@ -782,15 +801,20 @@ bool GetMap(char* parea) {
             traj_type = 2;
         }
 
+        if (trajsArray[i].HasMember("speed_limit")) {
+            speed_limit = trajsArray[i]["speed_limit"].GetDouble();
+        }
+
         const Value& trajPointsArray = trajsArray[i]["trajectory"];
         for (SizeType j = 0; j < trajPointsArray.Size(); j++) {
-            tp.x         = trajPointsArray[j]["x"].GetDouble();
-            tp.y         = trajPointsArray[j]["y"].GetDouble();
-            tp.z         = trajPointsArray[j]["z"].GetDouble();
-            tp.yaw       = trajPointsArray[j]["yaw"].GetDouble() / 180.0 * M_PI;
-            tp.curvature = trajPointsArray[j]["curvature"].GetDouble();
-            tp.attribute = static_cast<PointAttribute>(trajPointsArray[j]["attribute"].GetInt());
-            tp.direction = static_cast<unsigned char>(trajPointsArray[j]["direction"].GetInt());
+            tp.x           = trajPointsArray[j]["x"].GetDouble();
+            tp.y           = trajPointsArray[j]["y"].GetDouble();
+            tp.z           = trajPointsArray[j]["z"].GetDouble();
+            tp.yaw         = trajPointsArray[j]["yaw"].GetDouble() / 180.0 * M_PI;
+            tp.curvature   = trajPointsArray[j]["curvature"].GetDouble();
+            tp.attribute   = static_cast<PointAttribute>(trajPointsArray[j]["attribute"].GetInt());
+            tp.direction   = static_cast<unsigned char>(trajPointsArray[j]["direction"].GetInt());
+            tp.speed_limit = speed_limit;
             traj.trajectory.push_back(tp);
         }
         if (traj_type == 2) {

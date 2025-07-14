@@ -16,6 +16,7 @@ bool Planning::InitialFunction() {
     all_referencelines_.clear();
     global_path_.clear();
     v_has_calculate_pair_.clear();
+    reference_paths_.clear();
 
     task_type_               = TaskType::RESERVED;
     hybridAstar_path_length_ = 0;
@@ -460,6 +461,33 @@ PlanResult Planning::PathPlanning() {
     end_point_.yaw   = end_point_.yaw / 180.0 * M_PI;
     threadLogger_->info(" task_type_: {}", (int)task_type_);
 
+    if (reference_paths_.size() > 0) {
+        // 如果后台下发的要求拟合的参考路径不为空，则采用拟合的参考路径
+        // 遍历每个路径的最后一个点，判断哪条路径的最后一个点距离end_point_最近，挑选出的这条路径,并算出start_point_距离这条路最近点的索引
+        double min_distance = 1000;
+        int    min_index    = 0;
+        for (int i = 0; i < reference_paths_.size(); i++) {
+            double distance = hypot(reference_paths_[i].back().x - end_point_.x, reference_paths_[i].back().y - end_point_.y);
+            if (distance < min_distance) {
+                min_distance = distance;
+                min_index    = i;
+            }
+        }
+        if (min_distance > 0.3) {
+            threadLogger_->error("给定终点偏离参考路径，放弃此次规划");
+            return PlanResult::EndPoint_Deviation;
+        }
+
+        // 计算start_point_距离这条路最近点的索引
+        Helper::CalNearestIndex(start_point_, reference_paths_[min_index], start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
+        // 将匹配到的路径添加到全局路径中
+        threadLogger_->info("起点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", start_index_, start_lat_dis_, start_lon_dis_, start_angle_diff_ / M_PI * 180.0);
+
+        global_path_.insert(global_path_.end(), reference_paths_[min_index].begin() + start_index_, reference_paths_[min_index].end());
+        cout << "起点匹配上的路径索引" << start_index_ << " 横向距离" << start_lat_dis_ << " 纵向距离" << start_lon_dis_ << " 角度误差" << start_angle_diff_ / M_PI * 180.0 << endl;
+        return PlanResult::Plan_OK;
+    }
+
     if (task_type_ == TaskType::TEMP_MOVE_CAR) {
         // 临时挪车任务直接采用hybridA*规划路径
         threadLogger_->info("挪车");
@@ -468,7 +496,6 @@ PlanResult Planning::PathPlanning() {
     }
     else {
         threadLogger_->info("调度、装载、卸载");
-
         // 在这里判断装载和卸载任务终点是否位于参考路径上
         double temp_end_lat_dis, temp_end_lon_dis     = 0;
         double temp_start_lat_dis, temp_start_lon_dis = 0;
@@ -603,6 +630,7 @@ PlanResult Planning::FollowReferencelinePlanning() {
     vector<int> start_path_vec, end_path_vec;
     cout << "开始进入起点、终点搜索环节" << endl;
     cout << "end_search_radius:" << end_search_radius << endl;
+
 
     Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec);
     threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
@@ -790,7 +818,7 @@ bool Planning::PathOffset() {
     // 定义您想要生成的浮点数的集合
     random_device rd;
     mt19937       gen(rd());
-    vector<float> weights = {-1.0, 0, 1.0};
+    vector<float> weights = {0, 1.0};
     // 使用uniform_int_distribution从集合中随机选择一个索引
     uniform_int_distribution<size_t> dis(0, weights.size() - 1);
     float                            weight = 0.0;
@@ -1730,12 +1758,32 @@ void Planning::FillErrorCode(PlanResult result) {
 
 vector<unsigned int> Planning::CurvatureCheck(vector<_TrajectoryPoint>& input_path) {
     CurvatureCal(input_path);
+
+
+     double curvature_threshold = 1.0;
+
     vector<unsigned int> curvature_exceed_point;
     curvature_exceed_point.clear();
     for (unsigned int i = 1; i < input_path.size() - 1; i++) {
         double curvature = input_path.at(i).curvature;
-        if (fabs(curvature) > vehicle_param_.curvature_threshold) {
-            threadLogger_->info("第 {} 个点曲率超标，点坐标为({},{}),曲率为{},此点将被列为anchor点", i, input_path.at(i).x, input_path.at(i).y, input_path.at(i).curvature);
+        if (input_path.at(i).direction == MotionDirection::Forward) {
+            if (vehicle_param_.is_light) {
+                curvature_threshold = tan(vehicle_param_.light_forward_max_steering) / vehicle_param_.wheel_base;
+            }
+            else {
+                curvature_threshold = tan(vehicle_param_.heavy_forward_max_steering) / vehicle_param_.wheel_base;
+            }
+        }
+        else {
+            if (vehicle_param_.is_light) {
+                curvature_threshold = tan(vehicle_param_.light_backward_max_steering) / vehicle_param_.wheel_base;
+            }
+            else {
+                curvature_threshold = tan(vehicle_param_.heavy_backward_max_steering) / vehicle_param_.wheel_base;
+            }
+        }
+        if (fabs(curvature) > curvature_threshold + 1e-2) {
+            threadLogger_->info("第 {} 个点曲率超标，点坐标为({},{}),曲率为{},此点将被列为anchor点,> {}", i, input_path.at(i).x, input_path.at(i).y, input_path.at(i).curvature, curvature_threshold);
             curvature_exceed_point.push_back(i);
             curvature_exceed_point.push_back(i - 1);
             curvature_exceed_point.push_back(i + 1);

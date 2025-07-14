@@ -166,6 +166,7 @@ class Planning {
     int                        dubins_straight_distance_ = 0;
     string                     key_;
     double                     hybridAstar_path_length_ = 0;
+    vector<vector<_TrajectoryPoint>> reference_paths_;//后台下发的要求拟合的参考路径
 
 #ifdef SKIP_HEADER
 #else
