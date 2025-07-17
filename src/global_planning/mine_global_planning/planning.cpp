@@ -166,7 +166,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
     threadLogger_->info("执行均匀碾压后路径点曲率");
     for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} speed_limit:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute),i.speed_limit);
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} speed_limit:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute), i.speed_limit);
     }
     // 将global_path_保存到 after_smooth.txt文件中
     //  file_out.open("after_smooth.txt");
@@ -220,11 +220,11 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("CalAcc");
 
     // 检查全局路径是否与地图边界发生碰撞
-    // if (!IsGlobalPathCollision()) {
-    //     threadLogger_->error("全局路径与地图边界发生碰撞，放弃此次规划结果");
-    //     error_type_ = ErrorType::ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_COLLISION;
-    //     return;
-    // }
+    if (!IsGlobalPathCollision()) {
+        threadLogger_->error("全局路径与地图边界发生碰撞，放弃此次规划结果");
+        error_type_ = ErrorType::ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_COLLISION;
+        return;
+    }
 
     path = global_path_;
     threadLogger_->info("规划成功，即将返回轨迹  轨迹总长:{}", global_path_.size());
@@ -1763,7 +1763,7 @@ vector<unsigned int> Planning::CurvatureCheck(vector<_TrajectoryPoint>& input_pa
     CurvatureCal(input_path);
 
 
-     double curvature_threshold = 1.0;
+    double curvature_threshold = 1.0;
 
     vector<unsigned int> curvature_exceed_point;
     curvature_exceed_point.clear();
@@ -2036,9 +2036,9 @@ bool Planning::IsGlobalPathCollision() {
     // 3. 检查global_path_每个点
     for (size_t i = 0; i < global_path_.size(); ++i) {
         const auto& pt = global_path_[i];
-        Point       check_point(pt.x, pt.y, pt.z, pt.yaw, static_cast<MotionDirection>(pt.direction));
+        Point       check_point(pt.x, pt.y, pt.z, pt.yaw / 180.0 * M_PI, static_cast<MotionDirection>(pt.direction));
         if (collison_check_.IsVehicleCollision(check_point)) {
-            threadLogger_->info("全局路径与地图边界发生碰撞，碰撞点索引：{}", i);
+            threadLogger_->info("全局路径与地图边界发生碰撞，碰撞点索引：{} {} {}", pt.x, pt.y, pt.yaw);
             return false;
         }
     }
