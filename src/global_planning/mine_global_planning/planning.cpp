@@ -1367,6 +1367,9 @@ PlanResult Planning::HybirdAStarFitting() {
 
                         return result;
                     }
+                    if (result == PlanResult::StartPoint_Collision) {
+                        return result;
+                    }
                 }
                 else {
                     threadLogger_->info("参考路径位于车头后方，这种情况下先采用Back_Fitting模式，不行再采用Start_Front_End_Back模式");
@@ -1377,6 +1380,9 @@ PlanResult Planning::HybirdAStarFitting() {
                         global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
                         hybridAstar_path_length_ = temp_traj.size();
 
+                        return result;
+                    }
+                    if (result == PlanResult::StartPoint_Collision) {
                         return result;
                     }
                 }

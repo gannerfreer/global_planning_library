@@ -232,67 +232,134 @@ bool CollisonCheck::IsVehicleCollisionObstacleBound(const Point& my_point, const
     double cosa = cos(my_point.angle);
     double sina = sin(my_point.angle);
 
-    // 计算车辆安全包络左前角坐标
-    double     x_lf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double     y_lf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
-    Coordinate point_lf(x_lf, y_lf, my_point.z);
+    if (my_point.direction == MotionDirection::Forward) {
+        // 计算车辆安全包络左前角坐标
+        double     x_lf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+        double     y_lf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+        Coordinate point_lf(x_lf, y_lf, my_point.z);
 
-    // 计算车辆安全包络右前角坐标
-    double     x_rf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double     y_rf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
-    Coordinate point_rf(x_rf, y_rf, my_point.z);
+        // 计算车辆安全包络右前角坐标
+        double     x_rf = my_point.x + (m__VehicleParam_.veh_center_2_front + safe_distance) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+        double     y_rf = my_point.y + (m__VehicleParam_.veh_center_2_front + safe_distance) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+        Coordinate point_rf(x_rf, y_rf, my_point.z);
 
-    // 计算车辆安全包络左后角坐标
-    double     x_lr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double     y_lr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
-    Coordinate point_lr(x_lr, y_lr, my_point.z);
+        // 计算车辆安全包络左后角坐标
+        double     x_lr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+        double     y_lr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+        Coordinate point_lr(x_lr, y_lr, my_point.z);
 
-    // 计算车辆安全包络右后角坐标
-    double     x_rr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
-    double     y_rr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
-    Coordinate point_rr(x_rr, y_rr, my_point.z);
+        // 计算车辆安全包络右后角坐标
+        double     x_rr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+        double     y_rr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+        Coordinate point_rr(x_rr, y_rr, my_point.z);
 
-    // 使用轴对齐包围盒AABB包络车辆安全包络
-    double x_aabb_min = x_lf < x_rf ? x_lf : x_rf;
-    x_aabb_min        = x_aabb_min < x_lr ? x_aabb_min : x_lr;
-    x_aabb_min        = x_aabb_min < x_rr ? x_aabb_min : x_rr;
+        // 使用轴对齐包围盒AABB包络车辆安全包络
+        double x_aabb_min = x_lf < x_rf ? x_lf : x_rf;
+        x_aabb_min        = x_aabb_min < x_lr ? x_aabb_min : x_lr;
+        x_aabb_min        = x_aabb_min < x_rr ? x_aabb_min : x_rr;
 
-    double x_aabb_max = x_lf > x_rf ? x_lf : x_rf;
-    x_aabb_max        = x_aabb_max > x_lr ? x_aabb_max : x_lr;
-    x_aabb_max        = x_aabb_max > x_rr ? x_aabb_max : x_rr;
+        double x_aabb_max = x_lf > x_rf ? x_lf : x_rf;
+        x_aabb_max        = x_aabb_max > x_lr ? x_aabb_max : x_lr;
+        x_aabb_max        = x_aabb_max > x_rr ? x_aabb_max : x_rr;
 
-    double y_aabb_min = y_lf < y_rf ? y_lf : y_rf;
-    y_aabb_min        = y_aabb_min < y_lr ? y_aabb_min : y_lr;
-    y_aabb_min        = y_aabb_min < y_rr ? y_aabb_min : y_rr;
+        double y_aabb_min = y_lf < y_rf ? y_lf : y_rf;
+        y_aabb_min        = y_aabb_min < y_lr ? y_aabb_min : y_lr;
+        y_aabb_min        = y_aabb_min < y_rr ? y_aabb_min : y_rr;
 
-    double y_aabb_max = y_lf > y_rf ? y_lf : y_rf;
-    y_aabb_max        = y_aabb_max > y_lr ? y_aabb_max : y_lr;
-    y_aabb_max        = y_aabb_max > y_rr ? y_aabb_max : y_rr;
+        double y_aabb_max = y_lf > y_rf ? y_lf : y_rf;
+        y_aabb_max        = y_aabb_max > y_lr ? y_aabb_max : y_lr;
+        y_aabb_max        = y_aabb_max > y_rr ? y_aabb_max : y_rr;
 
-    // 计算方向包络盒占据的网格上下限
-    int x_int_aabb_min = static_cast<int>(floor(x_aabb_min / m__VehicleParam_.grid_dist));
-    int x_int_aabb_max = static_cast<int>(ceil(x_aabb_max / m__VehicleParam_.grid_dist));
-    int y_int_aabb_min = static_cast<int>(floor(y_aabb_min / m__VehicleParam_.grid_dist));
-    int y_int_aabb_max = static_cast<int>(ceil(y_aabb_max / m__VehicleParam_.grid_dist));
+        // 计算方向包络盒占据的网格上下限
+        int x_int_aabb_min = static_cast<int>(floor(x_aabb_min / m__VehicleParam_.grid_dist));
+        int x_int_aabb_max = static_cast<int>(ceil(x_aabb_max / m__VehicleParam_.grid_dist));
+        int y_int_aabb_min = static_cast<int>(floor(y_aabb_min / m__VehicleParam_.grid_dist));
+        int y_int_aabb_max = static_cast<int>(ceil(y_aabb_max / m__VehicleParam_.grid_dist));
 
-    // 遍历每个栅格点进行碰撞检测
-    IntCoordinate temp_int_point;
-    for (int i = x_int_aabb_min; i <= x_int_aabb_max; ++i) {
-        for (int j = y_int_aabb_min; j <= y_int_aabb_max; ++j) {
-            temp_int_point.x      = i;
-            temp_int_point.y      = j;
-            unsigned int hash     = Coordinate2Hash(temp_int_point);
-            auto         iter_vec = obstacle_bound_map_.find(hash);
-            if (iter_vec != obstacle_bound_map_.end()) {
-                for (auto iter = iter_vec->second.begin(); iter != iter_vec->second.end(); ++iter) {
-                    if (IsPointInMatrix(*iter, point_lf, point_lr, point_rr, point_rf) == true) // 存在一个点发生碰撞
-                        return true;
-                    else
-                        ;
+        // 遍历每个栅格点进行碰撞检测
+        IntCoordinate temp_int_point;
+        for (int i = x_int_aabb_min; i <= x_int_aabb_max; ++i) {
+            for (int j = y_int_aabb_min; j <= y_int_aabb_max; ++j) {
+                temp_int_point.x      = i;
+                temp_int_point.y      = j;
+                unsigned int hash     = Coordinate2Hash(temp_int_point);
+                auto         iter_vec = obstacle_bound_map_.find(hash);
+                if (iter_vec != obstacle_bound_map_.end()) {
+                    for (auto iter = iter_vec->second.begin(); iter != iter_vec->second.end(); ++iter) {
+                        if (IsPointInMatrix(*iter, point_lf, point_lr, point_rr, point_rf) == true) // 存在一个点发生碰撞
+                            return true;
+                        else
+                            ;
+                    }
                 }
             }
         }
     }
+    else {
+        // 计算车辆安全包络左前角坐标
+        double     x_lf = my_point.x + (m__VehicleParam_.veh_center_2_front) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+        double     y_lf = my_point.y + (m__VehicleParam_.veh_center_2_front) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+        Coordinate point_lf(x_lf, y_lf, my_point.z);
+
+        // 计算车辆安全包络右前角坐标
+        double     x_rf = my_point.x + (m__VehicleParam_.veh_center_2_front) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+        double     y_rf = my_point.y + (m__VehicleParam_.veh_center_2_front) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+        Coordinate point_rf(x_rf, y_rf, my_point.z);
+
+        // 计算车辆安全包络左后角坐标
+        double     x_lr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * cosa - (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+        double     y_lr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * sina + (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+        Coordinate point_lr(x_lr, y_lr, my_point.z);
+
+        // 计算车辆安全包络右后角坐标
+        double     x_rr = my_point.x + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * cosa + (m__VehicleParam_.veh_center_2_side + safe_distance) * sina;
+        double     y_rr = my_point.y + -(m__VehicleParam_.veh_center_2_rear_bound + safe_distance) * sina - (m__VehicleParam_.veh_center_2_side + safe_distance) * cosa;
+        Coordinate point_rr(x_rr, y_rr, my_point.z);
+
+        // 使用轴对齐包围盒AABB包络车辆安全包络
+        double x_aabb_min = x_lf < x_rf ? x_lf : x_rf;
+        x_aabb_min        = x_aabb_min < x_lr ? x_aabb_min : x_lr;
+        x_aabb_min        = x_aabb_min < x_rr ? x_aabb_min : x_rr;
+
+        double x_aabb_max = x_lf > x_rf ? x_lf : x_rf;
+        x_aabb_max        = x_aabb_max > x_lr ? x_aabb_max : x_lr;
+        x_aabb_max        = x_aabb_max > x_rr ? x_aabb_max : x_rr;
+
+        double y_aabb_min = y_lf < y_rf ? y_lf : y_rf;
+        y_aabb_min        = y_aabb_min < y_lr ? y_aabb_min : y_lr;
+        y_aabb_min        = y_aabb_min < y_rr ? y_aabb_min : y_rr;
+
+        double y_aabb_max = y_lf > y_rf ? y_lf : y_rf;
+        y_aabb_max        = y_aabb_max > y_lr ? y_aabb_max : y_lr;
+        y_aabb_max        = y_aabb_max > y_rr ? y_aabb_max : y_rr;
+
+        // 计算方向包络盒占据的网格上下限
+        int x_int_aabb_min = static_cast<int>(floor(x_aabb_min / m__VehicleParam_.grid_dist));
+        int x_int_aabb_max = static_cast<int>(ceil(x_aabb_max / m__VehicleParam_.grid_dist));
+        int y_int_aabb_min = static_cast<int>(floor(y_aabb_min / m__VehicleParam_.grid_dist));
+        int y_int_aabb_max = static_cast<int>(ceil(y_aabb_max / m__VehicleParam_.grid_dist));
+
+        // 遍历每个栅格点进行碰撞检测
+        IntCoordinate temp_int_point;
+        for (int i = x_int_aabb_min; i <= x_int_aabb_max; ++i) {
+            for (int j = y_int_aabb_min; j <= y_int_aabb_max; ++j) {
+                temp_int_point.x      = i;
+                temp_int_point.y      = j;
+                unsigned int hash     = Coordinate2Hash(temp_int_point);
+                auto         iter_vec = obstacle_bound_map_.find(hash);
+                if (iter_vec != obstacle_bound_map_.end()) {
+                    for (auto iter = iter_vec->second.begin(); iter != iter_vec->second.end(); ++iter) {
+                        if (IsPointInMatrix(*iter, point_lf, point_lr, point_rr, point_rf) == true) // 存在一个点发生碰撞
+                            return true;
+                        else
+                            ;
+                    }
+                }
+            }
+        }
+    }
+
+
     return false;
 }
 
