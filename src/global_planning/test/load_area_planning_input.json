@@ -1,73 +1,51 @@
 {
-    "m_Start_Point": {
+    "wait_point": {
         "x": 99.10303899013837,
         "y": -727.807070267549,
         "z": 19.05305290222168,
         "yaw": 347.8934020996094
     },
-    "m_End_Point": {
+    "load_point": {
         "x": -91.6529415363,
         "y": -162.4335527522,
         "z": 0.0,
-        "yaw": 119.4480352086,
-        "endPointId": 56
+        "yaw": 119.4480352086
     },
     "m_Veh_Param": {
-        "L1": 3,
-        "L2": 8,
-        "L3": 8,
-        "radious": 12.5,
-        "is_light": false,
-        "w_length": 0.0001,
-        "grid_dist": 0.7,
-        "max_kappa": 0.07,
-        "plan_time": 0.2,
-        "delta_dist": 1,
-        "grid_angle": 1,
-        "wheel_base": 5.15,
-        "reverse_speed": 1,
-        "rs_min_length": 2,
-        "switch_penalty": 10,
-        "forward_penalty": 1,
-        "offset_distance": 0.2,
-        "path_error_term": 0,
-        "backward_penalty": 5.5,
-        "max_acceleration": 0.3,
-        "min_acceleration": -0.4,
-        "speed_error_term": 0.1,
-        "turnning_penalty": 2.468,
-        "safe_margin_bound": 0.0,
-        "safe_margin_error": 0,
-        "speed_limit_level": 3,
-        "speed_smooth_term": 0.01,
-        "veh_center_2_side": 1.77,
-        "angle_discrete_num": 3,
-        "max_fitting_radius": 100,
-        "veh_center_2_front": 7.102,
-        "curvature_threshold": 0.08,
-        "max_iterations_opti": 100,
-        "path_curvature_term": 0.0,
-        "path_smoothness_term": 0.2,
-        "safe_margin_obstacle": 1.6,
-        "bumpy_road_speed_limit": 4.5,
-        "slope_road_speed_limit": 1.5,
-        "cusp_extension_distance": 3,
-        "hybridastar_step_length": 1,
-        "narrow_road_speed_limit": 2.0,
-        "veh_center_2_rear_bound": 2.85,
-        "regular_road_speed_limit": 6.5,
-        "linear_preferred_distance": 3,
-        "uniform_compaction_enable": false,
-        "heavy_forward_max_steering": 25,
-        "light_forward_max_steering": 28.3,
-        "veh_center_2_rear_obstacle": 2.77,
-        "heavy_backward_max_steering": 22.39,
-        "light_backward_max_steering": 27.24,
-        "intersection_road_speed_limit": 1.5,
-        "vehicle_code": 616
+        "max_curve_length": 1,
+        "min_curve_length": 1,
+        "delta_curve_length": 1,
+        "wheel_base_length": 1,
+        "center2side": 1,
+        "max_straight_length": 1,
+        "min_straight_length": 1,
+        "delta_straight_length": 1,
+        "max_steering_angle": 1,
+        "min_steering_angle": 1,
+        "delta_steering_angle": 1,
+        "standard_steering_angle": 1,
+        "weight_length": 1,
+        "weight_curve": 1,
+        "load_path_straight_length_weight": 1,
+        "load_path_curvature_weight": 1,
+        "out_put_path_dense": 1,
+        "search_range": 1,
+        "jump_dense": 1,
+        "length_weight": 1,
+        "critical_length": 1,
+        "curvature_weight": 1,
+        "min_straight_length_depart": 1,
+        "max_straight_length_depart": 1,
+        "delta_straight_length_depart": 1,
+        "min_straight_length_wait": 1,
+        "max_straight_length_wait": 1,
+        "delta_straight_length_wait": 1,
+        "min_straight_length_load": 1,
+        "max_straight_length_load": 1,
+        "delta_straight_length_load": 1
     },
-    "task_type": 2,
-    "Machines_Borders": [
+    "planning_mode": 0,
+    "Inner_Borders": [
         {
             "zone_id": 14,
             "inner_borders": [
@@ -829,7 +807,5 @@
             ]
         }
     ],
-    "Wall_Borders":[
-
-    ]
+    "key": "ids:mine:dispatch:planPath:result:1947116430015246336"
 }

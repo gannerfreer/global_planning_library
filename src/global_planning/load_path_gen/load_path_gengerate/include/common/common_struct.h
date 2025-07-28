@@ -1,12 +1,6 @@
 #ifndef GLOBAL_PLANNING_COMMON_STRUCT_H
 #define GLOBAL_PLANNING_COMMON_STRUCT_H
 
-#ifdef SKIP_HEADER
-
-#else
-#include <geometry_msgs/Point.h>
-#endif
-
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -19,13 +13,6 @@
 #include <map>
 #include <shared_mutex>
 #include <vector>
-
-#include "../third_lib/rapidjson/document.h"
-#include "../third_lib/rapidjson/filereadstream.h"
-#include "../third_lib/rapidjson/filewritestream.h"
-#include "../third_lib/rapidjson/prettywriter.h"
-#include "../third_lib/rapidjson/stringbuffer.h"
-#include "../third_lib/rapidjson/writer.h"
 
 using namespace std;
 
@@ -75,8 +62,7 @@ enum struct ErrorType : unsigned int {
     ALGORITHM_ERROR_TRAJECTORY_VERIFY_SPEED_OVER      = 16, // 全局规划算法运行异常-路径校验异常,轨迹超速
     ALGORITHM_ERROR_TRAJECTORY_VERIFY_DIRECTION_ERROR = 17, // 全局规划算法运行异常-路径校验异常,倒车路段direction错误
     ALGORITHM_ERROR_TRY_CATCH_ERROR                   = 18, // try_catch捕获异常
-    Start_Point_Too_Far                               = 19, // Start_Point_Too_Far 任务起点远离所有参考路径，目前支持最大范围100m
-    ALGORITHM_ERROR_TRAJECTORY_VERIFY_PATH_COLLISION  = 20  // 全局规划算法运行异常-路径校验异常,全局路径与地图边界发生碰撞
+    Start_Point_Too_Far                               = 19  // Start_Point_Too_Far 任务起点远离所有参考路径，目前支持最大范围100m
 };
 
 enum struct PointAttribute : unsigned int {
@@ -97,6 +83,15 @@ enum struct SpeedLimitLevel : unsigned int {
     three   = 3  // 三级限速
 };
 
+struct _ClothoidParam {
+    double start_x;              // 起点x坐标（单位：m）
+    double start_y;              // 起点y坐标（单位：m）
+    double start_theta;          // 起点朝向角（单位：0~360deg）
+    double start_curvature;      // 起点曲率（单位：无）
+    double totle_length;         // 回旋线总长度（单位：m）
+    double curvatrue_derivative; // 回旋线曲率随弧长的变化率（单位：1/m）
+};
+
 struct _TrajectoryPoint {
     double         x;         // x坐标(单位：m)
     double         y;         // y坐标(单位：m)
@@ -110,12 +105,13 @@ struct _TrajectoryPoint {
     unsigned char  direction; // 路点方向(0:前进，1:倒退)
     double         acc;
     bool           offset_flag;
+    double         t; // 到达改点的时间
 
     inline void Clear() {
-        x = y = z = yaw = curvature = speed = distance = speed_limit = direction = acc = 0;
+        x = y = z = yaw = curvature = speed = distance = speed_limit = direction = acc = t = 0;
     }
-    _TrajectoryPoint() : x(0), y(0), z(0), yaw(0), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false) {}
-    _TrajectoryPoint(double x_val, double y_val, double yaw_val) : x(x_val), y(y_val), z(0), yaw(yaw_val), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false) {}
+    _TrajectoryPoint() : x(0), y(0), z(0), yaw(0), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false), t(0) {}
+    _TrajectoryPoint(double x_val, double y_val, double yaw_val) : x(x_val), y(y_val), z(0), yaw(yaw_val), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false), t(0) {}
 };
 
 struct _SingleTraj {
@@ -153,6 +149,8 @@ struct _VehicleParam {
     double safe_margin_bound;
     // 前后左右的安全距离（障碍物）
     double safe_margin_obstacle;
+    // 前后左右距挡墙的距离
+    double safe_margin_wall;
     // 重载向后开最大车轮转角
     double heavy_backward_max_steering;
     // 重载向前开最大车轮转角
@@ -212,7 +210,6 @@ struct _VehicleParam {
     // 尖点延伸距离
     float cusp_extension_distance;
 
-
     // 速度规划参数
     /* 最大加速度 单位(m/s^2) */
     float max_acceleration;
@@ -226,8 +223,9 @@ struct _VehicleParam {
     /* 倒车速度 */
     float reverse_speed;
 
-
-    bool is_light;
+    /*曲率校验阈值*/
+    float curvature_threshold;
+    bool  is_light;
 
     SpeedLimitLevel speed_limit_level        = SpeedLimitLevel::three;
     int             L2                       = 8;
@@ -238,19 +236,19 @@ struct _VehicleParam {
     float           max_steering_wheel_speed = 0.1396;
     int             sample_num               = 40;
     float           plan_time                = 0.2;
-
-    float dis_threshold = 2.0;
+    float           w_curvature              = 1.0;
+    float           w_length                 = 0.0;
+    float           dis_threshold            = 2.0;
 };
 
 // 调用全局规划时，需要传入的参数
 struct _TarStartEnd {
-    _SinglePoint                     start_point;     // 起点
-    _SinglePoint                     end_point;       // 终点
-    _VehicleParam                    veh_param;       // 车辆参数
-    TaskType                         task_type;       // 当前车辆任务类型
-    vector<vector<_BorderPoint>>     inner_borders;   // 区域内边界
-    vector<vector<_TrajectoryPoint>> reference_paths; // 参考路径
-    string                           my_key;
+    _SinglePoint                 start_point;   // 起点
+    _SinglePoint                 end_point;     // 终点
+    _VehicleParam                veh_param;     // 车辆参数
+    TaskType                     task_type;     // 当前车辆任务类型
+    vector<vector<_BorderPoint>> inner_borders; // 区域内边界
+    string                       my_key;
 };
 
 struct _HumanVechicleInfo {
@@ -262,47 +260,6 @@ struct _AllHumanVechicleInfos {
     vector<_HumanVechicleInfo> human_vechicle_infos; // 有人车路位姿信息
     string                     my_key              = "human_test";
     int                        predicting_distance = 100;
-};
-
-// 调用装载区排队点自动生成算法时，需要传入的参数
-struct _LoadAreaPlanningInfos {
-    double max_curve_length;                 // 圆弧直线倒车最大曲线长度
-    double min_curve_length;                 // 圆弧直线倒车最小曲线长度
-    double delta_curve_length;               // 圆弧直线倒车曲线长度采样间距
-    double wheel_base_length;                // 车辆轴距
-    double center2side;                      // 车辆宽度
-    double max_straight_length;              // 圆弧直线倒车最大直线长度
-    double min_straight_length;              // 圆弧直线倒车最小直线长度
-    double delta_straight_length;            // 圆弧直线倒车直线采样间距
-    double max_steering_angle;               // 圆弧直线倒车最大转向角
-    double min_steering_angle;               // 圆弧直线倒车最小转向角
-    double delta_steering_angle;             // 圆弧直线倒车转角采样间距
-    double standard_steering_angle;          // 标准倒车转角
-    double weight_length;                    // 圆弧直线倒车长度评分权重
-    double weight_curve;                     // 圆弧直线倒车转角评分权重
-    double load_path_straight_length_weight; // 前往装载点路径直线长度权重
-    double load_path_curvature_weight;       // 前往装载点路径曲率权重
-    double out_put_path_dense;               // 输出路径密度
-    double search_range;                     // 寻找周围路径范围
-    double jump_dense;                       // 在目标路径上取点的密度
-    double length_weight;                    // 前进路径直线长度权重
-    double critical_length;                  // 前进路径长度标准值
-    double curvature_weight;                 // 前进路径曲率权重
-    double min_straight_length_depart;       // 驶离路径最短直线长度
-    double max_straight_length_depart;       // 驶离路径最长直线长度
-    double delta_straight_length_depart;     // 驶离路径长度采样间距
-    double min_straight_length_wait;         // 前往等待点路径直线长度最大值
-    double max_straight_length_wait;         // 前往等待点路径直线长度最小值
-    double delta_straight_length_wait;       // 前往等待点路径直线长度采样间距
-    double min_straight_length_load;         // 前往装载点路径直线长度最小值
-    double max_straight_length_load;         // 前往装载点路径直线长度最大值
-    double delta_straight_length_load;       // 前往装载点路径直线长度采样间距
-
-    int                          planning_mode = 0;
-    _SinglePoint                 wait_point;
-    _SinglePoint                 load_point;
-    vector<vector<_BorderPoint>> wall_borders; // 挡墙边界
-    vector<vector<_BorderPoint>> machine_borders;//挖掘机边界
 };
 
 struct GridPoint {
@@ -317,12 +274,13 @@ struct GridPoint {
 
 #ifdef SKIP_HEADER
 #else
-struct tarRviz {
-    // vector<Point_3d> vec_point;
-    vector<geometry_msgs::Point> vec_point, road_node, obstacle_v;
-    double                       minx;
-    double                       miny;
-};
+// struct tarRviz
+// {
+//     // vector<Point_3d> vec_point;
+//     vector<geometry_msgs::Point> vec_point, road_node, obstacle_v;
+//     double minx;
+//     double miny;
+// };
 #endif
 
 #if 1
@@ -332,7 +290,6 @@ typedef struct {
     double z;
 } Point_3d;
 #endif
-
 
 enum struct PlanRule : int {
     Normal_Planning      = 0, // 正常规划,无特殊限制
@@ -399,7 +356,6 @@ struct Point {
 
     double          angle; // 方向, 单位：rad
     double          curvature;
-    double          distance;
     MotionDirection direction; // 0表示前进，1表示后退(尖点属性随后)
 };
 /**
@@ -419,12 +375,10 @@ struct Line {
     double y2;
 };
 
-
 // 障碍物与地图边界
 typedef vector<vector<Coordinate>> Bound;
 // 带前进后退信息的路径
 typedef std::vector<Point> Path;
-
 
 } // namespace GlobalPlanning
 

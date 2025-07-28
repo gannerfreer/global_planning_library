@@ -1,9 +1,7 @@
 ﻿#ifndef COLLISION_CHECK_H
 #define COLLISION_CHECK_H
 
-#include "../common/common_struct.h"
-// #include "../os/os.h"
-#include "../time/TimeHelper.h"
+#include "../../common/common_struct.h"
 
 namespace GlobalPlanning {
 /**
@@ -11,10 +9,10 @@ namespace GlobalPlanning {
  */
 class CollisonCheck {
   public:
-    explicit CollisonCheck() {
-        time_couter_.SetHeader("碰撞检测.");
-    } // 默认构造函数
-    ~CollisonCheck() {} // 析构函数
+    explicit CollisonCheck() {} // 默认构造函数
+    ~CollisonCheck() {}         // 析构函数
+    void InitWallBoundMap(const Bound wall_bound);
+
     void InitParam(_VehicleParam m__VehicleParam);
     /**
      * @brief 初始化地图边界函数
@@ -28,31 +26,29 @@ class CollisonCheck {
      * @return 返回说明：无
      */
     void InitObstacleMap(const Bound obstacle_bound);
-
-
-    /**
-     * @brief 初始化挡墙边界函数
-     * @param[in] wall_bound 障碍物边界点
-     * @return 返回说明：无
-     */
-    void InitWallMap(const Bound wall_bound);
-
     /**
      * @brief 判断RS拟合路径是否跟边界碰撞函数
      * @param[in] my_rspath  RS路径
      * @return 返回说明：
      * true:  碰撞
      * false: 不碰撞
-
-
      */
     bool IsRSPathCollision(const Path& my_rspath);
+
     /**
      * @brief 判断优化路径是否跟边界碰撞函数
      * @param[in] my_optipath  优化路径
      * @return 返回碰撞点索引
      */
     vector<unsigned int> OptiPathCollisionCheck(const Path& my_optipath);
+
+    /**
+     * @brief 判断路径是否跟所有边界碰撞
+     * @param[in] my_optipath  优化路径
+     * @return 返回碰撞点索引
+     */
+    vector<unsigned int> OptiPathCollisionCheckWithAll(const Path& my_optipath);
+
     /**
      * @brief 判断车辆位置是否跟边界碰撞函数
      * @param[in] my_point  路点位置
@@ -61,6 +57,10 @@ class CollisonCheck {
      * false: 不碰撞
      */
     bool IsVehicleCollision(const Point& my_point);
+
+    vector<unsigned int> DepartPathCollisionCheck(const Path& my_optipath);
+
+    bool IsVehicleCollisionWithAll(const Point& my_point);
 
   private:
     /**
@@ -92,6 +92,7 @@ class CollisonCheck {
      * true:  点在矩形内
      * false: 点在矩形外
      */
+    bool IsVehicleCollisionWallBound(const Point& my_point, const double& safe_distance);
     bool IsPointInMatrix(Coordinate& p, Coordinate& p1, Coordinate& p2, Coordinate& p3, Coordinate& p4);
     /**
      * @brief 计算两向量叉乘函数
@@ -114,9 +115,8 @@ class CollisonCheck {
 
   private:
     unordered_map<unsigned int, vector<Coordinate>> road_bound_map_;     // 地图边界
+    unordered_map<unsigned int, vector<Coordinate>> wall_bound_map_;     // 挡墙边界
     unordered_map<unsigned int, vector<Coordinate>> obstacle_bound_map_; // 障碍物边界
-    unordered_map<unsigned int, vector<Coordinate>> wall_bound_map_;     // 障碍物边界
-    utility::CTimeCounter                           time_couter_;        // 计时对象
 
 }; // end class
 } // namespace GlobalPlanning
