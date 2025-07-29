@@ -36,7 +36,9 @@ planner/speedplanner/global_speed_planning.o: \
  planner/speedplanner/../../common/../third_lib/rapidjson/internal/itoa.h \
  planner/speedplanner/../../common/../third_lib/rapidjson/stringbuffer.h \
  planner/speedplanner/../../common/../third_lib/rapidjson/stringbuffer.h \
- planner/speedplanner/../../common/../third_lib/rapidjson/writer.h
+ planner/speedplanner/../../common/../third_lib/rapidjson/writer.h \
+ planner/speedplanner/../../math/helper.h \
+ planner/speedplanner/../../math/../common/common_struct.h
 
 planner/speedplanner/global_speed_planning.h:
 
@@ -111,3 +113,7 @@ planner/speedplanner/../../common/../third_lib/rapidjson/stringbuffer.h:
 planner/speedplanner/../../common/../third_lib/rapidjson/stringbuffer.h:
 
 planner/speedplanner/../../common/../third_lib/rapidjson/writer.h:
+
+planner/speedplanner/../../math/helper.h:
+
+planner/speedplanner/../../math/../common/common_struct.h:

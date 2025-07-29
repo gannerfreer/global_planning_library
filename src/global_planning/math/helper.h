@@ -563,7 +563,7 @@ inline double mod(double x, double y) {
 
 
 // 计算加速度的函数
-inline void calculateAcceleration(const std::vector<_TrajectoryPoint>& v_points) {
+inline void calculateAcceleration( std::vector<_TrajectoryPoint>& v_points) {
     if (v_points.size() < 2) {
         std::cout << "至少需要两个点才能计算加速度" << std::endl;
         return;
@@ -576,9 +576,12 @@ inline void calculateAcceleration(const std::vector<_TrajectoryPoint>& v_points)
         double                  speedSquaredDiff = currentPoint.speed * currentPoint.speed - prevPoint.speed * prevPoint.speed;
 
         double acceleration = speedSquaredDiff / 2 * distance;
+        v_points.at(i).acc  = acceleration;
 
         // std::cout << "点(" << currentPoint.x << ", " << currentPoint.y << ") 的加速度为: " << acceleration << std::endl;
     }
+    v_points.front().acc = v_points.at(1).acc;
+    v_points.back().acc  = v_points.at(v_points.size() - 2).acc;
 }
 
 static inline float clamp(float n, float lower, float upper) {

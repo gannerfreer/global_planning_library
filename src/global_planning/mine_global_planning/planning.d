@@ -306,6 +306,7 @@ mine_global_planning/planning.o: mine_global_planning/planning.cpp \
  mine_global_planning/../planner/pathplanner/hybirdastar/r_s_curve.h \
  mine_global_planning/../planner/speedplanner/global_speed_planning.h \
  mine_global_planning/../planner/speedplanner/../../common/common_struct.h \
+ mine_global_planning/../planner/speedplanner/../../math/helper.h \
  mine_global_planning/../planner/pathplanner/dubins/dubins.h \
  mine_global_planning/../planner/pathplanner/dubins/../../../common/common_struct.h \
  mine_global_planning/../planner/pathplanner/dubins/point.h \
@@ -934,6 +935,8 @@ mine_global_planning/../planner/pathplanner/hybirdastar/r_s_curve.h:
 mine_global_planning/../planner/speedplanner/global_speed_planning.h:
 
 mine_global_planning/../planner/speedplanner/../../common/common_struct.h:
+
+mine_global_planning/../planner/speedplanner/../../math/helper.h:
 
 mine_global_planning/../planner/pathplanner/dubins/dubins.h:
 

@@ -6,6 +6,10 @@
  * ****************************************/
 #include "global_speed_planning.h"
 
+#include <cctype>
+#include <type_traits>
+
+
 #define eps 1e-4
 
 using namespace GlobalPlanning;
@@ -16,13 +20,13 @@ using namespace GlobalPlanning;
  *return
  */
 void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
-    max_acceleration  = m_veh_param.max_acceleration;
-    min_acceleration  = m_veh_param.min_acceleration;
+    max_acceleration_ = m_veh_param.max_acceleration;
+    min_acceleration_ = m_veh_param.min_acceleration;
     speed_error_term  = m_veh_param.speed_error_term;
     speed_smooth_term = m_veh_param.speed_smooth_term;
     reverse_speed     = m_veh_param.reverse_speed;
-    threadLogger_->info("max_acceleration ={} ", max_acceleration);
-    threadLogger_->info("min_acceleration ={} ", min_acceleration);
+    threadLogger_->info("max_acceleration_ ={} ", max_acceleration_);
+    threadLogger_->info("min_acceleration_ ={} ", min_acceleration_);
     threadLogger_->info("speed_error_term ={} ", speed_error_term);
     threadLogger_->info("speed_smooth_term ={} ", speed_smooth_term);
     threadLogger_->info("reverse_speed ={} ", reverse_speed);
@@ -43,16 +47,35 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
 
     // 对trajectory中的每个点进行速度规划
     planSpeed(trajectory);
-    std::ofstream file;
-    // 保存平滑前的速度
+    // std::ofstream file;
+    // // 保存平滑前的速度
     // file.open("speed_before_smooth.txt");
     // for (const auto& point : trajectory) {
-    //     file << point.distance << " " << point.speed << std::endl;
+    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
     // }
     // file.close();
 
     // 速度曲线平滑
-    SpeedCurveSmooth(trajectory);
+    Smooth(trajectory);
+    // threadLogger_->info("进入FixLocalMininum");
+    // FixLocalMininum(trajectory);
+    // Helper::calculateAcceleration(trajectory);
+
+    // file.open("speed_after_smooth.txt");
+    // for (const auto& point : trajectory) {
+    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+    // }
+    // file.close();
+    // threadLogger_->info("进入FixLocalMaxnum");
+    // FixLocalMaxnum(trajectory);
+    // file.open("speed_after_smooth2.txt");
+    // for (const auto& point : trajectory) {
+    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+    // }
+    // file.close();
+
+    
+
 
     // 恢复倒车速度
     for (auto& point : trajectory) {
@@ -61,12 +84,8 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
         }
     }
     // 保存平滑后的速度
-    // file.open("speed_after_smooth.txt");
-    // for (const auto& point : trajectory) {
-    //     file << point.distance << " " << point.speed << std::endl;
-    // }
-    // file.close();
 }
+
 
 
 void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajectory) {
@@ -116,7 +135,6 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
         bumpy_road_speed_limit        = c * bumpy_road_speed_limit;
         reverse_speed                 = 0.5;
     }
-   
 
 
     // 先通过direction属性，将前进后退轨迹进行区分(direction 0:前进 1:后退),后退轨迹限速均为1m/s
@@ -258,132 +276,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     // file_out.close();
 }
 
-
-void GlobalSpeedPlanning::SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory) {
-    // const double JERK = 0.15; // 基准jerk值 (m/s³/m)
-
-    // // 找出所有极小值点的索引（不包括起点和终点）
-    // vector<size_t> minima_indices;
-    // for (size_t i = 1; i < trajectory.size() - 1; i++) {
-    //     if ((trajectory[i].speed <= trajectory[i - 1].speed && trajectory[i].speed < trajectory[i + 1].speed) || (trajectory[i].speed < trajectory[i - 1].speed && trajectory[i].speed <= trajectory[i + 1].speed)) {
-    //         minima_indices.push_back(i);
-    //     }
-    // }
-
-    // // 添加起点和终点
-    // minima_indices.insert(minima_indices.begin(), 0);
-    // minima_indices.push_back(trajectory.size() - 1);
-
-    // // 打印minima_indices
-    // for (size_t i = 0; i < minima_indices.size(); i++) {
-    //     threadLogger_->info("minima_indices:{}", minima_indices[i]);
-    // }
-
-    // // 对每对相邻极小值之间的区间进行处理
-    // for (size_t i = 0; i < minima_indices.size() - 1; i++) {
-    //     size_t start_idx = minima_indices[i];
-    //     size_t end_idx   = minima_indices[i + 1];
-
-    //     // 判断此区间是否有效，通过判断这个区间速度是否相等来识别
-    //     if (fabs(trajectory[start_idx].speed - trajectory[end_idx].speed) < 0.01 && trajectory[end_idx].speed > eps) {
-    //         continue;
-    //     }
-    //     // 打印调试信息
-    //     threadLogger_->info("start_idx:{}, end_idx:{}", start_idx, end_idx);
-
-    //     // 从极小值向两边扩展
-    //     double current_jerk  = JERK;
-    //     bool   valid_profile = false;
-
-    //     while (!valid_profile) {
-    //         threadLogger_->info("current_jerk:{}", current_jerk);
-    //         vector<double> forward_speeds;  // 从start向前推演的速度
-    //         vector<double> backward_speeds; // 从end向后推演的速度
-
-    //         // 从start_idx开始向前推演
-    //         double v = trajectory[start_idx].speed;
-    //         double a = 0.0; // 假设极小值处加速度为0
-
-    //         for (size_t j = start_idx; j <= end_idx; j++) {
-    //             forward_speeds.push_back(v);
-
-    //             if (j < end_idx) {
-    //                 double ds = trajectory[j + 1].distance - trajectory[j].distance;
-    //                 a         = std::min(float(a + current_jerk * ds), max_acceleration);
-    //                 threadLogger_->info("a:{}", a);
-    //                 double v_next = sqrt(v * v + 2 * a * ds);
-
-    //                 if (fabs(v_next) > fabs(trajectory[j + 1].speed)) {
-    //                     v = fabs(trajectory[j + 1].speed);
-    //                 }
-    //                 else {
-    //                     v = v_next;
-    //                 }
-    //             }
-    //         }
-    //         threadLogger_->info("开始向后推演");
-    //         // 从end_idx开始向后推演
-    //         v = trajectory[end_idx].speed;
-    //         a = 0.0;
-
-    //         for (size_t j = end_idx; j >= start_idx; j--) {
-    //             backward_speeds.insert(backward_speeds.begin(), v);
-
-    //             if (j > start_idx) {
-    //                 double ds = trajectory[j].distance - trajectory[j - 1].distance;
-    //                 a         = std::min(float(a + current_jerk * ds), -min_acceleration);
-    //                 threadLogger_->info("a:{}", a);
-    //                 double v_prev = sqrt(v * v + 2 * a * ds);
-
-    //                 if (fabs(v_prev) > fabs(trajectory[j - 1].speed)) {
-    //                     v = fabs(trajectory[j - 1].speed);
-    //                 }
-    //                 else {
-    //                     v = v_prev;
-    //                 }
-    //             }
-
-    //             if (j == start_idx) break;
-    //         }
-
-    //         // 找出forward和backward的交点，选择较小的速度作为最终速度
-    //         vector<double> temp_speeds(end_idx - start_idx + 1);
-    //         for (size_t j = 0; j <= end_idx - start_idx; j++) {
-    //             if (j == 0) {
-    //                 temp_speeds[j] = forward_speeds[j];
-    //             }
-    //             else if (j == end_idx - start_idx) {
-    //                 temp_speeds[j] = backward_speeds[j];
-    //             }
-    //             else {
-    //                 temp_speeds[j] = (fabs(forward_speeds[j]) <= fabs(backward_speeds[j])) ? forward_speeds[j] : backward_speeds[j];
-    //             }
-    //         }
-
-    //         // 检查加速度约束
-    //         valid_profile = true;
-    //         for (size_t j = 1; j <= end_idx - start_idx; j++) {
-    //             double ds  = trajectory[start_idx + j].distance - trajectory[start_idx + j - 1].distance;
-    //             double acc = (temp_speeds[j] * temp_speeds[j] - temp_speeds[j - 1] * temp_speeds[j - 1]) / (2 * ds);
-    //             threadLogger_->info("acc:{}", acc);
-    //             if (acc > max_acceleration + eps || acc < min_acceleration - eps) {
-    //                 valid_profile = false;
-    //                 break;
-    //             }
-    //         }
-
-    //         if (valid_profile) {
-    //             // 如果满足加速度约束，更新速度
-    //             for (size_t j = 0; j <= end_idx - start_idx; j++) {
-    //                 trajectory[start_idx + j].speed = temp_speeds[j];
-    //             }
-    //         }
-    //         else {
-    //             // 如果不满足约束，增加jerk值继续尝试
-    //             current_jerk *= 1.2;
-    //         }
-    //     }
-    // }
+void GlobalSpeedPlanning::Smooth(vector<_TrajectoryPoint>& trajectory) {
     vector<_TrajectoryPoint> trajectory_copy = trajectory;
     unsigned int             iterations      = 0;
     // 最大遍历次数为100次
@@ -404,6 +297,132 @@ void GlobalSpeedPlanning::SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory)
             // 确保速度不超过原始限速
             if (trajectory_copy.at(i).speed < trajectory.at(i).speed) {
                 trajectory.at(i).speed = trajectory_copy.at(i).speed;
+            }
+        }
+    }
+}
+void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) {
+    const double JERK = 0.05; // 基准jerk值 (m/s³/m)
+
+    // 找出所有极小值点的索引（不包括起点和终点）
+    vector<size_t> minima_indices;
+    for (size_t i = 1; i < trajectory.size() - 1; i++) {
+        if ((trajectory[i].speed <= trajectory[i - 1].speed && trajectory[i].speed < trajectory[i + 1].speed) || (trajectory[i].speed < trajectory[i - 1].speed && trajectory[i].speed <= trajectory[i + 1].speed)) {
+            minima_indices.push_back(i);
+        }
+    }
+
+    // 添加起点和终点
+    minima_indices.insert(minima_indices.begin(), 0);
+    minima_indices.push_back(trajectory.size() - 1);
+
+    // 打印minima_indices
+    for (size_t i = 0; i < minima_indices.size(); i++) {
+        threadLogger_->info("minima_indices:{}", minima_indices[i]);
+    }
+
+    // 对每对相邻极小值之间的区间进行处理
+    for (size_t i = 0; i < minima_indices.size() - 1; i++) {
+        size_t start_idx = minima_indices[i];
+        size_t end_idx   = minima_indices[i + 1];
+
+        // 判断此区间是否有效，通过判断这个区间速度是否相等来识别
+        if (fabs(trajectory[start_idx].speed - trajectory[end_idx].speed) < 0.01 && trajectory[end_idx].speed > eps && fabs(trajectory[start_idx].speed - trajectory[start_idx + 1].speed) < 0.01) {
+            continue;
+        }
+        // 打印调试信息
+        threadLogger_->info("start_idx:{}, end_idx:{}", start_idx, end_idx);
+
+        // 从极小值向两边扩展
+        double current_jerk  = JERK;
+        bool   valid_profile = false;
+
+        while (!valid_profile) {
+            threadLogger_->info("current_jerk:{}", current_jerk);
+            vector<double> forward_speeds;  // 从start向前推演的速度
+            vector<double> backward_speeds; // 从end向后推演的速度
+
+            // 从start_idx开始向前推演
+            double v = trajectory[start_idx].speed;
+            double a = 0.0; // 假设极小值处加速度为0
+
+            for (size_t j = start_idx; j <= end_idx; j++) {
+                forward_speeds.push_back(v);
+
+                if (j < end_idx) {
+                    double ds = trajectory[j + 1].distance - trajectory[j].distance;
+                    a         = std::min(float(a + current_jerk * ds), max_acceleration_);
+                    threadLogger_->info("前向推演 a:{} {}", a, max_acceleration_);
+                    double v_next = sqrt(v * v + 2 * a * ds);
+
+                    if (fabs(v_next) > fabs(trajectory[j + 1].speed)) {
+                        v = fabs(trajectory[j + 1].speed);
+                    }
+                    else {
+                        v = v_next;
+                    }
+                }
+            }
+            threadLogger_->info("开始向后推演");
+            // 从end_idx开始向后推演
+            v = trajectory[end_idx].speed;
+            a = 0.0;
+
+            for (size_t j = end_idx; j >= start_idx; j--) {
+                backward_speeds.insert(backward_speeds.begin(), v);
+
+                if (j > start_idx) {
+                    double ds = trajectory[j].distance - trajectory[j - 1].distance;
+                    a         = std::min(float(a + current_jerk * ds), -min_acceleration_);
+                    threadLogger_->info("后向推演 a:{} {}", a, -min_acceleration_);
+                    double v_prev = sqrt(v * v + 2 * a * ds);
+
+                    if (fabs(v_prev) > fabs(trajectory[j - 1].speed)) {
+                        v = fabs(trajectory[j - 1].speed);
+                    }
+                    else {
+                        v = v_prev;
+                    }
+                }
+
+                if (j == start_idx) break;
+            }
+
+            // 找出forward和backward的交点，选择较小的速度作为最终速度
+            vector<double> temp_speeds(end_idx - start_idx + 1);
+            for (size_t j = 0; j <= end_idx - start_idx; j++) {
+                if (j == 0) {
+                    temp_speeds[j] = forward_speeds[j];
+                }
+                else if (j == end_idx - start_idx) {
+                    temp_speeds[j] = backward_speeds[j];
+                }
+                else {
+                    temp_speeds[j] = (fabs(forward_speeds[j]) <= fabs(backward_speeds[j])) ? forward_speeds[j] : backward_speeds[j];
+                }
+            }
+
+            // 检查加速度约束
+            valid_profile = true;
+            for (size_t j = 1; j <= end_idx - start_idx; j++) {
+                double ds  = trajectory[start_idx + j].distance - trajectory[start_idx + j - 1].distance;
+                double acc = (temp_speeds[j] * temp_speeds[j] - temp_speeds[j - 1] * temp_speeds[j - 1]) / (2 * ds);
+                threadLogger_->info("acc:{}", acc);
+                if (acc > max_acceleration_ + eps || acc < min_acceleration_ - eps) {
+                    valid_profile = false;
+                    break;
+                }
+            }
+
+            if (valid_profile) {
+                // 如果满足加速度约束，更新速度
+                for (size_t j = 0; j <= end_idx - start_idx; j++) {
+                    trajectory[start_idx + j].speed = temp_speeds[j];
+                }
+            }
+            else {
+                // 如果不满足约束，增加jerk值继续尝试
+                current_jerk *= 1.2;
             }
         }
     }
@@ -430,7 +449,7 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
     for (size_t i = 1; i < trajectory_copy.size(); ++i) {
         double ds = trajectory_copy[i].distance - trajectory_copy[i - 1].distance;
         // 根据方向选择加速度限制
-        double current_max_acc    = trajectory_copy[i].direction == 0 ? max_acceleration : max_acceleration * 0.5;
+        double current_max_acc    = trajectory_copy[i].direction == 0 ? max_acceleration_ : max_acceleration_;
         double max_possible_speed = std::sqrt(trajectory_copy[i - 1].speed * trajectory_copy[i - 1].speed + 2 * current_max_acc * ds);
         trajectory_copy[i].speed  = std::min(max_possible_speed, trajectory_copy[i].speed_limit);
         // threadLogger_->info("i:{} speed:{}", i, trajectory_copy[i].speed);
@@ -440,7 +459,7 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
     for (size_t i = trajectory_copy.size() - 2; i > 0; --i) {
         double ds = trajectory_copy[i + 1].distance - trajectory_copy[i].distance;
         // 根据方向选择减速度限制
-        double current_min_acc    = trajectory_copy[i].direction == 0 ? min_acceleration * 0.5 : min_acceleration * 0.5;
+        double current_min_acc    = trajectory_copy[i].direction == 0 ? min_acceleration_ : min_acceleration_;
         double max_possible_speed = std::sqrt(trajectory_copy[i + 1].speed * trajectory_copy[i + 1].speed + 2 * std::abs(current_min_acc) * ds);
         trajectory_copy[i].speed  = std::min(trajectory_copy[i].speed, max_possible_speed);
         // threadLogger_->info("i:{} speed:{}", i, trajectory_copy[i].speed);
@@ -450,32 +469,168 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
         trajectory.at(i).speed = trajectory_copy.at(i).speed;
     }
 }
-void GlobalSpeedPlanning::AdjustSpeedLimit(vector<_TrajectoryPoint>& trajectory) {
-    std::vector<int> minimaIndices = findMinimaIndices(trajectory);
-    int              numMinima     = minimaIndices.size();
 
-    for (int i = 0; i < numMinima - 1; ++i) {
-        int start          = minimaIndices[i];
-        int end            = minimaIndices[i + 1];
-        int intervalLength = end - start;
 
-        if (intervalLength < 20) {
-            float maxEndpoint = std::max(trajectory.at(start).speed_limit, trajectory.at(end).speed_limit);
-            for (int j = start + 1; j < end; ++j) {
-                trajectory.at(j).speed_limit = maxEndpoint;
-            }
+void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
+    // 找出所有极大值点的索引（不包括起点和终点）
+    vector<size_t> maxima_indices;
+    for (size_t i = 1; i < trajectory.size() - 1; i++) {
+        if ((trajectory[i].speed >= trajectory[i - 1].speed && trajectory[i].speed > trajectory[i + 1].speed) || (trajectory[i].speed > trajectory[i - 1].speed && trajectory[i].speed >= trajectory[i + 1].speed)) {
+            maxima_indices.push_back(i);
         }
+    }
+    // 打印maxima_indices
+    threadLogger_->info("打印所有极大值");
+    for (size_t i = 0; i < maxima_indices.size(); i++) {
+        threadLogger_->info("maxima_indices:{}", maxima_indices[i]);
+    }
+    // 找出所有极小值点
+    vector<size_t> minima_indices;
+    for (size_t i = 1; i < trajectory.size() - 1; i++) {
+        if ((trajectory[i].speed <= trajectory[i - 1].speed && trajectory[i].speed < trajectory[i + 1].speed) || (trajectory[i].speed < trajectory[i - 1].speed && trajectory[i].speed <= trajectory[i + 1].speed)) {
+            minima_indices.push_back(i);
+        }
+    }
+
+    // 添加起点和终点
+    minima_indices.insert(minima_indices.begin(), 0);
+    minima_indices.push_back(trajectory.size() - 1);
+    // 打印minima_indices
+    threadLogger_->info("打印所有极小值，包括起点终点");
+    for (size_t i = 0; i < minima_indices.size(); i++) {
+        threadLogger_->info("minima_indices:{}", minima_indices[i]);
+    }
+
+    // 构建vector<tuple<int,int,int>>，每个tuple包含一个极大值点索引，及该极大值索引左侧的极小值点索引和右侧的极小值点索引
+    vector<int> total_record;
+    total_record.insert(total_record.end(), minima_indices.begin(), minima_indices.end());
+    total_record.insert(total_record.end(), maxima_indices.begin(), maxima_indices.end());
+    sort(total_record.begin(), total_record.end());
+    vector<tuple<int, int, int>> maxima_minima_indices;
+    for (size_t i = 0; i < maxima_indices.size(); i++) {
+        int index = BinarySearch(maxima_indices.at(i), total_record);
+        maxima_minima_indices.push_back(make_tuple(maxima_indices[i], total_record[index - 1], total_record[index + 1]));
+    }
+
+    // 打印maxima_minima_indices
+
+    threadLogger_->info("打印所有极大值区间");
+    for (size_t i = 0; i < maxima_minima_indices.size(); i++) {
+        threadLogger_->info("maxima_minima_indices:{}  {}  {}", get<0>(maxima_minima_indices[i]), get<1>(maxima_minima_indices[i]), get<2>(maxima_minima_indices[i]));
+    }
+
+
+    double min_delta_jerk = -0.1;
+    for (int i = 0; i < maxima_minima_indices.size(); i++) {
+        int maxima_idx       = get<0>(maxima_minima_indices[i]);
+        int left_minima_idx  = get<1>(maxima_minima_indices[i]);
+        int right_minima_idx = get<2>(maxima_minima_indices[i]);
+        int reasonable_idx   = -1;
+
+        threadLogger_->info("第 {} 对区间 [{},{}]，最右侧端点的速度 {}，加速度 {}", i, left_minima_idx, right_minima_idx, trajectory[right_minima_idx].speed, trajectory[right_minima_idx].acc);
+        // 从maxima_idx开始，往前遍历，直到遍历到left_minima_idx
+        for (int j = maxima_idx - 1; j >= left_minima_idx; j--) {
+            bool   flag  = false;
+            double cur_a = trajectory.at(j).acc + min_delta_jerk;
+            double cur_v = trajectory.at(j).speed;
+            for (int k = j; k < right_minima_idx; k++) {
+                double ds       = trajectory[k + 1].distance - trajectory[k].distance;
+                double next_v_2 = cur_v * cur_v + 2 * cur_a * ds > 0 ? cur_v * cur_v + 2 * cur_a * ds : 0;
+
+                double next_v = sqrt(next_v_2);
+
+                cur_a += min_delta_jerk;
+                if (cur_a < min_acceleration_) cur_a = min_acceleration_;
+                cur_v = next_v;
+                threadLogger_->info("index:{} v:{} acc:{} target_v:{} target_acc:{}", k, cur_v, cur_a, trajectory.at(k + 1).speed, trajectory.at(k + 1).acc);
+                if (cur_v > trajectory.at(k + 1).speed) {
+                    flag = true;
+                    break;
+                }
+                cout << "第" << i << "区间,第" << k << "个索引点" << " ds:" << ds << " a:" << cur_a << " v:" << cur_v << endl;
+            }
+            if (flag) {
+                threadLogger_->info("候选点 {} 以最大减速度推演出现超速情况，pass", j);
+                continue;
+            }
+            threadLogger_->info("候选点 {} ,起始速度：{}  起始加速度：{} 最终推导结果如下 cur_v:{} cur_a:{}", j, trajectory.at(j).speed, trajectory.at(j).acc + min_delta_jerk, cur_v, cur_a);
+            // 循环结束，判断推演出的最后一个点的速度、加速度是否满足要求
+            if ((cur_v <= trajectory[right_minima_idx].speed) && (cur_a <= trajectory.at(right_minima_idx).acc)) {
+                threadLogger_->info("第 {} 对区间，找到合理的衔接点{}", i, j);
+                reasonable_idx = j;
+                break;
+            }
+            cout << endl;
+        }
+        if (reasonable_idx == -1) {
+            // 这个区间，极大值左侧找不到合理的衔接点,跳过后续所有代码
+            threadLogger_->info("第 {} 对区间，没有找到合理的衔接点", i);
+            continue;
+        }
+        // 从reasonable_idx处开始推理，找到最合理的delta_jerk
+        threadLogger_->info("开始对第 {} 对区间进行试验，找出合理的delta_jerk", i);
+        double                        cur_delta_jerk = min_delta_jerk;
+        vector<tuple<double, double>> v_t;
+        int                           end_index;
+        bool                          success_flag = false;
+        while (cur_delta_jerk < 0) {
+            double cur_a = trajectory.at(reasonable_idx).acc + cur_delta_jerk;
+            double cur_v = trajectory.at(reasonable_idx).speed;
+            v_t.clear();
+            v_t.push_back(make_tuple(cur_a, cur_v));
+            for (int k = reasonable_idx; k < right_minima_idx; k++) {
+                double ds       = trajectory[k + 1].distance - trajectory[k].distance;
+                double next_v_2 = cur_v * cur_v + 2 * cur_a * ds > 0 ? cur_v * cur_v + 2 * cur_a * ds : 0;
+                double next_v   = sqrt(next_v_2);
+                cur_a += min_delta_jerk;
+                if (cur_a < min_acceleration_) cur_a = min_acceleration_;
+                cur_v = next_v;
+                v_t.push_back(make_tuple(cur_a, cur_v));
+                threadLogger_->info("index:{} v:{} a:{} target_v:{} target_a:{}",k,cur_v,cur_a,trajectory.at(k + 1).speed,trajectory.at(k + 1).acc);
+                if (fabs(cur_v - trajectory.at(k + 1).speed) < 1e-2 && fabs(cur_a - trajectory.at(k + 1).acc) < 1e-1) {
+                    threadLogger_->info("成功对接，对接处的索引{},speed:{} acc:{}", k + 1, cur_v, cur_a);
+                    success_flag = true;
+                    end_index    = k + 1;
+                    threadLogger_->info("有 {} 个点需要调整速度 加速度",v_t.size());
+                    for (int m = 0; m < v_t.size(); m++) {
+                        threadLogger_->info("m:{} reasonable_idx:{}",m,reasonable_idx);
+                        trajectory.at(reasonable_idx).acc   = get<0>(v_t.at(m));
+                        trajectory.at(reasonable_idx).speed = get<1>(v_t.at(m));
+                        reasonable_idx++;
+                    }
+                    threadLogger_->info("line592");
+                    break;
+                }
+                else{
+                    threadLogger_->info("未成功对接");
+                }
+            }
+            if (success_flag) {
+                threadLogger_->info("line597");
+                break;
+            }
+            // 循环结束，判断推演出的最后一个点的速度、加速度是否满足要求
+            threadLogger_->info("cur_delta_jerk={} 无法顺利接轨，换成 {} 尝试", cur_delta_jerk, cur_delta_jerk + 0.01);
+
+            cur_delta_jerk += 0.01;
+        }
+        threadLogger_->info("line603");
     }
 }
-
-// 函数用于查找极小值的索引
-std::vector<int> GlobalSpeedPlanning::findMinimaIndices(vector<_TrajectoryPoint>& trajectory) {
-    std::vector<int> minimaIndices;
-    int              n = trajectory.size();
-    for (int i = 1; i < n - 1; ++i) {
-        if (trajectory.at(i).speed_limit < trajectory.at(i - 1).speed_limit && trajectory.at(i).speed_limit < trajectory.at(i + 1).speed_limit) {
-            minimaIndices.push_back(i);
+int GlobalSpeedPlanning::BinarySearch(int a, vector<int>& vec) {
+    int size = vec.size();
+    int left = 0, right = size;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (a < vec.at(mid)) {
+            right = mid - 1;
+        }
+        else if (a > vec.at(mid)) {
+            left = mid + 1;
+        }
+        else {
+            return mid;
         }
     }
-    return minimaIndices;
+    return -1;
 }

@@ -166,7 +166,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
     threadLogger_->info("执行均匀碾压后路径点曲率");
     for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} speed_limit:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute), i.speed_limit);
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} speed_limit:{} acc:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute), i.speed_limit,i.acc);
     }
     // 将global_path_保存到 after_smooth.txt文件中
     //  file_out.open("after_smooth.txt");
@@ -1564,10 +1564,19 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
         return false;
     }
     for (int i = 0; i < output_path.size(); i++) {
-        if (collison_check_.IsVehicleCollision(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(0)))) {
-            // threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
-            // break;
-            return false;
+        if (flag == 1) {
+            if (collison_check_.IsVehicleCollision(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(1)))) {
+                // threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
+                // break;
+                return false;
+            }
+        }
+        else {
+            if (collison_check_.IsVehicleCollision(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(0)))) {
+                // threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
+                // break;
+                return false;
+            }
         }
     }
     threadLogger_->info("dubins碰撞检测成功");

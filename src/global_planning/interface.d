@@ -305,6 +305,7 @@ interface.o: interface.cpp interface.h globalvariable.h \
  parser/../mine_global_planning/../planner/pathplanner/hybirdastar/r_s_curve.h \
  parser/../mine_global_planning/../planner/speedplanner/global_speed_planning.h \
  parser/../mine_global_planning/../planner/speedplanner/../../common/common_struct.h \
+ parser/../mine_global_planning/../planner/speedplanner/../../math/helper.h \
  parser/../mine_global_planning/../planner/pathplanner/dubins/dubins.h \
  parser/../mine_global_planning/../planner/pathplanner/dubins/../../../common/common_struct.h \
  parser/../mine_global_planning/../planner/pathplanner/dubins/point.h \
@@ -943,6 +944,8 @@ parser/../mine_global_planning/../planner/pathplanner/hybirdastar/r_s_curve.h:
 parser/../mine_global_planning/../planner/speedplanner/global_speed_planning.h:
 
 parser/../mine_global_planning/../planner/speedplanner/../../common/common_struct.h:
+
+parser/../mine_global_planning/../planner/speedplanner/../../math/helper.h:
 
 parser/../mine_global_planning/../planner/pathplanner/dubins/dubins.h:
 

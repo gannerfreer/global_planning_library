@@ -348,8 +348,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     for (int i = 0; i < path_a_star_.size(); i++) {
         threadLogger_->info("x:{} y:{} angle:{}  curvature:{} direction:{} s:{} ", path_a_star_.at(i).x, path_a_star_.at(i).y, path_a_star_.at(i).angle / M_PI * 180.0, path_a_star_.at(i).curvature, path_a_star_.at(i).direction, path_a_star_.at(i).distance);
     }
-    
-    
+
 
     // 路径优化，得到最终的path
     my_path_opti.OptimizePath(path_a_star_, path, collison_check_, m_vehicle_param_);
@@ -357,12 +356,12 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     for (auto i : path) {
         threadLogger_->info("x:{} y:{} angle:{} curvature:{} direction:{} s:{} ", i.x, i.y, i.angle / M_PI * 180.0, i.curvature, i.direction, i.distance);
     }
-    //保存优化后路径点信息
-    // file_out.open("path_after_opti.txt");
-    // for (int i = 0; i < path.size(); i++) {
-    //     file_out << path.at(i).x << " " << path.at(i).y << " " << path.at(i).angle << " " << path.at(i).curvature << " " << path.at(i).direction << " " << path.at(i).distance << endl;
-    // }
-    // file_out.close();
+    // 保存优化后路径点信息
+    //  file_out.open("path_after_opti.txt");
+    //  for (int i = 0; i < path.size(); i++) {
+    //      file_out << path.at(i).x << " " << path.at(i).y << " " << path.at(i).angle << " " << path.at(i).curvature << " " << path.at(i).direction << " " << path.at(i).distance << endl;
+    //  }
+    //  file_out.close();
 
     long long cal_time2 = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_opti);
     threadLogger_->info("路径优化完成，用时: {} ms ", 0.001 * cal_time2);

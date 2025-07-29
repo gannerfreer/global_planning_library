@@ -32,13 +32,17 @@ vector<vector<_TrajectoryPoint>> human_vehicle_global_path;
 vector<Point>                    expand_point;
 
 
+
+
+
+
 void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
     start_point.x   = msg->pose.pose.position.x;
     start_point.y   = msg->pose.pose.position.y;
     start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    // start_point.x   = -210.82864043255907 - x_o_;
-    // start_point.y   = 487.0477609852887 - y_o_;
-    // start_point.yaw = 105.73189544677734/ 180.0 * M_PI;
+    start_point.x   = -412.968505859375 - x_o_;
+    start_point.y   = -722.4910888671875 - y_o_;
+    start_point.yaw = 105.29842413201281/ 180.0 * M_PI;
 
     is_receive_start = true;
 }
@@ -48,9 +52,9 @@ void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     end_point.x   = msg->pose.position.x;
     end_point.y   = msg->pose.position.y;
     end_point.yaw = tf::getYaw(msg->pose.orientation);
-    // end_point.x   = -271.4170106229 - x_o_;
-    // end_point.y   = 555.7284693476 - y_o_;
-    // end_point.yaw = 132.7627695609 / 180.0 * M_PI;
+    end_point.x   = -478.1893310546875 - x_o_;
+    end_point.y   = -629.5673217773438 - y_o_;
+    end_point.yaw = 43.6433788340074 / 180.0 * M_PI;
 
 
     is_receive_end = true;

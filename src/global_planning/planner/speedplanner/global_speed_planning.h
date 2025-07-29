@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "../../common/common_struct.h"
+#include "../../math/helper.h"
 
 using namespace GlobalPlanning;
 
@@ -37,7 +38,7 @@ class GlobalSpeedPlanning {
      */
     void                       SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param);
     shared_ptr<spdlog::logger> threadLogger_;
-    double hybridAstar_path_length_ = 0;
+    double                     hybridAstar_path_length_ = 0;
 
   private:
     /**
@@ -45,9 +46,11 @@ class GlobalSpeedPlanning {
      * @param  num：trajectory_fragments中的第num条
      * @return 无
      */
-    void             SpeedCurveSmooth(vector<_TrajectoryPoint>& trajectory);
-    void             AdjustSpeedLimit(vector<_TrajectoryPoint>& trajectory);
-    std::vector<int> findMinimaIndices(vector<_TrajectoryPoint>& trajectory);
+    void Smooth(vector<_TrajectoryPoint>& trajectory);
+    void FixLocalMininum(vector<_TrajectoryPoint>& trajectory);
+    void FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory);
+    int BinarySearch(int a,vector<int>& input);
+
     /**
      *@brief: 初始化速度规划参数
      *@param [in] m_veh_param 车辆参数
@@ -57,9 +60,9 @@ class GlobalSpeedPlanning {
 
 
     /* 最大加速度 单位(m/s^2) */
-    float max_acceleration;
+    float max_acceleration_;
     /* 最小加速度 单位(m/s^2) */
-    float min_acceleration;
+    float min_acceleration_;
 
     /* 误差项权重 */
     float speed_error_term;

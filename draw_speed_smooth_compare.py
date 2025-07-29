@@ -12,10 +12,15 @@ speed_before = data[:, 1]
    
 data = np.loadtxt('speed_after_smooth.txt')  
 speed_after = data[:, 1]
+
+data = np.loadtxt('speed_after_smooth2.txt')  
+speed_after2 = data[:, 1]
+
 # 绘制第一张图：速度  
 plt.figure(1)  # 创建一个新的图形窗口，编号为1  
-plt.plot(speed_before, label='speed_before')  
-plt.plot(speed_after, label='speed_after')   
+plt.plot(speed_before, label='Init')  
+plt.plot(speed_after, label='FixLocalMin')
+plt.plot(speed_after2, label='FixLocalMax')  
 plt.xlabel('index')  
 plt.ylabel('speed')  
 plt.title('speed_smooth_compare')  

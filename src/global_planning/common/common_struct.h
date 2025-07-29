@@ -106,16 +106,17 @@ struct _TrajectoryPoint {
     double         speed;
     double         distance;
     PointAttribute attribute; // 路点属性(根据具体场景定义)
-    double         speed_limit;
+    double         speed_limit = -1;
     unsigned char  direction; // 路点方向(0:前进，1:倒退)
     double         acc;
     bool           offset_flag;
 
     inline void Clear() {
-        x = y = z = yaw = curvature = speed = distance = speed_limit = direction = acc = 0;
+        x = y = z = yaw = curvature = speed = distance = direction = acc = 0;
+        speed_limit                                                      = -1;
     }
-    _TrajectoryPoint() : x(0), y(0), z(0), yaw(0), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false) {}
-    _TrajectoryPoint(double x_val, double y_val, double yaw_val) : x(x_val), y(y_val), z(0), yaw(yaw_val), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(0), direction(0), acc(0), offset_flag(false) {}
+    _TrajectoryPoint() : x(0), y(0), z(0), yaw(0), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(-1), direction(0), acc(0), offset_flag(false) {}
+    _TrajectoryPoint(double x_val, double y_val, double yaw_val) : x(x_val), y(y_val), z(0), yaw(yaw_val), curvature(0), speed(0), distance(0), attribute(PointAttribute::regular_road), speed_limit(-1), direction(0), acc(0), offset_flag(false) {}
 };
 
 struct _SingleTraj {
