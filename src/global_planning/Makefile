@@ -23,7 +23,7 @@ SRC = interface.cpp \
       planner/pathplanner/spline/spline.cpp\
 	  load_area_planning/load_area_planning.cpp\
 	  load_area_planning/wait_point_generate.cpp\
-	  load_area_planning/fitting_path_generte.cpp
+	  load_area_planning/fitting_path_generate.cpp
 		  
 
 

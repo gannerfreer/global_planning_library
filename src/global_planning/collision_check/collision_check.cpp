@@ -547,4 +547,26 @@ unsigned int CollisonCheck::Coordinate2Hash(const IntCoordinate& point) {
 
     return hash;
 }
+
+/**
+ *@brief: 判断车辆位置是否跟所有障碍物碰撞
+ *@param
+ *return
+ */
+ bool CollisonCheck::IsVehicleCollisionWithAll(const GlobalPlanning::Point& my_point) {
+    if (!IsVehicleCollisionRoadBound(my_point, m__VehicleParam_.safe_margin_bound)) {
+        if (obstacle_bound_map_.empty()) {
+            return false;
+        }
+        else {
+            if (IsVehicleCollisionObstacleBound(my_point, m__VehicleParam_.safe_margin_obstacle)) {
+                return true;
+            }
+            else {
+                return IsVehicleCollisionWallBound(my_point, m__VehicleParam_.safe_margin_wall);
+            }
+        }
+    }
+    return true;
+}
 // end namespace

@@ -628,6 +628,7 @@ char* AutoLoadWaittingPointGenerating(char* point_veh_start_end) {
     CollisonCheck collison_check;
 
     collison_check.InitParam(veh_start_end.veh_param);
+    planning.threadLogger_->info("collision_check InitParam()成功");
     Bound                map_border_v;
     vector<_BorderPoint> map_border;
     map_border = GlobalVariable::getInstance()->GetMapBorder();
@@ -641,6 +642,7 @@ char* AutoLoadWaittingPointGenerating(char* point_veh_start_end) {
     }
     map_border_v.push_back(vC);
     collison_check.InitBoundMap(map_border_v);
+    planning.threadLogger_->info("collision_check InitBoundMap()成功");
 
     Bound                              wall_border_v;
     const vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
@@ -655,6 +657,7 @@ char* AutoLoadWaittingPointGenerating(char* point_veh_start_end) {
     }
     wall_border_v.push_back(vC);
     collison_check.InitWallMap(wall_border_v);
+    planning.threadLogger_->info("collision_check InitWallMap()成功");
 
     Bound                        machine_border_v;
     vector<vector<_BorderPoint>> machine_border = veh_start_end.machine_borders;
@@ -669,6 +672,8 @@ char* AutoLoadWaittingPointGenerating(char* point_veh_start_end) {
     }
     machine_border_v.push_back(vC);
     collison_check.InitObstacleMap(machine_border_v);
+    planning.threadLogger_->info("collision_check InitObstacleMap()成功");
+
 
 
     Path                input_path, out_path;
@@ -767,6 +772,7 @@ char* AutoLoadWaittingPointGenerating(char* point_veh_start_end) {
 
 
     try {
+        planning.threadLogger_->info("开始调用LoadAreaPlanningInterface()");
         path = planning.LoadAreaPlanningInterface(veh_start_end.planning_mode, wait_point, load_point, input_path, out_path, collison_check);
     } catch (const std::exception& e) {
         cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;

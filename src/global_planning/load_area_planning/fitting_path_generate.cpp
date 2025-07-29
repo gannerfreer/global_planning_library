@@ -62,7 +62,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     std::sort(load_path_candidates_.begin(), load_path_candidates_.end(), [](const std::pair<GlobalPlanning::Path, double>& a, const std::pair<GlobalPlanning::Path, double>& b) {
         return a.second > b.second; // 按 double 值降序
     });
-    for (const auto& path_info : load_path_candidates_) {
+    for (auto& path_info : load_path_candidates_) {
         if (collision_checker.OptiPathCollisionCheckWithAll(path_info.first).empty()) {
             std::cout << "成功了" << std::endl;
             for (int i = 0; i < path_info.first.size(); i++) {

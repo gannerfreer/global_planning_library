@@ -121,7 +121,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.safe_margin_bound = 0.0;
-                cout << "无法找到车参 safe_margin_bound ，即将赋予默认值" << endl;
+                cout << "无法找到车参 safe_margin_bound ，即将赋予默认值 0" << endl;
             }
 
             if (val.HasMember("safe_margin_wall") && val["safe_margin_wall"].IsNumber()) {
@@ -1173,7 +1173,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.radious = 13;
-                cout << "无法找到车参 radious ，即将赋予默认值" << endl;
+                cout << "无法找到车参 radious ，即将赋予默认值 13" << endl;
             }
 
 
@@ -1183,7 +1183,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.safe_margin_bound = 0.0;
-                cout << "无法找到车参 safe_margin_bound ，即将赋予默认值" << endl;
+                cout << "无法找到车参 safe_margin_bound ，即将赋予默认值 0" << endl;
             }
 
             if (val.HasMember("safe_margin_wall") && val["safe_margin_wall"].IsNumber()) {
@@ -1192,7 +1192,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.safe_margin_wall = 0.5;
-                cout << "无法找到车参 safe_margin_wall ，即将赋予默认值" << endl;
+                cout << "无法找到车参 safe_margin_wall ，即将赋予默认值 0.5" << endl;
             }
 
 
@@ -1202,7 +1202,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.veh_center_2_side = 1.735;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值" << endl;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.735" << endl;
             }
 
             if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
@@ -1211,7 +1211,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.veh_center_2_front = 7.3;
-                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值" << endl;
+                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.3" << endl;
             }
 
             if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {
@@ -1220,7 +1220,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.safe_margin_obstacle = 2.0;
-                cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值" << endl;
+                cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值 2.0" << endl;
             }
 
             if (val.HasMember("veh_center_2_rear_bound") && val["veh_center_2_rear_bound"].IsNumber()) {
@@ -1229,7 +1229,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.veh_center_2_rear_bound = 0.5;
-                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值" << endl;
+                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 0.5" << endl;
             }
 
 
@@ -1239,7 +1239,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.safe_margin_error = 0.0;
-                cout << "无法找到车参 safe_margin_error ，即将赋予默认值" << endl;
+                cout << "无法找到车参 safe_margin_error ，即将赋予默认值 0.0" << endl;
             }
 
 
@@ -1272,8 +1272,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
 
             // 车辆基础参数
-            if (val.HasMember("wheel_base_length") && val["wheel_base_length"].IsInt()) {
-                planning_info.wheel_base_length = val["wheel_base_length"].GetInt();
+            if (val.HasMember("wheel_base_length") && val["wheel_base_length"].IsDouble()) {
+                planning_info.wheel_base_length = val["wheel_base_length"].GetDouble();
                 std::cout << "planning_info.wheel_base_length: " << planning_info.wheel_base_length << std::endl;
             }
             else {
@@ -1281,8 +1281,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cerr << "无法找到车参 wheel_base_length ，赋予默认值: " << planning_info.wheel_base_length << std::endl;
             }
 
-            if (val.HasMember("center2side") && val["center2side"].IsInt()) {
-                planning_info.center2side = val["center2side"].GetInt();
+            if (val.HasMember("center2side") && val["center2side"].IsDouble()) {
+                planning_info.center2side = val["center2side"].GetDouble();
                 std::cout << "planning_info.center2side: " << planning_info.center2side << std::endl;
             }
             else {

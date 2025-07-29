@@ -66,6 +66,7 @@ class CollisonCheck {
      * @return 返回碰撞点索引
      */
     vector<unsigned int> OptiPathCollisionCheckWithAll(const Path& my_optipath);
+    bool IsVehicleCollisionWithAll(const GlobalPlanning::Point& my_point);
 
     /**
      *@brief: 判断路径是否与装载区动态边界和挖机碰撞
