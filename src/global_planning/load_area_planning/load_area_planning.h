@@ -5,6 +5,7 @@
 namespace LoadAreaPlanning {
 class LoadAreaPlanning {
   private:
+  public:
     double max_curve_length_;                 // 圆弧直线倒车最大曲线长度
     double min_curve_length_;                 // 圆弧直线倒车最小曲线长度
     double delta_curve_length_;               // 圆弧直线倒车曲线长度采样间距
@@ -36,9 +37,8 @@ class LoadAreaPlanning {
     double min_straight_length_load_;         // 前往装载点路径直线长度最小值
     double max_straight_length_load_;         // 前往装载点路径直线长度最大值
     double delta_straight_length_load_;       // 前往装载点路径直线长度采样间距
-
-  public:
     ~LoadAreaPlanning();
+    shared_ptr<spdlog::logger>                                                                                threadLogger_;
     std::tuple<bool, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_poit, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck collision_checker);
 };
 } // namespace LoadAreaPlanning

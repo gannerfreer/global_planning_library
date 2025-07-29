@@ -107,7 +107,7 @@ class GlobalVariable // 单例类
      const std::vector<_SingleTraj>& GetInGuidingPaths() const {
         return in_guiding_paths_;
     }
-    void SetIdGuidingPaths(const std::vector<_SingleTraj>& input_paths) {
+    void SetInGuidingPaths(const std::vector<_SingleTraj>& input_paths) {
         in_guiding_paths_ = input_paths;
     }
 

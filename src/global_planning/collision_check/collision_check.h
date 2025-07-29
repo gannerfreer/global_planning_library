@@ -65,7 +65,7 @@ class CollisonCheck {
      * @param[in] my_optipath  优化路径
      * @return 返回碰撞点索引
      */
-    vector<unsigned int> CollisonCheck::OptiPathCollisionCheckWithAll(const Path& my_optipath);
+    vector<unsigned int> OptiPathCollisionCheckWithAll(const Path& my_optipath);
 
     /**
      *@brief: 判断路径是否与装载区动态边界和挖机碰撞

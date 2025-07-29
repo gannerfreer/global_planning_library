@@ -14,6 +14,7 @@ Description: This is a collection of helper functions that are used throughout t
 #include "../globalvariable.h"
 #include "../mine_global_planning/planning.h"
 #include "../mine_global_planning/predicting.h"
+#include <tuple>
 namespace fs = std::filesystem;
 namespace GlobalPlanning {
 
@@ -119,9 +120,19 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.safe_margin_bound " << veh_start_end.veh_param.safe_margin_bound << endl;
             }
             else {
-                veh_start_end.veh_param.safe_margin_bound = 0.5;
+                veh_start_end.veh_param.safe_margin_bound = 0.0;
                 cout << "无法找到车参 safe_margin_bound ，即将赋予默认值" << endl;
             }
+
+            if (val.HasMember("safe_margin_wall") && val["safe_margin_wall"].IsNumber()) {
+                veh_start_end.veh_param.safe_margin_wall = val["safe_margin_wall"].GetDouble();
+                cout << "veh_start_end.veh_param.safe_margin_wall " << veh_start_end.veh_param.safe_margin_wall << endl;
+            }
+            else {
+                veh_start_end.veh_param.safe_margin_wall = 0.5;
+                cout << "无法找到车参 safe_margin_wall ，即将赋予默认值" << endl;
+            }
+
 
             if (val.HasMember("veh_center_2_side") && val["veh_center_2_side"].IsNumber()) {
                 veh_start_end.veh_param.veh_center_2_side = val["veh_center_2_side"].GetDouble();
@@ -842,7 +853,7 @@ bool GetMap(char* parea) {
     }
     GlobalVariable::getInstance()->SetAllSelfDrivingReferencelines(m_traj_self_driving);
     GlobalVariable::getInstance()->SetAllHumanDrivingReferencelines(m_traj_human_driving);
-    GlobalVariable::getInstance()->SetInGuidingPaths(input_paths);
+    GlobalVariable::getInstance()->SetInGuidingPaths(input_paths); 
     GlobalVariable::getInstance()->SetOutGuidingPaths(output_paths);
 
     // 解析relation
@@ -1075,7 +1086,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         }
         else {
             planning_info.wait_point.x = 0.0;
-            std::cerr << "wait_point.x 不存在或格式错误，赋予默认值: " << planning_info.Wait_Point.x << std::endl;
+            std::cerr << "wait_point.x 不存在或格式错误，赋予默认值: " << planning_info.wait_point.x << std::endl;
         }
 
         // 解析y坐标
@@ -1113,335 +1124,412 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
     if (doc.HasMember("Load_Point") && doc["Load_Point"].IsObject()) {
         const rapidjson::Value& load_point = doc["Load_Point"];
 
-        if (Load_Point.HasMember("x") && Load_Point["x"].IsDouble()) {
-            planning_info.load_point.x = Load_Point["x"].GetDouble();
-            std::cout << "解析 Load_Point.x: " << planning_info.load_point.x << std::endl;
+        if (load_point.HasMember("x") && load_point["x"].IsDouble()) {
+            planning_info.load_point.x = load_point["x"].GetDouble();
+            std::cout << "解析 load_point.x: " << planning_info.load_point.x << std::endl;
         }
         else {
             planning_info.load_point.x = 0.0;
-            std::cerr << "Load_Point.x 不存在或格式错误，赋予默认值: " << planning_info.load_point.x << std::endl;
+            std::cerr << "load_point.x 不存在或格式错误，赋予默认值: " << planning_info.load_point.x << std::endl;
         }
 
-        if (Load_Point.HasMember("y") && Load_Point["y"].IsDouble()) {
-            planning_info.load_point.y = Load_Point["y"].GetDouble();
-            std::cout << "解析 Load_Point.y: " << planning_info.load_point.y << std::endl;
+        if (load_point.HasMember("y") && load_point["y"].IsDouble()) {
+            planning_info.load_point.y = load_point["y"].GetDouble();
+            std::cout << "解析 load_point.y: " << planning_info.load_point.y << std::endl;
         }
         else {
             planning_info.load_point.y = 0.0;
-            std::cerr << "Load_Point.y 不存在或格式错误，赋予默认值: " << planning_info.load_point.y << std::endl;
+            std::cerr << "load_point.y 不存在或格式错误，赋予默认值: " << planning_info.load_point.y << std::endl;
         }
 
-        if (Load_Point.HasMember("z") && Load_Point["z"].IsDouble()) {
-            planning_info.load_point.z = Load_Point["z"].GetDouble();
-            std::cout << "解析 Load_Point.z: " << planning_info.load_point.z << std::endl;
+        if (load_point.HasMember("z") && load_point["z"].IsDouble()) {
+            planning_info.load_point.z = load_point["z"].GetDouble();
+            std::cout << "解析 load_point.z: " << planning_info.load_point.z << std::endl;
         }
         else {
             planning_info.load_point.z = 0.0;
-            std::cerr << "Load_Point.z 不存在或格式错误，赋予默认值: " << planning_info.load_point.z << std::endl;
+            std::cerr << "load_point.z 不存在或格式错误，赋予默认值: " << planning_info.load_point.z << std::endl;
         }
 
-        if (Load_Point.HasMember("yaw") && Load_Point["yaw"].IsDouble()) {
-            planning_info.load_point.yaw = Load_Point["yaw"].GetDouble();
-            std::cout << "解析 Load_Point.yaw: " << planning_info.load_point.yaw << std::endl;
+        if (load_point.HasMember("yaw") && load_point["yaw"].IsDouble()) {
+            planning_info.load_point.yaw = load_point["yaw"].GetDouble();
+            std::cout << "解析 load_point.yaw: " << planning_info.load_point.yaw << std::endl;
         }
         else {
             planning_info.load_point.yaw = 0.0;
-            std::cerr << "Load_Point.yaw 不存在或格式错误，赋予默认值: " << planning_info.load_point.yaw << std::endl;
+            std::cerr << "load_point.yaw 不存在或格式错误，赋予默认值: " << planning_info.load_point.yaw << std::endl;
         }
     }
 
-    // 解析车辆参数(m_Veh_Param)
-    if (doc.HasMember("m_Veh_Param") && doc["m_Veh_Param"].IsObject()) {
-        const rapidjson::Value& veh_param = doc["m_Veh_Param"];
-        _VehicleParam&          param     = planning_info.veh_param;
-        std::cout << "开始解析车辆参数..." << std::endl;
 
-        // 曲线长度参数
-        if (veh_param.HasMember("max_curve_length") && veh_param["max_curve_length"].IsInt()) {
-            param.max_curve_length = veh_param["max_curve_length"].GetInt();
-            std::cout << "param.max_curve_length: " << param.max_curve_length << std::endl;
-        }
-        else {
-            param.max_curve_length = 1;
-            std::cerr << "无法找到车参 max_curve_length ，赋予默认值: " << param.max_curve_length << std::endl;
-        }
+    if (doc.HasMember("m_Veh_Param")) {
+        cout << "解析 m_Veh_Param 中" << endl;
+        Value& val = doc["m_Veh_Param"];
+        if (val.IsObject()) {
+            // 车辆参数
+            if (val.HasMember("radious") && val["radious"].IsNumber()) {
+                planning_info.veh_param.radious = val["radious"].GetDouble();
+                cout << "planning_info.veh_param.radious " << planning_info.veh_param.radious << endl;
+            }
+            else {
+                planning_info.veh_param.radious = 13;
+                cout << "无法找到车参 radious ，即将赋予默认值" << endl;
+            }
 
-        if (veh_param.HasMember("min_curve_length") && veh_param["min_curve_length"].IsInt()) {
-            param.min_curve_length = veh_param["min_curve_length"].GetInt();
-            std::cout << "param.min_curve_length: " << param.min_curve_length << std::endl;
-        }
-        else {
-            param.min_curve_length = 1;
-            std::cerr << "无法找到车参 min_curve_length ，赋予默认值: " << param.min_curve_length << std::endl;
-        }
 
-        if (veh_param.HasMember("delta_curve_length") && veh_param["delta_curve_length"].IsInt()) {
-            param.delta_curve_length = veh_param["delta_curve_length"].GetInt();
-            std::cout << "param.delta_curve_length: " << param.delta_curve_length << std::endl;
-        }
-        else {
-            param.delta_curve_length = 1;
-            std::cerr << "无法找到车参 delta_curve_length ，赋予默认值: " << param.delta_curve_length << std::endl;
-        }
+            if (val.HasMember("safe_margin_bound") && val["safe_margin_bound"].IsNumber()) {
+                planning_info.veh_param.safe_margin_bound = val["safe_margin_bound"].GetDouble();
+                cout << "planning_info.veh_param.safe_margin_bound " << planning_info.veh_param.safe_margin_bound << endl;
+            }
+            else {
+                planning_info.veh_param.safe_margin_bound = 0.0;
+                cout << "无法找到车参 safe_margin_bound ，即将赋予默认值" << endl;
+            }
 
-        // 车辆基础参数
-        if (veh_param.HasMember("wheel_base_length") && veh_param["wheel_base_length"].IsInt()) {
-            param.wheel_base_length = veh_param["wheel_base_length"].GetInt();
-            std::cout << "param.wheel_base_length: " << param.wheel_base_length << std::endl;
-        }
-        else {
-            param.wheel_base_length = 2700; // 典型轴距默认值(mm)
-            std::cerr << "无法找到车参 wheel_base_length ，赋予默认值: " << param.wheel_base_length << std::endl;
-        }
+            if (val.HasMember("safe_margin_wall") && val["safe_margin_wall"].IsNumber()) {
+                planning_info.veh_param.safe_margin_wall = val["safe_margin_wall"].GetDouble();
+                cout << "planning_info.veh_param.safe_margin_wall " << planning_info.veh_param.safe_margin_wall << endl;
+            }
+            else {
+                planning_info.veh_param.safe_margin_wall = 0.5;
+                cout << "无法找到车参 safe_margin_wall ，即将赋予默认值" << endl;
+            }
 
-        if (veh_param.HasMember("center2side") && veh_param["center2side"].IsInt()) {
-            param.center2side = veh_param["center2side"].GetInt();
-            std::cout << "param.center2side: " << param.center2side << std::endl;
-        }
-        else {
-            param.center2side = 800; // 典型轮距默认值(mm)
-            std::cerr << "无法找到车参 center2side ，赋予默认值: " << param.center2side << std::endl;
-        }
 
-        // 直线长度参数
-        if (veh_param.HasMember("max_straight_length") && veh_param["max_straight_length"].IsInt()) {
-            param.max_straight_length = veh_param["max_straight_length"].GetInt();
-            std::cout << "param.max_straight_length: " << param.max_straight_length << std::endl;
-        }
-        else {
-            param.max_straight_length = 10000;
-            std::cerr << "无法找到车参 max_straight_length ，赋予默认值: " << param.max_straight_length << std::endl;
-        }
+            if (val.HasMember("veh_center_2_side") && val["veh_center_2_side"].IsNumber()) {
+                planning_info.veh_param.veh_center_2_side = val["veh_center_2_side"].GetDouble();
+                cout << "planning_info.veh_param.veh_center_2_side " << planning_info.veh_param.veh_center_2_side << endl;
+            }
+            else {
+                planning_info.veh_param.veh_center_2_side = 1.735;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值" << endl;
+            }
 
-        if (veh_param.HasMember("min_straight_length") && veh_param["min_straight_length"].IsInt()) {
-            param.min_straight_length = veh_param["min_straight_length"].GetInt();
-            std::cout << "param.min_straight_length: " << param.min_straight_length << std::endl;
-        }
-        else {
-            param.min_straight_length = 1000;
-            std::cerr << "无法找到车参 min_straight_length ，赋予默认值: " << param.min_straight_length << std::endl;
-        }
+            if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
+                planning_info.veh_param.veh_center_2_front = val["veh_center_2_front"].GetDouble();
+                cout << "planning_info.veh_param.veh_center_2_front " << planning_info.veh_param.veh_center_2_front << endl;
+            }
+            else {
+                planning_info.veh_param.veh_center_2_front = 7.3;
+                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值" << endl;
+            }
 
-        if (veh_param.HasMember("delta_straight_length") && veh_param["delta_straight_length"].IsInt()) {
-            param.delta_straight_length = veh_param["delta_straight_length"].GetInt();
-            std::cout << "param.delta_straight_length: " << param.delta_straight_length << std::endl;
-        }
-        else {
-            param.delta_straight_length = 500;
-            std::cerr << "无法找到车参 delta_straight_length ，赋予默认值: " << param.delta_straight_length << std::endl;
-        }
+            if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {
+                planning_info.veh_param.safe_margin_obstacle = val["safe_margin_obstacle"].GetDouble();
+                cout << "planning_info.veh_param.safe_margin_obstacle " << planning_info.veh_param.safe_margin_obstacle << endl;
+            }
+            else {
+                planning_info.veh_param.safe_margin_obstacle = 2.0;
+                cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值" << endl;
+            }
 
-        // 转向角参数
-        if (veh_param.HasMember("max_steering_angle") && veh_param["max_steering_angle"].IsInt()) {
-            param.max_steering_angle = veh_param["max_steering_angle"].GetInt();
-            std::cout << "param.max_steering_angle: " << param.max_steering_angle << std::endl;
-        }
-        else {
-            param.max_steering_angle = 35; // 典型最大转向角(度)
-            std::cerr << "无法找到车参 max_steering_angle ，赋予默认值: " << param.max_steering_angle << std::endl;
-        }
+            if (val.HasMember("veh_center_2_rear_bound") && val["veh_center_2_rear_bound"].IsNumber()) {
+                planning_info.veh_param.veh_center_2_rear_bound = val["veh_center_2_rear_bound"].GetDouble();
+                cout << "planning_info.veh_param.veh_center_2_rear_bound " << planning_info.veh_param.veh_center_2_rear_bound << endl;
+            }
+            else {
+                planning_info.veh_param.veh_center_2_rear_bound = 0.5;
+                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值" << endl;
+            }
 
-        if (veh_param.HasMember("min_steering_angle") && veh_param["min_steering_angle"].IsInt()) {
-            param.min_steering_angle = veh_param["min_steering_angle"].GetInt();
-            std::cout << "param.min_steering_angle: " << param.min_steering_angle << std::endl;
-        }
-        else {
-            param.min_steering_angle = -35; // 典型最小转向角(度)
-            std::cerr << "无法找到车参 min_steering_angle ，赋予默认值: " << param.min_steering_angle << std::endl;
-        }
 
-        if (veh_param.HasMember("delta_steering_angle") && veh_param["delta_steering_angle"].IsInt()) {
-            param.delta_steering_angle = veh_param["delta_steering_angle"].GetInt();
-            std::cout << "param.delta_steering_angle: " << param.delta_steering_angle << std::endl;
-        }
-        else {
-            param.delta_steering_angle = 5;
-            std::cerr << "无法找到车参 delta_steering_angle ，赋予默认值: " << param.delta_steering_angle << std::endl;
-        }
+            if (val.HasMember("safe_margin_error") && val["safe_margin_error"].IsNumber()) {
+                planning_info.veh_param.safe_margin_error = val["safe_margin_error"].GetDouble();
+                cout << "planning_info.veh_param.safe_margin_error " << planning_info.veh_param.safe_margin_error << endl;
+            }
+            else {
+                planning_info.veh_param.safe_margin_error = 0.0;
+                cout << "无法找到车参 safe_margin_error ，即将赋予默认值" << endl;
+            }
 
-        if (veh_param.HasMember("standard_steering_angle") && veh_param["standard_steering_angle"].IsInt()) {
-            param.standard_steering_angle = veh_param["standard_steering_angle"].GetInt();
-            std::cout << "param.standard_steering_angle: " << param.standard_steering_angle << std::endl;
-        }
-        else {
-            param.standard_steering_angle = 0; // 标准转向角(直行)
-            std::cerr << "无法找到车参 standard_steering_angle ，赋予默认值: " << param.standard_steering_angle << std::endl;
-        }
 
-        // 权重参数
-        if (veh_param.HasMember("weight_length") && veh_param["weight_length"].IsInt()) {
-            param.weight_length = veh_param["weight_length"].GetInt();
-            std::cout << "param.weight_length: " << param.weight_length << std::endl;
-        }
-        else {
-            param.weight_length = 1;
-            std::cerr << "无法找到车参 weight_length ，赋予默认值: " << param.weight_length << std::endl;
-        }
+            // 曲线长度参数
+            if (val.HasMember("max_curve_length") && val["max_curve_length"].IsInt()) {
+                planning_info.max_curve_length = val["max_curve_length"].GetInt();
+                std::cout << "planning_info.max_curve_length: " << planning_info.max_curve_length << std::endl;
+            }
+            else {
+                planning_info.max_curve_length = 1;
+                std::cerr << "无法找到车参 max_curve_length ，赋予默认值: " << planning_info.max_curve_length << std::endl;
+            }
 
-        if (veh_param.HasMember("weight_curve") && veh_param["weight_curve"].IsInt()) {
-            param.weight_curve = veh_param["weight_curve"].GetInt();
-            std::cout << "param.weight_curve: " << param.weight_curve << std::endl;
-        }
-        else {
-            param.weight_curve = 1;
-            std::cerr << "无法找到车参 weight_curve ，赋予默认值: " << param.weight_curve << std::endl;
-        }
+            if (val.HasMember("min_curve_length") && val["min_curve_length"].IsInt()) {
+                planning_info.min_curve_length = val["min_curve_length"].GetInt();
+                std::cout << "planning_info.min_curve_length: " << planning_info.min_curve_length << std::endl;
+            }
+            else {
+                planning_info.min_curve_length = 1;
+                std::cerr << "无法找到车参 min_curve_length ，赋予默认值: " << planning_info.min_curve_length << std::endl;
+            }
 
-        if (veh_param.HasMember("load_path_straight_length_weight") && veh_param["load_path_straight_length_weight"].IsInt()) {
-            param.load_path_straight_length_weight = veh_param["load_path_straight_length_weight"].GetInt();
-            std::cout << "param.load_path_straight_length_weight: " << param.load_path_straight_length_weight << std::endl;
-        }
-        else {
-            param.load_path_straight_length_weight = 1;
-            std::cerr << "无法找到车参 load_path_straight_length_weight ，赋予默认值: " << param.load_path_straight_length_weight << std::endl;
-        }
+            if (val.HasMember("delta_curve_length") && val["delta_curve_length"].IsInt()) {
+                planning_info.delta_curve_length = val["delta_curve_length"].GetInt();
+                std::cout << "planning_info.delta_curve_length: " << planning_info.delta_curve_length << std::endl;
+            }
+            else {
+                planning_info.delta_curve_length = 1;
+                std::cerr << "无法找到车参 delta_curve_length ，赋予默认值: " << planning_info.delta_curve_length << std::endl;
+            }
 
-        if (veh_param.HasMember("load_path_curvature_weight") && veh_param["load_path_curvature_weight"].IsInt()) {
-            param.load_path_curvature_weight = veh_param["load_path_curvature_weight"].GetInt();
-            std::cout << "param.load_path_curvature_weight: " << param.load_path_curvature_weight << std::endl;
-        }
-        else {
-            param.load_path_curvature_weight = 1;
-            std::cerr << "无法找到车参 load_path_curvature_weight ，赋予默认值: " << param.load_path_curvature_weight << std::endl;
-        }
+            // 车辆基础参数
+            if (val.HasMember("wheel_base_length") && val["wheel_base_length"].IsInt()) {
+                planning_info.wheel_base_length = val["wheel_base_length"].GetInt();
+                std::cout << "planning_info.wheel_base_length: " << planning_info.wheel_base_length << std::endl;
+            }
+            else {
+                planning_info.wheel_base_length = 2700; // 典型轴距默认值(mm)
+                std::cerr << "无法找到车参 wheel_base_length ，赋予默认值: " << planning_info.wheel_base_length << std::endl;
+            }
 
-        // 路径规划参数
-        if (veh_param.HasMember("out_put_path_dense") && veh_param["out_put_path_dense"].IsInt()) {
-            param.out_put_path_dense = veh_param["out_put_path_dense"].GetInt();
-            std::cout << "param.out_put_path_dense: " << param.out_put_path_dense << std::endl;
-        }
-        else {
-            param.out_put_path_dense = 50; // 路径点密度默认值(mm)
-            std::cerr << "无法找到车参 out_put_path_dense ，赋予默认值: " << param.out_put_path_dense << std::endl;
-        }
+            if (val.HasMember("center2side") && val["center2side"].IsInt()) {
+                planning_info.center2side = val["center2side"].GetInt();
+                std::cout << "planning_info.center2side: " << planning_info.center2side << std::endl;
+            }
+            else {
+                planning_info.center2side = 800; // 典型轮距默认值(mm)
+                std::cerr << "无法找到车参 center2side ，赋予默认值: " << planning_info.center2side << std::endl;
+            }
 
-        if (veh_param.HasMember("search_range") && veh_param["search_range"].IsInt()) {
-            param.search_range = veh_param["search_range"].GetInt();
-            std::cout << "param.search_range: " << param.search_range << std::endl;
-        }
-        else {
-            param.search_range = 5000; // 搜索范围默认值(mm)
-            std::cerr << "无法找到车参 search_range ，赋予默认值: " << param.search_range << std::endl;
-        }
+            // 直线长度参数
+            if (val.HasMember("max_straight_length") && val["max_straight_length"].IsInt()) {
+                planning_info.max_straight_length = val["max_straight_length"].GetInt();
+                std::cout << "planning_info.max_straight_length: " << planning_info.max_straight_length << std::endl;
+            }
+            else {
+                planning_info.max_straight_length = 10000;
+                std::cerr << "无法找到车参 max_straight_length ，赋予默认值: " << planning_info.max_straight_length << std::endl;
+            }
 
-        if (veh_param.HasMember("jump_dense") && veh_param["jump_dense"].IsInt()) {
-            param.jump_dense = veh_param["jump_dense"].GetInt();
-            std::cout << "param.jump_dense: " << param.jump_dense << std::endl;
-        }
-        else {
-            param.jump_dense = 100;
-            std::cerr << "无法找到车参 jump_dense ，赋予默认值: " << param.jump_dense << std::endl;
-        }
+            if (val.HasMember("min_straight_length") && val["min_straight_length"].IsInt()) {
+                planning_info.min_straight_length = val["min_straight_length"].GetInt();
+                std::cout << "planning_info.min_straight_length: " << planning_info.min_straight_length << std::endl;
+            }
+            else {
+                planning_info.min_straight_length = 1000;
+                std::cerr << "无法找到车参 min_straight_length ，赋予默认值: " << planning_info.min_straight_length << std::endl;
+            }
 
-        if (veh_param.HasMember("length_weight") && veh_param["length_weight"].IsInt()) {
-            param.length_weight = veh_param["length_weight"].GetInt();
-            std::cout << "param.length_weight: " << param.length_weight << std::endl;
-        }
-        else {
-            param.length_weight = 1;
-            std::cerr << "无法找到车参 length_weight ，赋予默认值: " << param.length_weight << std::endl;
-        }
+            if (val.HasMember("delta_straight_length") && val["delta_straight_length"].IsInt()) {
+                planning_info.delta_straight_length = val["delta_straight_length"].GetInt();
+                std::cout << "planning_info.delta_straight_length: " << planning_info.delta_straight_length << std::endl;
+            }
+            else {
+                planning_info.delta_straight_length = 500;
+                std::cerr << "无法找到车参 delta_straight_length ，赋予默认值: " << planning_info.delta_straight_length << std::endl;
+            }
 
-        if (veh_param.HasMember("critical_length") && veh_param["critical_length"].IsInt()) {
-            param.critical_length = veh_param["critical_length"].GetInt();
-            std::cout << "param.critical_length: " << param.critical_length << std::endl;
-        }
-        else {
-            param.critical_length = 5000;
-            std::cerr << "无法找到车参 critical_length ，赋予默认值: " << param.critical_length << std::endl;
-        }
+            // 转向角参数
+            if (val.HasMember("max_steering_angle") && val["max_steering_angle"].IsInt()) {
+                planning_info.max_steering_angle = val["max_steering_angle"].GetInt();
+                std::cout << "planning_info.max_steering_angle: " << planning_info.max_steering_angle << std::endl;
+            }
+            else {
+                planning_info.max_steering_angle = 35; // 典型最大转向角(度)
+                std::cerr << "无法找到车参 max_steering_angle ，赋予默认值: " << planning_info.max_steering_angle << std::endl;
+            }
 
-        if (veh_param.HasMember("curvature_weight") && veh_param["curvature_weight"].IsInt()) {
-            param.curvature_weight = veh_param["curvature_weight"].GetInt();
-            std::cout << "param.curvature_weight: " << param.curvature_weight << std::endl;
-        }
-        else {
-            param.curvature_weight = 1;
-            std::cerr << "无法找到车参 curvature_weight ，赋予默认值: " << param.curvature_weight << std::endl;
-        }
+            if (val.HasMember("min_steering_angle") && val["min_steering_angle"].IsInt()) {
+                planning_info.min_steering_angle = val["min_steering_angle"].GetInt();
+                std::cout << "planning_info.min_steering_angle: " << planning_info.min_steering_angle << std::endl;
+            }
+            else {
+                planning_info.min_steering_angle = -35; // 典型最小转向角(度)
+                std::cerr << "无法找到车参 min_steering_angle ，赋予默认值: " << planning_info.min_steering_angle << std::endl;
+            }
 
-        // 场景特定直线长度参数
-        if (veh_param.HasMember("min_straight_length_depart") && veh_param["min_straight_length_depart"].IsInt()) {
-            param.min_straight_length_depart = veh_param["min_straight_length_depart"].GetInt();
-            std::cout << "param.min_straight_length_depart: " << param.min_straight_length_depart << std::endl;
-        }
-        else {
-            param.min_straight_length_depart = 1000;
-            std::cerr << "无法找到车参 min_straight_length_depart ，赋予默认值: " << param.min_straight_length_depart << std::endl;
-        }
+            if (val.HasMember("delta_steering_angle") && val["delta_steering_angle"].IsInt()) {
+                planning_info.delta_steering_angle = val["delta_steering_angle"].GetInt();
+                std::cout << "planning_info.delta_steering_angle: " << planning_info.delta_steering_angle << std::endl;
+            }
+            else {
+                planning_info.delta_steering_angle = 5;
+                std::cerr << "无法找到车参 delta_steering_angle ，赋予默认值: " << planning_info.delta_steering_angle << std::endl;
+            }
 
-        if (veh_param.HasMember("max_straight_length_depart") && veh_param["max_straight_length_depart"].IsInt()) {
-            param.max_straight_length_depart = veh_param["max_straight_length_depart"].GetInt();
-            std::cout << "param.max_straight_length_depart: " << param.max_straight_length_depart << std::endl;
-        }
-        else {
-            param.max_straight_length_depart = 5000;
-            std::cerr << "无法找到车参 max_straight_length_depart ，赋予默认值: " << param.max_straight_length_depart << std::endl;
-        }
+            if (val.HasMember("standard_steering_angle") && val["standard_steering_angle"].IsInt()) {
+                planning_info.standard_steering_angle = val["standard_steering_angle"].GetInt();
+                std::cout << "planning_info.standard_steering_angle: " << planning_info.standard_steering_angle << std::endl;
+            }
+            else {
+                planning_info.standard_steering_angle = 0; // 标准转向角(直行)
+                std::cerr << "无法找到车参 standard_steering_angle ，赋予默认值: " << planning_info.standard_steering_angle << std::endl;
+            }
 
-        if (veh_param.HasMember("delta_straight_length_depart") && veh_param["delta_straight_length_depart"].IsInt()) {
-            param.delta_straight_length_depart = veh_param["delta_straight_length_depart"].GetInt();
-            std::cout << "param.delta_straight_length_depart: " << param.delta_straight_length_depart << std::endl;
-        }
-        else {
-            param.delta_straight_length_depart = 500;
-            std::cerr << "无法找到车参 delta_straight_length_depart ，赋予默认值: " << param.delta_straight_length_depart << std::endl;
-        }
+            // 权重参数
+            if (val.HasMember("weight_length") && val["weight_length"].IsInt()) {
+                planning_info.weight_length = val["weight_length"].GetInt();
+                std::cout << "planning_info.weight_length: " << planning_info.weight_length << std::endl;
+            }
+            else {
+                planning_info.weight_length = 1;
+                std::cerr << "无法找到车参 weight_length ，赋予默认值: " << planning_info.weight_length << std::endl;
+            }
 
-        if (veh_param.HasMember("min_straight_length_wait") && veh_param["min_straight_length_wait"].IsInt()) {
-            param.min_straight_length_wait = veh_param["min_straight_length_wait"].GetInt();
-            std::cout << "param.min_straight_length_wait: " << param.min_straight_length_wait << std::endl;
-        }
-        else {
-            param.min_straight_length_wait = 1000;
-            std::cerr << "无法找到车参 min_straight_length_wait ，赋予默认值: " << param.min_straight_length_wait << std::endl;
-        }
+            if (val.HasMember("weight_curve") && val["weight_curve"].IsInt()) {
+                planning_info.weight_curve = val["weight_curve"].GetInt();
+                std::cout << "planning_info.weight_curve: " << planning_info.weight_curve << std::endl;
+            }
+            else {
+                planning_info.weight_curve = 1;
+                std::cerr << "无法找到车参 weight_curve ，赋予默认值: " << planning_info.weight_curve << std::endl;
+            }
 
-        if (veh_param.HasMember("max_straight_length_wait") && veh_param["max_straight_length_wait"].IsInt()) {
-            param.max_straight_length_wait = veh_param["max_straight_length_wait"].GetInt();
-            std::cout << "param.max_straight_length_wait: " << param.max_straight_length_wait << std::endl;
-        }
-        else {
-            param.max_straight_length_wait = 5000;
-            std::cerr << "无法找到车参 max_straight_length_wait ，赋予默认值: " << param.max_straight_length_wait << std::endl;
-        }
+            if (val.HasMember("load_path_straight_length_weight") && val["load_path_straight_length_weight"].IsInt()) {
+                planning_info.load_path_straight_length_weight = val["load_path_straight_length_weight"].GetInt();
+                std::cout << "planning_info.load_path_straight_length_weight: " << planning_info.load_path_straight_length_weight << std::endl;
+            }
+            else {
+                planning_info.load_path_straight_length_weight = 1;
+                std::cerr << "无法找到车参 load_path_straight_length_weight ，赋予默认值: " << planning_info.load_path_straight_length_weight << std::endl;
+            }
 
-        if (veh_param.HasMember("delta_straight_length_wait") && veh_param["delta_straight_length_wait"].IsInt()) {
-            param.delta_straight_length_wait = veh_param["delta_straight_length_wait"].GetInt();
-            std::cout << "param.delta_straight_length_wait: " << param.delta_straight_length_wait << std::endl;
-        }
-        else {
-            param.delta_straight_length_wait = 500;
-            std::cerr << "无法找到车参 delta_straight_length_wait ，赋予默认值: " << param.delta_straight_length_wait << std::endl;
-        }
+            if (val.HasMember("load_path_curvature_weight") && val["load_path_curvature_weight"].IsInt()) {
+                planning_info.load_path_curvature_weight = val["load_path_curvature_weight"].GetInt();
+                std::cout << "planning_info.load_path_curvature_weight: " << planning_info.load_path_curvature_weight << std::endl;
+            }
+            else {
+                planning_info.load_path_curvature_weight = 1;
+                std::cerr << "无法找到车参 load_path_curvature_weight ，赋予默认值: " << planning_info.load_path_curvature_weight << std::endl;
+            }
 
-        if (veh_param.HasMember("min_straight_length_load") && veh_param["min_straight_length_load"].IsInt()) {
-            param.min_straight_length_load = veh_param["min_straight_length_load"].GetInt();
-            std::cout << "param.min_straight_length_load: " << param.min_straight_length_load << std::endl;
-        }
-        else {
-            param.min_straight_length_load = 1000;
-            std::cerr << "无法找到车参 min_straight_length_load ，赋予默认值: " << param.min_straight_length_load << std::endl;
-        }
+            // 路径规划参数
+            if (val.HasMember("out_put_path_dense") && val["out_put_path_dense"].IsInt()) {
+                planning_info.out_put_path_dense = val["out_put_path_dense"].GetInt();
+                std::cout << "planning_info.out_put_path_dense: " << planning_info.out_put_path_dense << std::endl;
+            }
+            else {
+                planning_info.out_put_path_dense = 50; // 路径点密度默认值(mm)
+                std::cerr << "无法找到车参 out_put_path_dense ，赋予默认值: " << planning_info.out_put_path_dense << std::endl;
+            }
 
-        if (veh_param.HasMember("max_straight_length_load") && veh_param["max_straight_length_load"].IsInt()) {
-            param.max_straight_length_load = veh_param["max_straight_length_load"].GetInt();
-            std::cout << "param.max_straight_length_load: " << param.max_straight_length_load << std::endl;
-        }
-        else {
-            param.max_straight_length_load = 5000;
-            std::cerr << "无法找到车参 max_straight_length_load ，赋予默认值: " << param.max_straight_length_load << std::endl;
-        }
+            if (val.HasMember("search_range") && val["search_range"].IsInt()) {
+                planning_info.search_range = val["search_range"].GetInt();
+                std::cout << "planning_info.search_range: " << planning_info.search_range << std::endl;
+            }
+            else {
+                planning_info.search_range = 5000; // 搜索范围默认值(mm)
+                std::cerr << "无法找到车参 search_range ，赋予默认值: " << planning_info.search_range << std::endl;
+            }
 
-        if (veh_param.HasMember("delta_straight_length_load") && veh_param["delta_straight_length_load"].IsInt()) {
-            param.delta_straight_length_load = veh_param["delta_straight_length_load"].GetInt();
-            std::cout << "param.delta_straight_length_load: " << param.delta_straight_length_load << std::endl;
+            if (val.HasMember("jump_dense") && val["jump_dense"].IsInt()) {
+                planning_info.jump_dense = val["jump_dense"].GetInt();
+                std::cout << "planning_info.jump_dense: " << planning_info.jump_dense << std::endl;
+            }
+            else {
+                planning_info.jump_dense = 100;
+                std::cerr << "无法找到车参 jump_dense ，赋予默认值: " << planning_info.jump_dense << std::endl;
+            }
+
+            if (val.HasMember("length_weight") && val["length_weight"].IsInt()) {
+                planning_info.length_weight = val["length_weight"].GetInt();
+                std::cout << "planning_info.length_weight: " << planning_info.length_weight << std::endl;
+            }
+            else {
+                planning_info.length_weight = 1;
+                std::cerr << "无法找到车参 length_weight ，赋予默认值: " << planning_info.length_weight << std::endl;
+            }
+
+            if (val.HasMember("critical_length") && val["critical_length"].IsInt()) {
+                planning_info.critical_length = val["critical_length"].GetInt();
+                std::cout << "planning_info.critical_length: " << planning_info.critical_length << std::endl;
+            }
+            else {
+                planning_info.critical_length = 5000;
+                std::cerr << "无法找到车参 critical_length ，赋予默认值: " << planning_info.critical_length << std::endl;
+            }
+
+            if (val.HasMember("curvature_weight") && val["curvature_weight"].IsInt()) {
+                planning_info.curvature_weight = val["curvature_weight"].GetInt();
+                std::cout << "planning_info.curvature_weight: " << planning_info.curvature_weight << std::endl;
+            }
+            else {
+                planning_info.curvature_weight = 1;
+                std::cerr << "无法找到车参 curvature_weight ，赋予默认值: " << planning_info.curvature_weight << std::endl;
+            }
+
+            // 场景特定直线长度参数
+            if (val.HasMember("min_straight_length_depart") && val["min_straight_length_depart"].IsInt()) {
+                planning_info.min_straight_length_depart = val["min_straight_length_depart"].GetInt();
+                std::cout << "planning_info.min_straight_length_depart: " << planning_info.min_straight_length_depart << std::endl;
+            }
+            else {
+                planning_info.min_straight_length_depart = 1000;
+                std::cerr << "无法找到车参 min_straight_length_depart ，赋予默认值: " << planning_info.min_straight_length_depart << std::endl;
+            }
+
+            if (val.HasMember("max_straight_length_depart") && val["max_straight_length_depart"].IsInt()) {
+                planning_info.max_straight_length_depart = val["max_straight_length_depart"].GetInt();
+                std::cout << "planning_info.max_straight_length_depart: " << planning_info.max_straight_length_depart << std::endl;
+            }
+            else {
+                planning_info.max_straight_length_depart = 5000;
+                std::cerr << "无法找到车参 max_straight_length_depart ，赋予默认值: " << planning_info.max_straight_length_depart << std::endl;
+            }
+
+            if (val.HasMember("delta_straight_length_depart") && val["delta_straight_length_depart"].IsInt()) {
+                planning_info.delta_straight_length_depart = val["delta_straight_length_depart"].GetInt();
+                std::cout << "planning_info.delta_straight_length_depart: " << planning_info.delta_straight_length_depart << std::endl;
+            }
+            else {
+                planning_info.delta_straight_length_depart = 500;
+                std::cerr << "无法找到车参 delta_straight_length_depart ，赋予默认值: " << planning_info.delta_straight_length_depart << std::endl;
+            }
+
+            if (val.HasMember("min_straight_length_wait") && val["min_straight_length_wait"].IsInt()) {
+                planning_info.min_straight_length_wait = val["min_straight_length_wait"].GetInt();
+                std::cout << "planning_info.min_straight_length_wait: " << planning_info.min_straight_length_wait << std::endl;
+            }
+            else {
+                planning_info.min_straight_length_wait = 1000;
+                std::cerr << "无法找到车参 min_straight_length_wait ，赋予默认值: " << planning_info.min_straight_length_wait << std::endl;
+            }
+
+            if (val.HasMember("max_straight_length_wait") && val["max_straight_length_wait"].IsInt()) {
+                planning_info.max_straight_length_wait = val["max_straight_length_wait"].GetInt();
+                std::cout << "planning_info.max_straight_length_wait: " << planning_info.max_straight_length_wait << std::endl;
+            }
+            else {
+                planning_info.max_straight_length_wait = 5000;
+                std::cerr << "无法找到车参 max_straight_length_wait ，赋予默认值: " << planning_info.max_straight_length_wait << std::endl;
+            }
+
+            if (val.HasMember("delta_straight_length_wait") && val["delta_straight_length_wait"].IsInt()) {
+                planning_info.delta_straight_length_wait = val["delta_straight_length_wait"].GetInt();
+                std::cout << "planning_info.delta_straight_length_wait: " << planning_info.delta_straight_length_wait << std::endl;
+            }
+            else {
+                planning_info.delta_straight_length_wait = 500;
+                std::cerr << "无法找到车参 delta_straight_length_wait ，赋予默认值: " << planning_info.delta_straight_length_wait << std::endl;
+            }
+
+            if (val.HasMember("min_straight_length_load") && val["min_straight_length_load"].IsInt()) {
+                planning_info.min_straight_length_load = val["min_straight_length_load"].GetInt();
+                std::cout << "planning_info.min_straight_length_load: " << planning_info.min_straight_length_load << std::endl;
+            }
+            else {
+                planning_info.min_straight_length_load = 1000;
+                std::cerr << "无法找到车参 min_straight_length_load ，赋予默认值: " << planning_info.min_straight_length_load << std::endl;
+            }
+
+            if (val.HasMember("max_straight_length_load") && val["max_straight_length_load"].IsInt()) {
+                planning_info.max_straight_length_load = val["max_straight_length_load"].GetInt();
+                std::cout << "planning_info.max_straight_length_load: " << planning_info.max_straight_length_load << std::endl;
+            }
+            else {
+                planning_info.max_straight_length_load = 5000;
+                std::cerr << "无法找到车参 max_straight_length_load ，赋予默认值: " << planning_info.max_straight_length_load << std::endl;
+            }
+
+            if (val.HasMember("delta_straight_length_load") && val["delta_straight_length_load"].IsInt()) {
+                planning_info.delta_straight_length_load = val["delta_straight_length_load"].GetInt();
+                std::cout << "planning_info.delta_straight_length_load: " << planning_info.delta_straight_length_load << std::endl;
+            }
+            else {
+                planning_info.delta_straight_length_load = 500;
+                std::cerr << "无法找到车参 delta_straight_length_load ，赋予默认值: " << planning_info.delta_straight_length_load << std::endl;
+            }
+            std::cout << "车辆参数解析完成" << std::endl;
         }
-        else {
-            param.delta_straight_length_load = 500;
-            std::cerr << "无法找到车参 delta_straight_length_load ，赋予默认值: " << param.delta_straight_length_load << std::endl;
-        }
-        std::cout << "车辆参数解析完成" << std::endl;
     }
 
     // 解析规划模式(planning_mode)
@@ -1544,7 +1632,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
     writer.Key("z");
     writer.Double(wait_point.z);
     writer.Key("yaw");
-    writer.Double(wait_point.yaw);
+    writer.Double(wait_point.angle);
     writer.EndObject();
     std::cout << "执行完代码 写入Wait_Point" << std::endl;
 
@@ -1558,7 +1646,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
         // 写入Path1
         writer.Key("Path1");
         writer.StartArray();
-        for (const auto& point : path_r1.points) {
+        for (const auto& point : path_r1) {
             writer.StartObject();
             writer.Key("x");
             writer.Double(point.x);
@@ -1567,7 +1655,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
             writer.Key("z");
             writer.Double(point.z);
             writer.Key("yaw");
-            writer.Double(point.yaw);
+            writer.Double(point.angle);
             writer.Key("curvature");
             writer.Double(point.curvature);
             writer.Key("direction");
@@ -1582,7 +1670,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
         // 写入Path2
         writer.Key("Path2");
         writer.StartArray();
-        for (const auto& point : path_r2.points) {
+        for (const auto& point : path_r2) {
             writer.StartObject();
             writer.Key("x");
             writer.Double(point.x);
@@ -1591,7 +1679,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
             writer.Key("z");
             writer.Double(point.z);
             writer.Key("yaw");
-            writer.Double(point.yaw);
+            writer.Double(point.angle);
             writer.Key("curvature");
             writer.Double(point.curvature);
             writer.Key("direction");
@@ -1606,7 +1694,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
         // 写入Path3
         writer.Key("Path3");
         writer.StartArray();
-        for (const auto& point : path_r3.points) {
+        for (const auto& point : path_r3) {
             writer.StartObject();
             writer.Key("x");
             writer.Double(point.x);
@@ -1615,7 +1703,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
             writer.Key("z");
             writer.Double(point.z);
             writer.Key("yaw");
-            writer.Double(point.yaw);
+            writer.Double(point.angle);
             writer.Key("curvature");
             writer.Double(point.curvature);
             writer.Key("direction");

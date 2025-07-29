@@ -17,13 +17,14 @@
 #include "globalvariable.h"
 #include "parser/parser.h"
 
+
 namespace fs = std::filesystem;
 
 extern "C" {
 char* GlobalPathPlanning(char* point_veh_start_end); // 全局轨迹规划
 bool  GetMap(char* parea);                           // 初始化自动获取地图信息
 char* PathPredicting(char* input_info);              // 有人车路径预测
-char* LoadAreaPlanning(char* point_veh_start_end);//装载区排队点自动生存算法
+char* AutoLoadWaittingPointGenerating(char* point_veh_start_end);//装载区排队点自动生存算法
 }
 
 
