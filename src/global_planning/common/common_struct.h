@@ -151,6 +151,8 @@ struct _VehicleParam {
     double wheel_base;
     // 前后左右的安全距离（地图边界）
     double safe_margin_bound;
+    // 前后左右距挡墙的距离
+    double safe_margin_wall;
     // 前后左右的安全距离（障碍物）
     double safe_margin_obstacle;
     // 重载向后开最大车轮转角
@@ -301,8 +303,8 @@ struct _LoadAreaPlanningInfos {
     int                          planning_mode = 0;
     _SinglePoint                 wait_point;
     _SinglePoint                 load_point;
-    vector<vector<_BorderPoint>> wall_borders; // 挡墙边界
-    vector<vector<_BorderPoint>> machine_borders;//挖掘机边界
+    vector<vector<_BorderPoint>> wall_borders;    // 挡墙边界
+    vector<vector<_BorderPoint>> machine_borders; // 挖掘机边界
 };
 
 struct GridPoint {

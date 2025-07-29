@@ -29,6 +29,12 @@ class CollisonCheck {
      */
     void InitObstacleMap(const Bound obstacle_bound);
 
+    /**
+     * @brief 初始化障碍物边界函数
+     * @param[in] wall_bound 障碍物边界点
+     * @return 返回说明：无
+     */
+    void InitWallBoundMap(const Bound wall_bound);
 
     /**
      * @brief 初始化挡墙边界函数
@@ -53,6 +59,22 @@ class CollisonCheck {
      * @return 返回碰撞点索引
      */
     vector<unsigned int> OptiPathCollisionCheck(const Path& my_optipath);
+
+    /**
+     * @brief 判断优化路径是否跟所有障碍物碰撞函数
+     * @param[in] my_optipath  优化路径
+     * @return 返回碰撞点索引
+     */
+    vector<unsigned int> CollisonCheck::OptiPathCollisionCheckWithAll(const Path& my_optipath);
+
+    /**
+     *@brief: 判断路径是否与装载区动态边界和挖机碰撞
+     *@param
+     *return
+     */
+    vector<unsigned int> DepartPathCollisionCheck(const Path& my_optipath);
+
+
     /**
      * @brief 判断车辆位置是否跟边界碰撞函数
      * @param[in] my_point  路点位置
@@ -61,6 +83,7 @@ class CollisonCheck {
      * false: 不碰撞
      */
     bool IsVehicleCollision(const Point& my_point);
+
 
   private:
     /**
@@ -81,6 +104,17 @@ class CollisonCheck {
      * false: 不碰撞
      */
     bool IsVehicleCollisionObstacleBound(const Point& my_point, const double& safe_distance);
+
+    /**
+     * @brief 判断车辆位置是否跟挡墙碰撞函数
+     * @param[in] my_point       路点位置
+     * @param[in] safe_distance  车辆安全距离
+     * @return 返回说明：
+     * true:  碰撞
+     * false: 不碰撞
+     */
+    bool IsVehicleCollisionWallBound(const Point& my_point, const double& safe_distance);
+
     /**
      * @brief 判断点是否在矩形内函数
      * @param[in] p   待判断点坐标
