@@ -1052,6 +1052,7 @@ string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<std::vector<
 
     return GlobalVariable::getInstance()->GetGlobalStr();
 }
+
 _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
     _LoadAreaPlanningInfos planning_info;
     rapidjson::Document    doc;
@@ -1449,97 +1450,66 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         std::cout << "解析 Planning_Mode: " << planning_info.planning_mode << std::endl;
     }
 
-    // 解析Machine_Borders（原Inner_Borders重命名）
-    auto parseBorderArray = [&](const rapidjson::Value& borderArray, std::vector<_ZoneBorder>& targetVector, const std::string& borderName) {
-        for (rapidjson::SizeType i = 0; i < borderArray.Size(); ++i) {
-            const rapidjson::Value& zone_border = borderArray[i];
-            if (!zone_border.IsObject()) {
-                std::cerr << borderName << "数组元素非对象类型，跳过该元素" << std::endl;
-                continue;
-            }
+    if (doc.HasMember("Machine_Borders")) {
+        cout << "解析 Machine_Borders 中" << endl;
+        Value& val = doc["Machine_Borders"];
+        for (size_t i = 0; i < val.Size(); i++) {
+            Value&               temp_val = val[i];
+            vector<_BorderPoint> inner_border;
 
-            _ZoneBorder zone;
-            if (zone_border.HasMember("zone_id") && zone_border["zone_id"].IsInt()) {
-                zone.zone_id = zone_border["zone_id"].GetInt();
-                std::cout << "解析 " << borderName << " zone_id: " << zone.zone_id << std::endl;
-            }
-            else {
-                zone.zone_id = -1;
-                std::cerr << borderName << " 无法找到 zone_id ，赋予默认值: " << zone.zone_id << std::endl;
-                continue;
-            }
+            if (temp_val.HasMember("inner_borders")) {
+                Value& temp_value = temp_val["inner_borders"];
+                for (size_t j = 0; j < temp_value.Size(); j++) {
+                    Value& temp_vall = temp_value[j];
 
-            if (zone_border.HasMember("inner_borders") && zone_border["inner_borders"].IsArray()) {
-                const rapidjson::Value& borders = zone_border["inner_borders"];
-                for (rapidjson::SizeType j = 0; j < borders.Size(); ++j) {
-                    const rapidjson::Value& border = borders[j];
-                    if (!border.IsObject()) {
-                        std::cerr << borderName << " inner_borders数组元素非对象类型，跳过该元素" << std::endl;
-                        continue;
-                    }
+                    if (temp_vall.HasMember("border_points")) {
+                        Value&       temp_val_1 = temp_vall["border_points"];
+                        _BorderPoint temp_point;
 
-                    _InnerBorder inner_border;
-                    if (border.HasMember("point_num") && border["point_num"].IsInt()) {
-                        inner_border.point_num = border["point_num"].GetInt();
-                        std::cout << "解析 " << borderName << " point_num: " << inner_border.point_num << std::endl;
-                    }
-                    else {
-                        inner_border.point_num = 0;
-                        std::cerr << borderName << " 无法找到 point_num ，赋予默认值: " << inner_border.point_num << std::endl;
-                        continue;
-                    }
-
-                    if (border.HasMember("border_points") && border["border_points"].IsArray()) {
-                        const rapidjson::Value& points = border["border_points"];
-                        for (rapidjson::SizeType k = 0; k < points.Size(); ++k) {
-                            const rapidjson::Value& point = points[k];
-                            if (!point.IsObject()) {
-                                std::cerr << borderName << " border_points数组元素非对象类型，跳过该点" << std::endl;
-                                continue;
-                            }
-
-                            _Point3D p;
-                            p.x    = point.HasMember("x") && point["x"].IsDouble() ? point["x"].GetDouble() : 0.0;
-                            p.y    = point.HasMember("y") && point["y"].IsDouble() ? point["y"].GetDouble() : 0.0;
-                            p.z    = point.HasMember("z") && point["z"].IsDouble() ? point["z"].GetDouble() : 0.0;
-                            p.type = point.HasMember("type") && point["type"].IsInt() ? point["type"].GetInt() : 0;
-
-                            inner_border.border_points.push_back(p);
+                        for (size_t j = 0; j < temp_val_1.Size(); j++) {
+                            Value& temp_val_2 = temp_val_1[j];
+                            temp_point.x      = temp_val_2["x"].GetDouble();
+                            temp_point.y      = temp_val_2["y"].GetDouble();
+                            temp_point.z      = temp_val_2["z"].GetFloat();
+                            temp_point.type   = temp_val_2["type"].GetUint();
+                            inner_border.push_back(temp_point);
                         }
-                        std::cout << borderName << " 解析完成 " << inner_border.border_points.size() << " 个边界点" << std::endl;
                     }
-                    else {
-                        std::cerr << borderName << " 无法找到 border_points 或格式错误，跳过该边界" << std::endl;
-                        continue;
-                    }
-
-                    zone.inner_borders.push_back(inner_border);
                 }
             }
-            else {
-                std::cerr << borderName << " 无法找到 inner_borders 或格式错误，跳过该区域" << std::endl;
-                continue;
-            }
-
-            targetVector.push_back(zone);
+            planning_info.machine_borders.emplace_back(inner_border);
         }
-        std::cout << borderName << " 解析完成 " << targetVector.size() << " 个区域边界信息" << std::endl;
-    };
-
-    // 解析Machine_Borders
-    if (doc.HasMember("Machine_Borders") && doc["Machine_Borders"].IsArray()) {
-        parseBorderArray(doc["Machine_Borders"], planning_info.machine_borders, "Machine_Borders");
-    }
-    else {
-        std::cerr << "JSON中未找到有效的 Machine_Borders 字段，无设备边界信息" << std::endl;
     }
 
-    // 新增解析Wall_Borders（数据类型与Machine_Borders一致）
-    if (doc.HasMember("Wall_Borders") && doc["Wall_Borders"].IsArray()) {
-        parseBorderArray(doc["Wall_Borders"], planning_info.wall_borders, "Wall_Borders");
-    }
-    else {
-        std::cerr << "JSON中未找到有效的 Wall_Borders 字段，无墙体边界信息" << std::endl;
+    if (doc.HasMember("Wall_Borders")) {
+        cout << "解析 Wall_Borders 中" << endl;
+        Value& val = doc["Wall_Borders"];
+        for (size_t i = 0; i < val.Size(); i++) {
+            Value&               temp_val = val[i];
+            vector<_BorderPoint> inner_border;
+
+            if (temp_val.HasMember("inner_borders")) {
+                Value& temp_value = temp_val["inner_borders"];
+                for (size_t j = 0; j < temp_value.Size(); j++) {
+                    Value& temp_vall = temp_value[j];
+
+                    if (temp_vall.HasMember("border_points")) {
+                        Value&       temp_val_1 = temp_vall["border_points"];
+                        _BorderPoint temp_point;
+
+                        for (size_t j = 0; j < temp_val_1.Size(); j++) {
+                            Value& temp_val_2 = temp_val_1[j];
+                            temp_point.x      = temp_val_2["x"].GetDouble();
+                            temp_point.y      = temp_val_2["y"].GetDouble();
+                            temp_point.z      = temp_val_2["z"].GetFloat();
+                            temp_point.type   = temp_val_2["type"].GetUint();
+                            inner_border.push_back(temp_point);
+                        }
+                    }
+                }
+            }
+            planning_info.wall_borders.emplace_back(inner_border);
+        }
     }
 
     return planning_info;
