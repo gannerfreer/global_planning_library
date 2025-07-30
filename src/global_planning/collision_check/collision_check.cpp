@@ -60,6 +60,7 @@ void CollisonCheck::InitObstacleMap(const Bound obstacle_bound) {
     obstacle_bound_map_.clear();
     //    std::cout << " 222m__VehicleParam_.grid_dist = " <<  m__VehicleParam_.grid_dist <<"\n";
     // 将所有障碍物边界点存入对应栅格中
+    cout<<"InitObstacleMap =>obstacle_bound.size():"<<obstacle_bound.size()<<" front():"<<obstacle_bound.front().size()<<endl;
     for (unsigned int i = 0; i < obstacle_bound.size(); ++i) {
         for (auto iter = obstacle_bound.at(i).begin(); iter != obstacle_bound.at(i).end(); ++iter) {
             IntCoordinate temp_int_point;
@@ -75,30 +76,8 @@ void CollisonCheck::InitObstacleMap(const Bound obstacle_bound) {
             iter_vec->second.push_back(*iter);
         }
     }
-    cout << "obstacle_bound_map_.size():" << obstacle_bound_map_.size() << endl;
-}
-
-void CollisonCheck::InitWallBoundMap(const Bound wall_bound) {
-    wall_bound_map_.clear();
-    if (wall_bound.empty()) return;
-    //    std::cout << " 111m__VehicleParam_.grid_dist = " <<  m__VehicleParam_.grid_dist <<"\n";
-    // 将所有地图边界点存入对应栅格中
-    for (unsigned int i = 0; i < wall_bound.size(); ++i) {
-        for (auto iter = wall_bound.at(i).begin(); iter != wall_bound.at(i).end(); ++iter) {
-            IntCoordinate temp_int_point;
-            temp_int_point.x      = static_cast<int>(floor(iter->x / m__VehicleParam_.grid_dist));
-            temp_int_point.y      = static_cast<int>(floor(iter->y / m__VehicleParam_.grid_dist));
-            unsigned int hash     = Coordinate2Hash(temp_int_point);
-            auto         iter_vec = wall_bound_map_.find(hash);
-            if (iter_vec == wall_bound_map_.end()) // 若当前栅格点没在wall_bound_map_中
-            {
-                wall_bound_map_[hash] = vector<Coordinate>();
-                iter_vec              = wall_bound_map_.find(hash);
-            }
-            iter_vec->second.push_back(*iter);
-        }
-    }
-    cout << "InitWallBoundMap--wall_bound_map_.size():" << wall_bound.front().size() << endl;
+    
+    
 }
 
 
@@ -111,6 +90,7 @@ void CollisonCheck::InitWallMap(const Bound wall_bound) {
     wall_bound_map_.clear();
     //    std::cout << " 222m__VehicleParam_.grid_dist = " <<  m__VehicleParam_.grid_dist <<"\n";
     // 将所有障碍物边界点存入对应栅格中
+    cout<<"InitWallMap=>wall_bound.size():"<<wall_bound.size()<<" front():"<<wall_bound.front().size()<<endl;
     for (unsigned int i = 0; i < wall_bound.size(); ++i) {
         for (auto iter = wall_bound.at(i).begin(); iter != wall_bound.at(i).end(); ++iter) {
             IntCoordinate temp_int_point;
@@ -126,7 +106,6 @@ void CollisonCheck::InitWallMap(const Bound wall_bound) {
             iter_vec->second.push_back(*iter);
         }
     }
-    cout << "wall_bound_map_.size():" << wall_bound_map_.size() << endl;
 }
 
 

@@ -522,10 +522,13 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> path;
     // 解析传入的参数
     cout << "本次入參大小： " << strlen(point_veh_start_end) << "strlen()计算方式" << endl;
+    
     _LoadAreaPlanningInfos veh_start_end;
     try {
         std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->parse_func_write_lock); // 这里之所以加解析锁，是因为之前采用jna方案时，测试多线程调用时，出现解析混乱情况
         veh_start_end = GlobalPlanning::Parser::ParseLoadAreaPlanningJson(point_veh_start_end);
+        cout<<"execute_mode:"<<veh_start_end.planning_mode<<endl;
+        cout<<"load_point:("<<veh_start_end.load_point.x<<","<<veh_start_end.load_point.y<<")"<<endl;
     } catch (...) {
         // 捕获所有类型的异常
         std::cerr << "捕获到一个异常" << std::endl;
@@ -598,21 +601,6 @@ char* QueuePointGenerator(char* point_veh_start_end) {
 
     } // 获取传入的内边界并将其存入对应的r区域内
 
-    if (!veh_start_end.wall_borders.empty()) {
-        cout << "入参传入" << veh_start_end.wall_borders.size() << "组挡墙边界" << endl;
-    }
-    else {
-        planning.threadLogger_->error("此次任务无wall_borders信息");
-    }
-
-
-    if (!veh_start_end.machine_borders.empty()) {
-        cout << "入参传入" << veh_start_end.machine_borders.size() << "组挖掘机边界" << endl;
-    }
-    else {
-        planning.threadLogger_->error("此次任务无machine_borders信息");
-    }
-
 
     planning.threadLogger_->info("wait_point.x ={}", veh_start_end.wait_point.x);
     planning.threadLogger_->info("wait_point.y ={}", veh_start_end.wait_point.y);
@@ -646,6 +634,8 @@ char* QueuePointGenerator(char* point_veh_start_end) {
 
     Bound                              wall_border_v;
     const vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
+    cout<<"收到挡墙"<<wall_border.size()<<"组"<<endl;
+    vC.clear();
     for (unsigned int i = 0; i < wall_border.size(); ++i) {
         for (unsigned int j = 0; j < wall_border.at(i).size(); ++j) {
             Coordinate temp_point;
@@ -661,6 +651,8 @@ char* QueuePointGenerator(char* point_veh_start_end) {
 
     Bound                        machine_border_v;
     vector<vector<_BorderPoint>> machine_border = veh_start_end.machine_borders;
+    vC.clear();
+    cout<<"收到挖掘"<<machine_border.size()<<"组"<<endl;
     for (unsigned int i = 0; i < machine_border.size(); ++i) {
         for (unsigned int j = 0; j < machine_border.at(i).size(); ++j) {
             Coordinate temp_point;
@@ -680,6 +672,8 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     vector<_SingleTraj> input_paths, output_paths;
     input_paths  = GlobalVariable::getInstance()->GetInGuidingPaths();
     output_paths = GlobalVariable::getInstance()->GetOutGuidingPaths();
+    cout<<"驶入引导路径一共"<<input_paths.size()<<"条"<<endl;
+    cout<<"驶出引导路径一共"<<output_paths.size()<<"条"<<endl;
 
     int    neares_idx  = -1;
     double nearest_dis = numeric_limits<double>::max();
@@ -687,7 +681,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         for (int j = 0; j < input_paths.at(i).trajectory.size(); j++) {
             double temp_dis = hypot(veh_start_end.load_point.x - input_paths.at(i).trajectory.at(j).x, veh_start_end.load_point.y - input_paths.at(i).trajectory.at(j).y);
             if (temp_dis < nearest_dis) {
-                neares_idx = temp_dis;
+                nearest_dis = temp_dis;
                 neares_idx = i;
             }
         }
@@ -703,13 +697,14 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         temp_point.direction = static_cast<MotionDirection>(input_paths.at(neares_idx).trajectory.at(i).direction);
         input_path.push_back(temp_point);
     }
+    cout<<"结合当前load_point位置，挑选出的驶入引导路径第一个点坐标为:("<<input_path.front().x<<","<<input_path.front().y<<")"<<endl;
 
     nearest_dis = numeric_limits<double>::max();
     for (int i = 0; i < output_paths.size(); i++) {
         for (int j = 0; j < output_paths.at(i).trajectory.size(); j++) {
             double temp_dis = hypot(veh_start_end.load_point.x - output_paths.at(i).trajectory.at(j).x, veh_start_end.load_point.y - output_paths.at(i).trajectory.at(j).y);
             if (temp_dis < nearest_dis) {
-                neares_idx = temp_dis;
+                nearest_dis = temp_dis;
                 neares_idx = i;
             }
         }
@@ -724,6 +719,10 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         temp_point.direction = static_cast<MotionDirection>(output_paths.at(neares_idx).trajectory.at(i).direction);
         out_path.push_back(temp_point);
     }
+    cout<<"结合当前load_point位置，挑选出的驶出引导路径第一个点坐标为:("<<out_path.front().x<<","<<out_path.front().y<<")"<<endl;
+
+
+
 
     GlobalPlanning::Point wait_point, load_point;
     wait_point.x     = veh_start_end.wait_point.x;
@@ -772,8 +771,13 @@ char* QueuePointGenerator(char* point_veh_start_end) {
 
 
     try {
+        cout<<"开始调用LoadAreaPlanningInterface()"<<endl;
         planning.threadLogger_->info("开始调用LoadAreaPlanningInterface()");
         path = planning.LoadAreaPlanningInterface(veh_start_end.planning_mode, wait_point, load_point, input_path, out_path, collison_check);
+        cout<<"LoadAreaPlanningInterface()返回信息汇总"<<endl;
+        cout<<get<0>(path)<<endl;
+        cout<<"("<<get<1>(path).x<<","<<get<1>(path).y<<")"<<endl;
+        cout<<get<2>(path).size()<<" "<<get<3>(path).size()<<" "<<get<4>(path).size()<<endl;
     } catch (const std::exception& e) {
         cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;
         planning.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 exception 抛出");
