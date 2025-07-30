@@ -20,7 +20,12 @@ SRC = interface.cpp \
       smoother/path_opti.cpp\
       smoother/tension_smoother_2.cpp\
       collision_check/collision_check.cpp\
-      planner/pathplanner/spline/spline.cpp
+      planner/pathplanner/spline/spline.cpp\
+	  load_area_planning/load_area_planning.cpp\
+	  load_area_planning/wait_point_generate.cpp\
+	  load_area_planning/fitting_path_generate.cpp
+		  
+
 
 OBJS = $(SRC:.cpp=.o)
 

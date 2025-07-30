@@ -80,5 +80,11 @@
         "span": "cpp",
         "*.ipp": "cpp"
     },
-    "cmake.sourceDirectory": "/home/yyf/global_planning_library/src/msgs/msg_lidar_shape"
+    "cmake.sourceDirectory": "/home/yyf/global_planning_library/src/msgs/msg_lidar_shape",
+    "python.autoComplete.extraPaths": [
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
 }

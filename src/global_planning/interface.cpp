@@ -9,6 +9,9 @@
 
 #include "interface.h"
 
+#include "common/common_struct.h"
+#include "globalvariable.h"
+#include "load_area_planning/load_area_planning.h"
 #include "mine_global_planning/planning.h"
 #include "mine_global_planning/predicting.h"
 
@@ -501,6 +504,375 @@ char* PathPredicting(char* input_info) {
             predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
             predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             predicting.threadLogger_->info("出锁成功");
+            return GlobalVariable::getInstance()->GetReceivePtr();
+        }
+    }
+}
+
+char* QueuePointGenerator(char* point_veh_start_end) {
+    auto              currentTime = std::chrono::system_clock::now();
+    std::time_t       timestamp   = std::chrono::system_clock::to_time_t(currentTime);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
+    std::string timeStr = ss.str();
+    cout << "**********************欢迎装载排队点自动生成库,版本号:G_V1.4.0.20250310_beta************************************" << timeStr << endl;
+    time_t start_time, end_time;
+    time(&start_time);
+    LoadAreaPlanning::LoadAreaPlanning                                                                        planning;
+    std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> path;
+    // 解析传入的参数
+    cout << "本次入參大小： " << strlen(point_veh_start_end) << "strlen()计算方式" << endl;
+    _LoadAreaPlanningInfos veh_start_end;
+    try {
+        std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->parse_func_write_lock); // 这里之所以加解析锁，是因为之前采用jna方案时，测试多线程调用时，出现解析混乱情况
+        veh_start_end = GlobalPlanning::Parser::ParseLoadAreaPlanningJson(point_veh_start_end);
+    } catch (...) {
+        // 捕获所有类型的异常
+        std::cerr << "捕获到一个异常" << std::endl;
+    }
+
+
+    {
+        std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->record_file_write_lock);
+        std::ofstream                       record;
+        std::string                         folderPath = "record_file";
+        std::string                         filePath   = folderPath + "/LoadAreaPlanning_record.txt";
+        if (!fs::exists(folderPath)) {
+            try {
+                fs::create_directory(folderPath);
+            } catch (const fs::filesystem_error& e) {
+                std::cerr << "Error creating directory: " << e.what() << std::endl;
+            }
+        }
+        record.open(filePath, std::ios_base::app);
+        record << timeStr << " ，收到请求" << "    装载区路径生成库版本号:G_V1.4.0.20250310_beta" << endl;
+        record.close();
+    }
+
+    // 创建 log 目录
+    string      id      = "load_point_test";
+    std::string dirPath = "log/" + id;
+    filesystem::create_directories(dirPath);
+    // 构造文件路径
+    std::string        filePath = dirPath + "/log_" + timeStr + ".log";
+    std::ostringstream oss;
+    int                num = GlobalVariable::getInstance()->GetDispatchNums();
+    GlobalVariable::getInstance()->SetDispatchNums(num++);
+    oss << GlobalVariable::getInstance()->GetDispatchNums();
+    id += oss.str();
+
+
+    planning.threadLogger_ = spdlog::rotating_logger_mt(id, filePath, 10 * 2048 * 2048, 5, true);
+    planning.threadLogger_->flush_on(spdlog::level::info);
+    planning.threadLogger_->info(id);
+    planning.threadLogger_->info("point_veh_start_end.strlen().size:{}", strlen(point_veh_start_end));
+    planning.threadLogger_->info("LoadAreaPlanning-IDS_LoadAreaPlanning_version: G_V1.4.0.20250310_beta");
+
+    {
+        std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
+        planning.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size());
+        if (GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0) {
+            get<0>(path) = 0;
+            {
+                std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+                planning.threadLogger_->info("进锁成功");
+                string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+                int    temp_string_size = temp_string.size();
+                GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+                if (temp_string_size < 10) {
+                    cout << "temp_string还没接就被释放了" << endl;
+                    planning.threadLogger_->info("出锁成功");
+                }
+                planning.threadLogger_->info("VecWaypoint2json successfully");
+                planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+                planning.threadLogger_->info("出锁成功");
+                return GlobalVariable::getInstance()->GetReceivePtr();
+            }
+        }
+
+        // 给planning对象的有向图、地图边界、路段进行赋值
+        planning.threadLogger_->info("map_border_:{}", GlobalVariable::getInstance()->GetMapBorder().size());
+        planning.threadLogger_->info("装载区驶入引导路径:{}", GlobalVariable::getInstance()->GetInGuidingPaths().size());
+        planning.threadLogger_->info("装载区驶出引导路径:{}", GlobalVariable::getInstance()->GetOutGuidingPaths().size());
+
+
+    } // 获取传入的内边界并将其存入对应的r区域内
+
+    if (!veh_start_end.wall_borders.empty()) {
+        cout << "入参传入" << veh_start_end.wall_borders.size() << "组挡墙边界" << endl;
+    }
+    else {
+        planning.threadLogger_->error("此次任务无wall_borders信息");
+    }
+
+
+    if (!veh_start_end.machine_borders.empty()) {
+        cout << "入参传入" << veh_start_end.machine_borders.size() << "组挖掘机边界" << endl;
+    }
+    else {
+        planning.threadLogger_->error("此次任务无machine_borders信息");
+    }
+
+
+    planning.threadLogger_->info("wait_point.x ={}", veh_start_end.wait_point.x);
+    planning.threadLogger_->info("wait_point.y ={}", veh_start_end.wait_point.y);
+    planning.threadLogger_->info("wait_point.z ={}", veh_start_end.wait_point.z);
+    planning.threadLogger_->info("wait_point.yaw ={}", veh_start_end.wait_point.yaw);
+    planning.threadLogger_->info("load_point.x ={}", veh_start_end.load_point.x);
+    planning.threadLogger_->info("load_point.y ={}", veh_start_end.load_point.y);
+    planning.threadLogger_->info("load_point.z ={}", veh_start_end.load_point.z);
+    planning.threadLogger_->info("load_point.yaw ={}", veh_start_end.load_point.yaw);
+
+
+    // 构建碰撞检测对象
+    CollisonCheck collison_check;
+
+    collison_check.InitParam(veh_start_end.veh_param);
+    planning.threadLogger_->info("collision_check InitParam()成功");
+    Bound                map_border_v;
+    vector<_BorderPoint> map_border;
+    map_border = GlobalVariable::getInstance()->GetMapBorder();
+    vector<Coordinate> vC;
+    for (unsigned int i = 0; i < map_border.size(); ++i) {
+        Coordinate temp_point;
+        temp_point.z = 0;
+        temp_point.x = map_border.at(i).x;
+        temp_point.y = map_border.at(i).y;
+        vC.push_back(temp_point);
+    }
+    map_border_v.push_back(vC);
+    collison_check.InitBoundMap(map_border_v);
+    planning.threadLogger_->info("collision_check InitBoundMap()成功");
+
+    Bound                              wall_border_v;
+    const vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
+    for (unsigned int i = 0; i < wall_border.size(); ++i) {
+        for (unsigned int j = 0; j < wall_border.at(i).size(); ++j) {
+            Coordinate temp_point;
+            temp_point.z = 0;
+            temp_point.x = wall_border.at(i).at(j).x;
+            temp_point.y = wall_border.at(i).at(j).y;
+            vC.push_back(temp_point);
+        }
+    }
+    wall_border_v.push_back(vC);
+    collison_check.InitWallMap(wall_border_v);
+    planning.threadLogger_->info("collision_check InitWallMap()成功");
+
+    Bound                        machine_border_v;
+    vector<vector<_BorderPoint>> machine_border = veh_start_end.machine_borders;
+    for (unsigned int i = 0; i < machine_border.size(); ++i) {
+        for (unsigned int j = 0; j < machine_border.at(i).size(); ++j) {
+            Coordinate temp_point;
+            temp_point.z = 0;
+            temp_point.x = machine_border.at(i).at(j).x;
+            temp_point.y = machine_border.at(i).at(j).y;
+            vC.push_back(temp_point);
+        }
+    }
+    machine_border_v.push_back(vC);
+    collison_check.InitObstacleMap(machine_border_v);
+    planning.threadLogger_->info("collision_check InitObstacleMap()成功");
+
+
+
+    Path                input_path, out_path;
+    vector<_SingleTraj> input_paths, output_paths;
+    input_paths  = GlobalVariable::getInstance()->GetInGuidingPaths();
+    output_paths = GlobalVariable::getInstance()->GetOutGuidingPaths();
+
+    int    neares_idx  = -1;
+    double nearest_dis = numeric_limits<double>::max();
+    for (int i = 0; i < input_paths.size(); i++) {
+        for (int j = 0; j < input_paths.at(i).trajectory.size(); j++) {
+            double temp_dis = hypot(veh_start_end.load_point.x - input_paths.at(i).trajectory.at(j).x, veh_start_end.load_point.y - input_paths.at(i).trajectory.at(j).y);
+            if (temp_dis < nearest_dis) {
+                neares_idx = temp_dis;
+                neares_idx = i;
+            }
+        }
+    }
+    Point temp_point;
+    for (int i = 0; i < input_paths.at(neares_idx).trajectory.size(); i++) {
+        temp_point.x         = input_paths.at(neares_idx).trajectory.at(i).x;
+        temp_point.y         = input_paths.at(neares_idx).trajectory.at(i).y;
+        temp_point.z         = input_paths.at(neares_idx).trajectory.at(i).z;
+        temp_point.angle     = input_paths.at(neares_idx).trajectory.at(i).yaw;
+        temp_point.curvature = input_paths.at(neares_idx).trajectory.at(i).curvature;
+        temp_point.distance  = input_paths.at(neares_idx).trajectory.at(i).distance;
+        temp_point.direction = static_cast<MotionDirection>(input_paths.at(neares_idx).trajectory.at(i).direction);
+        input_path.push_back(temp_point);
+    }
+
+    nearest_dis = numeric_limits<double>::max();
+    for (int i = 0; i < output_paths.size(); i++) {
+        for (int j = 0; j < output_paths.at(i).trajectory.size(); j++) {
+            double temp_dis = hypot(veh_start_end.load_point.x - output_paths.at(i).trajectory.at(j).x, veh_start_end.load_point.y - output_paths.at(i).trajectory.at(j).y);
+            if (temp_dis < nearest_dis) {
+                neares_idx = temp_dis;
+                neares_idx = i;
+            }
+        }
+    }
+    for (int i = 0; i < output_paths.at(neares_idx).trajectory.size(); i++) {
+        temp_point.x         = output_paths.at(neares_idx).trajectory.at(i).x;
+        temp_point.y         = output_paths.at(neares_idx).trajectory.at(i).y;
+        temp_point.z         = output_paths.at(neares_idx).trajectory.at(i).z;
+        temp_point.angle     = output_paths.at(neares_idx).trajectory.at(i).yaw;
+        temp_point.curvature = output_paths.at(neares_idx).trajectory.at(i).curvature;
+        temp_point.distance  = output_paths.at(neares_idx).trajectory.at(i).distance;
+        temp_point.direction = static_cast<MotionDirection>(output_paths.at(neares_idx).trajectory.at(i).direction);
+        out_path.push_back(temp_point);
+    }
+
+    GlobalPlanning::Point wait_point, load_point;
+    wait_point.x     = veh_start_end.wait_point.x;
+    wait_point.y     = veh_start_end.wait_point.y;
+    wait_point.z     = veh_start_end.wait_point.z;
+    wait_point.angle = veh_start_end.wait_point.yaw;
+
+    load_point.x     = veh_start_end.load_point.x;
+    load_point.y     = veh_start_end.load_point.y;
+    load_point.z     = veh_start_end.load_point.z;
+    load_point.angle = veh_start_end.load_point.yaw;
+
+    {
+        planning.max_curve_length_                 = veh_start_end.max_curve_length; // 圆弧直线倒车最大曲线长度
+        planning.min_curve_length_                 = veh_start_end.min_curve_length; // 圆弧直线倒车最小曲线长度
+        planning.delta_curve_length_               = veh_start_end.delta_curve_length; // 圆弧直线倒车曲线长度采样间距
+        planning.wheel_base_length_                = veh_start_end.wheel_base_length; // 车辆轴距
+        planning.center2side_                      = veh_start_end.center2side; // 车辆宽度
+        planning.max_straight_length_              = veh_start_end.max_straight_length; // 圆弧直线倒车最大直线长度
+        planning.min_straight_length_              = veh_start_end.min_straight_length; // 圆弧直线倒车最小直线长度
+        planning.delta_straight_length_            = veh_start_end.delta_straight_length; // 圆弧直线倒车直线采样间距
+        planning.max_steering_angle_               = veh_start_end.max_steering_angle; // 圆弧直线倒车最大转向角
+        planning.min_steering_angle_               = veh_start_end.min_steering_angle; // 圆弧直线倒车最小转向角
+        planning.delta_steering_angle_             = veh_start_end.delta_steering_angle; // 圆弧直线倒车转角采样间距
+        planning.standard_steering_angle_          = veh_start_end.standard_steering_angle; // 标准倒车转角
+        planning.weight_length_                    = veh_start_end.weight_length; // 圆弧直线倒车长度评分权重
+        planning.weight_curve_                     = veh_start_end.weight_curve; // 圆弧直线倒车转角评分权重
+        planning.load_path_straight_length_weight_ = veh_start_end.load_path_straight_length_weight; // 前往装载点路径直线长度权重
+        planning.load_path_curvature_weight_       = veh_start_end.load_path_curvature_weight; // 前往装载点路径曲率权重
+        planning.out_put_path_dense_               = veh_start_end.out_put_path_dense; // 输出路径密度
+        planning.search_range_                     = veh_start_end.search_range; // 寻找周围路径范围
+        planning.jump_dense_                       = veh_start_end.jump_dense; // 在目标路径上取点的密度
+        planning.length_weight_                    = veh_start_end.length_weight; // 前进路径直线长度权重
+        planning.critical_length_                  = veh_start_end.critical_length; // 前进路径长度标准值
+        planning.curvature_weight_                 = veh_start_end.curvature_weight; // 前进路径曲率权重
+        planning.min_straight_length_depart_       = veh_start_end.min_straight_length_depart; // 驶离路径最短直线长度
+        planning.max_straight_length_depart_       = veh_start_end.max_straight_length_depart; // 驶离路径最长直线长度
+        planning.delta_straight_length_depart_     = veh_start_end.delta_straight_length_depart; // 驶离路径长度采样间距
+        planning.min_straight_length_wait_         = veh_start_end.min_straight_length_wait; // 前往等待点路径直线长度最大值
+        planning.max_straight_length_wait_         = veh_start_end.max_straight_length_wait; // 前往等待点路径直线长度最小值
+        planning.delta_straight_length_wait_       = veh_start_end.delta_straight_length_wait; // 前往等待点路径直线长度采样间距
+        planning.min_straight_length_load_         = veh_start_end.min_straight_length_load; // 前往装载点路径直线长度最小值
+        planning.max_straight_length_load_         = veh_start_end.max_straight_length_load; // 前往装载点路径直线长度最大值
+        planning.delta_straight_length_load_       = veh_start_end.delta_straight_length_load; // 前往装载点路径直线长度采样间距
+    }
+
+
+    try {
+        planning.threadLogger_->info("开始调用LoadAreaPlanningInterface()");
+        path = planning.LoadAreaPlanningInterface(veh_start_end.planning_mode, wait_point, load_point, input_path, out_path, collison_check);
+    } catch (const std::exception& e) {
+        cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;
+        planning.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 exception 抛出");
+        {
+            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+            planning.threadLogger_->info("进 return_write_lock 锁成功");
+            cout << "进 return_write_lock 锁成功" << endl;
+            string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+            int    temp_string_size = temp_string.size();
+            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+            if (temp_string_size < 10) {
+                cout << "temp_string还没接就被释放了" << endl;
+                planning.threadLogger_->info("temp_string还没接就被释放了");
+            }
+            planning.threadLogger_->info("VecWaypoint2json successfully");
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("即将出  return_write_lock 锁");
+            cout << "即将出  return_write_lock 锁" << endl;
+            return GlobalVariable::getInstance()->GetReceivePtr();
+        }
+    } catch (const std::out_of_range& e) {
+        // 处理数组越界异常
+        cout << "规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出" << endl;
+        planning.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出");
+        {
+            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+            planning.threadLogger_->info("进锁成功");
+            string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+            int    temp_string_size = temp_string.size();
+            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+            if (temp_string_size < 10) {
+                cout << "temp_string还没接就被释放了" << endl;
+                planning.threadLogger_->info("出锁成功");
+            }
+            planning.threadLogger_->info("VecWaypoint2json successfully");
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("出锁成功");
+            return GlobalVariable::getInstance()->GetReceivePtr();
+        }
+    }
+
+    try {
+        cout << "最后一步，将规划结果转为json格式字符串并返回" << endl;
+        planning.threadLogger_->info("最后一步，返回字符指针");
+        {
+            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+            planning.threadLogger_->info("进锁成功");
+            string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+            int    temp_string_size = temp_string.size();
+            cout << "temp_string_size:" << temp_string_size << endl;
+            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+            cout << "执行完 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data())" << endl;
+            if (temp_string_size < 10) {
+                cout << "temp_string还没接就被释放了" << endl;
+                planning.threadLogger_->info("出锁成功");
+            }
+            cout << "返回轨迹" << endl;
+            planning.threadLogger_->info("VecWaypoint2json successfully");
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("出锁成功");
+            return GlobalVariable::getInstance()->GetReceivePtr();
+        }
+    } catch (const std::exception& e) {
+        cout << "规划库执行 VecWaypoint2json 时出现 exception 抛出" << endl;
+        planning.threadLogger_->info("规划库执行 VecWaypoint2json 时出现 exception 抛出");
+        {
+            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+            planning.threadLogger_->info("进锁成功");
+            string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+            int    temp_string_size = temp_string.size();
+
+            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+            if (temp_string_size < 10) {
+                cout << "temp_string还没接就被释放了" << endl;
+                planning.threadLogger_->info("出锁成功");
+            }
+            planning.threadLogger_->info("VecWaypoint2json successfully");
+
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("出锁成功");
+            return GlobalVariable::getInstance()->GetReceivePtr();
+        }
+    } catch (const std::out_of_range& e) {
+        // 处理数组越界异常
+        cout << "规划库执行 VecWaypoint2json 时出现 out_of_range 抛出" << endl;
+        planning.threadLogger_->info("规划库执行 VecWaypoint2json 时出现 out_of_range 抛出");
+        {
+            std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+            planning.threadLogger_->info("进锁成功");
+            string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+            int    temp_string_size = temp_string.size();
+            GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+            if (temp_string_size < 10) {
+                cout << "temp_string还没接就被释放了" << endl;
+                planning.threadLogger_->info("出锁成功");
+            }
+            planning.threadLogger_->info("VecWaypoint2json successfully");
+            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+            planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     }
