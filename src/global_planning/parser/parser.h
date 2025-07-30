@@ -1118,6 +1118,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             planning_info.wait_point.yaw = 0.0;
             std::cerr << "queue_point.yaw 不存在或格式错误，赋予默认值: " << planning_info.wait_point.yaw << std::endl;
         }
+    }else{
+        std::cout<<"queue_point 为空"<<std::endl;
     }
 
     // 解析加载点(load_point)
@@ -1201,8 +1203,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 cout << "planning_info.veh_param.veh_center_2_side " << planning_info.veh_param.veh_center_2_side << endl;
             }
             else {
-                planning_info.veh_param.veh_center_2_side = 1.735;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.735" << endl;
+                planning_info.veh_param.veh_center_2_side = 1.885;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.885" << endl;
             }
 
             if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
@@ -1219,8 +1221,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 cout << "planning_info.veh_param.safe_margin_obstacle " << planning_info.veh_param.safe_margin_obstacle << endl;
             }
             else {
-                planning_info.veh_param.safe_margin_obstacle = 2.0;
-                cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值 2.0" << endl;
+                planning_info.veh_param.safe_margin_obstacle = 1.0;
+                cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值 1.0" << endl;
             }
 
             if (val.HasMember("veh_center_2_rear_bound") && val["veh_center_2_rear_bound"].IsNumber()) {
@@ -1228,8 +1230,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 cout << "planning_info.veh_param.veh_center_2_rear_bound " << planning_info.veh_param.veh_center_2_rear_bound << endl;
             }
             else {
-                planning_info.veh_param.veh_center_2_rear_bound = 0.5;
-                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 0.5" << endl;
+                planning_info.veh_param.veh_center_2_rear_bound = 2.85;
+                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 2.85" << endl;
             }
 
 
@@ -1249,7 +1251,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.max_curve_length: " << planning_info.max_curve_length << std::endl;
             }
             else {
-                planning_info.max_curve_length = 1;
+                planning_info.max_curve_length = 40;
                 std::cerr << "无法找到车参 max_curve_length ，赋予默认值: " << planning_info.max_curve_length << std::endl;
             }
 
@@ -1258,7 +1260,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.min_curve_length: " << planning_info.min_curve_length << std::endl;
             }
             else {
-                planning_info.min_curve_length = 1;
+                planning_info.min_curve_length = 20;
                 std::cerr << "无法找到车参 min_curve_length ，赋予默认值: " << planning_info.min_curve_length << std::endl;
             }
 
@@ -1267,7 +1269,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.delta_curve_length: " << planning_info.delta_curve_length << std::endl;
             }
             else {
-                planning_info.delta_curve_length = 1;
+                planning_info.delta_curve_length = 5;
                 std::cerr << "无法找到车参 delta_curve_length ，赋予默认值: " << planning_info.delta_curve_length << std::endl;
             }
 
@@ -1277,7 +1279,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.wheel_base_length: " << planning_info.wheel_base_length << std::endl;
             }
             else {
-                planning_info.wheel_base_length = 2700; // 典型轴距默认值(mm)
+                planning_info.wheel_base_length = 5.8; // 典型轴距默认值(mm)
                 std::cerr << "无法找到车参 wheel_base_length ，赋予默认值: " << planning_info.wheel_base_length << std::endl;
             }
 
@@ -1286,7 +1288,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.center2side: " << planning_info.center2side << std::endl;
             }
             else {
-                planning_info.center2side = 800; // 典型轮距默认值(mm)
+                planning_info.center2side = 1.885; // 典型轮距默认值(mm)
                 std::cerr << "无法找到车参 center2side ，赋予默认值: " << planning_info.center2side << std::endl;
             }
 
@@ -1296,7 +1298,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.max_straight_length: " << planning_info.max_straight_length << std::endl;
             }
             else {
-                planning_info.max_straight_length = 10000;
+                planning_info.max_straight_length = 10;
                 std::cerr << "无法找到车参 max_straight_length ，赋予默认值: " << planning_info.max_straight_length << std::endl;
             }
 
@@ -1305,7 +1307,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.min_straight_length: " << planning_info.min_straight_length << std::endl;
             }
             else {
-                planning_info.min_straight_length = 1000;
+                planning_info.min_straight_length = 2;
                 std::cerr << "无法找到车参 min_straight_length ，赋予默认值: " << planning_info.min_straight_length << std::endl;
             }
 
@@ -1314,7 +1316,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.delta_straight_length: " << planning_info.delta_straight_length << std::endl;
             }
             else {
-                planning_info.delta_straight_length = 500;
+                planning_info.delta_straight_length = 2;
                 std::cerr << "无法找到车参 delta_straight_length ，赋予默认值: " << planning_info.delta_straight_length << std::endl;
             }
 
@@ -1324,7 +1326,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.max_steering_angle: " << planning_info.max_steering_angle << std::endl;
             }
             else {
-                planning_info.max_steering_angle = 35; // 典型最大转向角(度)
+                planning_info.max_steering_angle = 28; // 典型最大转向角(度)
                 std::cerr << "无法找到车参 max_steering_angle ，赋予默认值: " << planning_info.max_steering_angle << std::endl;
             }
 
@@ -1333,7 +1335,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.min_steering_angle: " << planning_info.min_steering_angle << std::endl;
             }
             else {
-                planning_info.min_steering_angle = -35; // 典型最小转向角(度)
+                planning_info.min_steering_angle = -28; // 典型最小转向角(度)
                 std::cerr << "无法找到车参 min_steering_angle ，赋予默认值: " << planning_info.min_steering_angle << std::endl;
             }
 
@@ -1342,7 +1344,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.delta_steering_angle: " << planning_info.delta_steering_angle << std::endl;
             }
             else {
-                planning_info.delta_steering_angle = 5;
+                planning_info.delta_steering_angle = 4;
                 std::cerr << "无法找到车参 delta_steering_angle ，赋予默认值: " << planning_info.delta_steering_angle << std::endl;
             }
 
@@ -1351,7 +1353,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.standard_steering_angle: " << planning_info.standard_steering_angle << std::endl;
             }
             else {
-                planning_info.standard_steering_angle = 0; // 标准转向角(直行)
+                planning_info.standard_steering_angle = 14; // 标准转向角(直行)
                 std::cerr << "无法找到车参 standard_steering_angle ，赋予默认值: " << planning_info.standard_steering_angle << std::endl;
             }
 
@@ -1370,7 +1372,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.weight_curve: " << planning_info.weight_curve << std::endl;
             }
             else {
-                planning_info.weight_curve = 1;
+                planning_info.weight_curve = 2;
                 std::cerr << "无法找到车参 weight_curve ，赋予默认值: " << planning_info.weight_curve << std::endl;
             }
 
@@ -1398,7 +1400,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.out_put_path_dense: " << planning_info.out_put_path_dense << std::endl;
             }
             else {
-                planning_info.out_put_path_dense = 50; // 路径点密度默认值(mm)
+                planning_info.out_put_path_dense = 1; // 路径点密度默认值(mm)
                 std::cerr << "无法找到车参 out_put_path_dense ，赋予默认值: " << planning_info.out_put_path_dense << std::endl;
             }
 
@@ -1407,7 +1409,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.search_range: " << planning_info.search_range << std::endl;
             }
             else {
-                planning_info.search_range = 5000; // 搜索范围默认值(mm)
+                planning_info.search_range = 50; // 搜索范围默认值(mm)
                 std::cerr << "无法找到车参 search_range ，赋予默认值: " << planning_info.search_range << std::endl;
             }
 
@@ -1416,7 +1418,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.jump_dense: " << planning_info.jump_dense << std::endl;
             }
             else {
-                planning_info.jump_dense = 100;
+                planning_info.jump_dense = 1;
                 std::cerr << "无法找到车参 jump_dense ，赋予默认值: " << planning_info.jump_dense << std::endl;
             }
 
@@ -1434,7 +1436,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.critical_length: " << planning_info.critical_length << std::endl;
             }
             else {
-                planning_info.critical_length = 5000;
+                planning_info.critical_length = 30;
                 std::cerr << "无法找到车参 critical_length ，赋予默认值: " << planning_info.critical_length << std::endl;
             }
 
@@ -1453,7 +1455,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.min_straight_length_depart: " << planning_info.min_straight_length_depart << std::endl;
             }
             else {
-                planning_info.min_straight_length_depart = 1000;
+                planning_info.min_straight_length_depart =2;
                 std::cerr << "无法找到车参 min_straight_length_depart ，赋予默认值: " << planning_info.min_straight_length_depart << std::endl;
             }
 
@@ -1462,7 +1464,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.max_straight_length_depart: " << planning_info.max_straight_length_depart << std::endl;
             }
             else {
-                planning_info.max_straight_length_depart = 5000;
+                planning_info.max_straight_length_depart = 10;
                 std::cerr << "无法找到车参 max_straight_length_depart ，赋予默认值: " << planning_info.max_straight_length_depart << std::endl;
             }
 
@@ -1471,7 +1473,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.delta_straight_length_depart: " << planning_info.delta_straight_length_depart << std::endl;
             }
             else {
-                planning_info.delta_straight_length_depart = 500;
+                planning_info.delta_straight_length_depart = 2;
                 std::cerr << "无法找到车参 delta_straight_length_depart ，赋予默认值: " << planning_info.delta_straight_length_depart << std::endl;
             }
 
@@ -1480,7 +1482,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.min_straight_length_wait: " << planning_info.min_straight_length_wait << std::endl;
             }
             else {
-                planning_info.min_straight_length_wait = 1000;
+                planning_info.min_straight_length_wait = 2;
                 std::cerr << "无法找到车参 min_straight_length_wait ，赋予默认值: " << planning_info.min_straight_length_wait << std::endl;
             }
 
@@ -1489,7 +1491,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.max_straight_length_wait: " << planning_info.max_straight_length_wait << std::endl;
             }
             else {
-                planning_info.max_straight_length_wait = 5000;
+                planning_info.max_straight_length_wait = 8;
                 std::cerr << "无法找到车参 max_straight_length_wait ，赋予默认值: " << planning_info.max_straight_length_wait << std::endl;
             }
 
@@ -1498,7 +1500,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.delta_straight_length_wait: " << planning_info.delta_straight_length_wait << std::endl;
             }
             else {
-                planning_info.delta_straight_length_wait = 500;
+                planning_info.delta_straight_length_wait = 2;
                 std::cerr << "无法找到车参 delta_straight_length_wait ，赋予默认值: " << planning_info.delta_straight_length_wait << std::endl;
             }
 
@@ -1507,7 +1509,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.min_straight_length_load: " << planning_info.min_straight_length_load << std::endl;
             }
             else {
-                planning_info.min_straight_length_load = 1000;
+                planning_info.min_straight_length_load = 2;
                 std::cerr << "无法找到车参 min_straight_length_load ，赋予默认值: " << planning_info.min_straight_length_load << std::endl;
             }
 
@@ -1516,7 +1518,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.max_straight_length_load: " << planning_info.max_straight_length_load << std::endl;
             }
             else {
-                planning_info.max_straight_length_load = 5000;
+                planning_info.max_straight_length_load = 10;
                 std::cerr << "无法找到车参 max_straight_length_load ，赋予默认值: " << planning_info.max_straight_length_load << std::endl;
             }
 
@@ -1525,7 +1527,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.delta_straight_length_load: " << planning_info.delta_straight_length_load << std::endl;
             }
             else {
-                planning_info.delta_straight_length_load = 500;
+                planning_info.delta_straight_length_load = 2;
                 std::cerr << "无法找到车参 delta_straight_length_load ，赋予默认值: " << planning_info.delta_straight_length_load << std::endl;
             }
             std::cout << "车辆参数解析完成" << std::endl;
