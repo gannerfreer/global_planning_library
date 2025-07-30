@@ -133,7 +133,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
         double                length = i * delta_straight_length_wait_ + max_straight_length_wait_;
         // std::cout << "length = " << length << std::endl;
         straight_start_point.x         = wait_point.x - length * cos(wait_point.angle * M_PI / 180.0);
-        straight_start_point.y         = wait_point.y - length * cos(wait_point.angle * M_PI / 180.0);
+        straight_start_point.y         = wait_point.y - length * sin(wait_point.angle * M_PI / 180.0);
         straight_start_point.angle     = wait_point.angle;
         straight_start_point.curvature = 0;
         auto straight_path             = GenerateStraitLine(straight_start_point, wait_point);
@@ -431,10 +431,10 @@ std::vector<GlobalPlanning::Point> FittingPathGenerator::SamplePathSegment(const
             closest_idx = i;
         }
     }
-    // std::cout << "寻找距离load_point最近的点" << std::endl;
+    std::cout << "寻找距离load_point最近的点" << min_dist << std::endl;
 
     // 检查最近点是否在50m范围内
-    // std::cout << "路径上最近点离装载点的距离" << min_dist << std::endl;
+    std::cout << "search_range_=" << search_range_ << std::endl;
     if (min_dist > search_range_) {
         return end_point_sample; // 返回空vector
     }

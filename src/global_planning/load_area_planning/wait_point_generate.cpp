@@ -177,7 +177,7 @@ vector<arc_sample_point> WaitPointGenerator::SampleCandiPoints(GlobalPlanning::C
                 arc_sample_point temp_point;
                 temp_point.path_point.x         = center.first + abs(R) * cos(theta * M_PI / 180.0);
                 temp_point.path_point.y         = center.second + abs(R) * sin(theta * M_PI / 180.0);
-                temp_point.path_point.angle     = theta;
+                temp_point.path_point.angle     = theta + direction * 90.0;
                 temp_point.path_point.curvature = fabs(1 / R);
                 if (collision_checker.IsVehicleCollisionWithAll(temp_point.path_point)) {
                     break;
@@ -406,7 +406,7 @@ GlobalPlanning::Path WaitPointGenerator::CalArcPath(double steer, double wheelba
             GlobalPlanning::Point temp_point;
             temp_point.x         = center.first + abs(R) * cos(theta * M_PI / 180.0);
             temp_point.y         = center.second + abs(R) * sin(theta * M_PI / 180.0);
-            temp_point.angle     = theta;
+            temp_point.angle     = theta + direction * 90.0;
             temp_point.curvature = fabs(1 / R);
             path.emplace_back(temp_point);
         }
