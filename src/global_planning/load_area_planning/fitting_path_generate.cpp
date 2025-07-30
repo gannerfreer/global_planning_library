@@ -1,4 +1,4 @@
-#include "fitting_path_generate.h"
+#include "../../../include/planner/fitting_path_generate/fitting_path_generate.h"
 namespace FittingPathGenerate {
 
 FittingPathGenerator::FittingPathGenerator(double out_put_path_dense, double search_range, double jump_dense, double length_weight, double curvature_weight, double critical_length, double min_straight_line_length, double max_straight_line_length, double delta_straight_line_length, double min_straight_length_wait, double max_straight_length_wait, double delta_straight_length_wait, double min_straight_length_load, double max_straight_length_load, double delta_straight_length_load, double straight_length_weight, double load_path_curvature_weight) {
@@ -62,12 +62,9 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     std::sort(load_path_candidates_.begin(), load_path_candidates_.end(), [](const std::pair<GlobalPlanning::Path, double>& a, const std::pair<GlobalPlanning::Path, double>& b) {
         return a.second > b.second; // 按 double 值降序
     });
-    for (auto& path_info : load_path_candidates_) {
+    for (const auto& path_info : load_path_candidates_) {
         if (collision_checker.OptiPathCollisionCheckWithAll(path_info.first).empty()) {
             std::cout << "成功了" << std::endl;
-            for (int i = 0; i < path_info.first.size(); i++) {
-                path_info.first[i].direction = GlobalPlanning::MotionDirection::Backward;
-            }
             return std::make_pair(path_info.first, path_info.second);
         }
         else {
@@ -109,9 +106,6 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     auto stitch_path = PathCuttoStart(result.front(), origin_path);
     std::cout << "stitch_path .size()=" << stitch_path.size() << endl;
     result.insert(result.begin(), stitch_path.begin(), stitch_path.end());
-    for (int i = 0; i < result.size(); i++) {
-        result[i].direction = GlobalPlanning::MotionDirection::Forward;
-    }
     return std::make_pair(result, grade);
 }
 
@@ -191,9 +185,6 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     // std::cout << "straight_path_with_wait_point .size()=" << straight_path_with_wait_point.size() << endl;
 
     result.insert(result.end(), straight_path_with_wait_point.begin() + 1, straight_path_with_wait_point.end());
-    for (int i = 0; i < result.size(); i++) {
-        result[i].direction = GlobalPlanning::MotionDirection::Forward;
-    }
     return std::make_pair(result, grade);
 }
 
@@ -273,9 +264,6 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
     auto stitch_path = PathCuttoEnd(result.back(), target_path);
     std::cout << "stitch_path .size()=" << stitch_path.size() << endl;
     result.insert(result.end(), stitch_path.begin(), stitch_path.end());
-    for (int i = 0; i < result.size(); i++) {
-        result[i].direction = GlobalPlanning::MotionDirection::Forward;
-    }
     return std::make_pair(result, grade);
 }
 
@@ -431,10 +419,12 @@ std::vector<GlobalPlanning::Point> FittingPathGenerator::SamplePathSegment(const
             closest_idx = i;
         }
     }
-    std::cout << "寻找距离load_point最近的点" << min_dist << std::endl;
+    // std::cout << "寻找距离load_point最近的点" << std::endl;
 
     // 检查最近点是否在50m范围内
-    std::cout << "search_range_=" << search_range_ << std::endl;
+    std::cout << "路径上最近点离装载点的距离" << min_dist << std::endl;
+    std::cout << "search_range_ = " << search_range_ << std::endl;
+
     if (min_dist > search_range_) {
         return end_point_sample; // 返回空vector
     }
@@ -523,3 +513,4 @@ GlobalPlanning::Path FittingPathGenerator::PathTransFormer(const std::vector<cur
 }
 
 } // namespace FittingPathGenerate
+

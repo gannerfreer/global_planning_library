@@ -1,4 +1,4 @@
-#include "wait_point_generate.h"
+#include "../../../include/planner/wait_point_generate/wait_point_generate.h"
 namespace WaitPointGenerate {
 
 // 计算两点间距离的平方（避免开方提高性能）
@@ -115,8 +115,11 @@ GlobalPlanning::Path WaitPointGenerator::GenerateStraitLine(const GlobalPlanning
 
 double WaitPointGenerator::DeterminateStraightLength(const GlobalPlanning::Point& load_point, GlobalPlanning::CollisonCheck& collision_checker) {
     double result = min_straight_length_;
+    cout << "min_straight_length_=" << min_straight_length_ << endl;
+    cout << "delta_straight_length_=" << delta_straight_length_ << endl;
+    cout << "max_straight_length_=" << max_straight_length_ << endl;
     for (double i = 0.0; i * delta_straight_length_ + max_straight_length_ >= min_straight_length_; i -= 1.0) {
-        double                temp_length   = i * delta_curve_length_ + max_straight_length_ >= min_straight_length_;
+        double                temp_length   = i * delta_curve_length_ + max_straight_length_;
         double                succeed_count = 0;
         GlobalPlanning::Point start_end;
         start_end.x         = load_point.x + temp_length * cos(load_point.angle * M_PI / 180.0);
@@ -132,6 +135,7 @@ double WaitPointGenerator::DeterminateStraightLength(const GlobalPlanning::Point
             }
         }
         if ((succeed_count / (double)(max_steering_angle_ - min_steering_angle_ + 1)) > 0.6) {
+            cout << "倒车驶入路径直线段长度：" << temp_length << endl;
             result = temp_length;
             break;
         }
@@ -211,16 +215,34 @@ double WaitPointGenerator::CalculateGradeAboutLoadPath(const arc_sample_point& s
     double angle_diff = std::abs(sample_point.path_point.angle - closest_point.angle);
     angle_diff        = NormalizeAngle(angle_diff);
 
-    // 3. 计算距离评分（越接近 target_dist_diff 越高）
-    double dist_score = LinearScore(dist_diff, 15.0, 15.0);
+    // // 3. 计算距离评分（越接近 target_dist_diff 越高）
+    // double dist_score = LinearScore(dist_diff, 15.0, 15.0);
 
     // 4. 计算角度评分（越接近 target_angle_diff 越高）
-    double angle_score = LinearScore(angle_diff, 20.0, 20.0);
+    double angle_score = LinearScore(angle_diff, 0, 180.0);
 
-    cout << "dist_diff = " << dist_diff << ",angle_diff = " << angle_diff << ",dist_score = " << dist_score << ",angle_score = " << angle_score << ",score = " << (weight_length_ * dist_score + weight_curve_ * angle_score) / (weight_length_ + weight_curve_) << endl;
+
+    // cout << "dist_diff = " << dist_diff << ",angle_diff = " << angle_diff << ",dist_score = " << dist_score << ",angle_score = " << angle_score << ",score = " << (weight_length_ * dist_score + weight_curve_ * angle_score) / (weight_length_ + weight_curve_) << endl;
 
     // 5. 综合评分（加权平均）
-    return (weight_length_ * dist_score + weight_curve_ * angle_score) / (weight_length_ + weight_curve_);
+    // return (weight_length_ * dist_score + weight_curve_ * angle_score) / (weight_length_ + weight_curve_);
+    return weight_curve_ * angle_score;
+}
+
+double WaitPointGenerator::CalculateGradeAboutLoadPoint(const arc_sample_point& sample_point, const GlobalPlanning::Point& load_point) {
+    // 2. 计算角度差（单位：弧度，可调整）
+    double angle_diff = std::abs(sample_point.path_point.angle - load_point.angle);
+    angle_diff        = NormalizeAngle(angle_diff);
+
+    // 3. 计算距离评分（越接近 target_dist_diff 越高）
+    double dist_score = LinearScore(sample_point.arc_length, 20, 35);
+
+    // 4. 计算角度评分（越接近 target_angle_diff 越高）
+    double angle_score = LinearScore(angle_diff, 0, 90.0);
+
+    cout << "dist_score = " << dist_score << ",angle_score" << 4.0 * angle_score << endl;
+    // 5. 综合评分（加权平均）
+    return (1.0 * dist_score + 4.0 * angle_score) / (5.0);
 }
 
 double WaitPointGenerator::NormalizeAngle(double angle) {
@@ -229,10 +251,17 @@ double WaitPointGenerator::NormalizeAngle(double angle) {
     return angle - 180.0;               // 转换到 [-180, 180]
 }
 
-void WaitPointGenerator::CalculateWaitPointGrade(const GlobalPlanning::Path& load_path) {
+void WaitPointGenerator::CalculateWaitPointGrade(const GlobalPlanning::Path& load_path, const GlobalPlanning::Point& load_point) {
     for (int i = 0; i < wait_point_sample_.size(); i++) {
-        auto closest_point = FindNearestPoint(wait_point_sample_[i].path_point.x, wait_point_sample_[i].path_point.y, load_path);
+        wait_point_sample_[i].grade = 0;
+        auto closest_point          = FindNearestPoint(wait_point_sample_[i].path_point.x, wait_point_sample_[i].path_point.y, load_path);
+        cout << "wait_point_sample_[i].grade = " << wait_point_sample_[i].grade << endl;
         wait_point_sample_[i].grade += CalculateGradeAboutLoadPath(wait_point_sample_[i], closest_point);
+        cout << "wait_point_sample_[i].grade = " << wait_point_sample_[i].grade << endl;
+        cout << "CalculateGradeAboutLoadPath = " << CalculateGradeAboutLoadPath(wait_point_sample_[i], closest_point) << endl;
+        wait_point_sample_[i].grade += 1.2 * CalculateGradeAboutLoadPoint(wait_point_sample_[i], load_point);
+        cout << "CalculateGradeAboutLoadPoint = " << CalculateGradeAboutLoadPoint(wait_point_sample_[i], load_point) << endl;
+        cout << "wait_point_sample_[i].grade = " << wait_point_sample_[i].grade << endl;
     }
 }
 
@@ -254,7 +283,6 @@ GlobalPlanning::Point WaitPointGenerator::FindNearestPoint(double x, double y, c
 }
 
 GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& depart_path, GlobalPlanning::CollisonCheck& collision_checker, FittingPathGenerate::FittingPathGenerator& fitting_path_generator, const GlobalPlanning::Path& in_path) {
-    cout << "进入！！！" << endl;
     double expect_straight_length = DeterminateStraightLength(load_point, collision_checker);
     cout << "expect_straight_length = " << expect_straight_length << endl;
     GlobalPlanning::Point straight_end;
@@ -263,12 +291,14 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
     straight_end.angle     = load_point.angle;
     straight_end.curvature = 0.0;
     auto straight_path     = GenerateStraitLine(load_point, straight_end);
-    reverse(straight_path.begin(), straight_path.begin());
+    reverse(straight_path.begin(), straight_path.end());
+    straight_path.insert(straight_path.begin(), straight_end);
+
 
     wait_point_sample_ = SampleCandiPoints(collision_checker, max_steering_angle_, min_steering_angle_, straight_end);
     cout << "生成采样点完毕" << endl;
     cout << "wait_point_sample_.size() = " << wait_point_sample_.size() << endl;
-    CalculateWaitPointGrade(in_path);
+    CalculateWaitPointGrade(in_path, load_point);
     cout << "代价计算完毕" << endl;
     std::sort(wait_point_sample_.begin(), wait_point_sample_.end(), [](const arc_sample_point& a, const arc_sample_point& b) {
         return a.grade > b.grade; // 按 double 值降序
@@ -276,17 +306,14 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
     cout << "排序完毕" << endl;
     cout << "wait_point_sample_.size() = " << wait_point_sample_.size() << endl;
     for (const auto& point : wait_point_sample_) {
-        cout << "point.path_point.x = " << point.path_point.x << endl;
-        cout << "point.path_point.y = " << point.path_point.y << endl;
-        cout << "point.path_point.angle = " << point.path_point.angle << endl;
-
         auto wait_path = fitting_path_generator.WaitPathGenerateInterface(in_path, point.path_point, collision_checker);
         if (!wait_path.first.empty()) {
             cout << "驶入规划成功" << endl;
+            cout << "point.x,y,yaw=" << point.path_point.x << "," << point.path_point.y << "," << point.path_point.angle << endl;
             auto load_path = CalArcPath(point.steering, wheel_base_length_, point.arc_length, straight_end);
             reverse(load_path.begin(), load_path.end());
             load_path.insert(load_path.end(), straight_path.begin(), straight_path.end());
-            cout << "load_path.size()=" << load_path.size() << endl;
+            cout << "load_path_first.x,y,yaw=" << load_path.front().x << "," << load_path.front().y << "," << load_path.front().angle << endl;
             if (collision_checker.OptiPathCollisionCheckWithAll(load_path).empty()) {
                 cout << "没碰撞load_path.size()=" << load_path.size() << endl;
                 return load_path;
@@ -353,12 +380,12 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
 
 GlobalPlanning::Path WaitPointGenerator::CalArcPath(double steer, double wheelbase, double arc_total_length, const GlobalPlanning::Point& straight_end) {
     GlobalPlanning::Path path;
-    cout << "steer = " << steer << endl;
-    cout << "wheelbase = " << wheelbase << endl;
-    cout << "arc_total_length = " << arc_total_length << endl;
-    cout << "straight_end.angle = " << straight_end.angle << endl;
-    cout << "straight_end.X = " << straight_end.x << endl;
-    cout << "straight_end.Y = " << straight_end.y << endl;
+    // cout << "steer = " << steer << endl;
+    // cout << "wheelbase = " << wheelbase << endl;
+    // cout << "arc_total_length = " << arc_total_length << endl;
+    // cout << "straight_end.angle = " << straight_end.angle << endl;
+    // cout << "straight_end.X = " << straight_end.x << endl;
+    // cout << "straight_end.Y = " << straight_end.y << endl;
 
 
     // 2. Calculate turning radius R (avoid division by zero)
@@ -369,7 +396,7 @@ GlobalPlanning::Path WaitPointGenerator::CalArcPath(double steer, double wheelba
     else {
         R = -abs(wheelbase / tan(steer * M_PI / 180.0));
     }
-    cout << "R = " << R << endl;
+    // cout << "R = " << R << endl;
 
 
     // 3. Generate arc segment
@@ -387,20 +414,20 @@ GlobalPlanning::Path WaitPointGenerator::CalArcPath(double steer, double wheelba
         // Calculate arc center
         double               direction = (steer > 0) ? 1.0 : -1.0; // Left turn (+) or right turn (-)
         pair<double, double> center    = {straight_end.x + direction * R * sin(straight_end.angle * M_PI / 180.0), straight_end.y - direction * R * cos(straight_end.angle * M_PI / 180.0)};
-        cout << "center.x = " << center.first << endl;
-        cout << "center.y = " << center.second << endl;
+        // cout << "center.x = " << center.first << endl;
+        // cout << "center.y = " << center.second << endl;
 
         // Arc starting angle (from the end of straight segment)
         double theta_start = straight_end.angle - direction * 90.0;
-        cout << "theta_start = " << theta_start << endl;
+        // cout << "theta_start = " << theta_start << endl;
 
         // Arc angle range (calculated based on total length)
         double theta_range = arc_total_length / abs(R) / M_PI * 180.0;
-        cout << "theta_range = " << theta_range << endl;
+        // cout << "theta_range = " << theta_range << endl;
 
 
         // Generate arc coordinates
-        for (int i = 1; i < arc_total_length; ++i) {
+        for (int i = 1; i <= arc_total_length; ++i) {
             double                t     = static_cast<double>(i) / arc_total_length;
             double                theta = theta_start + direction * t * theta_range;
             GlobalPlanning::Point temp_point;
