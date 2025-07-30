@@ -32,11 +32,12 @@ class WaitPointGenerator {
     bool                     doSegmentsIntersect(const GlobalPlanning::Point& p1, const GlobalPlanning::Point& p2, const GlobalPlanning::Point& q1, const GlobalPlanning::Point& q2);
     bool                     arePathsCrossing(const std::vector<GlobalPlanning::Point>& path1, const std::vector<GlobalPlanning::Point>& path2, double distanceThreshold = 5.0);
     GlobalPlanning::Path     GenerateStraitLine(const GlobalPlanning::Point& start, const GlobalPlanning::Point& end);
-    void                     CalculateWaitPointGrade(const GlobalPlanning::Path& load_path);
+    void                     CalculateWaitPointGrade(const GlobalPlanning::Path& load_path, const GlobalPlanning::Point& load_point);
     GlobalPlanning::Point    FindNearestPoint(double x, double y, const GlobalPlanning::Path& path);
     double                   CalculateGradeAboutLoadPath(const arc_sample_point& sample_point, const GlobalPlanning::Point& closest_point);
     double                   NormalizeAngle(double angle);
     double                   LinearScore(double diff, double target_diff, double tolerance);
+    double                   CalculateGradeAboutLoadPoint(const arc_sample_point& sample_point, const GlobalPlanning::Point& load_point);
 
   public:
     GlobalPlanning::Path GenerateWaitPointInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& depart_path, GlobalPlanning::CollisonCheck& collision_checker, FittingPathGenerate::FittingPathGenerator& fitting_path_generator, const GlobalPlanning::Path& in_path);

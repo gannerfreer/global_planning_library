@@ -1,4 +1,4 @@
-#include "../../../include/planner/wait_point_generate/wait_point_generate.h"
+#include "wait_point_generate.h"
 namespace WaitPointGenerate {
 
 // 计算两点间距离的平方（避免开方提高性能）

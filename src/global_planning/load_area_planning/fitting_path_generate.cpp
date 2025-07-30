@@ -1,4 +1,4 @@
-#include "../../../include/planner/fitting_path_generate/fitting_path_generate.h"
+#include "fitting_path_generate.h"
 namespace FittingPathGenerate {
 
 FittingPathGenerator::FittingPathGenerator(double out_put_path_dense, double search_range, double jump_dense, double length_weight, double curvature_weight, double critical_length, double min_straight_line_length, double max_straight_line_length, double delta_straight_line_length, double min_straight_length_wait, double max_straight_length_wait, double delta_straight_length_wait, double min_straight_length_load, double max_straight_length_load, double delta_straight_length_load, double straight_length_weight, double load_path_curvature_weight) {

@@ -1,4 +1,4 @@
-#include "../../../include/planner/load_area_planning/load_area_planning.h"
+#include "load_area_planning.h"
 namespace LoadAreaPlanning {
 std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanning::LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck collision_checker) {
     FittingPathGenerate::FittingPathGenerator fit_path_planner(out_put_path_dense_, search_range_, jump_dense_, length_weight_, curvature_weight_, critical_length_, min_straight_length_depart_, max_straight_length_depart_, delta_straight_length_depart_, min_straight_length_wait_, max_straight_length_wait_, delta_straight_length_wait_, min_straight_length_load_, max_straight_length_load_, delta_straight_length_load_, load_path_straight_length_weight_, load_path_curvature_weight_);

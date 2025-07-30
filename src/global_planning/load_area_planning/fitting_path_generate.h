@@ -6,8 +6,8 @@
 #include <string>
 #include <tuple>
 
-#include "../collision_check/collision_check.h"
 #include "../common/common_struct.h"
+#include "../collision_check/collision_check.h"
 #include "../planner/pathplanner/dubins/dubins.h"
 
 namespace FittingPathGenerate {
