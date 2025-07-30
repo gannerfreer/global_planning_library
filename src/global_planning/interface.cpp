@@ -509,7 +509,7 @@ char* PathPredicting(char* input_info) {
     }
 }
 
-char* AutoLoadWaittingPointGenerating(char* point_veh_start_end) {
+char* QueuePointGenerator(char* point_veh_start_end) {
     auto              currentTime = std::chrono::system_clock::now();
     std::time_t       timestamp   = std::chrono::system_clock::to_time_t(currentTime);
     std::stringstream ss;
@@ -519,7 +519,7 @@ char* AutoLoadWaittingPointGenerating(char* point_veh_start_end) {
     time_t start_time, end_time;
     time(&start_time);
     LoadAreaPlanning::LoadAreaPlanning                                                                        planning;
-    std::tuple<bool, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> path;
+    std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> path;
     // 解析传入的参数
     cout << "本次入參大小： " << strlen(point_veh_start_end) << "strlen()计算方式" << endl;
     _LoadAreaPlanningInfos veh_start_end;
@@ -572,7 +572,7 @@ char* AutoLoadWaittingPointGenerating(char* point_veh_start_end) {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
         planning.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size());
         if (GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0) {
-            get<0>(path) = false;
+            get<0>(path) = 0;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
                 planning.threadLogger_->info("进锁成功");

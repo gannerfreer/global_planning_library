@@ -1075,14 +1075,14 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         return planning_info;
     }
 
-    // 解析等待点(Wait_Point) - 兼容字段不存在或为空的情况
-    if (doc.HasMember("Wait_Point") && doc["Wait_Point"].IsObject()) {
-        const rapidjson::Value& Wait_Point = doc["Wait_Point"];
+    // 解析等待点(queue_point) - 兼容字段不存在或为空的情况
+    if (doc.HasMember("queue_point") && doc["queue_point"].IsObject()) {
+        const rapidjson::Value& queue_point = doc["queue_point"];
 
         // 解析x坐标，兼容字段不存在或类型错误
-        if (Wait_Point.HasMember("x") && Wait_Point["x"].IsDouble()) {
-            planning_info.wait_point.x = Wait_Point["x"].GetDouble();
-            std::cout << "解析 Wait_Point.x: " << planning_info.wait_point.x << std::endl;
+        if (queue_point.HasMember("x") && queue_point["x"].IsDouble()) {
+            planning_info.wait_point.x = queue_point["x"].GetDouble();
+            std::cout << "解析 queue_point.x: " << planning_info.wait_point.x << std::endl;
         }
         else {
             planning_info.wait_point.x = 0.0;
@@ -1090,39 +1090,39 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         }
 
         // 解析y坐标
-        if (Wait_Point.HasMember("y") && Wait_Point["y"].IsDouble()) {
-            planning_info.wait_point.y = Wait_Point["y"].GetDouble();
-            std::cout << "解析 Wait_Point.y: " << planning_info.wait_point.y << std::endl;
+        if (queue_point.HasMember("y") && queue_point["y"].IsDouble()) {
+            planning_info.wait_point.y = queue_point["y"].GetDouble();
+            std::cout << "解析 queue_point.y: " << planning_info.wait_point.y << std::endl;
         }
         else {
             planning_info.wait_point.y = 0.0;
-            std::cerr << "Wait_Point.y 不存在或格式错误，赋予默认值: " << planning_info.wait_point.y << std::endl;
+            std::cerr << "queue_point.y 不存在或格式错误，赋予默认值: " << planning_info.wait_point.y << std::endl;
         }
 
         // 解析z坐标
-        if (Wait_Point.HasMember("z") && Wait_Point["z"].IsDouble()) {
-            planning_info.wait_point.z = Wait_Point["z"].GetDouble();
-            std::cout << "解析 Wait_Point.z: " << planning_info.wait_point.z << std::endl;
+        if (queue_point.HasMember("z") && queue_point["z"].IsDouble()) {
+            planning_info.wait_point.z = queue_point["z"].GetDouble();
+            std::cout << "解析 queue_point.z: " << planning_info.wait_point.z << std::endl;
         }
         else {
             planning_info.wait_point.z = 0.0;
-            std::cerr << "Wait_Point.z 不存在或格式错误，赋予默认值: " << planning_info.wait_point.z << std::endl;
+            std::cerr << "queue_point.z 不存在或格式错误，赋予默认值: " << planning_info.wait_point.z << std::endl;
         }
 
         // 解析yaw角度
-        if (Wait_Point.HasMember("yaw") && Wait_Point["yaw"].IsDouble()) {
-            planning_info.wait_point.yaw = Wait_Point["yaw"].GetDouble();
-            std::cout << "解析 Wait_Point.yaw: " << planning_info.wait_point.yaw << std::endl;
+        if (queue_point.HasMember("yaw") && queue_point["yaw"].IsDouble()) {
+            planning_info.wait_point.yaw = queue_point["yaw"].GetDouble();
+            std::cout << "解析 queue_point.yaw: " << planning_info.wait_point.yaw << std::endl;
         }
         else {
             planning_info.wait_point.yaw = 0.0;
-            std::cerr << "Wait_Point.yaw 不存在或格式错误，赋予默认值: " << planning_info.wait_point.yaw << std::endl;
+            std::cerr << "queue_point.yaw 不存在或格式错误，赋予默认值: " << planning_info.wait_point.yaw << std::endl;
         }
     }
 
-    // 解析加载点(Load_Point)
-    if (doc.HasMember("Load_Point") && doc["Load_Point"].IsObject()) {
-        const rapidjson::Value& load_point = doc["Load_Point"];
+    // 解析加载点(load_point)
+    if (doc.HasMember("load_point") && doc["load_point"].IsObject()) {
+        const rapidjson::Value& load_point = doc["load_point"];
 
         if (load_point.HasMember("x") && load_point["x"].IsDouble()) {
             planning_info.load_point.x = load_point["x"].GetDouble();
@@ -1533,14 +1533,14 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
     }
 
     // 解析规划模式(planning_mode)
-    if (doc.HasMember("Planning_Mode") && doc["Planning_Mode"].IsInt()) {
-        planning_info.planning_mode = doc["Planning_Mode"].GetInt();
-        std::cout << "解析 Planning_Mode: " << planning_info.planning_mode << std::endl;
+    if (doc.HasMember("execute_mode") && doc["execute_mode"].IsInt()) {
+        planning_info.planning_mode = doc["execute_mode"].GetInt();
+        std::cout << "解析 execute_mode: " << planning_info.planning_mode << std::endl;
     }
 
-    if (doc.HasMember("Machine_Borders")) {
-        cout << "解析 Machine_Borders 中" << endl;
-        Value& val = doc["Machine_Borders"];
+    if (doc.HasMember("excavator_border")) {
+        cout << "解析 excavator_border 中" << endl;
+        Value& val = doc["excavator_border"];
         for (size_t i = 0; i < val.Size(); i++) {
             Value&               temp_val = val[i];
             vector<_BorderPoint> inner_border;
@@ -1569,9 +1569,9 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         }
     }
 
-    if (doc.HasMember("Wall_Borders")) {
-        cout << "解析 Wall_Borders 中" << endl;
-        Value& val = doc["Wall_Borders"];
+    if (doc.HasMember("dynamic_border")) {
+        cout << "解析 dynamic_border 中" << endl;
+        Value& val = doc["dynamic_border"];
         for (size_t i = 0; i < val.Size(); i++) {
             Value&               temp_val = val[i];
             vector<_BorderPoint> inner_border;
@@ -1603,7 +1603,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
     return planning_info;
 }
 
-string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path>& result) {
+string LoadAreaPathVecWaypoint2json(std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path>& result) {
     cout << "enter LoadAreaPathVecWaypoint2json" << endl;
 
     time_t start_time, end_time;
@@ -1616,14 +1616,14 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
     std::cout << "执行完代码 writer.StartObject();" << std::endl;
 
     // 写入操作结果状态
-    bool success = std::get<0>(result);
-    writer.Key("Success");
-    writer.Bool(success);
+    int success = std::get<0>(result);
+    writer.Key("result");
+    writer.Int(success);
     std::cout << "执行完代码 写入success状态" << std::endl;
 
     // 写入起始点信息
     GlobalPlanning::Point wait_point = std::get<1>(result);
-    writer.Key("Wait_Point");
+    writer.Key("queue_point");
     writer.StartObject();
     writer.Key("x");
     writer.Double(wait_point.x);
@@ -1643,8 +1643,8 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
         GlobalPlanning::Path path_r2 = std::get<3>(result);
         GlobalPlanning::Path path_r3 = std::get<4>(result);
 
-        // 写入Path1
-        writer.Key("Path1");
+        // 写入entrance_queue_path
+        writer.Key("entrance_queue_path");
         writer.StartArray();
         for (const auto& point : path_r1) {
             writer.StartObject();
@@ -1658,6 +1658,12 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
             writer.Double(point.angle);
             writer.Key("curvature");
             writer.Double(point.curvature);
+            writer.Key("speed_limit");
+            writer.Double(100);
+            writer.Key("speed");
+            writer.Double(0);
+            writer.Key("distance");
+            writer.Double(0);
             writer.Key("direction");
             writer.Int(point.direction);
             writer.Key("attribute");
@@ -1667,8 +1673,8 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
         writer.EndArray();
         std::cout << "执行完代码 写入Path1路径" << std::endl;
 
-        // 写入Path2
-        writer.Key("Path2");
+        // 写入entrance_load_path
+        writer.Key("entrance_load_path");
         writer.StartArray();
         for (const auto& point : path_r2) {
             writer.StartObject();
@@ -1682,6 +1688,12 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
             writer.Double(point.angle);
             writer.Key("curvature");
             writer.Double(point.curvature);
+            writer.Key("speed_limit");
+            writer.Double(100);
+            writer.Key("speed");
+            writer.Double(0);
+            writer.Key("distance");
+            writer.Double(0);
             writer.Key("direction");
             writer.Int(point.direction);
             writer.Key("attribute");
@@ -1691,8 +1703,8 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
         writer.EndArray();
         std::cout << "执行完代码 写入Path2路径" << std::endl;
 
-        // 写入Path3
-        writer.Key("Path3");
+        // 写入exit_queue_path
+        writer.Key("exit_queue_path");
         writer.StartArray();
         for (const auto& point : path_r3) {
             writer.StartObject();
@@ -1706,6 +1718,12 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
             writer.Double(point.angle);
             writer.Key("curvature");
             writer.Double(point.curvature);
+            writer.Key("speed_limit");
+            writer.Double(100);
+            writer.Key("speed");
+            writer.Double(0);
+            writer.Key("distance");
+            writer.Double(0);
             writer.Key("direction");
             writer.Int(point.direction);
             writer.Key("attribute");
@@ -1717,15 +1735,15 @@ string LoadAreaPathVecWaypoint2json(std::tuple<bool, GlobalPlanning::Point, Glob
     }
     else {
         // 失败时写入空数组
-        writer.Key("Path1");
+        writer.Key("entrance_queue_path");
         writer.StartArray();
         writer.EndArray();
 
-        writer.Key("Path2");
+        writer.Key("entrance_load_path");
         writer.StartArray();
         writer.EndArray();
 
-        writer.Key("Path3");
+        writer.Key("exit_queue_path");
         writer.StartArray();
         writer.EndArray();
 

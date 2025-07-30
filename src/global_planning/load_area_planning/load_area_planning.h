@@ -39,7 +39,7 @@ class LoadAreaPlanning {
     double delta_straight_length_load_;       // 前往装载点路径直线长度采样间距
     ~LoadAreaPlanning();
     shared_ptr<spdlog::logger>                                                                                threadLogger_;
-    std::tuple<bool, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_poit, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck collision_checker);
+    std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_poit, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck collision_checker);
 };
 } // namespace LoadAreaPlanning
 

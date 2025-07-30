@@ -160,8 +160,8 @@ int main() {
     }
 
     typedef char* (*my_function_t4)(char*);
-    my_function_t4 AutoLoadWaittingPointGenerating = (my_function_t4)dlsym(handle, "AutoLoadWaittingPointGenerating");
-    if (!AutoLoadWaittingPointGenerating) {
+    my_function_t4 QueuePointGenerator = (my_function_t4)dlsym(handle, "QueuePointGenerator");
+    if (!QueuePointGenerator) {
         std::cerr << "Failed to load function: " << dlerror() << std::endl;
     }
 
@@ -177,7 +177,7 @@ int main() {
     // GlobalPathPlanning(global_param);
     // HumanVehPredicting(human_veh_param);
     cout<<"即将调用LoadAreaPlanning接口"<<endl;
-    char* out_put = AutoLoadWaittingPointGenerating(load_waitting_point_auto_gen_param);
+    char* out_put = QueuePointGenerator(load_waitting_point_auto_gen_param);
     cout<<"调用LoadAreaPlanning接口成功"<<endl;
 
     std::string filename = "load_area_planning_output.json"; // 要保存的 JSON 文件名

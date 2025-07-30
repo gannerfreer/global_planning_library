@@ -1,10 +1,9 @@
 #include <dlfcn.h>
-
 #include <iostream>
-
 #include "cpp-httplib-master/httplib.h"
 
 using namespace std;
+
 // 定义全局函数指针
 typedef char* (*GlobalPathPlanningFunc)(const char*);
 GlobalPathPlanningFunc globalPathPlanning = nullptr;
@@ -17,6 +16,10 @@ PoseVerificationInterfaceForHoutaiFunc PoseVerificationInterfaceForHoutai = null
 
 typedef char* (*HumanVehPredictingFunc)(const char*);
 HumanVehPredictingFunc PathPredicting = nullptr;
+
+// 新增：定义QueuePointGenerator函数指针类型
+typedef char* (*QueuePointGeneratorFunc)(const char*);
+QueuePointGeneratorFunc queuePointGenerator = nullptr;
 
 int globalPathPlanning_handler(const httplib::Request& req, httplib::Response& res) {
     const std::string& input = req.body;
@@ -45,6 +48,7 @@ int getMap_handler(const httplib::Request& req, httplib::Response& res) {
     }
     return res.status;
 }
+
 int PoseVerificationInterfaceForHoutai_handler(const httplib::Request& req, httplib::Response& res) {
     const std::string& input = req.body;
     if (!input.empty() && PoseVerificationInterfaceForHoutai != nullptr) {
@@ -73,9 +77,25 @@ int PathPredicting_handler(const httplib::Request& req, httplib::Response& res) 
     return res.status;
 }
 
+// 新增：QueuePointGenerator的HTTP处理函数
+int QueuePointGenerator_handler(const httplib::Request& req, httplib::Response& res) {
+    const std::string& input = req.body;
+    if (!input.empty() && queuePointGenerator != nullptr) {
+        const char* response_str = queuePointGenerator(input.c_str());
+        res.set_content(response_str, "application/json");
+        res.status = 200;
+    }
+    else {
+        res.set_content("Missing input data or QueuePointGenerator function not loaded", "text/plain");
+        res.status = 400;
+    }
+    return res.status;
+}
+
 int main() {
     void* handle         = dlopen("./lib/libGlobalPlanning.so", RTLD_NOW);
     void* another_handle = dlopen("./lib/libPoseVerification.so", RTLD_NOW);
+    
     if (!handle || !another_handle) {
         cerr << "Failed to load shared library: " << dlerror() << endl;
     }
@@ -85,23 +105,28 @@ int main() {
         getMap                             = (GetMapFunc)dlsym(handle, "GetMap");
         PoseVerificationInterfaceForHoutai = (PoseVerificationInterfaceForHoutaiFunc)dlsym(another_handle, "PoseVerificationInterfaceForHoutai");
         PathPredicting                     = (HumanVehPredictingFunc)dlsym(handle, "PathPredicting");
+        
+        // 新增：加载QueuePointGenerator函数
+        queuePointGenerator                = (QueuePointGeneratorFunc)dlsym(handle, "QueuePointGenerator");
 
-        if (!globalPathPlanning || !getMap || !PoseVerificationInterfaceForHoutai || !PathPredicting) {
+        if (!globalPathPlanning || !getMap || !PoseVerificationInterfaceForHoutai || !PathPredicting || !queuePointGenerator) {
             cerr << "Failed to load function: " << dlerror() << endl;
         }
         else {
             httplib::Server svr;
-            svr.set_payload_max_length(50 * 1024 * 1024); // 设置请求体大小限制为30MB
-            // svr.set_max_content_length(1024 * 1024 * 50); // 设置请求体大小限制为30MB
-            //  设置路由和处理函数
+            svr.set_payload_max_length(50 * 1024 * 1024); // 设置请求体大小限制为50MB
+            
+            // 设置路由和处理函数
             svr.Post("/globalPathPlanning", globalPathPlanning_handler);
             svr.Post("/getMap", getMap_handler);
             svr.Post("/PoseVerificationInterfaceForHoutai", PoseVerificationInterfaceForHoutai_handler);
             svr.Post("/PathPredicting", PathPredicting_handler);
+            // 新增：注册QueuePointGenerator的路由
+            svr.Post("/QueuePointGenerator", QueuePointGenerator_handler);
+            
             // 启动服务器，监听端口8080
+            cout << "Server is running at http://0.0.0.0:8080" << endl;
             svr.listen("0.0.0.0", 8080);
-            // svr.listen("localhost", 8080);
-            cout << "Server is running at http://localhost:8080" << endl;
         }
 
         dlclose(handle);

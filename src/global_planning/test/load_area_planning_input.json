@@ -1,5 +1,5 @@
 {
-    "wait_point": {
+    "queue_point": {
         "x": -109.4469486309,
         "y": 573.4600173947,
         "z": 19.05305290222168,
@@ -52,8 +52,8 @@
         "max_straight_length_load": 10,
         "delta_straight_length_load": 2
     },
-    "planning_mode": 1,
-    "Wall_Borders": [
+    "execute_mode": 1,
+    "dynamic_border": [
         {
             "zone_id": 14,
             "inner_borders": [
@@ -815,7 +815,7 @@
             ]
         }
     ],
-    "Machine_Borders": [
+    "excavator_border": [
         {
             "zone_id": 14,
             "inner_borders": [
