@@ -9,12 +9,13 @@ Description: This is a collection of helper functions that are used throughout t
 #ifndef HELPER_H
 #define HELPER_H
 #include <filesystem>
+#include <tuple>
 
 #include "../common/common_struct.h"
 #include "../globalvariable.h"
 #include "../mine_global_planning/planning.h"
 #include "../mine_global_planning/predicting.h"
-#include <tuple>
+
 namespace fs = std::filesystem;
 namespace GlobalPlanning {
 
@@ -853,7 +854,7 @@ bool GetMap(char* parea) {
     }
     GlobalVariable::getInstance()->SetAllSelfDrivingReferencelines(m_traj_self_driving);
     GlobalVariable::getInstance()->SetAllHumanDrivingReferencelines(m_traj_human_driving);
-    GlobalVariable::getInstance()->SetInGuidingPaths(input_paths); 
+    GlobalVariable::getInstance()->SetInGuidingPaths(input_paths);
     GlobalVariable::getInstance()->SetOutGuidingPaths(output_paths);
 
     // 解析relation
@@ -1118,8 +1119,9 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             planning_info.wait_point.yaw = 0.0;
             std::cerr << "queue_point.yaw 不存在或格式错误，赋予默认值: " << planning_info.wait_point.yaw << std::endl;
         }
-    }else{
-        std::cout<<"queue_point 为空"<<std::endl;
+    }
+    else {
+        std::cout << "queue_point 为空" << std::endl;
     }
 
     // 解析加载点(load_point)
@@ -1455,7 +1457,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.min_straight_length_depart: " << planning_info.min_straight_length_depart << std::endl;
             }
             else {
-                planning_info.min_straight_length_depart =2;
+                planning_info.min_straight_length_depart = 2;
                 std::cerr << "无法找到车参 min_straight_length_depart ，赋予默认值: " << planning_info.min_straight_length_depart << std::endl;
             }
 
@@ -1619,6 +1621,12 @@ string LoadAreaPathVecWaypoint2json(std::tuple<int, GlobalPlanning::Point, Globa
 
     // 写入操作结果状态
     int success = std::get<0>(result);
+    if (success == 1) {
+        success = 0;
+    }
+    else {
+        success = 1;
+    }
     writer.Key("result");
     writer.Int(success);
     std::cout << "执行完代码 写入success状态" << std::endl;
@@ -1639,7 +1647,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<int, GlobalPlanning::Point, Globa
     std::cout << "执行完代码 写入Wait_Point" << std::endl;
 
     // 处理三条路径：成功时写入实际数据，失败时写入空数组
-    if (success) {
+    if (!success) {
         // 获取三条路径
         GlobalPlanning::Path path_r1 = std::get<2>(result);
         GlobalPlanning::Path path_r2 = std::get<3>(result);
