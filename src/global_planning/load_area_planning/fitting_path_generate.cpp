@@ -513,3 +513,4 @@ GlobalPlanning::Path FittingPathGenerator::PathTransFormer(const std::vector<cur
 }
 
 } // namespace FittingPathGenerate
+

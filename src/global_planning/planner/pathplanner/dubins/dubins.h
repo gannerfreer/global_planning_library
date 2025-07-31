@@ -138,7 +138,7 @@ class Dubins {
     }; // dubins曲线的6种组成类型
 
     float       radius_  = 8.4;
-    const float delta_s_ = 0.1;
+    const float delta_s_ = 1;
     float       alpha_, beta_, d_;
     float       sin_alpha_, sin_beta_, cos_alpha_, cos_beta_, cos_alpha_m_beta_;
 };

@@ -1,5 +1,6 @@
 #include "wait_point_generate.h"
 namespace WaitPointGenerate {
+// 计算两点间距离的平方（避免开方提高性能）
 
 // 计算两点间距离的平方（避免开方提高性能）
 double WaitPointGenerator::distanceSquared(const GlobalPlanning::Point& point, const GlobalPlanning::Point& other) const {
@@ -459,5 +460,4 @@ WaitPointGenerator::WaitPointGenerator(double max_curve_length, double min_curve
 }
 
 WaitPointGenerator::~WaitPointGenerator() {}
-
 } // namespace WaitPointGenerate

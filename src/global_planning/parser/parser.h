@@ -1246,6 +1246,17 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 cout << "无法找到车参 safe_margin_error ，即将赋予默认值 0.0" << endl;
             }
 
+            if (val.HasMember("grid_dist") && val["grid_dist"].IsNumber()) {
+                planning_info.veh_param.grid_dist = val["grid_dist"].GetDouble();
+                cout << "planning_info.veh_param.grid_dist " << planning_info.veh_param.grid_dist << endl;
+            }
+            else {
+                planning_info.veh_param.grid_dist = 0.5;
+                cout << "无法找到车参 grid_dist ，即将赋予默认值 0.5" << endl;
+            }
+
+          
+
 
             // 曲线长度参数
             if (val.HasMember("max_curve_length") && val["max_curve_length"].IsInt()) {
@@ -1281,7 +1292,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.wheel_base_length: " << planning_info.wheel_base_length << std::endl;
             }
             else {
-                planning_info.wheel_base_length = 5.8; // 典型轴距默认值(mm)
+                planning_info.wheel_base_length = 5.15; // 典型轴距默认值(mm)
                 std::cerr << "无法找到车参 wheel_base_length ，赋予默认值: " << planning_info.wheel_base_length << std::endl;
             }
 
@@ -1300,7 +1311,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.max_straight_length: " << planning_info.max_straight_length << std::endl;
             }
             else {
-                planning_info.max_straight_length = 10;
+                planning_info.max_straight_length = 8;
                 std::cerr << "无法找到车参 max_straight_length ，赋予默认值: " << planning_info.max_straight_length << std::endl;
             }
 

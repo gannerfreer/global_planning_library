@@ -691,7 +691,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         temp_point.x         = input_paths.at(neares_idx).trajectory.at(i).x;
         temp_point.y         = input_paths.at(neares_idx).trajectory.at(i).y;
         temp_point.z         = input_paths.at(neares_idx).trajectory.at(i).z;
-        temp_point.angle     = input_paths.at(neares_idx).trajectory.at(i).yaw;
+        temp_point.angle     = input_paths.at(neares_idx).trajectory.at(i).yaw/M_PI*180.0;
         temp_point.curvature = input_paths.at(neares_idx).trajectory.at(i).curvature;
         temp_point.distance  = input_paths.at(neares_idx).trajectory.at(i).distance;
         temp_point.direction = static_cast<MotionDirection>(input_paths.at(neares_idx).trajectory.at(i).direction);
@@ -713,7 +713,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         temp_point.x         = output_paths.at(neares_idx).trajectory.at(i).x;
         temp_point.y         = output_paths.at(neares_idx).trajectory.at(i).y;
         temp_point.z         = output_paths.at(neares_idx).trajectory.at(i).z;
-        temp_point.angle     = output_paths.at(neares_idx).trajectory.at(i).yaw;
+        temp_point.angle     = output_paths.at(neares_idx).trajectory.at(i).yaw/M_PI*180.0;
         temp_point.curvature = output_paths.at(neares_idx).trajectory.at(i).curvature;
         temp_point.distance  = output_paths.at(neares_idx).trajectory.at(i).distance;
         temp_point.direction = static_cast<MotionDirection>(output_paths.at(neares_idx).trajectory.at(i).direction);
@@ -778,6 +778,12 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         cout<<get<0>(path)<<endl;
         cout<<"("<<get<1>(path).x<<","<<get<1>(path).y<<")"<<endl;
         cout<<get<2>(path).size()<<" "<<get<3>(path).size()<<" "<<get<4>(path).size()<<endl;
+
+
+        cout<<"打印第一条路"<<endl;
+        for(int i=0;i<get<2>(path).size();i++){
+            cout<<"x:"<<get<2>(path).at(i).x<<" y:"<<get<2>(path).at(i).y<<" yaw:"<<get<2>(path).at(i).angle<<endl;
+        }
     } catch (const std::exception& e) {
         cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;
         planning.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 exception 抛出");

@@ -6,6 +6,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
     GlobalPlanning::Path                      load_path;
     GlobalPlanning::Path                      depart_path;
     GlobalPlanning::Point                     queue_point;
+    
     depart_path = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker).first;
     cout << "DepartPathGenerateInterface完成" << endl;
     cout << "depart_path.size() = " << depart_path.size() << endl;

@@ -176,9 +176,9 @@ int main() {
     // char *out_put = GlobalPathPlanning(global_param);
     // GlobalPathPlanning(global_param);
     // HumanVehPredicting(human_veh_param);
-    cout<<"即将调用LoadAreaPlanning接口"<<endl;
+    // cout<<"即将调用LoadAreaPlanning接口"<<endl;
     char* out_put = QueuePointGenerator(load_waitting_point_auto_gen_param);
-    cout<<"调用LoadAreaPlanning接口成功"<<endl;
+    // cout<<"调用LoadAreaPlanning接口成功"<<endl;
 
     std::string filename = "load_area_planning_output.json"; // 要保存的 JSON 文件名
     cout << "hello world" << endl;

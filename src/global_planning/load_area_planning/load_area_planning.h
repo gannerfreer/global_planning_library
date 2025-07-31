@@ -40,9 +40,8 @@ class LoadAreaPlanning {
   public:
     ~LoadAreaPlanning();
     std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_poit, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck collision_checker);
-    vector<WaitPointGenerate::arc_sample_point>                                                              sample_points;
     shared_ptr<spdlog::logger> threadLogger_;
-
+    vector<WaitPointGenerate::arc_sample_point>                                                              sample_points;
 };
 } // namespace LoadAreaPlanning
 
