@@ -505,7 +505,7 @@ GlobalPlanning::Path FittingPathGenerator::PathTransFormer(const std::vector<cur
     for (const auto& point : curve_path) {
         temp_point.x         = point.GetX();
         temp_point.y         = point.GetY();
-        temp_point.angle     = point.GetAngle() * M_PI / 180.0;
+        temp_point.angle     = point.GetAngle();
         temp_point.curvature = point.GetCurvature();
         result.emplace_back(temp_point);
     }
@@ -513,4 +513,3 @@ GlobalPlanning::Path FittingPathGenerator::PathTransFormer(const std::vector<cur
 }
 
 } // namespace FittingPathGenerate
-
