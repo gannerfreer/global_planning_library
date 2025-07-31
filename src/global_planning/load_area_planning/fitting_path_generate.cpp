@@ -184,7 +184,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     result.insert(result.begin(), stitch_path.begin(), stitch_path.end());
     // std::cout << "straight_path_with_wait_point .size()=" << straight_path_with_wait_point.size() << endl;
 
-    result.insert(result.end(), straight_path_with_wait_point.begin() + 1, straight_path_with_wait_point.end());
+    result.insert(result.end(), straight_path_with_wait_point.begin(), straight_path_with_wait_point.end());
     return std::make_pair(result, grade);
 }
 
