@@ -590,7 +590,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             for (SizeType j = 0; j < pathPointsArray.Size(); j++) {
                 pp.x         = pathPointsArray[j]["x"].GetDouble();
                 pp.y         = pathPointsArray[j]["y"].GetDouble();
-                pp.yaw       = pathPointsArray[j]["yaw"].GetDouble();
+                pp.yaw       = pathPointsArray[j]["yaw"].GetDouble()/180.0*M_PI;
                 pp.direction = pathPointsArray[j]["direction"].GetInt();
                 pp.attribute = PointAttribute::dump_road;
                 temp_reference_path.push_back(pp);
