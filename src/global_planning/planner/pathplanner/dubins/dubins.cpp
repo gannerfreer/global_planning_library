@@ -218,7 +218,7 @@ Point Dubins ::CalNextPoint(float v, float x, float y, float theta, DubinsPathSe
 bool Dubins::DubinsPathSelfIntersectCheck(std::vector<Point>& path) {
     // 通过判断yaw的变化了分析是否画圈
     // 判断方法，设置36个if else，36个标志位，如果超过24个标志为被置为true，即被判定为绕圈
-    cout << "进入检测绕圈函数" << endl;
+    // cout << "进入检测绕圈函数" << endl;
 
     vector<int> vec(36, 0);
     int         index = 0;
@@ -236,13 +236,13 @@ bool Dubins::DubinsPathSelfIntersectCheck(std::vector<Point>& path) {
         }
     }
     double percent = sum / 36.0;
-    cout << "percent: " << percent << endl;
+    // cout << "percent: " << percent << endl;
     if (percent < 0.5) {
-        cout << "路径未构成圈" << endl;
+        // cout << "路径未构成圈" << endl;
         return false;
     }
     else {
-        cout << "路径构成圈圈" << endl;
+        // cout << "路径构成圈圈" << endl;
         return true;
     }
 }

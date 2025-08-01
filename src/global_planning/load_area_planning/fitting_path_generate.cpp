@@ -54,7 +54,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
         double aver_curvature = total_curvature / (double)(load_curve_path.size() - 1);
         auto   stitch_path    = GenerateStraitLine(load_point, straight_line_start);
         reverse(stitch_path.begin(), stitch_path.end());
-        stitch_path.emplace_back(straight_line_start);
+        // stitch_path.emplace_back(straight_line_start);
         load_curve_path.insert(load_curve_path.end(), stitch_path.begin() + 1, stitch_path.end());
         double grade = (load_path_straight_length_weight_ * length / max_straight_length_load_ + load_path_curvature_weight_ * aver_curvature) / (load_path_straight_length_weight_ + load_path_curvature_weight_);
         load_path_candidates_.emplace_back(std::make_pair(load_curve_path, grade));
@@ -62,9 +62,12 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     std::sort(load_path_candidates_.begin(), load_path_candidates_.end(), [](const std::pair<GlobalPlanning::Path, double>& a, const std::pair<GlobalPlanning::Path, double>& b) {
         return a.second > b.second; // 按 double 值降序
     });
-    for (const auto& path_info : load_path_candidates_) {
+    for ( auto& path_info : load_path_candidates_) {
         if (collision_checker.OptiPathCollisionCheckWithAll(path_info.first).empty()) {
             std::cout << "成功了" << std::endl;
+            for(auto& point:path_info.first){
+                point.direction = GlobalPlanning::MotionDirection::Backward;
+            }
             return std::make_pair(path_info.first, path_info.second);
         }
         else {
@@ -85,7 +88,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
         std::cout << "该排队点离主路径太远，不满足要求" << std::endl;
         return std::make_pair(result, 0.0);
     }
-    std::cout << "SamplePathSegment" << std::endl;
+    // std::cout << "SamplePathSegment" << std::endl;
 
     curve::Point end_point(wait_point.x, wait_point.y, wait_point.angle, 0.0);
     for (const auto& start_point : start_point_sample) {
