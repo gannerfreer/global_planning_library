@@ -43,29 +43,30 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
         straight_line_start.angle     = load_point.angle;
         straight_line_start.curvature = 0.0;
         curve::Point temp_straight_line_start(straight_line_start.x, straight_line_start.y, straight_line_start.angle, 0.0);
-        dubins_planner.GetDubinsPath(temp_straight_line_start, temp_wait_point, dubins_path);
-        reverse(dubins_path.begin(), dubins_path.end());
-        auto load_curve_path = PathTransFormer(dubins_path);
-        CalCurvature(load_curve_path, 1);
-        double total_curvature;
-        for (const auto& point : load_curve_path) {
-            total_curvature += fabs(point.curvature);
+        if (dubins_planner.GetDubinsPath(temp_straight_line_start, temp_wait_point, dubins_path)) {
+            reverse(dubins_path.begin(), dubins_path.end());
+            auto load_curve_path = PathTransFormer(dubins_path);
+            CalCurvature(load_curve_path, 1);
+            double total_curvature;
+            for (const auto& point : load_curve_path) {
+                total_curvature += fabs(point.curvature);
+            }
+            double aver_curvature = total_curvature / (double)(load_curve_path.size() - 1);
+            auto   stitch_path    = GenerateStraitLine(load_point, straight_line_start);
+            reverse(stitch_path.begin(), stitch_path.end());
+            // stitch_path.emplace_back(straight_line_start);
+            load_curve_path.insert(load_curve_path.end(), stitch_path.begin() + 1, stitch_path.end());
+            double grade = (load_path_straight_length_weight_ * length / max_straight_length_load_ + load_path_curvature_weight_ * aver_curvature) / (load_path_straight_length_weight_ + load_path_curvature_weight_);
+            load_path_candidates_.emplace_back(std::make_pair(load_curve_path, grade));
         }
-        double aver_curvature = total_curvature / (double)(load_curve_path.size() - 1);
-        auto   stitch_path    = GenerateStraitLine(load_point, straight_line_start);
-        reverse(stitch_path.begin(), stitch_path.end());
-        // stitch_path.emplace_back(straight_line_start);
-        load_curve_path.insert(load_curve_path.end(), stitch_path.begin() + 1, stitch_path.end());
-        double grade = (load_path_straight_length_weight_ * length / max_straight_length_load_ + load_path_curvature_weight_ * aver_curvature) / (load_path_straight_length_weight_ + load_path_curvature_weight_);
-        load_path_candidates_.emplace_back(std::make_pair(load_curve_path, grade));
     }
     std::sort(load_path_candidates_.begin(), load_path_candidates_.end(), [](const std::pair<GlobalPlanning::Path, double>& a, const std::pair<GlobalPlanning::Path, double>& b) {
         return a.second > b.second; // 按 double 值降序
     });
-    for ( auto& path_info : load_path_candidates_) {
+    for (auto& path_info : load_path_candidates_) {
         if (collision_checker.OptiPathCollisionCheckWithAll(path_info.first).empty()) {
             std::cout << "成功了" << std::endl;
-            for(auto& point:path_info.first){
+            for (auto& point : path_info.first) {
                 point.direction = GlobalPlanning::MotionDirection::Backward;
             }
             return std::make_pair(path_info.first, path_info.second);
@@ -516,4 +517,3 @@ GlobalPlanning::Path FittingPathGenerator::PathTransFormer(const std::vector<cur
 }
 
 } // namespace FittingPathGenerate
-
