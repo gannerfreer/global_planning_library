@@ -299,7 +299,7 @@ GlobalPlanning::Path FittingPathGenerator::PathCuttoEnd(const GlobalPlanning::Po
     std::cout << "index = " << index << endl;
     std::cout << "path.size() - 1 = " << path.size() - 1;
     if (index != path.size() - 1) {
-        for (int j = index + 1; j < path.size() - 1; j++) {
+        for (int j = index + 1; j < path.size(); j++) {
             result.emplace_back(path[j]);
         }
     }
