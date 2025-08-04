@@ -55,9 +55,8 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
         }
         // threadLogger_->info("达标");
     }
-    
-    if (min_length_index == 4 || min_length_index == 5) {
-       return false;
+    else if (min_length_index == 4 || min_length_index == 5) {
+        return false;
     }
 
     std::vector<Point> cp;
