@@ -47,34 +47,32 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
 
     // 对trajectory中的每个点进行速度规划
     planSpeed(trajectory);
-    // std::ofstream file;
-    // // 保存平滑前的速度
-    // file.open("speed_before_smooth.txt");
-    // for (const auto& point : trajectory) {
-    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
-    // }
-    // file.close();
+    std::ofstream file;
+    // 保存平滑前的速度
+    file.open("speed_before_smooth.txt");
+    for (const auto& point : trajectory) {
+        file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+    }
+    file.close();
 
-    // 速度曲线平滑
-    Smooth(trajectory);
-    // threadLogger_->info("进入FixLocalMininum");
-    // FixLocalMininum(trajectory);
-    // Helper::calculateAcceleration(trajectory);
+    //速度曲线平滑
+    // Smooth(trajectory);
+    threadLogger_->info("进入FixLocalMininum");
+    FixLocalMininum(trajectory);
+    Helper::calculateAcceleration(trajectory);
 
-    // file.open("speed_after_smooth.txt");
-    // for (const auto& point : trajectory) {
-    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
-    // }
-    // file.close();
-    // threadLogger_->info("进入FixLocalMaxnum");
-    // FixLocalMaxnum(trajectory);
-    // file.open("speed_after_smooth2.txt");
-    // for (const auto& point : trajectory) {
-    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
-    // }
-    // file.close();
-
-    
+    file.open("speed_after_smooth.txt");
+    for (const auto& point : trajectory) {
+        file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+    }
+    file.close();
+    threadLogger_->info("进入FixLocalMaxnum");
+    FixLocalMaxnum(trajectory);
+    file.open("speed_after_smooth2.txt");
+    for (const auto& point : trajectory) {
+        file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+    }
+    file.close();
 
 
     // 恢复倒车速度
@@ -85,7 +83,6 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
     }
     // 保存平滑后的速度
 }
-
 
 
 void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajectory) {
@@ -345,6 +342,9 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
             // 从start_idx开始向前推演
             double v = trajectory[start_idx].speed;
             double a = 0.0; // 假设极小值处加速度为0
+            if (fabs(trajectory[start_idx].speed) < 0.01) {
+                current_jerk = 1.5 * JERK;
+            }
 
             for (size_t j = start_idx; j <= end_idx; j++) {
                 forward_speeds.push_back(v);
@@ -366,6 +366,9 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
             threadLogger_->info("开始向后推演");
             // 从end_idx开始向后推演
             v = trajectory[end_idx].speed;
+            if (fabs(trajectory[end_idx].speed) < 0.01) {
+                current_jerk = 1.5 * JERK;
+            }
             a = 0.0;
 
             for (size_t j = end_idx; j >= start_idx; j--) {
@@ -586,14 +589,14 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                 if (cur_a < min_acceleration_) cur_a = min_acceleration_;
                 cur_v = next_v;
                 v_t.push_back(make_tuple(cur_a, cur_v));
-                threadLogger_->info("index:{} v:{} a:{} target_v:{} target_a:{}",k,cur_v,cur_a,trajectory.at(k + 1).speed,trajectory.at(k + 1).acc);
+                threadLogger_->info("index:{} v:{} a:{} target_v:{} target_a:{}", k, cur_v, cur_a, trajectory.at(k + 1).speed, trajectory.at(k + 1).acc);
                 if (fabs(cur_v - trajectory.at(k + 1).speed) < 1e-2 && fabs(cur_a - trajectory.at(k + 1).acc) < 1e-1) {
                     threadLogger_->info("成功对接，对接处的索引{},speed:{} acc:{}", k + 1, cur_v, cur_a);
                     success_flag = true;
                     end_index    = k + 1;
-                    threadLogger_->info("有 {} 个点需要调整速度 加速度",v_t.size());
+                    threadLogger_->info("有 {} 个点需要调整速度 加速度", v_t.size());
                     for (int m = 0; m < v_t.size(); m++) {
-                        threadLogger_->info("m:{} reasonable_idx:{}",m,reasonable_idx);
+                        threadLogger_->info("m:{} reasonable_idx:{}", m, reasonable_idx);
                         trajectory.at(reasonable_idx).acc   = get<0>(v_t.at(m));
                         trajectory.at(reasonable_idx).speed = get<1>(v_t.at(m));
                         reasonable_idx++;
@@ -601,7 +604,7 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                     threadLogger_->info("line592");
                     break;
                 }
-                else{
+                else {
                     threadLogger_->info("未成功对接");
                 }
             }
