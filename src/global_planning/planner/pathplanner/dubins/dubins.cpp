@@ -47,7 +47,7 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
     auto opt_path = C[min_length_index];
     auto type     = dubins_path_type_[min_length_index];
 
-    if (min_length_index == 0 || min_length_index == 1 || min_length_index == 2 || min_length_index == 3) {
+    if (min_length_index == 1 || min_length_index == 2) {
         // threadLogger_->info("dubins lsl lsr rsl rsr {},{},{}", std::get<0>(opt_path) * radius_, std::get<1>(opt_path) * radius_, std::get<2>(opt_path) * radius_);
         if ((std::get<1>(opt_path) * radius_ < 15 && std::get<0>(opt_path) * radius_ > 3.7) || (std::get<1>(opt_path) * radius_ < 15 && std::get<2>(opt_path) * radius_ > 3.7)) {
             // threadLogger_->info("路径长度小于15m，不合理");
@@ -55,7 +55,7 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
         }
         // threadLogger_->info("达标");
     }
-    else {
+    else if (min_length_index == 4 || min_length_index == 5) {
         return false;
     }
 
