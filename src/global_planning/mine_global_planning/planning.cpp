@@ -12,7 +12,8 @@ Planning::~Planning() {
 bool Planning::InitialFunction() {
     road_directed_graph_.clear(); // 储存所有区域信息的容器
     map_border_.clear();
-    inner_borders_.clear();
+    machine_borders_.clear();
+    wall_borders_.clear();
     all_referencelines_.clear();
     global_path_.clear();
     v_has_calculate_pair_.clear();
@@ -166,7 +167,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
     threadLogger_->info("执行均匀碾压后路径点曲率");
     for (auto i : global_path_) {
-        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} speed_limit:{} acc:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute), i.speed_limit,i.acc);
+        threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} speed_limit:{} acc:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute), i.speed_limit, i.acc);
     }
     // 将global_path_保存到 after_smooth.txt文件中
     //  file_out.open("after_smooth.txt");
@@ -537,7 +538,7 @@ PlanResult Planning::PathPlanning() {
 PlanResult Planning::NotFollowReferencelinePlanning() {
     my_optimal_path_.threadLogger_ = threadLogger_;
 
-    my_optimal_path_.InitBound(start_point_, map_border_, inner_borders_, vehicle_param_);
+    my_optimal_path_.InitBound(start_point_, map_border_, machine_borders_, wall_borders_, vehicle_param_);
     vector<_TrajectoryPoint> temp_traj;
     long long                time_threshold = 0.9 * 1000 * 1000;
     PlanRule                 rule_id_1 = PlanRule::Forward_All_Time, rule_id_2 = PlanRule::Backward_All_Time, rule_id_3 = PlanRule::Start_Front_End_Back;
@@ -781,7 +782,7 @@ bool Planning::PathOffset() {
     threadLogger_->info("均匀碾压功能开启");
     vector<_TrajectoryPoint> path_before_offset, path_after_offset, input_points;
 
-    map_border_t_.clear();
+    Bound map_border;
     vector<Coordinate> vC;
     for (unsigned int i = 0; i < map_border_.size(); ++i) {
         Coordinate temp_point;
@@ -790,9 +791,11 @@ bool Planning::PathOffset() {
         temp_point.y = map_border_.at(i).y;
         vC.push_back(temp_point);
     }
-    map_border_t_.push_back(vC);
+    map_border.push_back(vC);
+
+
     collison_check_.InitParam(vehicle_param_);
-    collison_check_.InitBoundMap(map_border_t_);
+    collison_check_.InitBoundMap(map_border);
 
 
     for (int i = 0; i < global_path_.size(); i++) {
@@ -981,7 +984,7 @@ bool Planning::PathOffset() {
     }
     // 对global_path进行碰撞检测，碰撞检测失败的点，其offset标志位置为false，曲率超标的点，其offset标志为也置为false
     for (int i = 0; i < path_after_offset.size(); i++) {
-        if (collison_check_.IsVehicleCollision(Point(path_after_offset.at(i).x, path_after_offset.at(i).y, path_after_offset.at(i).z, path_after_offset.at(i).yaw, static_cast<GlobalPlanning::MotionDirection>(path_after_offset.at(i).direction)))) {
+        if (collison_check_.IsVehicleCollisionWithAll(Point(path_after_offset.at(i).x, path_after_offset.at(i).y, path_after_offset.at(i).z, path_after_offset.at(i).yaw, static_cast<GlobalPlanning::MotionDirection>(path_after_offset.at(i).direction)))) {
             record_where_is_collision.insert(i);
             threadLogger_->info("偏移后路径点存在碰撞 {}", i);
         }
@@ -1228,9 +1231,9 @@ PlanResult Planning::HybirdAStarFitting() {
     //  初始化HybrdiA*算法地图边界及voronoi图
     PlanResult result              = PlanResult::Plan_OK;
     my_optimal_path_.threadLogger_ = threadLogger_;
-    my_optimal_path_.InitBound(start_point_, map_border_, inner_borders_, vehicle_param_);
+    my_optimal_path_.InitBound(start_point_, map_border_, machine_borders_, wall_borders_, vehicle_param_);
 
-    map_border_for_dubins_.clear();
+    Bound part_map_border;
     vector<Coordinate> vC;
     for (unsigned int i = 0; i < map_border_.size(); ++i) {
         Coordinate temp_point;
@@ -1241,10 +1244,9 @@ PlanResult Planning::HybirdAStarFitting() {
             vC.push_back(temp_point);
         }
     }
-    threadLogger_->info("map_border_for_dubins_边界大小:{}", vC.size());
-    map_border_for_dubins_.push_back(vC);
+    part_map_border.push_back(vC);
     collison_check_.InitParam(vehicle_param_);
-    collison_check_.InitBoundMap(map_border_for_dubins_);
+    collison_check_.InitBoundMap(part_map_border);
 
 
     // 基于横纵向距离来判断是否进行hybirdA*拟合
@@ -1565,14 +1567,14 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
     }
     for (int i = 0; i < output_path.size(); i++) {
         if (flag == 1) {
-            if (collison_check_.IsVehicleCollision(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(1)))) {
+            if (collison_check_.IsVehicleCollisionWithAll(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(1)))) {
                 // threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
                 // break;
                 return false;
             }
         }
         else {
-            if (collison_check_.IsVehicleCollision(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(0)))) {
+            if (collison_check_.IsVehicleCollisionWithAll(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(0)))) {
                 // threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
                 // break;
                 return false;
@@ -2044,15 +2046,17 @@ bool Planning::IsGlobalPathCollision() {
     }
     all_map_borders.push_back(border_coords);
 
+   
     // 2. 初始化碰撞检测参数和边界
     collison_check_.InitParam(vehicle_param_);
     collison_check_.InitBoundMap(all_map_borders);
+
 
     // 3. 检查global_path_每个点
     for (size_t i = 0; i < global_path_.size(); ++i) {
         const auto& pt = global_path_[i];
         Point       check_point(pt.x, pt.y, pt.z, pt.yaw / 180.0 * M_PI, static_cast<MotionDirection>(pt.direction));
-        if (collison_check_.IsVehicleCollision(check_point)) {
+        if (collison_check_.IsVehicleCollisionWithAll(check_point)) {
             threadLogger_->info("全局路径与地图边界发生碰撞，碰撞点索引：{} {} {}", pt.x, pt.y, pt.yaw);
             return false;
         }

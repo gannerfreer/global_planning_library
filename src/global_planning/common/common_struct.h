@@ -251,7 +251,8 @@ struct _TarStartEnd {
     _SinglePoint                     end_point;       // 终点
     _VehicleParam                    veh_param;       // 车辆参数
     TaskType                         task_type;       // 当前车辆任务类型
-    vector<vector<_BorderPoint>>     inner_borders;   // 区域内边界
+    vector<vector<_BorderPoint>>     machine_borders;   // 挖掘机边界
+    vector<vector<_BorderPoint>>     wall_borders;  // 动态挡墙边界
     vector<vector<_TrajectoryPoint>> reference_paths; // 参考路径
     string                           my_key;
 };
@@ -405,7 +406,7 @@ struct _LoadAreaPlanningInfos {
     int                          planning_mode = 0;
     _SinglePoint                 wait_point;
     _SinglePoint                 load_point;
-    vector<vector<_BorderPoint>> wall_borders;    // 挡墙边界
+    vector<vector<_BorderPoint>> wall_borders;    // 动态挡墙边界
     vector<vector<_BorderPoint>> machine_borders; // 挖掘机边界
 };
 

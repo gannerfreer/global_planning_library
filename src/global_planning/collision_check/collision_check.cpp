@@ -116,7 +116,7 @@ void CollisonCheck::InitWallMap(const Bound wall_bound) {
  */
 bool CollisonCheck::IsRSPathCollision(const Path& my_rspath) {
     for (int i = 0; i < my_rspath.size(); ++i) {
-        if (true == IsVehicleCollision(my_rspath.at(i)))
+        if (true == IsVehicleCollisionWithAll(my_rspath.at(i)))
             return true;
         else
             ;
@@ -183,22 +183,7 @@ vector<unsigned int> CollisonCheck::DepartPathCollisionCheck(const Path& my_opti
     return collision_point;
 }
 
-/**
- *@brief: 判断车辆位置是否跟边界碰撞函数
- *@param
- *return
- */
-bool CollisonCheck::IsVehicleCollision(const Point& my_point) {
-    utility::CTimeCounterTool time_tool(&time_couter_);
-    if (!IsVehicleCollisionRoadBound(my_point, m__VehicleParam_.safe_margin_bound)) {
-        if (obstacle_bound_map_.empty()) {
-            return false;
-        }
 
-        return IsVehicleCollisionObstacleBound(my_point, m__VehicleParam_.safe_margin_obstacle);
-    }
-    return true;
-}
 
 /**
  *@brief: 计算两向量叉乘函数

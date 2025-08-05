@@ -164,7 +164,7 @@ int main(int argc, char** argv) {
             // 将obstacle_v存入planning的inner_borders中
             if (!obstacle_v.empty()) {
                 v_bp.clear();
-                planning.inner_borders_.clear();
+                planning.machine_borders_.clear();
                 for (int i = 0; i < obstacle_v.size(); i++) {
                     bp.x    = obstacle_v.at(i).x;
                     bp.y    = obstacle_v.at(i).y;
@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
                     bp.type = 0;
                     v_bp.push_back(bp);
                 }
-                planning.inner_borders_.push_back(v_bp);
+                planning.machine_borders_.push_back(v_bp);
             }
 
             planning.c_rviz_.PubStartPosition(start_point.x, start_point.y, start_point.yaw);

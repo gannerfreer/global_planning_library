@@ -13,15 +13,17 @@
 using namespace GlobalPlanning;
 
 
-void OptimalPath::InitBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders, const _VehicleParam& m_vehicle_param) {
+void OptimalPath::InitBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& machine_borders, const vector<vector<_BorderPoint>>& wall_borders, const _VehicleParam& m_vehicle_param) {
     // 初始化当前任务HybridA*所需要的地图边界和障碍物边界
     //  区域外边界、区域内边界转换
     threadLogger_->info("初始化当前任务HybridA*所需要的地图边界、障碍物边界及Voronoi图");
     Coordinate temp_Coordinate;
     v_road_outer_bound_.clear();
-    v_road_inner_bound_.clear();
+    v_machine_bound_.clear();
+    v_wall_bound_.clear();
     init_road_bound_.clear();
-    init_obstacle_bound_.clear();
+    init_machine_bound_.clear();
+    init_wall_bound_.clear();
     // 获取道路外边界 (以传入参数的外边界点作为道路外边界)
     for (int index = 0; index < map_border.size(); index++) {
         temp_Coordinate.x = map_border.at(index).x;
@@ -31,21 +33,30 @@ void OptimalPath::InitBound(const _SinglePoint start_point, const vector<_Border
             v_road_outer_bound_.emplace_back(temp_Coordinate);
         }
     }
-    // threadLogger_->info("內边界大小  inner_borders_.size():{} ,inner_borders_.at(0).size():{}", inner_borders_.size(), inner_borders_.at(0).size());
+    // threadLogger_->info("內边界大小  machine_borders.size():{} ,machine_borders.at(0).size():{}", machine_borders.size(), machine_borders.at(0).size());
     // 获取道路内边界 (暂时以传入参数的障碍物边界作为道路内边界)
-    for (int index = 0; index < inner_borders.size(); index++) {
-        for (int j = 0; j < inner_borders.at(index).size(); j++) {
-            temp_Coordinate.x = inner_borders.at(index).at(j).x;
-            temp_Coordinate.y = inner_borders.at(index).at(j).y;
-            temp_Coordinate.z = inner_borders.at(index).at(j).z;
+    for (int index = 0; index < machine_borders.size(); index++) {
+        for (int j = 0; j < machine_borders.at(index).size(); j++) {
+            temp_Coordinate.x = machine_borders.at(index).at(j).x;
+            temp_Coordinate.y = machine_borders.at(index).at(j).y;
+            temp_Coordinate.z = machine_borders.at(index).at(j).z;
             // cout << "x:" << temp_Coordinate.x << "  y:" << temp_Coordinate.y << "  z:" << temp_Coordinate.z << endl;
             if (hypot(start_point.x - temp_Coordinate.x, start_point.y - temp_Coordinate.y) < 100) {
-                v_road_inner_bound_.emplace_back(temp_Coordinate);
+                v_machine_bound_.emplace_back(temp_Coordinate);
             }
         }
     }
+    for (int index = 0; index < wall_borders.size(); index++) {
+        for (int j = 0; j < wall_borders.at(index).size(); j++) {
+            temp_Coordinate.x = wall_borders.at(index).at(j).x;
+            temp_Coordinate.y = wall_borders.at(index).at(j).y;
+            temp_Coordinate.z = wall_borders.at(index).at(j).z;
+            v_wall_bound_.emplace_back(temp_Coordinate);
+        }
+    }
     threadLogger_->info("v_road_outer_bound_.size():{}", v_road_outer_bound_.size());
-    threadLogger_->info("v_road_inner_bound_.size():{}", v_road_inner_bound_.size());
+    threadLogger_->info("v_machine_bound_.size():{}", v_machine_bound_.size());
+    threadLogger_->info("v_wall_bound_.size():{}", v_wall_bound_.size());
     // std::ofstream file_out;
     // file_out.open("selected_border.txt");
     // for (int i = 0; i < v_road_outer_bound_.size(); i++) {
@@ -54,7 +65,8 @@ void OptimalPath::InitBound(const _SinglePoint start_point, const vector<_Border
     // file_out.close();
 
     init_road_bound_.emplace_back(v_road_outer_bound_);
-    init_obstacle_bound_.emplace_back(v_road_inner_bound_); // 这里填充好的road_inner_bound_和road_outer_bound_会在调用globalPlanning()函数时作为入参传入
+    init_machine_bound_.emplace_back(v_machine_bound_); // 这里填充好的road_inner_bound_和road_outer_bound_会在调用globalPlanning()函数时作为入参传入
+    init_wall_bound_.emplace_back(v_wall_bound_);
 }
 
 
@@ -77,6 +89,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     collison_check_.InitParam(m_vehicle_param_);
     collison_check_.InitBoundMap(offset_road_bound_);
     collison_check_.InitObstacleMap(offset_obstacle_bound_);
+    collison_check_.InitWallMap(offset_dynamic_bound_);
     timelog.AddLog("InitBoundMap");
 
     GenerateBoundSet();
@@ -86,23 +99,23 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     nodes2D_set_.clear();
     h_cost_map_.clear();
     nodes2D_map_.clear();
-
-    if (true == collison_check_.IsVehicleCollision(actual_start_)) {
+    
+    if (true == collison_check_.IsVehicleCollisionWithAll(actual_start_)) {
         threadLogger_->info("起点碰撞检测不通过");
         return PlanResult::StartPoint_Collision;
     }
 
     cout << "开启对终点的碰撞检测" << endl;
     // 终点区域碰撞判断
-    if (true == collison_check_.IsVehicleCollision(end_)) {
+    if (true == collison_check_.IsVehicleCollisionWithAll(end_)) {
         threadLogger_->info("终点碰撞检测不通过 {} {}  {}", end_.x + midpoint_.x, end_.y + midpoint_.y, end_.angle / M_PI * 180.0);
         cout << "终点碰撞检测不通过" << endl;
         return PlanResult::EndPoint_Collision;
     }
     cout << "终点碰撞检测通过" << endl;
     bool end_f_collison_flag = false, end_r_collison_flag = false;
-    end_r_collison_flag = collison_check_.IsVehicleCollision(end_r_);
-    end_f_collison_flag = collison_check_.IsVehicleCollision(end_f_);
+    end_r_collison_flag = collison_check_.IsVehicleCollisionWithAll(end_r_);
+    end_f_collison_flag = collison_check_.IsVehicleCollisionWithAll(end_f_);
 
 
     if ((plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front) && end_r_collison_flag) {
@@ -120,7 +133,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     else {
         threadLogger_->info("PlanRule::Backward_All_Time||plan_path_rule_ == PlanRule::Start_Front_End_Back ,end_f_ 碰撞检测成功 ");
     }
-    timelog.AddLog("IsVehicleCollision");
+    timelog.AddLog("IsVehicleCollisionWithAll");
 
 
     if (plan_path_rule_ == PlanRule::Start_Front_End_Back || plan_path_rule_ == PlanRule::Backward_All_Time) {
@@ -205,8 +218,8 @@ void OptimalPath::InitData(Point start, Point end) {
 
     // 计算平移后障碍物边界点
     offset_obstacle_bound_.clear();
-    for (unsigned int i = 0; i < init_obstacle_bound_.size(); ++i) {
-        vector<Coordinate> temp_bound = init_obstacle_bound_.at(i);
+    for (unsigned int i = 0; i < init_machine_bound_.size(); ++i) {
+        vector<Coordinate> temp_bound = init_machine_bound_.at(i);
         vector<Coordinate> temp_bound_2;
         for (int j = 0; j < temp_bound.size(); ++j) {
             Coordinate temp_point;
@@ -217,6 +230,21 @@ void OptimalPath::InitData(Point start, Point end) {
         }
         threadLogger_->info("内边界大小：{}", temp_bound_2.size());
         offset_obstacle_bound_.push_back(temp_bound_2);
+    }
+    // 计算平移后挡墙边界点
+    offset_dynamic_bound_.clear();
+    for (unsigned int i = 0; i < init_wall_bound_.size(); ++i) {
+        vector<Coordinate> temp_bound = init_wall_bound_.at(i);
+        vector<Coordinate> temp_bound_2;
+        for (int j = 0; j < temp_bound.size(); ++j) {
+            Coordinate temp_point;
+            temp_point.z = 0;
+            temp_point.x = temp_bound.at(j).x - midpoint_.x;
+            temp_point.y = temp_bound.at(j).y - midpoint_.y;
+            temp_bound_2.push_back(temp_point);
+        }
+        threadLogger_->info("挡墙边界大小：{}", temp_bound_2.size());
+        offset_dynamic_bound_.push_back(temp_bound_2);
     }
 
     // 计算终点前直线补偿点位置
@@ -626,7 +654,7 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
             Point               temp_point(end_point.x, end_point.y, end_point.z, end_point.angle, end_point.direction);
             utility::CTimeClock start_time_rs;
             // threadLogger_->info("检测运动学拓展的点({} {} {})是否碰撞", end_point.x, end_point.y, end_point.angle / M_PI * 180.0);
-            flag = collison_check_.IsVehicleCollision(temp_point);
+            flag = collison_check_.IsVehicleCollisionWithAll(temp_point);
 
             time2 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs);
             utility::CTimeClock start_time_rs__;
@@ -1383,6 +1411,15 @@ void OptimalPath::GenerateBoundSet() {
         for (int j = 0; j < offset_obstacle_bound_.at(i).size(); ++j) {
             temp_point.x = static_cast<short>(floor(offset_obstacle_bound_.at(i).at(j).x / m_vehicle_param_.grid_dist));
             temp_point.y = static_cast<short>(floor(offset_obstacle_bound_.at(i).at(j).y / m_vehicle_param_.grid_dist));
+            hash         = Coordinate2Hash(temp_point);
+            bound_set_.insert(hash);
+        }
+    }
+    // 计算挡墙边界栅格
+    for (int i = 0; i < offset_dynamic_bound_.size(); ++i) {
+        for (int j = 0; j < offset_dynamic_bound_.at(i).size(); ++j) {
+            temp_point.x = static_cast<short>(floor(offset_dynamic_bound_.at(i).at(j).x / m_vehicle_param_.grid_dist));
+            temp_point.y = static_cast<short>(floor(offset_dynamic_bound_.at(i).at(j).y / m_vehicle_param_.grid_dist));
             hash         = Coordinate2Hash(temp_point);
             bound_set_.insert(hash);
         }
