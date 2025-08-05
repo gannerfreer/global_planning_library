@@ -40,9 +40,9 @@ void StartPositionCallback(const geometry_msgs::PoseWithCovarianceStamped::Const
     start_point.x   = msg->pose.pose.position.x;
     start_point.y   = msg->pose.pose.position.y;
     start_point.yaw = tf::getYaw(msg->pose.pose.orientation);
-    start_point.x   = -412.968505859375 - x_o_;
-    start_point.y   = -722.4910888671875 - y_o_;
-    start_point.yaw = 105.29842413201281/ 180.0 * M_PI;
+    // start_point.x   = -412.968505859375 - x_o_;
+    // start_point.y   = -722.4910888671875 - y_o_;
+    // start_point.yaw = 105.29842413201281/ 180.0 * M_PI;
 
     is_receive_start = true;
 }
@@ -52,9 +52,9 @@ void EndPositionCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     end_point.x   = msg->pose.position.x;
     end_point.y   = msg->pose.position.y;
     end_point.yaw = tf::getYaw(msg->pose.orientation);
-    end_point.x   = -478.1893310546875 - x_o_;
-    end_point.y   = -629.5673217773438 - y_o_;
-    end_point.yaw = 43.6433788340074 / 180.0 * M_PI;
+    // end_point.x   = -478.1893310546875 - x_o_;
+    // end_point.y   = -629.5673217773438 - y_o_;
+    // end_point.yaw = 43.6433788340074 / 180.0 * M_PI;
 
 
     is_receive_end = true;
@@ -164,7 +164,7 @@ int main(int argc, char** argv) {
             // 将obstacle_v存入planning的inner_borders中
             if (!obstacle_v.empty()) {
                 v_bp.clear();
-                planning.inner_borders_.clear();
+                planning.machine_borders_.clear();
                 for (int i = 0; i < obstacle_v.size(); i++) {
                     bp.x    = obstacle_v.at(i).x;
                     bp.y    = obstacle_v.at(i).y;
@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
                     bp.type = 0;
                     v_bp.push_back(bp);
                 }
-                planning.inner_borders_.push_back(v_bp);
+                planning.machine_borders_.push_back(v_bp);
             }
 
             planning.c_rviz_.PubStartPosition(start_point.x, start_point.y, start_point.yaw);

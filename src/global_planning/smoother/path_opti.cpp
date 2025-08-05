@@ -454,7 +454,7 @@ void Path_Opti::CuspPointExtension(CollisonCheck& collison_check) {
                 temp_point.y         = path_.at(i).y + flag_pos_neg * j * sin(temp_point.angle);
                 temp_point.direction = (path_.at(i).direction == Forward) ? Forward : Backward;
                 threadLogger_->info("延伸的点坐标({},{},{})", temp_point.x, temp_point.y, temp_point.direction);
-                if (false == collison_check.IsVehicleCollision(temp_point)) // 如果碰撞，则放弃继续延伸
+                if (false == collison_check.IsVehicleCollisionWithAll(temp_point)) // 如果碰撞，则放弃继续延伸
                 {
                     threadLogger_->info("该点碰撞检测通过");
                     temp_path.push_back(temp_point);

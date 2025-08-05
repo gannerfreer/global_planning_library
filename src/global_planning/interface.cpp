@@ -155,10 +155,10 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
 
     } // 获取传入的内边界并将其存入对应的r区域内
 
-    if (!veh_start_end.inner_borders.empty()) {
-        cout << "入参传入" << veh_start_end.inner_borders.size() << "组内边界" << endl;
+    if (!veh_start_end.machine_borders.empty()) {
+        cout << "入参传入" << veh_start_end.machine_borders.size() << "组挖机边界" << endl;
         try {
-            planning.inner_borders_ = veh_start_end.inner_borders;
+            planning.machine_borders_ = veh_start_end.machine_borders;
         } catch (const std::exception& e) {
             cout << "规划库入参数解析，将内边界赋值给planning对象的成员变量时出现异常" << endl;
             planning.error_type_ = ErrorType::ALGORITHM_ERROR_PARAS_PARSE_FAIL;
@@ -182,6 +182,38 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     else {
         planning.threadLogger_->error("此次任务无inner_borders信息");
     }
+
+    if (!veh_start_end.wall_borders.empty()) {
+        cout << "入参传入" << veh_start_end.wall_borders.size() << "组挡墙边界" << endl;
+        try {
+            planning.wall_borders_ = veh_start_end.wall_borders;
+        } catch (const std::exception& e) {
+            cout << "规划库入参数解析，将内边界赋值给planning对象的成员变量时出现异常" << endl;
+            planning.error_type_ = ErrorType::ALGORITHM_ERROR_PARAS_PARSE_FAIL;
+            {
+                std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+                planning.threadLogger_->info("进锁成功");
+                string temp_string      = GlobalPlanning::Parser::VecWaypoint2json(path, planning);
+                int    temp_string_size = temp_string.size();
+                GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
+                if (temp_string_size < 10) {
+                    cout << "temp_string还没接就被释放了" << endl;
+                    planning.threadLogger_->info("出锁成功");
+                }
+                planning.threadLogger_->info("VecWaypoint2json successfully");
+                planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+                planning.threadLogger_->info("出锁成功");
+                return GlobalVariable::getInstance()->GetReceivePtr();
+            }
+        }
+    }
+    else {
+        planning.threadLogger_->error("此次任务无dynamic_border信息");
+    }
+
+
+
+
 
     planning.task_type_     = veh_start_end.task_type;
     planning.vehicle_param_ = veh_start_end.veh_param;

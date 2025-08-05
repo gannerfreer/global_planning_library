@@ -143,8 +143,8 @@ class Planning {
 
     vector<vector<double>>       road_directed_graph_; // 路段有向图
     vector<_BorderPoint>         map_border_;          // 地图外边界
-    Bound                        map_border_t_, map_border_for_dubins_;
-    vector<vector<_BorderPoint>> inner_borders_;      // 内边界
+    vector<vector<_BorderPoint>> machine_borders_;      //挖掘机边界
+    vector<vector<_BorderPoint>> wall_borders_;     // 动态挡墙边界
     map<int, _SingleTraj>        all_referencelines_; // 所有可供无人车行使的参考路段
     vector<_TrajectoryPoint>     global_path_;        // 全局路径
     vector<int>                  road_sequence_;      // 路段拓扑结果

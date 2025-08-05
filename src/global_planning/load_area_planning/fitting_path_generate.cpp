@@ -121,7 +121,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
 std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, bool need_completed) {
     GlobalPlanning::Path result;
     double               grade = 0.0;
-    if (collision_checker.IsVehicleCollision(wait_point)) {
+    if (collision_checker.IsVehicleCollisionWithAll(wait_point)) {
         std::cout << "该排队点有碰撞，无法使用" << endl;
         return std::make_pair(result, 0.0);
     }

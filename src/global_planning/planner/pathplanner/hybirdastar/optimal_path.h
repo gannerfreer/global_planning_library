@@ -80,7 +80,7 @@ class OptimalPath {
      * 返回规划结果
      */
     PlanResult    SearchGlobalPath(const Point start, const Point end, const _VehicleParam m_vehicle_param, Path& final_path, long long time_threshold, const PlanRule& plan_path_rule);
-    void          InitBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders, const _VehicleParam& m_vehicle_param);
+    void          InitBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& inner_borders,const vector<vector<_BorderPoint>>& dynamic_border, const _VehicleParam& m_vehicle_param);
     _VehicleParam m_vehicle_param_;
 
   private:
@@ -364,9 +364,9 @@ class OptimalPath {
 
     Path path_a_star_, path_r_s_;
 
-    vector<Coordinate> v_road_outer_bound_, v_road_inner_bound_; // hybridA*规划框定的地图外边界和内边界
-    Bound              init_road_bound_, init_obstacle_bound_;
-    Bound              offset_road_bound_, offset_obstacle_bound_;
+    vector<Coordinate> v_road_outer_bound_, v_machine_bound_, v_wall_bound_; // hybridA*规划框定的地图外边界和内边界
+    Bound              init_road_bound_, init_machine_bound_, init_wall_bound_;
+    Bound              offset_road_bound_, offset_obstacle_bound_, offset_dynamic_bound_;
     Bound              voronoi_bound_;
 
     MotionDirection start_d_, end_d_; // 结束拓展方向
