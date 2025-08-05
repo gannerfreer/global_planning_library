@@ -1,5 +1,5 @@
 {
-    "execute_mode": 2,
+    "execute_mode": 0,
     "queue_point": {
         "x": 130.4458890223,
         "y": -761.2379947666,
@@ -7,10 +7,10 @@
         "yaw": 312.3693464872
     },
     "load_point": {
-        "x": 105.7605582076,
-        "y": -735.5796543299,
+        "x": 190,
+        "y": -820,
         "z": null,
-        "yaw": 14.4756297978
+        "yaw": 150
     },
     "entrance_load_guide_path": null,
     "exit_load_guide_path": null,
