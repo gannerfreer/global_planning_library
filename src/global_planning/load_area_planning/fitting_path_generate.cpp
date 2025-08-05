@@ -25,10 +25,11 @@ FittingPathGenerator::~FittingPathGenerator() {}
 
 std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker) {
     std::cout << "进入" << endl;
-    GlobalPlanning::Path      result;
-    double                    result_grade;
-    curve::Point              temp_wait_point(wait_point.x, wait_point.y, wait_point.angle, 0.0);
-    curve::Dubins             dubins_planner;
+    GlobalPlanning::Path result;
+    double               result_grade;
+    curve::Point         temp_wait_point(wait_point.x, wait_point.y, wait_point.angle, 0.0);
+    curve::Dubins        dubins_planner;
+    dubins_planner.SetRadius(15.0);
     std::vector<curve::Point> dubins_path;
     std::cout << "delta_straight_length_load_ = " << delta_straight_length_load_ << endl;
     std::cout << "max_straight_length_load_ = " << max_straight_length_load_ << endl;
@@ -85,7 +86,8 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     GlobalPlanning::Path result;
     double               grade = 0.0;
 
-    curve::Dubins                                        dubins_planner;
+    curve::Dubins dubins_planner;
+    dubins_planner.SetRadius(15.0);
     std::vector<GlobalPlanning::Point>                   start_point_sample = SamplePathSegment(origin_path, wait_point, 0);
     std::vector<std::pair<GlobalPlanning::Path, double>> wait_path_candidates;
     if (start_point_sample.empty()) {
@@ -150,7 +152,8 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
         return std::make_pair(result, 0.0);
     }
 
-    curve::Dubins                      dubins_planner;
+    curve::Dubins dubins_planner;
+    dubins_planner.SetRadius(15.0);
     std::vector<GlobalPlanning::Point> start_point_sample = SamplePathSegment(origin_path, straight_path_with_wait_point.front(), 0);
     // cout << "驶出点寻找完毕" << endl;
     std::vector<std::pair<GlobalPlanning::Path, double>> wait_path_candidates;
@@ -195,9 +198,10 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
 }
 
 std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerateInterface(const GlobalPlanning::Path& target_path, const GlobalPlanning::Point& load_point, GlobalPlanning::CollisonCheck& collision_checker) {
-    GlobalPlanning::Path                                 result;
-    double                                               grade;
-    curve::Dubins                                        dubins_planner;
+    GlobalPlanning::Path result;
+    double               grade;
+    curve::Dubins        dubins_planner;
+    dubins_planner.SetRadius(15.0);
     std::vector<GlobalPlanning::Point>                   end_point_sample = SamplePathSegment(target_path, load_point, 0);
     std::vector<std::pair<GlobalPlanning::Path, double>> depart_path_candidates;
     std::vector<std::pair<GlobalPlanning::Path, double>> temp_depart_path_candidates;
@@ -427,8 +431,8 @@ std::vector<GlobalPlanning::Point> FittingPathGenerator::SamplePathSegment(const
     // std::cout << "寻找距离load_point最近的点" << std::endl;
 
     // 检查最近点是否在50m范围内
-    // std::cout << "路径上最近点离装载点的距离" << min_dist << std::endl;
-    // std::cout << "search_range_ = " << search_range_ << std::endl;
+    std::cout << "路径上最近点离装载点的距离" << min_dist << std::endl;
+    std::cout << "search_range_ = " << search_range_ << std::endl;
 
     if (min_dist > search_range_) {
         return end_point_sample; // 返回空vector

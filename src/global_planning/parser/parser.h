@@ -590,7 +590,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             for (SizeType j = 0; j < pathPointsArray.Size(); j++) {
                 pp.x         = pathPointsArray[j]["x"].GetDouble();
                 pp.y         = pathPointsArray[j]["y"].GetDouble();
-                pp.yaw       = pathPointsArray[j]["yaw"].GetDouble()/180.0*M_PI;
+                pp.yaw       = pathPointsArray[j]["yaw"].GetDouble() / 180.0 * M_PI;
                 pp.direction = pathPointsArray[j]["direction"].GetInt();
                 pp.attribute = PointAttribute::dump_road;
                 temp_reference_path.push_back(pp);
@@ -1255,7 +1255,32 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 cout << "无法找到车参 grid_dist ，即将赋予默认值 0.5" << endl;
             }
 
-          
+            if (val.HasMember("safe_margin_front") && val["safe_margin_front"].IsNumber()) {
+                planning_info.safe_margin_front = val["safe_margin_front"].GetDouble();
+                cout << "planning_info.safe_margin_front " << planning_info.safe_margin_front << endl;
+            }
+            else {
+                planning_info.safe_margin_front = 2.0;
+                cout << "无法找到车参 safe_margin_front ，即将赋予默认值 2.0" << endl;
+            }
+
+            if (val.HasMember("safe_margin_rear") && val["safe_margin_rear"].IsNumber()) {
+                planning_info.safe_margin_rear = val["safe_margin_rear"].GetDouble();
+                cout << "planning_info.safe_margin_rear " << planning_info.safe_margin_rear << endl;
+            }
+            else {
+                planning_info.safe_margin_rear = 2.0;
+                cout << "无法找到车参 safe_margin_rear ，即将赋予默认值 2.0" << endl;
+            }
+
+            if (val.HasMember("safe_margin_side") && val["safe_margin_side"].IsNumber()) {
+                planning_info.safe_margin_side = val["safe_margin_side"].GetDouble();
+                cout << "planning_info.safe_margin_side " << planning_info.safe_margin_side << endl;
+            }
+            else {
+                planning_info.safe_margin_side = 1.3;
+                cout << "无法找到车参 safe_margin_side ，即将赋予默认值 1.3" << endl;
+            }
 
 
             // 曲线长度参数
@@ -1273,7 +1298,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.min_curve_length: " << planning_info.min_curve_length << std::endl;
             }
             else {
-                planning_info.min_curve_length = 20;
+                planning_info.min_curve_length = 15;
                 std::cerr << "无法找到车参 min_curve_length ，赋予默认值: " << planning_info.min_curve_length << std::endl;
             }
 
@@ -1407,6 +1432,15 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cerr << "无法找到车参 load_path_curvature_weight ，赋予默认值: " << planning_info.load_path_curvature_weight << std::endl;
             }
 
+            if (val.HasMember("collision_weight") && val["collision_weight"].IsInt()) {
+                planning_info.load_path_curvature_weight = val["collision_weight"].GetInt();
+                std::cout << "planning_info.collision_weight: " << planning_info.collision_weight << std::endl;
+            }
+            else {
+                planning_info.collision_weight = 0.5;
+                std::cerr << "无法找到车参 collision_weight ，赋予默认值: " << planning_info.collision_weight << std::endl;
+            }
+
             // 路径规划参数
             if (val.HasMember("out_put_path_dense") && val["out_put_path_dense"].IsInt()) {
                 planning_info.out_put_path_dense = val["out_put_path_dense"].GetInt();
@@ -1422,7 +1456,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.search_range: " << planning_info.search_range << std::endl;
             }
             else {
-                planning_info.search_range = 50; // 搜索范围默认值(mm)
+                planning_info.search_range = 60; // 搜索范围默认值(mm)
                 std::cerr << "无法找到车参 search_range ，赋予默认值: " << planning_info.search_range << std::endl;
             }
 
@@ -1504,7 +1538,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.max_straight_length_wait: " << planning_info.max_straight_length_wait << std::endl;
             }
             else {
-                planning_info.max_straight_length_wait = 8;
+                planning_info.max_straight_length_wait = 6;
                 std::cerr << "无法找到车参 max_straight_length_wait ，赋予默认值: " << planning_info.max_straight_length_wait << std::endl;
             }
 
