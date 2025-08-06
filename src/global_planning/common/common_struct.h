@@ -401,8 +401,6 @@ struct _LoadAreaPlanningInfos {
     double min_straight_length_load;         // 前往装载点路径直线长度最小值
     double max_straight_length_load;         // 前往装载点路径直线长度最大值
     double delta_straight_length_load;       // 前往装载点路径直线长度采样间距
-    double center2front;
-    double center2rear;
     double safe_margin_front;
     double safe_margin_rear;
     double safe_margin_side;
