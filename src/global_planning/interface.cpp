@@ -550,17 +550,17 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     cout << "**********************欢迎装载排队点自动生成库,版本号:G_V1.4.0.20250310_beta************************************" << timeStr << endl;
     time_t start_time, end_time;
     time(&start_time);
-    LoadAreaPlanning::LoadAreaPlanning                                                                        planning;
+    LoadAreaPlanning::LoadAreaPlanning                                                                       planning;
     std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> path;
     // 解析传入的参数
     cout << "本次入參大小： " << strlen(point_veh_start_end) << "strlen()计算方式" << endl;
-    
+
     _LoadAreaPlanningInfos veh_start_end;
     try {
         std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->parse_func_write_lock); // 这里之所以加解析锁，是因为之前采用jna方案时，测试多线程调用时，出现解析混乱情况
         veh_start_end = GlobalPlanning::Parser::ParseLoadAreaPlanningJson(point_veh_start_end);
-        cout<<"execute_mode:"<<veh_start_end.planning_mode<<endl;
-        cout<<"load_point:("<<veh_start_end.load_point.x<<","<<veh_start_end.load_point.y<<")"<<endl;
+        cout << "execute_mode:" << veh_start_end.planning_mode << endl;
+        cout << "load_point:(" << veh_start_end.load_point.x << "," << veh_start_end.load_point.y << ")" << endl;
     } catch (...) {
         // 捕获所有类型的异常
         std::cerr << "捕获到一个异常" << std::endl;
@@ -666,7 +666,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
 
     Bound                              wall_border_v;
     const vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
-    cout<<"收到挡墙"<<wall_border.size()<<"组"<<endl;
+    cout << "收到挡墙" << wall_border.size() << "组" << endl;
     vC.clear();
     for (unsigned int i = 0; i < wall_border.size(); ++i) {
         for (unsigned int j = 0; j < wall_border.at(i).size(); ++j) {
@@ -684,7 +684,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     Bound                        machine_border_v;
     vector<vector<_BorderPoint>> machine_border = veh_start_end.machine_borders;
     vC.clear();
-    cout<<"收到挖掘"<<machine_border.size()<<"组"<<endl;
+    cout << "收到挖掘" << machine_border.size() << "组" << endl;
     for (unsigned int i = 0; i < machine_border.size(); ++i) {
         for (unsigned int j = 0; j < machine_border.at(i).size(); ++j) {
             Coordinate temp_point;
@@ -699,13 +699,12 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     planning.threadLogger_->info("collision_check InitObstacleMap()成功");
 
 
-
     Path                input_path, out_path;
     vector<_SingleTraj> input_paths, output_paths;
     input_paths  = GlobalVariable::getInstance()->GetInGuidingPaths();
     output_paths = GlobalVariable::getInstance()->GetOutGuidingPaths();
-    cout<<"驶入引导路径一共"<<input_paths.size()<<"条"<<endl;
-    cout<<"驶出引导路径一共"<<output_paths.size()<<"条"<<endl;
+    cout << "驶入引导路径一共" << input_paths.size() << "条" << endl;
+    cout << "驶出引导路径一共" << output_paths.size() << "条" << endl;
 
     int    neares_idx  = -1;
     double nearest_dis = numeric_limits<double>::max();
@@ -714,7 +713,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
             double temp_dis = hypot(veh_start_end.load_point.x - input_paths.at(i).trajectory.at(j).x, veh_start_end.load_point.y - input_paths.at(i).trajectory.at(j).y);
             if (temp_dis < nearest_dis) {
                 nearest_dis = temp_dis;
-                neares_idx = i;
+                neares_idx  = i;
             }
         }
     }
@@ -723,13 +722,13 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         temp_point.x         = input_paths.at(neares_idx).trajectory.at(i).x;
         temp_point.y         = input_paths.at(neares_idx).trajectory.at(i).y;
         temp_point.z         = input_paths.at(neares_idx).trajectory.at(i).z;
-        temp_point.angle     = input_paths.at(neares_idx).trajectory.at(i).yaw/M_PI*180.0;
+        temp_point.angle     = input_paths.at(neares_idx).trajectory.at(i).yaw / M_PI * 180.0;
         temp_point.curvature = input_paths.at(neares_idx).trajectory.at(i).curvature;
         temp_point.distance  = input_paths.at(neares_idx).trajectory.at(i).distance;
         temp_point.direction = static_cast<MotionDirection>(input_paths.at(neares_idx).trajectory.at(i).direction);
         input_path.push_back(temp_point);
     }
-    cout<<"结合当前load_point位置，挑选出的驶入引导路径第一个点坐标为:("<<input_path.front().x<<","<<input_path.front().y<<")"<<endl;
+    cout << "结合当前load_point位置，挑选出的驶入引导路径第一个点坐标为:(" << input_path.front().x << "," << input_path.front().y << ")" << endl;
 
     nearest_dis = numeric_limits<double>::max();
     for (int i = 0; i < output_paths.size(); i++) {
@@ -737,7 +736,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
             double temp_dis = hypot(veh_start_end.load_point.x - output_paths.at(i).trajectory.at(j).x, veh_start_end.load_point.y - output_paths.at(i).trajectory.at(j).y);
             if (temp_dis < nearest_dis) {
                 nearest_dis = temp_dis;
-                neares_idx = i;
+                neares_idx  = i;
             }
         }
     }
@@ -745,15 +744,13 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         temp_point.x         = output_paths.at(neares_idx).trajectory.at(i).x;
         temp_point.y         = output_paths.at(neares_idx).trajectory.at(i).y;
         temp_point.z         = output_paths.at(neares_idx).trajectory.at(i).z;
-        temp_point.angle     = output_paths.at(neares_idx).trajectory.at(i).yaw/M_PI*180.0;
+        temp_point.angle     = output_paths.at(neares_idx).trajectory.at(i).yaw / M_PI * 180.0;
         temp_point.curvature = output_paths.at(neares_idx).trajectory.at(i).curvature;
         temp_point.distance  = output_paths.at(neares_idx).trajectory.at(i).distance;
         temp_point.direction = static_cast<MotionDirection>(output_paths.at(neares_idx).trajectory.at(i).direction);
         out_path.push_back(temp_point);
     }
-    cout<<"结合当前load_point位置，挑选出的驶出引导路径第一个点坐标为:("<<out_path.front().x<<","<<out_path.front().y<<")"<<endl;
-
-
+    cout << "结合当前load_point位置，挑选出的驶出引导路径第一个点坐标为:(" << out_path.front().x << "," << out_path.front().y << ")" << endl;
 
 
     GlobalPlanning::Point wait_point, load_point;
@@ -768,53 +765,60 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     load_point.angle = veh_start_end.load_point.yaw;
 
     {
-        planning.max_curve_length_                 = veh_start_end.max_curve_length; // 圆弧直线倒车最大曲线长度
-        planning.min_curve_length_                 = veh_start_end.min_curve_length; // 圆弧直线倒车最小曲线长度
-        planning.delta_curve_length_               = veh_start_end.delta_curve_length; // 圆弧直线倒车曲线长度采样间距
-        planning.wheel_base_length_                = veh_start_end.wheel_base_length; // 车辆轴距
-        planning.center2side_                      = veh_start_end.center2side; // 车辆宽度
-        planning.max_straight_length_              = veh_start_end.max_straight_length; // 圆弧直线倒车最大直线长度
-        planning.min_straight_length_              = veh_start_end.min_straight_length; // 圆弧直线倒车最小直线长度
-        planning.delta_straight_length_            = veh_start_end.delta_straight_length; // 圆弧直线倒车直线采样间距
-        planning.max_steering_angle_               = veh_start_end.max_steering_angle; // 圆弧直线倒车最大转向角
-        planning.min_steering_angle_               = veh_start_end.min_steering_angle; // 圆弧直线倒车最小转向角
-        planning.delta_steering_angle_             = veh_start_end.delta_steering_angle; // 圆弧直线倒车转角采样间距
-        planning.standard_steering_angle_          = veh_start_end.standard_steering_angle; // 标准倒车转角
-        planning.weight_length_                    = veh_start_end.weight_length; // 圆弧直线倒车长度评分权重
-        planning.weight_curve_                     = veh_start_end.weight_curve; // 圆弧直线倒车转角评分权重
+        planning.max_curve_length_                 = veh_start_end.max_curve_length;                 // 圆弧直线倒车最大曲线长度
+        planning.min_curve_length_                 = veh_start_end.min_curve_length;                 // 圆弧直线倒车最小曲线长度
+        planning.delta_curve_length_               = veh_start_end.delta_curve_length;               // 圆弧直线倒车曲线长度采样间距
+        planning.wheel_base_length_                = veh_start_end.wheel_base_length;                // 车辆轴距
+        planning.center2side_                      = veh_start_end.center2side;                      // 车辆宽度
+        planning.max_straight_length_              = veh_start_end.max_straight_length;              // 圆弧直线倒车最大直线长度
+        planning.min_straight_length_              = veh_start_end.min_straight_length;              // 圆弧直线倒车最小直线长度
+        planning.delta_straight_length_            = veh_start_end.delta_straight_length;            // 圆弧直线倒车直线采样间距
+        planning.max_steering_angle_               = veh_start_end.max_steering_angle;               // 圆弧直线倒车最大转向角
+        planning.min_steering_angle_               = veh_start_end.min_steering_angle;               // 圆弧直线倒车最小转向角
+        planning.delta_steering_angle_             = veh_start_end.delta_steering_angle;             // 圆弧直线倒车转角采样间距
+        planning.standard_steering_angle_          = veh_start_end.standard_steering_angle;          // 标准倒车转角
+        planning.weight_length_                    = veh_start_end.weight_length;                    // 圆弧直线倒车长度评分权重
+        planning.weight_curve_                     = veh_start_end.weight_curve;                     // 圆弧直线倒车转角评分权重
         planning.load_path_straight_length_weight_ = veh_start_end.load_path_straight_length_weight; // 前往装载点路径直线长度权重
-        planning.load_path_curvature_weight_       = veh_start_end.load_path_curvature_weight; // 前往装载点路径曲率权重
-        planning.out_put_path_dense_               = veh_start_end.out_put_path_dense; // 输出路径密度
-        planning.search_range_                     = veh_start_end.search_range; // 寻找周围路径范围
-        planning.jump_dense_                       = veh_start_end.jump_dense; // 在目标路径上取点的密度
-        planning.length_weight_                    = veh_start_end.length_weight; // 前进路径直线长度权重
-        planning.critical_length_                  = veh_start_end.critical_length; // 前进路径长度标准值
-        planning.curvature_weight_                 = veh_start_end.curvature_weight; // 前进路径曲率权重
-        planning.min_straight_length_depart_       = veh_start_end.min_straight_length_depart; // 驶离路径最短直线长度
-        planning.max_straight_length_depart_       = veh_start_end.max_straight_length_depart; // 驶离路径最长直线长度
-        planning.delta_straight_length_depart_     = veh_start_end.delta_straight_length_depart; // 驶离路径长度采样间距
-        planning.min_straight_length_wait_         = veh_start_end.min_straight_length_wait; // 前往等待点路径直线长度最大值
-        planning.max_straight_length_wait_         = veh_start_end.max_straight_length_wait; // 前往等待点路径直线长度最小值
-        planning.delta_straight_length_wait_       = veh_start_end.delta_straight_length_wait; // 前往等待点路径直线长度采样间距
-        planning.min_straight_length_load_         = veh_start_end.min_straight_length_load; // 前往装载点路径直线长度最小值
-        planning.max_straight_length_load_         = veh_start_end.max_straight_length_load; // 前往装载点路径直线长度最大值
-        planning.delta_straight_length_load_       = veh_start_end.delta_straight_length_load; // 前往装载点路径直线长度采样间距
+        planning.load_path_curvature_weight_       = veh_start_end.load_path_curvature_weight;       // 前往装载点路径曲率权重
+        planning.out_put_path_dense_               = veh_start_end.out_put_path_dense;               // 输出路径密度
+        planning.search_range_                     = veh_start_end.search_range;                     // 寻找周围路径范围
+        planning.jump_dense_                       = veh_start_end.jump_dense;                       // 在目标路径上取点的密度
+        planning.length_weight_                    = veh_start_end.length_weight;                    // 前进路径直线长度权重
+        planning.critical_length_                  = veh_start_end.critical_length;                  // 前进路径长度标准值
+        planning.curvature_weight_                 = veh_start_end.curvature_weight;                 // 前进路径曲率权重
+        planning.min_straight_length_depart_       = veh_start_end.min_straight_length_depart;       // 驶离路径最短直线长度
+        planning.max_straight_length_depart_       = veh_start_end.max_straight_length_depart;       // 驶离路径最长直线长度
+        planning.delta_straight_length_depart_     = veh_start_end.delta_straight_length_depart;     // 驶离路径长度采样间距
+        planning.min_straight_length_wait_         = veh_start_end.min_straight_length_wait;         // 前往等待点路径直线长度最大值
+        planning.max_straight_length_wait_         = veh_start_end.max_straight_length_wait;         // 前往等待点路径直线长度最小值
+        planning.delta_straight_length_wait_       = veh_start_end.delta_straight_length_wait;       // 前往等待点路径直线长度采样间距
+        planning.min_straight_length_load_         = veh_start_end.min_straight_length_load;         // 前往装载点路径直线长度最小值
+        planning.max_straight_length_load_         = veh_start_end.max_straight_length_load;         // 前往装载点路径直线长度最大值
+        planning.delta_straight_length_load_       = veh_start_end.delta_straight_length_load;       // 前往装载点路径直线长度采样间距
+        planning.center2front_                     = veh_start_end.veh_param.veh_center_2_front;
+        planning.center2rear_                      = veh_start_end.veh_param.veh_center_2_rear_bound;
+        planning.center2side_                      = veh_start_end.veh_param.veh_center_2_side;
+        planning.safe_margin_front_                = veh_start_end.safe_margin_front;
+        planning.safe_margin_rear_                 = veh_start_end.safe_margin_rear;
+        planning.safe_margin_side_                 = veh_start_end.safe_margin_side;
+        planning.collision_weight_                 = veh_start_end.collision_weight;
     }
 
 
     try {
-        cout<<"开始调用LoadAreaPlanningInterface()"<<endl;
+        cout << "开始调用LoadAreaPlanningInterface()" << endl;
         planning.threadLogger_->info("开始调用LoadAreaPlanningInterface()");
         path = planning.LoadAreaPlanningInterface(veh_start_end.planning_mode, wait_point, load_point, input_path, out_path, collison_check);
-        cout<<"LoadAreaPlanningInterface()返回信息汇总"<<endl;
-        cout<<get<0>(path)<<endl;
-        cout<<"("<<get<1>(path).x<<","<<get<1>(path).y<<")"<<endl;
-        cout<<get<2>(path).size()<<" "<<get<3>(path).size()<<" "<<get<4>(path).size()<<endl;
+        cout << "LoadAreaPlanningInterface()返回信息汇总" << endl;
+        cout << get<0>(path) << endl;
+        cout << "(" << get<1>(path).x << "," << get<1>(path).y << ")" << endl;
+        cout << get<2>(path).size() << " " << get<3>(path).size() << " " << get<4>(path).size() << endl;
 
 
-        cout<<"打印第一条路"<<endl;
-        for(int i=0;i<get<2>(path).size();i++){
-            cout<<"x:"<<get<2>(path).at(i).x<<" y:"<<get<2>(path).at(i).y<<" yaw:"<<get<2>(path).at(i).angle<<endl;
+        cout << "打印第一条路" << endl;
+        for (int i = 0; i < get<2>(path).size(); i++) {
+            cout << "x:" << get<2>(path).at(i).x << " y:" << get<2>(path).at(i).y << " yaw:" << get<2>(path).at(i).angle << endl;
         }
     } catch (const std::exception& e) {
         cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;

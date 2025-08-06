@@ -5,11 +5,16 @@
 namespace LoadAreaPlanning {
 class LoadAreaPlanning {
   public:
+    double center2front_;
+    double center2side_;
+    double center2rear_;
+    double safe_margin_front_;
+    double safe_margin_side_;
+    double safe_margin_rear_;
     double max_curve_length_;                 // 圆弧直线倒车最大曲线长度
     double min_curve_length_;                 // 圆弧直线倒车最小曲线长度
     double delta_curve_length_;               // 圆弧直线倒车曲线长度采样间距
     double wheel_base_length_;                // 车辆轴距
-    double center2side_;                      // 车辆宽度
     double max_straight_length_;              // 圆弧直线倒车最大直线长度
     double min_straight_length_;              // 圆弧直线倒车最小直线长度
     double delta_straight_length_;            // 圆弧直线倒车直线采样间距
@@ -36,12 +41,14 @@ class LoadAreaPlanning {
     double min_straight_length_load_;         // 前往装载点路径直线长度最小值
     double max_straight_length_load_;         // 前往装载点路径直线长度最大值
     double delta_straight_length_load_;       // 前往装载点路径直线长度采样间距
+    double collision_weight_;
 
   public:
     ~LoadAreaPlanning();
     std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_poit, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck collision_checker);
     shared_ptr<spdlog::logger> threadLogger_;
     vector<WaitPointGenerate::arc_sample_point>                                                              sample_points;
+    std::vector<std::pair<GlobalPlanning::Path, double>>                                                     wait_path_candidates;
 };
 } // namespace LoadAreaPlanning
 

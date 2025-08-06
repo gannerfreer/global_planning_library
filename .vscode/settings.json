@@ -78,7 +78,16 @@
         "typeindex": "cpp",
         "rope": "cpp",
         "span": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "csetjmp": "cpp",
+        "csignal": "cpp",
+        "cuchar": "cpp",
+        "forward_list": "cpp",
+        "netfwd": "cpp",
+        "slist": "cpp",
+        "future": "cpp",
+        "scoped_allocator": "cpp",
+        "valarray": "cpp"
     },
     "cmake.sourceDirectory": "/home/yyf/global_planning_library/src/msgs/msg_lidar_shape",
     "python.autoComplete.extraPaths": [
