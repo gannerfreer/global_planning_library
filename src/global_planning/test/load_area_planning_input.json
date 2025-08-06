@@ -10,7 +10,7 @@
         "x": 190,
         "y": -820,
         "z": null,
-        "yaw": 150
+        "yaw": 150.0
     },
     "entrance_load_guide_path": null,
     "exit_load_guide_path": null,
