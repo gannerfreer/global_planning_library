@@ -475,18 +475,72 @@ PlanResult Planning::PathPlanning() {
             }
         }
         if (min_distance > 0.3) {
-            threadLogger_->error("给定终点偏离参考路径，放弃此次规划");
-            return PlanResult::EndPoint_Deviation;
+            if (task_type_ != TaskType::EXIT_LOAD) {
+                threadLogger_->error("给定终点偏离参考路径，放弃此次规划");
+                return PlanResult::EndPoint_Deviation;
+            }
+            else {
+                threadLogger_->info("exit load");
+                threadLogger_->info("打印referce_paths_最后一条路径信息");
+                for(int i=0;i<reference_paths_.back().size();i++){
+                    threadLogger_->info("x:{} y:{} yaw:{} direction:{}", reference_paths_.back().at(i).x, reference_paths_.back().at(i).y, reference_paths_.back().at(i).yaw/M_PI*180, reference_paths_.back().at(i).direction  );
+                }
+                
+                Helper::CalNearestIndex(start_point_, reference_paths_.back(), start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
+                global_path_.insert(global_path_.end(), reference_paths_.back().begin() + start_index_, reference_paths_.back().end());
+                threadLogger_->info("global_path_.size():{}", global_path_.size());
+                threadLogger_->info("起点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", start_index_, start_lat_dis_, start_lon_dis_, start_angle_diff_ / M_PI * 180.0);
+                cout << "起点匹配上的路径索引" << start_index_ << " 横向距离" << start_lat_dis_ << " 纵向距离" << start_lon_dis_ << " 角度误差" << start_angle_diff_ / M_PI * 180.0 << endl;
+                _SinglePoint new_start_point;
+                new_start_point.x   = reference_paths_.back().back().x;
+                new_start_point.y   = reference_paths_.back().back().y;
+                new_start_point.yaw = reference_paths_.back().back().yaw;
+                vector<int> success_path_vec;
+                // 找all_referencelines_中每条路径第一个点与new_start_point几何距离小于1.5m的最近的路径
+                for (auto it = all_referencelines_.begin(); it != all_referencelines_.end(); ++it) {
+                    if (hypot(it->second.trajectory.at(0).x - new_start_point.x, it->second.trajectory.at(0).y - new_start_point.y) < 1.5) {
+                        success_path_vec.push_back(it->first);
+                    }
+                }
+                threadLogger_->info("success_path_vec.size():{}", success_path_vec.size());
+                vector<int> success_path_vec_switch;
+                for (auto i : success_path_vec) {
+                    success_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
+                }
+
+                double temp_end_lat_dis, temp_end_lon_dis = 0;
+                int    end_id             = Helper::GetNearestReferencelines(end_point_, all_referencelines_, temp_end_lat_dis, temp_end_lon_dis);
+                int    end_id_switch      = GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, end_id);
+                bool   found_Connect_path = false;
+                for (auto i : success_path_vec_switch) {
+                    if (IsConnect(i, end_id_switch)) {
+                        threadLogger_->info("找到连接路径");
+                        found_Connect_path = true;
+                        dijkstra_.searchpath(i, end_id_switch);
+                        road_sequence_            = dijkstra_.GetPath();
+                        threadLogger_->info("road_sequence_.size():{}", road_sequence_.size());
+                        end_key_                  = sequence_mapping_.at(end_id_switch);
+                        _SingleTraj temp_end_traj = all_referencelines_.at(end_key_);
+                        Helper::CalNearestIndex(end_point_, temp_end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_, end_angle_diff_);
+                        start_index_ = 0;
+                        PathClipAndSplice();
+                        return PlanResult::Plan_OK;
+                    }
+                }
+                if (found_Connect_path == false) {
+                    return PlanResult::Map_Infeasible;
+                }
+            }
+
+            // 计算start_point_距离这条路最近点的索引
+            Helper::CalNearestIndex(start_point_, reference_paths_[min_index], start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
+            // 将匹配到的路径添加到全局路径中
+            threadLogger_->info("起点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", start_index_, start_lat_dis_, start_lon_dis_, start_angle_diff_ / M_PI * 180.0);
+
+            global_path_.insert(global_path_.end(), reference_paths_[min_index].begin() + start_index_, reference_paths_[min_index].end());
+            cout << "起点匹配上的路径索引" << start_index_ << " 横向距离" << start_lat_dis_ << " 纵向距离" << start_lon_dis_ << " 角度误差" << start_angle_diff_ / M_PI * 180.0 << endl;
+            return PlanResult::Plan_OK;
         }
-
-        // 计算start_point_距离这条路最近点的索引
-        Helper::CalNearestIndex(start_point_, reference_paths_[min_index], start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
-        // 将匹配到的路径添加到全局路径中
-        threadLogger_->info("起点匹配上的路径索引{}，横向距离{}，纵向距离{}, 角度误差{}", start_index_, start_lat_dis_, start_lon_dis_, start_angle_diff_ / M_PI * 180.0);
-
-        global_path_.insert(global_path_.end(), reference_paths_[min_index].begin() + start_index_, reference_paths_[min_index].end());
-        cout << "起点匹配上的路径索引" << start_index_ << " 横向距离" << start_lat_dis_ << " 纵向距离" << start_lon_dis_ << " 角度误差" << start_angle_diff_ / M_PI * 180.0 << endl;
-        return PlanResult::Plan_OK;
     }
 
     if (task_type_ == TaskType::TEMP_MOVE_CAR) {
@@ -782,7 +836,7 @@ bool Planning::PathOffset() {
     threadLogger_->info("均匀碾压功能开启");
     vector<_TrajectoryPoint> path_before_offset, path_after_offset, input_points;
 
-    Bound map_border;
+    Bound              map_border;
     vector<Coordinate> vC;
     for (unsigned int i = 0; i < map_border_.size(); ++i) {
         Coordinate temp_point;
@@ -1233,7 +1287,7 @@ PlanResult Planning::HybirdAStarFitting() {
     my_optimal_path_.threadLogger_ = threadLogger_;
     my_optimal_path_.InitBound(start_point_, map_border_, machine_borders_, wall_borders_, vehicle_param_);
 
-    Bound part_map_border;
+    Bound              part_map_border;
     vector<Coordinate> vC;
     for (unsigned int i = 0; i < map_border_.size(); ++i) {
         Coordinate temp_point;
@@ -2046,7 +2100,7 @@ bool Planning::IsGlobalPathCollision() {
     }
     all_map_borders.push_back(border_coords);
 
-   
+
     // 2. 初始化碰撞检测参数和边界
     collison_check_.InitParam(vehicle_param_);
     collison_check_.InitBoundMap(all_map_borders);

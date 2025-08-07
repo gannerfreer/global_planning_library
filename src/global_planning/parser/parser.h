@@ -1206,7 +1206,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         const rapidjson::Value& queue_point = doc["queue_point"];
 
         // 解析x坐标，兼容字段不存在或类型错误
-        if (queue_point.HasMember("x") && queue_point["x"].IsDouble()) {
+        if (queue_point.HasMember("x") ) {
             planning_info.wait_point.x = queue_point["x"].GetDouble();
             std::cout << "解析 queue_point.x: " << planning_info.wait_point.x << std::endl;
         }
@@ -1216,7 +1216,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         }
 
         // 解析y坐标
-        if (queue_point.HasMember("y") && queue_point["y"].IsDouble()) {
+        if (queue_point.HasMember("y") ) {
             planning_info.wait_point.y = queue_point["y"].GetDouble();
             std::cout << "解析 queue_point.y: " << planning_info.wait_point.y << std::endl;
         }
@@ -1236,7 +1236,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         }
 
         // 解析yaw角度
-        if (queue_point.HasMember("yaw") && queue_point["yaw"].IsDouble()) {
+        if (queue_point.HasMember("yaw") ) {
             planning_info.wait_point.yaw = queue_point["yaw"].GetDouble();
             std::cout << "解析 queue_point.yaw: " << planning_info.wait_point.yaw << std::endl;
         }
@@ -1253,7 +1253,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
     if (doc.HasMember("load_point") && doc["load_point"].IsObject()) {
         const rapidjson::Value& load_point = doc["load_point"];
 
-        if (load_point.HasMember("x") && load_point["x"].IsDouble()) {
+        if (load_point.HasMember("x") ) {
             planning_info.load_point.x = load_point["x"].GetDouble();
             std::cout << "解析 load_point.x: " << planning_info.load_point.x << std::endl;
         }
@@ -1262,7 +1262,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             std::cerr << "load_point.x 不存在或格式错误，赋予默认值: " << planning_info.load_point.x << std::endl;
         }
 
-        if (load_point.HasMember("y") && load_point["y"].IsDouble()) {
+        if (load_point.HasMember("y") ) {
             planning_info.load_point.y = load_point["y"].GetDouble();
             std::cout << "解析 load_point.y: " << planning_info.load_point.y << std::endl;
         }
@@ -1280,7 +1280,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             std::cerr << "load_point.z 不存在或格式错误，赋予默认值: " << planning_info.load_point.z << std::endl;
         }
 
-        if (load_point.HasMember("yaw") && load_point["yaw"].IsDouble()) {
+        if (load_point.HasMember("yaw") ) {
             planning_info.load_point.yaw = load_point["yaw"].GetDouble();
             std::cout << "解析 load_point.yaw: " << planning_info.load_point.yaw << std::endl;
         }

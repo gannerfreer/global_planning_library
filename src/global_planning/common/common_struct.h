@@ -37,7 +37,7 @@ enum struct TaskType : unsigned int {
     TEMP_MOVE_CAR = 1, // 临时挪车
     DISPATCH      = 2, // 常规调度
     LOAD          = 3, // 装载
-    UNLOAD        = 4  // 卸载
+    EXIT_LOAD        = 4  // 出装载区
 };
 
 enum class PlanResult {

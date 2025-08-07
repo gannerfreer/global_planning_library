@@ -93,8 +93,8 @@ inline int GetNearestReferencelines(_SinglePoint point, const map<int, _SingleTr
             temp_dis = sqrt(pow(point.x - pair.second.trajectory.at(i).x, 2) + pow(point.y - pair.second.trajectory.at(i).y, 2));
             if (temp_dis < nearest_dis) {
                 nearest_dis   = temp_dis;
-                index         = i;
-                nearest_point = pair.second.trajectory.at(index);
+                index         = pair.first;
+                nearest_point = pair.second.trajectory.at(i);
             }
         }
     }
