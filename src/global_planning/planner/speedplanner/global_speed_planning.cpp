@@ -585,7 +585,7 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                 double ds       = trajectory[k + 1].distance - trajectory[k].distance;
                 double next_v_2 = cur_v * cur_v + 2 * cur_a * ds > 0 ? cur_v * cur_v + 2 * cur_a * ds : 0;
                 double next_v   = sqrt(next_v_2);
-                cur_a += min_delta_jerk;
+                cur_a += cur_delta_jerk;
                 if (cur_a < min_acceleration_) cur_a = min_acceleration_;
                 cur_v = next_v;
                 v_t.push_back(make_tuple(cur_a, cur_v));
@@ -615,7 +615,7 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
             // 循环结束，判断推演出的最后一个点的速度、加速度是否满足要求
             threadLogger_->info("cur_delta_jerk={} 无法顺利接轨，换成 {} 尝试", cur_delta_jerk, cur_delta_jerk + 0.01);
 
-            cur_delta_jerk += 0.01;
+            cur_delta_jerk += 0.004;
         }
         threadLogger_->info("line603");
     }

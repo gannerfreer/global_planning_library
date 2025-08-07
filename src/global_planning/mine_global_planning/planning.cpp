@@ -465,6 +465,7 @@ PlanResult Planning::PathPlanning() {
     if (reference_paths_.size() > 0) {
         // 如果后台下发的要求拟合的参考路径不为空，则采用拟合的参考路径
         // 遍历每个路径的最后一个点，判断哪条路径的最后一个点距离end_point_最近，挑选出的这条路径,并算出start_point_距离这条路最近点的索引
+        threadLogger_->info("reference_paths_.size():{}", reference_paths_.size());
         double min_distance = 1000;
         int    min_index    = 0;
         for (int i = 0; i < reference_paths_.size(); i++) {
@@ -474,6 +475,7 @@ PlanResult Planning::PathPlanning() {
                 min_index    = i;
             }
         }
+        threadLogger_->info("min_distance:{} min_index:{}", min_distance, min_index);
         if (min_distance > 0.3) {
             if (task_type_ != TaskType::EXIT_LOAD) {
                 threadLogger_->error("给定终点偏离参考路径，放弃此次规划");
@@ -482,10 +484,10 @@ PlanResult Planning::PathPlanning() {
             else {
                 threadLogger_->info("exit load");
                 threadLogger_->info("打印referce_paths_最后一条路径信息");
-                for(int i=0;i<reference_paths_.back().size();i++){
-                    threadLogger_->info("x:{} y:{} yaw:{} direction:{}", reference_paths_.back().at(i).x, reference_paths_.back().at(i).y, reference_paths_.back().at(i).yaw/M_PI*180, reference_paths_.back().at(i).direction  );
+                for (int i = 0; i < reference_paths_.back().size(); i++) {
+                    threadLogger_->info("x:{} y:{} yaw:{} direction:{}", reference_paths_.back().at(i).x, reference_paths_.back().at(i).y, reference_paths_.back().at(i).yaw / M_PI * 180, reference_paths_.back().at(i).direction);
                 }
-                
+
                 Helper::CalNearestIndex(start_point_, reference_paths_.back(), start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
                 global_path_.insert(global_path_.end(), reference_paths_.back().begin() + start_index_, reference_paths_.back().end());
                 threadLogger_->info("global_path_.size():{}", global_path_.size());
@@ -509,15 +511,13 @@ PlanResult Planning::PathPlanning() {
                 }
 
                 double temp_end_lat_dis, temp_end_lon_dis = 0;
-                int    end_id             = Helper::GetNearestReferencelines(end_point_, all_referencelines_, temp_end_lat_dis, temp_end_lon_dis);
-                int    end_id_switch      = GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, end_id);
-                bool   found_Connect_path = false;
+                int    end_id        = Helper::GetNearestReferencelines(end_point_, all_referencelines_, temp_end_lat_dis, temp_end_lon_dis);
+                int    end_id_switch = GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, end_id);
                 for (auto i : success_path_vec_switch) {
                     if (IsConnect(i, end_id_switch)) {
                         threadLogger_->info("找到连接路径");
-                        found_Connect_path = true;
                         dijkstra_.searchpath(i, end_id_switch);
-                        road_sequence_            = dijkstra_.GetPath();
+                        road_sequence_ = dijkstra_.GetPath();
                         threadLogger_->info("road_sequence_.size():{}", road_sequence_.size());
                         end_key_                  = sequence_mapping_.at(end_id_switch);
                         _SingleTraj temp_end_traj = all_referencelines_.at(end_key_);
@@ -527,11 +527,10 @@ PlanResult Planning::PathPlanning() {
                         return PlanResult::Plan_OK;
                     }
                 }
-                if (found_Connect_path == false) {
-                    return PlanResult::Map_Infeasible;
-                }
+                return PlanResult::Map_Infeasible;
             }
-
+        }
+        else {
             // 计算start_point_距离这条路最近点的索引
             Helper::CalNearestIndex(start_point_, reference_paths_[min_index], start_index_, start_lat_dis_, start_lon_dis_, start_distance_, start_angle_diff_);
             // 将匹配到的路径添加到全局路径中
@@ -541,6 +540,9 @@ PlanResult Planning::PathPlanning() {
             cout << "起点匹配上的路径索引" << start_index_ << " 横向距离" << start_lat_dis_ << " 纵向距离" << start_lon_dis_ << " 角度误差" << start_angle_diff_ / M_PI * 180.0 << endl;
             return PlanResult::Plan_OK;
         }
+    }
+    else {
+        threadLogger_->info("reference_paths_为空");
     }
 
     if (task_type_ == TaskType::TEMP_MOVE_CAR) {
@@ -576,7 +578,7 @@ PlanResult Planning::PathPlanning() {
         else {
             // 对于常规调度任务，需上来就判断终点是否位于参考路径上
             if (hypot(temp_end_lat_dis, temp_end_lon_dis) > 0.3) {
-                threadLogger_->info("终点偏离参考路径，采用hybridA*算法直接规划，temp_end_lat_dis:{} temp_end_lon_dis:{}", temp_end_lat_dis, temp_end_lon_dis);
+                threadLogger_->info("终点偏离参考路径,temp_end_lat_dis:{} temp_end_lon_dis:{}", temp_end_lat_dis, temp_end_lon_dis);
                 return PlanResult::EndPoint_Deviation;
             }
             else {
