@@ -510,21 +510,45 @@ PlanResult Planning::PathPlanning() {
                     success_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
                 }
 
-                double temp_end_lat_dis, temp_end_lon_dis = 0;
-                int    end_id        = Helper::GetNearestReferencelines(end_point_, all_referencelines_, temp_end_lat_dis, temp_end_lon_dis);
-                int    end_id_switch = GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, end_id);
+                double      temp_end_lat_dis, temp_end_lon_dis = 0;
+                double      end_search_radius = 0.3;
+                vector<int> end_path_vec;
+
+                Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec);
+                threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
+                cout << "终点搜索半径:" << end_search_radius << "  搜索到路径数量:  " << end_path_vec.size() << endl;
+                if (end_path_vec.empty()) {
+                    return PlanResult::EndPoint_Deviation;
+                }
+                threadLogger_->info("搜索到的路径ID信息如下");
+                cout << "搜索到的路径ID信息如下:" << endl;
+                for (auto i : end_path_vec) {
+                    threadLogger_->info(i);
+                    cout << i << " ";
+                }
+                cout << endl; // welcome
+                vector<int> end_path_vec_switch;
+                for (auto i : end_path_vec) {
+                    end_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
+                }
+
+
+                // int end_id        = Helper::GetNearestReferencelines(end_point_, all_referencelines_, temp_end_lat_dis, temp_end_lon_dis);
+                // int end_id_switch = GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, end_id);
                 for (auto i : success_path_vec_switch) {
-                    if (IsConnect(i, end_id_switch)) {
-                        threadLogger_->info("找到连接路径");
-                        dijkstra_.searchpath(i, end_id_switch);
-                        road_sequence_ = dijkstra_.GetPath();
-                        threadLogger_->info("road_sequence_.size():{}", road_sequence_.size());
-                        end_key_                  = sequence_mapping_.at(end_id_switch);
-                        _SingleTraj temp_end_traj = all_referencelines_.at(end_key_);
-                        Helper::CalNearestIndex(end_point_, temp_end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_, end_angle_diff_);
-                        start_index_ = 0;
-                        PathClipAndSplice();
-                        return PlanResult::Plan_OK;
+                    for (auto j : end_path_vec_switch) {
+                        if (IsConnect(i, j)) {
+                            threadLogger_->info("找到连接路径");
+                            dijkstra_.searchpath(i, j);
+                            road_sequence_ = dijkstra_.GetPath();
+                            threadLogger_->info("road_sequence_.size():{}", road_sequence_.size());
+                            end_key_                  = sequence_mapping_.at(j);
+                            _SingleTraj temp_end_traj = all_referencelines_.at(end_key_);
+                            Helper::CalNearestIndex(end_point_, temp_end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_, end_angle_diff_);
+                            start_index_ = 0;
+                            PathClipAndSplice();
+                            return PlanResult::Plan_OK;
+                        }
                     }
                 }
                 return PlanResult::Map_Infeasible;
@@ -682,7 +706,7 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
 
 PlanResult Planning::FollowReferencelinePlanning() {
     // 搜索策略，终点只搜索0.2m范围内的参考路径，起点采用渐进式扩大搜索策略，从0.5m初始搜索半径开始
-    bool        is_found          = false; // 用于跟踪是否找到了成功的路径对
+    bool        is_found          = false; // 用于跟踪是否找到了成功的路径对  hello
     double      end_search_radius = 0.3, start_search_radius = 0.5;
     vector<int> start_path_vec, end_path_vec;
     cout << "开始进入起点、终点搜索环节" << endl;

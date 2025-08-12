@@ -402,11 +402,11 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
             //打印forward_speeds和backward_speeds
             threadLogger_->info("forward_speeds:{}", forward_speeds.size());
             for (size_t j = 0; j < forward_speeds.size(); j++) {
-                threadLogger_->info("forward_speeds[{}]:{} {}", j, forward_speeds[j].first, forward_speeds[j].second);
+                threadLogger_->info("forward_speeds[{}]:{}", j, forward_speeds[j]);
             }
             threadLogger_->info("backward_speeds:{}", backward_speeds.size());
             for (size_t j = 0; j < backward_speeds.size(); j++) {
-                threadLogger_->info("backward_speeds[{}]:{} {}", j, backward_speeds[j].first, backward_speeds[j].second);
+                threadLogger_->info("backward_speeds[{}]:{}", j, backward_speeds[j]);
             }
 
             // // 找出forward和backward的交点，选择较小的速度作为最终速度
@@ -437,7 +437,7 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
                 double acc = (temp_speeds[j] * temp_speeds[j] - temp_speeds[j - 1] * temp_speeds[j - 1]) / (2 * ds);
                 
                 if (acc > max_acceleration_ + eps || acc < min_acceleration_ - eps) {
-                    threadLogger_->info("第{}个点acc:{} 超出加速度约束,ds:{},temp_speeds[j]:{} temp_speeds[j-1]:{}", j+start_idx, acc, ds, backward_speeds[j].first, backward_speeds[j-1].first);
+                    threadLogger_->info("第{}个点acc:{} 超出加速度约束,ds:{},temp_speeds[j]:{} temp_speeds[j-1]:{}", j+start_idx, acc, ds, backward_speeds[j], backward_speeds[j-1]);
                     valid_profile = false;
                     break;
                 }
