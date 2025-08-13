@@ -596,10 +596,15 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     oss << GlobalVariable::getInstance()->GetDispatchNums();
     id += oss.str();
 
-
+    planning.threadLogger_ = spdlog::rotating_logger_mt(id, filePath, 10 * 2048 * 2048, 5, true);
+    planning.threadLogger_->flush_on(spdlog::level::info);
+    planning.threadLogger_->info(id);
+    planning.threadLogger_->info("point_veh_start_end.strlen().size:{}", strlen(point_veh_start_end));
+    planning.threadLogger_->info("LoadAreaPlanning-IDS_LoadAreaPlanning_version: G_V1.4.0.20250310_beta");
 
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
+        planning.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size());
         if (GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0) {
             get<0>(path) = 0;
             {
@@ -615,9 +620,21 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         }
 
         // 给planning对象的有向图、地图边界、路段进行赋值
+        planning.threadLogger_->info("map_border_:{}", GlobalVariable::getInstance()->GetMapBorder().size());
+        planning.threadLogger_->info("装载区驶入引导路径:{}", GlobalVariable::getInstance()->GetInGuidingPaths().size());
+        planning.threadLogger_->info("装载区驶出引导路径:{}", GlobalVariable::getInstance()->GetOutGuidingPaths().size());
 
 
     } // 获取传入的内边界并将其存入对应的r区域内
+
+    planning.threadLogger_->info("wait_point.x ={}", veh_start_end.wait_point.x);
+    planning.threadLogger_->info("wait_point.y ={}", veh_start_end.wait_point.y);
+    planning.threadLogger_->info("wait_point.z ={}", veh_start_end.wait_point.z);
+    planning.threadLogger_->info("wait_point.yaw ={}", veh_start_end.wait_point.yaw);
+    planning.threadLogger_->info("load_point.x ={}", veh_start_end.load_point.x);
+    planning.threadLogger_->info("load_point.y ={}", veh_start_end.load_point.y);
+    planning.threadLogger_->info("load_point.z ={}", veh_start_end.load_point.z);
+    planning.threadLogger_->info("load_point.yaw ={}", veh_start_end.load_point.yaw);
 
 
 
@@ -785,6 +802,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
 
     try {
         cout << "开始调用LoadAreaPlanningInterface()" << endl;
+        planning.threadLogger_->info("开始调用LoadAreaPlanningInterface()");
         path = planning.LoadAreaPlanningInterface(veh_start_end.planning_mode, wait_point, load_point, input_path, out_path, collison_check);
         cout << "LoadAreaPlanningInterface()返回信息汇总" << endl;
         cout << get<0>(path) << endl;

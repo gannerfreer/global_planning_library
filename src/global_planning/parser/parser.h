@@ -80,7 +80,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.wheel_base " << veh_start_end.veh_param.wheel_base << endl;
             }
             else {
-                veh_start_end.veh_param.wheel_base = 6.91;
+                veh_start_end.veh_param.wheel_base = 5.15;
                 cout << "无法找到车参 wheel_base ，即将赋予默认值" << endl;
             }
 
@@ -1739,7 +1739,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 planning_info.veh_param.wheel_base = val["wheel_base"].GetDouble();
             }
             else {
-                planning_info.veh_param.wheel_base = 5.1;
+                planning_info.veh_param.wheel_base = 5.15;
                 cout << "无法找到车参 wheel_base ，即将赋予默认值" << endl;
             }
             std::cout << "车辆参数解析完成" << std::endl;

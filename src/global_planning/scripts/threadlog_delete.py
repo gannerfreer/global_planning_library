@@ -123,3 +123,18 @@ with open('../planner/pathplanner/dubins/dubins.h', 'r') as file, tempfile.Named
         if 'threadLogger_' not in line:  
             tmpfile.write(line)  
 os.rename(tmpfile.name, '../planner/pathplanner/dubins/dubins.h') 
+
+with open('../load_area_planning/load_area_planning.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../load_area_planning/load_area_planning.cpp') 
+
+with open('../load_area_planning/load_area_planning.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../load_area_planning/load_area_planning.h') 
+
+
+

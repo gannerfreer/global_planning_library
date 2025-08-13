@@ -317,6 +317,7 @@ interface.o: interface.cpp interface.h globalvariable.h \
  load_area_planning/../collision_check/collision_check.h \
  load_area_planning/../common/common_struct.h \
  load_area_planning/../planner/pathplanner/dubins/dubins.h \
+ load_area_planning/../smoother/tension_smoother_2.hpp \
  load_area_planning/wait_point_generate.h mine_global_planning/planning.h \
  mine_global_planning/predicting.h
 
@@ -975,6 +976,8 @@ load_area_planning/../collision_check/collision_check.h:
 load_area_planning/../common/common_struct.h:
 
 load_area_planning/../planner/pathplanner/dubins/dubins.h:
+
+load_area_planning/../smoother/tension_smoother_2.hpp:
 
 load_area_planning/wait_point_generate.h:
 
