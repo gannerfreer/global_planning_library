@@ -10,6 +10,7 @@
 #include "../collision_check/collision_check.h"
 #include "../common/common_struct.h"
 #include "../planner/pathplanner/dubins/dubins.h"
+#include "../smoother/tension_smoother_2.hpp"
 
 namespace FittingPathGenerate {
 class FittingPathGenerator {

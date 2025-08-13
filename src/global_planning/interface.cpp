@@ -597,58 +597,35 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     id += oss.str();
 
 
-    planning.threadLogger_ = spdlog::rotating_logger_mt(id, filePath, 10 * 2048 * 2048, 5, true);
-    planning.threadLogger_->flush_on(spdlog::level::info);
-    planning.threadLogger_->info(id);
-    planning.threadLogger_->info("point_veh_start_end.strlen().size:{}", strlen(point_veh_start_end));
-    planning.threadLogger_->info("LoadAreaPlanning-IDS_LoadAreaPlanning_version: G_V1.4.0.20250310_beta");
 
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
-        planning.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size());
         if (GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0) {
             get<0>(path) = 0;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-                planning.threadLogger_->info("进锁成功");
                 string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
                 int    temp_string_size = temp_string.size();
                 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
                 if (temp_string_size < 10) {
                     cout << "temp_string还没接就被释放了" << endl;
-                    planning.threadLogger_->info("出锁成功");
                 }
-                planning.threadLogger_->info("VecWaypoint2json successfully");
-                planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-                planning.threadLogger_->info("出锁成功");
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
 
         // 给planning对象的有向图、地图边界、路段进行赋值
-        planning.threadLogger_->info("map_border_:{}", GlobalVariable::getInstance()->GetMapBorder().size());
-        planning.threadLogger_->info("装载区驶入引导路径:{}", GlobalVariable::getInstance()->GetInGuidingPaths().size());
-        planning.threadLogger_->info("装载区驶出引导路径:{}", GlobalVariable::getInstance()->GetOutGuidingPaths().size());
 
 
     } // 获取传入的内边界并将其存入对应的r区域内
 
 
-    planning.threadLogger_->info("wait_point.x ={}", veh_start_end.wait_point.x);
-    planning.threadLogger_->info("wait_point.y ={}", veh_start_end.wait_point.y);
-    planning.threadLogger_->info("wait_point.z ={}", veh_start_end.wait_point.z);
-    planning.threadLogger_->info("wait_point.yaw ={}", veh_start_end.wait_point.yaw);
-    planning.threadLogger_->info("load_point.x ={}", veh_start_end.load_point.x);
-    planning.threadLogger_->info("load_point.y ={}", veh_start_end.load_point.y);
-    planning.threadLogger_->info("load_point.z ={}", veh_start_end.load_point.z);
-    planning.threadLogger_->info("load_point.yaw ={}", veh_start_end.load_point.yaw);
 
 
     // 构建碰撞检测对象
     CollisonCheck collison_check;
 
     collison_check.InitParam(veh_start_end.veh_param);
-    planning.threadLogger_->info("collision_check InitParam()成功");
     Bound                map_border_v;
     vector<_BorderPoint> map_border;
     map_border = GlobalVariable::getInstance()->GetMapBorder();
@@ -662,7 +639,6 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     }
     map_border_v.push_back(vC);
     collison_check.InitBoundMap(map_border_v);
-    planning.threadLogger_->info("collision_check InitBoundMap()成功");
 
     Bound                              wall_border_v;
     const vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
@@ -679,7 +655,6 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     }
     wall_border_v.push_back(vC);
     collison_check.InitWallMap(wall_border_v);
-    planning.threadLogger_->info("collision_check InitWallMap()成功");
 
     Bound                        machine_border_v;
     vector<vector<_BorderPoint>> machine_border = veh_start_end.machine_borders;
@@ -696,7 +671,6 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     }
     machine_border_v.push_back(vC);
     collison_check.InitObstacleMap(machine_border_v);
-    planning.threadLogger_->info("collision_check InitObstacleMap()成功");
 
 
     Path                input_path, out_path;
@@ -803,12 +777,14 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         planning.safe_margin_rear_                 = veh_start_end.safe_margin_rear;
         planning.safe_margin_side_                 = veh_start_end.safe_margin_side;
         planning.collision_weight_                 = veh_start_end.collision_weight;
+        planning.veh_param                         = veh_start_end.veh_param;
     }
+
+    cout<<"line670    planning.veh_param.light_forward_max_steering: "<<planning.veh_param.light_forward_max_steering<<endl;
 
 
     try {
         cout << "开始调用LoadAreaPlanningInterface()" << endl;
-        planning.threadLogger_->info("开始调用LoadAreaPlanningInterface()");
         path = planning.LoadAreaPlanningInterface(veh_start_end.planning_mode, wait_point, load_point, input_path, out_path, collison_check);
         cout << "LoadAreaPlanningInterface()返回信息汇总" << endl;
         cout << get<0>(path) << endl;
@@ -820,53 +796,49 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         for (int i = 0; i < get<2>(path).size(); i++) {
             cout << "x:" << get<2>(path).at(i).x << " y:" << get<2>(path).at(i).y << " yaw:" << get<2>(path).at(i).angle << endl;
         }
+
+        cout << "打印第二条路" << endl;
+        for (int i = 0; i < get<3>(path).size(); i++) {
+            cout << "x:" << get<3>(path).at(i).x << " y:" << get<3>(path).at(i).y << " yaw:" << get<3>(path).at(i).angle << endl;
+        }
+
+        cout << "打印第三条路" << endl;
+        for (int i = 0; i < get<4>(path).size(); i++) {
+            cout << "x:" << get<4>(path).at(i).x << " y:" << get<4>(path).at(i).y << " yaw:" << get<4>(path).at(i).angle << endl;
+        }
     } catch (const std::exception& e) {
         cout << "规划库执行GlobalPathPlanningIntface时出现 exception 抛出" << endl;
-        planning.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 exception 抛出");
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            planning.threadLogger_->info("进 return_write_lock 锁成功");
             cout << "进 return_write_lock 锁成功" << endl;
             string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
             int    temp_string_size = temp_string.size();
             GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
             if (temp_string_size < 10) {
                 cout << "temp_string还没接就被释放了" << endl;
-                planning.threadLogger_->info("temp_string还没接就被释放了");
             }
-            planning.threadLogger_->info("VecWaypoint2json successfully");
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            planning.threadLogger_->info("即将出  return_write_lock 锁");
             cout << "即将出  return_write_lock 锁" << endl;
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::out_of_range& e) {
         // 处理数组越界异常
         cout << "规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出" << endl;
-        planning.threadLogger_->info("规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出");
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            planning.threadLogger_->info("进锁成功");
             string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
             int    temp_string_size = temp_string.size();
             GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
             if (temp_string_size < 10) {
                 cout << "temp_string还没接就被释放了" << endl;
-                planning.threadLogger_->info("出锁成功");
             }
-            planning.threadLogger_->info("VecWaypoint2json successfully");
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     }
 
     try {
         cout << "最后一步，将规划结果转为json格式字符串并返回" << endl;
-        planning.threadLogger_->info("最后一步，返回字符指针");
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            planning.threadLogger_->info("进锁成功");
             string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
             int    temp_string_size = temp_string.size();
             cout << "temp_string_size:" << temp_string_size << endl;
@@ -874,51 +846,35 @@ char* QueuePointGenerator(char* point_veh_start_end) {
             cout << "执行完 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data())" << endl;
             if (temp_string_size < 10) {
                 cout << "temp_string还没接就被释放了" << endl;
-                planning.threadLogger_->info("出锁成功");
             }
             cout << "返回轨迹" << endl;
-            planning.threadLogger_->info("VecWaypoint2json successfully");
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::exception& e) {
         cout << "规划库执行 VecWaypoint2json 时出现 exception 抛出" << endl;
-        planning.threadLogger_->info("规划库执行 VecWaypoint2json 时出现 exception 抛出");
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            planning.threadLogger_->info("进锁成功");
             string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
             int    temp_string_size = temp_string.size();
 
             GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
             if (temp_string_size < 10) {
                 cout << "temp_string还没接就被释放了" << endl;
-                planning.threadLogger_->info("出锁成功");
             }
-            planning.threadLogger_->info("VecWaypoint2json successfully");
 
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::out_of_range& e) {
         // 处理数组越界异常
         cout << "规划库执行 VecWaypoint2json 时出现 out_of_range 抛出" << endl;
-        planning.threadLogger_->info("规划库执行 VecWaypoint2json 时出现 out_of_range 抛出");
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            planning.threadLogger_->info("进锁成功");
             string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
             int    temp_string_size = temp_string.size();
             GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
             if (temp_string_size < 10) {
                 cout << "temp_string还没接就被释放了" << endl;
-                planning.threadLogger_->info("出锁成功");
             }
-            planning.threadLogger_->info("VecWaypoint2json successfully");
-            planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
-            planning.threadLogger_->info("出锁成功");
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     }
