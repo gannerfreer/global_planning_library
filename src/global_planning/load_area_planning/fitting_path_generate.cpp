@@ -223,11 +223,6 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
             // std::cout << "取得终点：" << end_point_sample[j].x << "," << end_point_sample[j].y << std::endl;
             if (dubins_planner.GetDubinsPath(start_point, end_point, temp_candi_path)) {
                 auto temp_path = PathTransFormer(temp_candi_path);
-                // if (j == end_point_sample.size() - 1) {
-                //     for (auto& point : temp_path) {
-                //         std::cout << "x,y,yaw = " << point.x << "," << point.y << "," << point.angle * 180 / M_PI << endl;
-                //     }
-                // }
                 auto collision_info = collision_checker.DepartPathCollisionCheck(temp_path);
                 if (collision_info.empty()) { // 你没有引用返回，严一峰
                     std::cout << "碰撞检测成功" << std::endl;

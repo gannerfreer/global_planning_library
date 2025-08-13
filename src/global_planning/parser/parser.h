@@ -1206,7 +1206,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         const rapidjson::Value& queue_point = doc["queue_point"];
 
         // 解析x坐标，兼容字段不存在或类型错误
-        if (queue_point.HasMember("x") ) {
+        if (queue_point.HasMember("x") && queue_point["x"].IsDouble()) {
             planning_info.wait_point.x = queue_point["x"].GetDouble();
             std::cout << "解析 queue_point.x: " << planning_info.wait_point.x << std::endl;
         }
@@ -1216,7 +1216,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         }
 
         // 解析y坐标
-        if (queue_point.HasMember("y") ) {
+        if (queue_point.HasMember("y") && queue_point["y"].IsDouble()) {
             planning_info.wait_point.y = queue_point["y"].GetDouble();
             std::cout << "解析 queue_point.y: " << planning_info.wait_point.y << std::endl;
         }
@@ -1236,7 +1236,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         }
 
         // 解析yaw角度
-        if (queue_point.HasMember("yaw") ) {
+        if (queue_point.HasMember("yaw") && queue_point["yaw"].IsDouble()) {
             planning_info.wait_point.yaw = queue_point["yaw"].GetDouble();
             std::cout << "解析 queue_point.yaw: " << planning_info.wait_point.yaw << std::endl;
         }
@@ -1253,7 +1253,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
     if (doc.HasMember("load_point") && doc["load_point"].IsObject()) {
         const rapidjson::Value& load_point = doc["load_point"];
 
-        if (load_point.HasMember("x") ) {
+        if (load_point.HasMember("x") && load_point["x"].IsDouble()) {
             planning_info.load_point.x = load_point["x"].GetDouble();
             std::cout << "解析 load_point.x: " << planning_info.load_point.x << std::endl;
         }
@@ -1262,7 +1262,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             std::cerr << "load_point.x 不存在或格式错误，赋予默认值: " << planning_info.load_point.x << std::endl;
         }
 
-        if (load_point.HasMember("y") ) {
+        if (load_point.HasMember("y") && load_point["y"].IsDouble()) {
             planning_info.load_point.y = load_point["y"].GetDouble();
             std::cout << "解析 load_point.y: " << planning_info.load_point.y << std::endl;
         }
@@ -1280,7 +1280,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             std::cerr << "load_point.z 不存在或格式错误，赋予默认值: " << planning_info.load_point.z << std::endl;
         }
 
-        if (load_point.HasMember("yaw") ) {
+        if (load_point.HasMember("yaw") && load_point["yaw"].IsDouble()) {
             planning_info.load_point.yaw = load_point["yaw"].GetDouble();
             std::cout << "解析 load_point.yaw: " << planning_info.load_point.yaw << std::endl;
         }
@@ -1701,6 +1701,46 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             else {
                 planning_info.delta_straight_length_load = 2;
                 std::cerr << "无法找到车参 delta_straight_length_load ，赋予默认值: " << planning_info.delta_straight_length_load << std::endl;
+            }
+
+             if (val.HasMember("heavy_forward_max_steering")) {
+                planning_info.veh_param.heavy_forward_max_steering = val["heavy_forward_max_steering"].GetDouble() * M_PI / 180.0;
+            }
+            else {
+                planning_info.veh_param.heavy_forward_max_steering = 27.24 * M_PI / 180.0;
+                cout << "无法找到车参 heavy_forward_max_steering ，即将赋予默认值" << endl;
+            }
+
+            if (val.HasMember("heavy_backward_max_steering")) {
+                planning_info.veh_param.heavy_backward_max_steering = val["heavy_backward_max_steering"].GetDouble() * M_PI / 180.0;
+            }
+            else {
+                planning_info.veh_param.heavy_backward_max_steering = 22.39 * M_PI / 180.0;
+                cout << "无法找到车参 heavy_backward_max_steering ，即将赋予默认值" << endl;
+            }
+
+            if (val.HasMember("light_backward_max_steering")) {
+                planning_info.veh_param.light_backward_max_steering = val["light_backward_max_steering"].GetDouble() * M_PI / 180.0;
+            }
+            else {
+                planning_info.veh_param.light_backward_max_steering = 27.24 * M_PI / 180.0;
+                cout << "无法找到车参 light_backward_max_steering ，即将赋予默认值" << endl;
+            }
+
+            if (val.HasMember("light_forward_max_steering")) {
+                planning_info.veh_param.light_forward_max_steering = val["light_forward_max_steering"].GetDouble() * M_PI / 180.0;
+            }
+            else {
+                planning_info.veh_param.light_forward_max_steering = 30.63 * M_PI / 180.0;
+                cout << "无法找到车参 light_forward_max_steering ，即将赋予默认值" << endl;
+            }
+
+            if (val.HasMember("wheel_base")) {
+                planning_info.veh_param.wheel_base = val["wheel_base"].GetDouble();
+            }
+            else {
+                planning_info.veh_param.wheel_base = 5.1;
+                cout << "无法找到车参 wheel_base ，即将赋予默认值" << endl;
             }
             std::cout << "车辆参数解析完成" << std::endl;
         }
