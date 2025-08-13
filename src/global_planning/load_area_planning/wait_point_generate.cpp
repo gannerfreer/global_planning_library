@@ -445,6 +445,9 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
             load_path.insert(load_path.begin(), start_straight_path.begin(), start_straight_path.end());
             if (collision_checker.OptiPathCollisionCheckWithAll(load_path).empty()) {
                 cout << "没碰撞load_path.size()=" << load_path.size() << endl;
+                for (auto& point : load_path) {
+                    point.direction = GlobalPlanning::MotionDirection::Backward;
+                }
                 cout << "load_path_first.x,y,yaw=" << load_path.front().x << "," << load_path.front().y << "," << load_path.front().angle << endl;
                 return load_path;
             }
