@@ -29,12 +29,7 @@ class CollisonCheck {
      */
     void InitObstacleMap(const Bound obstacle_bound);
 
-    /**
-     * @brief 初始化障碍物边界函数
-     * @param[in] wall_bound 障碍物边界点
-     * @return 返回说明：无
-     */
-    void InitWallBoundMap(const Bound wall_bound);
+   
 
     /**
      * @brief 初始化挡墙边界函数

@@ -290,7 +290,8 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
                 for (int i = 1; i < total_dubins_path.size(); i++) {
                     total_length += std::hypot(total_dubins_path[i].GetX() - total_dubins_path[i - 1].GetX(), total_dubins_path[i].GetY() - total_dubins_path[i - 1].GetY());
                 }
-                if (fabs(lat_dis) >= vehicle_param_.dis_threshold) {
+                // if (fabs(lat_dis) >= vehicle_param_.dis_threshold && temp_path.size() > 50) {
+                if (fabs(lat_dis) >= vehicle_param_.dis_threshold&&temp_path.size()>48) {
                     score = total_length;
                 }
                 else {
@@ -587,7 +588,7 @@ PlanResult Planning::PathPlanning() {
             threadLogger_->info("temp_end_lat_dis:{} temp_end_lon_dis:{} temp_start_lat_dis:{} temp_start_lon_dis:{} end_path_id:{} start_path_id:{}", temp_end_lat_dis, temp_end_lon_dis, temp_start_lat_dis, temp_start_lon_dis, end_path_id, start_path_id);
 
             // 对于 装载体/卸载之类的任务，下述条件满足其一，就直接采用hybridA*算法直接规划
-            if (fabs(temp_end_lat_dis) > 1 || fabs(temp_end_lon_dis) > 1 || fabs(temp_start_lat_dis) > 1 || fabs(temp_start_lon_dis) > 1) {
+            if (fabs(temp_end_lat_dis) > 1 || fabs(temp_end_lon_dis) > 1) {
                 threadLogger_->info("此次装卸载任务无参考路径");
                 result = NotFollowReferencelinePlanning();
                 return result;
@@ -1313,7 +1314,7 @@ PlanResult Planning::HybirdAStarFitting() {
     my_optimal_path_.threadLogger_ = threadLogger_;
     my_optimal_path_.InitBound(start_point_, map_border_, machine_borders_, wall_borders_, vehicle_param_);
 
-    Bound              part_map_border;
+    Bound              part_map_border, wall_borders, machine_borders;
     vector<Coordinate> vC;
     for (unsigned int i = 0; i < map_border_.size(); ++i) {
         Coordinate temp_point;
@@ -1325,10 +1326,47 @@ PlanResult Planning::HybirdAStarFitting() {
         }
     }
     part_map_border.push_back(vC);
+    threadLogger_->info("part_map_border.size():{}", part_map_border.size());
+
+    for (unsigned int i = 0; i < wall_borders_.size(); ++i) {
+        vector<_BorderPoint> temp_bound = wall_borders_.at(i);
+        vector<Coordinate> temp_bound_2;
+        for (int j = 0; j < temp_bound.size(); ++j) {
+            Coordinate temp_point;
+            temp_point.z = 0;
+            temp_point.x = temp_bound.at(j).x;
+            temp_point.y = temp_bound.at(j).y;
+            if (hypot(start_point_.x - temp_point.x, start_point_.y - temp_point.y) < 100) {
+                temp_bound_2.push_back(temp_point);
+            }
+        }
+        wall_borders.push_back(temp_bound_2);
+    }
+    threadLogger_->info("wall_borders.size():{}", wall_borders.size());
+
+    for (unsigned int i = 0; i < machine_borders_.size(); ++i) {
+        vector<_BorderPoint> temp_bound = machine_borders_.at(i);
+        vector<Coordinate> temp_bound_2;
+        for (int j = 0; j < temp_bound.size(); ++j) {
+            Coordinate temp_point;
+            temp_point.z = 0;
+            temp_point.x = temp_bound.at(j).x;
+            temp_point.y = temp_bound.at(j).y;
+            if (hypot(start_point_.x - temp_point.x, start_point_.y - temp_point.y) < 100) {
+                temp_bound_2.push_back(temp_point);
+            }
+        }
+        machine_borders.push_back(temp_bound_2);
+    }
+    threadLogger_->info("machine_borders.size():{}", machine_borders.size());
+
     collison_check_.InitParam(vehicle_param_);
     collison_check_.InitBoundMap(part_map_border);
-
-
+    threadLogger_->info("InitBoundMap完毕");
+    collison_check_.InitWallMap(wall_borders);
+    threadLogger_->info("InitWallBoundMap完毕");
+    collison_check_.InitObstacleMap(machine_borders);
+    threadLogger_->info("InitObstacleMap完毕");
     // 基于横纵向距离来判断是否进行hybirdA*拟合
     threadLogger_->info("Enter HybirdAStarFitting");
     bool   start_need_fitting     = false;
