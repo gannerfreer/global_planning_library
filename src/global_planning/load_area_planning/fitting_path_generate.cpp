@@ -194,6 +194,9 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     result.insert(result.begin(), stitch_path.begin(), stitch_path.end());
     // std::cout << "straight_path_with_wait_point .size()=" << straight_path_with_wait_point.size() << endl;
     if (need_completed) result.insert(result.end(), straight_path_with_wait_point.begin(), straight_path_with_wait_point.end());
+    for (auto& point : result) {
+        point.direction = GlobalPlanning::MotionDirection::Forward;
+    }
     return std::make_pair(result, grade);
 }
 
@@ -222,7 +225,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
             curve::Point end_point(end_point_sample[j].x, end_point_sample[j].y, end_point_sample[j].angle, end_point_sample[j].curvature);
             // std::cout << "取得终点：" << end_point_sample[j].x << "," << end_point_sample[j].y << std::endl;
             if (dubins_planner.GetDubinsPath(start_point, end_point, temp_candi_path)) {
-                auto temp_path = PathTransFormer(temp_candi_path);
+                auto temp_path      = PathTransFormer(temp_candi_path);
                 auto collision_info = collision_checker.DepartPathCollisionCheck(temp_path);
                 if (collision_info.empty()) { // 你没有引用返回，严一峰
                     std::cout << "碰撞检测成功" << std::endl;
