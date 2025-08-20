@@ -269,10 +269,16 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
             result.clear();
         }
     }
-    auto stitch_path = PathCuttoEnd(result.back(), target_path);
-    std::cout << "stitch_path .size()=" << stitch_path.size() << endl;
-    result.insert(result.end(), stitch_path.begin(), stitch_path.end());
-    return std::make_pair(result, grade);
+
+    if (!result.empty()) {
+        auto stitch_path = PathCuttoEnd(result.back(), target_path);
+        std::cout << "stitch_path .size()=" << stitch_path.size() << endl;
+        result.insert(result.end(), stitch_path.begin(), stitch_path.end());
+        return std::make_pair(result, grade);
+    }
+    else {
+        return std::make_pair(result, 0.0);
+    }
 }
 
 GlobalPlanning::Path FittingPathGenerator::GenerateStraitLine(const GlobalPlanning::Point& start, const GlobalPlanning::Point& end) {
