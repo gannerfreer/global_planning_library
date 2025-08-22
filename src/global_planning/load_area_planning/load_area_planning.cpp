@@ -140,7 +140,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         CalCurvature(load_path, 1);
         sample_points = wait_point_planner.wait_point_sample_;
         if (load_path.empty()) {
-            cout << "驶入等待点路径生成失败" << endl;
+            cout << "驶入装载点路径生成失败" << endl;
             return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
         }
         cout << "load_path.size() = " << load_path.size() << endl;
@@ -222,7 +222,6 @@ bool LoadAreaPlanning::PathSmoother(GlobalPlanning::Path& input_path, const Glob
     GlobalPlanning::TensionSmoother2 smoother(input_path, veh_param);
     smoother.threadLogger_ = threadLogger_;
     if (smoother.smooth(input_path)) {
-
         for (auto& point : input_path) {
             point.angle = point.angle * 180.0 / M_PI;
         }
