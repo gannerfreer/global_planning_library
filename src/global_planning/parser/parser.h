@@ -583,23 +583,18 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
     
         for (SizeType i = 0; i < dynamicBorderArray.Size(); i++) {
             const Value& borderPoint = dynamicBorderArray[i];
-            
+
             // 验证必要的字段是否存在且类型正确
-            if (!borderPoint.IsObject() ||
-                !borderPoint.HasMember("x") || !borderPoint["x"].IsDouble() ||
-                !borderPoint.HasMember("y") || !borderPoint["y"].IsDouble() ||
-                !borderPoint.HasMember("z") || !borderPoint["z"].IsDouble() ||
-                !borderPoint.HasMember("type") || !borderPoint["type"].IsUint()) {
+            if (!borderPoint.IsObject() || !borderPoint.HasMember("x") || !borderPoint["x"].IsDouble() || !borderPoint.HasMember("y") || !borderPoint["y"].IsDouble()) {
                 cerr << "dynamic_border 点数据不完整或格式错误，索引: " << i << endl;
                 continue; // 跳过错误的点，继续解析其他点
             }
-    
+
             _BorderPoint temp_point;
-            temp_point.x = borderPoint["x"].GetDouble();
-            temp_point.y = borderPoint["y"].GetDouble();
-            temp_point.z = static_cast<float>(borderPoint["z"].GetDouble()); // 从double转换为float
-            temp_point.type = borderPoint["type"].GetUint();
+            temp_point.x    = borderPoint["x"].GetDouble();
+            temp_point.y    = borderPoint["y"].GetDouble();
             
+
             // 可以选择处理经纬度信息
             // if (borderPoint.HasMember("longitude") && borderPoint["longitude"].IsDouble()) {
             //     // 处理经度
@@ -607,10 +602,10 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             // if (borderPoint.HasMember("latitude") && borderPoint["latitude"].IsDouble()) {
             //     // 处理纬度
             // }
-    
+
             dynamicBorderPoints.push_back(temp_point);
         }
-        
+
         // 将解析到的动态边界点添加到planning_info
         veh_start_end.wall_borders.emplace_back(dynamicBorderPoints);
         cout << "解析 dynamic_border 完毕，共 " << dynamicBorderPoints.size() << " 个点" << endl;
@@ -820,7 +815,7 @@ bool GetMap(char* parea) {
             throw std::runtime_error("JSON解析错误: 错误代码=" + std::to_string(error) + 
                                     ", 偏移位置=" + std::to_string(offset));
         }
-        
+
         // 确保有allocator可用
         doc.GetAllocator();
 
@@ -831,11 +826,11 @@ bool GetMap(char* parea) {
         if (!doc.HasMember("external_border") || !doc["external_border"].IsArray()) {
             throw std::runtime_error("JSON数据中缺少有效的external_border数组");
         }
-        
+
         const Value& borderPointsArray = doc["external_border"];
         _BorderPoint bp;
         vector<_BorderPoint> v_bp;
-        
+
         for (SizeType i = 0; i < borderPointsArray.Size(); i++) {
             const Value& point = borderPointsArray[i];
             // 检查点数据是否完整
@@ -850,12 +845,12 @@ bool GetMap(char* parea) {
             bp.y = point["y"].GetDouble();
             bp.z = point["z"].GetDouble();
             bp.type = static_cast<unsigned char>(point["type"].GetInt());
-            
+
             if (bp.type == 0) {
                 v_bp.emplace_back(bp);
             }
         }
-        
+
         GlobalVariable::getInstance()->SetMapBorder(v_bp);
         std::cout << "解析border_points完毕,边界点数量：" << v_bp.size() << std::endl;
 
@@ -863,7 +858,7 @@ bool GetMap(char* parea) {
         if (!doc.HasMember("reference_trajs") || !doc["reference_trajs"].IsArray()) {
             throw std::runtime_error("JSON数据中缺少有效的reference_trajs数组");
         }
-        
+
         const Value& trajsArray = doc["reference_trajs"];
         std::map<int, _SingleTraj> m_traj_self_driving, m_traj_human_driving;
         std::vector<_SingleTraj> input_paths, output_paths;
@@ -872,7 +867,7 @@ bool GetMap(char* parea) {
         int traj_type = -1;
         double speed_limit = -1;
         int guid_type = 0;
-        
+
         for (SizeType i = 0; i < trajsArray.Size(); i++) {
             const Value& trajObj = trajsArray[i];
             // 检查轨迹对象基本结构
@@ -883,14 +878,14 @@ bool GetMap(char* parea) {
 
             traj.trajectory.clear();
             traj.id = trajObj["id"].GetInt();
-            
+
             // 处理可选字段
             traj_type = trajObj.HasMember("type") && trajObj["type"].IsInt() ? 
                        trajObj["type"].GetInt() : 2;
-                       
+
             speed_limit = trajObj.HasMember("speed_limit") && trajObj["speed_limit"].IsDouble() ? 
                          trajObj["speed_limit"].GetDouble() : -1;
-                         
+
             guid_type = trajObj.HasMember("guid_type") && trajObj["guid_type"].IsInt() ? 
                        trajObj["guid_type"].GetInt() : 0;
 
@@ -919,7 +914,7 @@ bool GetMap(char* parea) {
                 tp.speed_limit = speed_limit;
                 traj.trajectory.push_back(tp);
             }
-            
+
             // 根据轨迹类型分类
             if (traj_type == 2) {
                 m_traj_self_driving[traj.id] = traj;
@@ -940,7 +935,7 @@ bool GetMap(char* parea) {
                 output_paths.push_back(traj);
             }
         }
-        
+
         // 保存解析后的轨迹数据
         GlobalVariable::getInstance()->SetAllSelfDrivingReferencelines(m_traj_self_driving);
         GlobalVariable::getInstance()->SetAllHumanDrivingReferencelines(m_traj_human_driving);
@@ -951,13 +946,13 @@ bool GetMap(char* parea) {
         if (!doc.HasMember("relation") || !doc["relation"].IsObject()) {
             throw std::runtime_error("JSON数据中缺少有效的relation对象");
         }
-        
+
         const Value& relationObj = doc["relation"];
         std::map<int, std::vector<int>> m_relation_self_driving;  // 无人车专用relation
         std::map<int, std::vector<int>> m_relation_human_driving; // 有人车专用relation
         int key;
         std::vector<int> relVec;
-        
+
         for (Value::ConstMemberIterator itr = relationObj.MemberBegin(); itr != relationObj.MemberEnd(); ++itr) {
             try {
                 key = std::stoi(itr->name.GetString());
@@ -965,12 +960,12 @@ bool GetMap(char* parea) {
                 throw std::runtime_error("relation键转换为整数失败: " + std::string(itr->name.GetString()) + 
                                        ", 错误: " + e.what());
             }
-            
+
             const Value& relArray = itr->value;
             if (!relArray.IsArray()) {
                 throw std::runtime_error("relation值不是数组，键: " + std::to_string(key));
             }
-            
+
             relVec.clear();
             for (SizeType k = 0; k < relArray.Size(); k++) {
                 if (!relArray[k].IsInt()) {
@@ -988,7 +983,7 @@ bool GetMap(char* parea) {
                 m_relation_human_driving[key] = relVec;
             }
         }
-        
+
         // 保存解析后的relation数据
         GlobalVariable::getInstance()->SetSelfDrivingReferencelineRelation(m_relation_self_driving);
         GlobalVariable::getInstance()->SetHumanDrivingReferencelineRelation(m_relation_human_driving);
@@ -1703,7 +1698,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cerr << "无法找到车参 delta_straight_length_load ，赋予默认值: " << planning_info.delta_straight_length_load << std::endl;
             }
 
-             if (val.HasMember("heavy_forward_max_steering")) {
+            if (val.HasMember("heavy_forward_max_steering")) {
                 planning_info.veh_param.heavy_forward_max_steering = val["heavy_forward_max_steering"].GetDouble() * M_PI / 180.0;
             }
             else {
@@ -1785,28 +1780,25 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
 
     if (doc.HasMember("dynamic_border") && doc["dynamic_border"].IsArray()) {
         cout << "解析 dynamic_border 中" << endl;
-        const Value& dynamicBorderArray = doc["dynamic_border"];
+        const Value&         dynamicBorderArray = doc["dynamic_border"];
         vector<_BorderPoint> dynamicBorderPoints;
-    
+        cout << "dynamicBorderArray.Size() = " << dynamicBorderArray.Size() << endl;
+
         for (SizeType i = 0; i < dynamicBorderArray.Size(); i++) {
             const Value& borderPoint = dynamicBorderArray[i];
-            
+
             // 验证必要的字段是否存在且类型正确
-            if (!borderPoint.IsObject() ||
-                !borderPoint.HasMember("x") || !borderPoint["x"].IsDouble() ||
-                !borderPoint.HasMember("y") || !borderPoint["y"].IsDouble() ||
-                !borderPoint.HasMember("z") || !borderPoint["z"].IsDouble() ||
-                !borderPoint.HasMember("type") || !borderPoint["type"].IsUint()) {
-                cerr << "dynamic_border 点数据不完整或格式错误，索引: " << i << endl;
+            if (!borderPoint.IsObject() || !borderPoint.HasMember("x") || !borderPoint["x"].IsDouble() || !borderPoint.HasMember("y") || !borderPoint["y"].IsDouble()) {
+                cout << "dynamic_border 点数据不完整或格式错误，索引: " << i << endl;
                 continue; // 跳过错误的点，继续解析其他点
             }
-    
+
             _BorderPoint temp_point;
             temp_point.x = borderPoint["x"].GetDouble();
             temp_point.y = borderPoint["y"].GetDouble();
-            temp_point.z = static_cast<float>(borderPoint["z"].GetDouble()); // 从double转换为float
-            temp_point.type = borderPoint["type"].GetUint();
-            
+            // temp_point.z    = static_cast<float>(borderPoint["z"].GetDouble()); // 从double转换为float
+            // temp_point.type = borderPoint["type"].GetUint();
+
             // 可以选择处理经纬度信息
             // if (borderPoint.HasMember("longitude") && borderPoint["longitude"].IsDouble()) {
             //     // 处理经度
@@ -1814,10 +1806,10 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             // if (borderPoint.HasMember("latitude") && borderPoint["latitude"].IsDouble()) {
             //     // 处理纬度
             // }
-    
+
             dynamicBorderPoints.push_back(temp_point);
         }
-        
+
         // 将解析到的动态边界点添加到planning_info
         planning_info.wall_borders.emplace_back(dynamicBorderPoints);
         cout << "解析 dynamic_border 完毕，共 " << dynamicBorderPoints.size() << " 个点" << endl;
