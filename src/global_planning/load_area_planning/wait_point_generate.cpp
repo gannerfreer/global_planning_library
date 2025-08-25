@@ -129,8 +129,14 @@ double WaitPointGenerator::DeterminateStraightLength(const GlobalPlanning::Point
         for (double j = 0; j + delta_steering_angle_ + min_steering_angle_ <= max_steering_angle_; j += 1.0) {
             double steering_angle = j + delta_steering_angle_ + min_steering_angle_;
             auto   arc_path       = CalArcPath(steering_angle, wheel_base_length_, max_curve_length_, start_end);
+            for (auto& point : arc_path) {
+                point.angle = point.angle * M_PI / 180.0;
+            }
             if (collision_checker.DepartPathCollisionCheck(arc_path).empty()) {
                 succeed_count += 1.0;
+            }
+            for (auto& point : arc_path) {
+                point.angle = point.angle * 180.0 / M_PI;
             }
         }
         if ((succeed_count / (double)(max_steering_angle_ - min_steering_angle_ + 1)) > 0.6) {
@@ -158,10 +164,11 @@ vector<arc_sample_point> WaitPointGenerator::SampleCandiPoints(GlobalPlanning::C
             for (double i = min_curve_length_; i <= max_curve_length_; i += delta_curve_length_) {
                 temp_point.path_point.x     = start_point.x + i * cos(start_point.angle * M_PI / 180.0);
                 temp_point.path_point.y     = start_point.y + i * sin(start_point.angle * M_PI / 180.0);
-                temp_point.path_point.angle = start_point.angle;
+                temp_point.path_point.angle = start_point.angle * M_PI / 180.0;
                 if (collision_checker.IsVehicleCollisionWithAll(temp_point.path_point)) {
                     break;
                 }
+                temp_point.path_point.angle = start_point.angle;
 
                 GlobalPlanning::Box2d ego_box(temp_point.path_point.x, temp_point.path_point.y, temp_point.path_point.angle * M_PI / 180.0, center2front_ + safe_margin_front_, center2rear_ + safe_margin_rear_, center2side_ + safe_margin_2side_);
 
@@ -202,12 +209,19 @@ vector<arc_sample_point> WaitPointGenerator::SampleCandiPoints(GlobalPlanning::C
                 temp_end_point.y     = temp_point.path_point.y + 2.0 * sin(temp_point.path_point.angle * M_PI / 180.0);
                 temp_end_point.angle = temp_point.path_point.angle;
 
+                temp_point.path_point.angle = temp_point.path_point.angle * M_PI / 180.0;
                 if (collision_checker.IsVehicleCollisionWithAll(temp_point.path_point)) {
                     break;
                 }
+                temp_point.path_point.angle = temp_point.path_point.angle * 180.0 / M_PI;
+
+                temp_end_point.angle = temp_end_point.angle * M_PI / 180.0;
                 if (collision_checker.IsVehicleCollisionWithAll(temp_end_point)) {
                     continue;
                 }
+                temp_end_point.angle = temp_end_point.angle * 180.0 / M_PI;
+
+
                 GlobalPlanning::Box2d ego_box(temp_point.path_point.x, temp_point.path_point.y, temp_point.path_point.angle * M_PI / 180.0, center2front_ + safe_margin_front_, center2rear_ + safe_margin_rear_, center2side_ + safe_margin_2side_);
                 // cout << "ego_box_info:(x,y,angle,center_front,center2rear_,center2side_):" << center2front_ + safe_margin_front_ << center2rear_ + safe_margin_rear_ << center2side_ + safe_margin_2side_ << endl;
                 // cout << "depart_path.size = :" << depart_path.size() << endl;
@@ -386,9 +400,15 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
     wait_point_sample_ = SampleCandiPoints(collision_checker, max_steering_angle_, min_steering_angle_, straight_end, depart_path);
     cout << "生成采样点完毕" << endl;
     cout << "wait_point_sample_.size() = " << wait_point_sample_.size() << endl;
-    // for (auto& point : wait_point_sample_) {
-    //     cout << "point.x,y = " << point.path_point.x << "," << point.path_point.y << "," << point.path_point.angle << endl;
-    // }
+
+    ofstream file;
+    file.open("wait_point_sample.txt");
+    for (auto& point : wait_point_sample_) {
+        file << point.path_point.x << " " << point.path_point.y << " " << point.path_point.angle << endl;
+    }
+    file.close();
+
+
     CalculateWaitPointGrade(in_path, load_point);
 
     // cout << "vehicle_info:" << center2front_ << "," << center2rear_ << "," << center2side_ << "," << safe_margin_front_ << "," << safe_margin_rear_ << "," << safe_margin_2side_ << endl;
@@ -422,9 +442,26 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
     });
     cout << "排序完毕" << endl;
     cout << "wait_point_sample_.size() = " << wait_point_sample_.size() << endl;
+    int i = 0;
     for (const auto& point : wait_point_sample_) {
-        // cout << "point.x,y,yaw=" << point.path_point.x << "," << point.path_point.y << "," << point.path_point.angle << endl;
-        auto wait_path = fitting_path_generator.WaitPathGenerateInterface(in_path, point.path_point, collision_checker);
+        i++;
+        GlobalPlanning::Point temp_end_point;
+        temp_end_point.x     = point.path_point.x + 2.0 * cos(point.path_point.angle * M_PI / 180.0);
+        temp_end_point.y     = point.path_point.y + 2.0 * sin(point.path_point.angle * M_PI / 180.0);
+        temp_end_point.angle = point.path_point.angle;
+        auto     wait_path   = fitting_path_generator.WaitPathGenerateInterface(in_path, temp_end_point, collision_checker);
+        ofstream file;
+        string   file_name = "wait_pathes";
+        file_name += std::to_string(i);
+        file_name += ".txt";
+        file.open(file_name);
+        for (auto& path : fitting_path_generator.GetWaitPathCandis()) {
+            for (auto& point : path.first) {
+                file << point.x << " " << point.y << endl;
+            }
+            file << "--------------" << endl;
+        }
+        file.close();
 
         if (!wait_path.first.empty()) {
             // cout << "wait_parh_end.x,y,yaw=" << wait_path.first.back().x << "," << wait_path.first.back().y << "," << wait_path.first.back().angle << endl;
@@ -443,10 +480,14 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
             start_straight_path.erase(start_straight_path.end() - 1);
             start_straight_path.insert(start_straight_path.begin(), temp_end_point);
             load_path.insert(load_path.begin(), start_straight_path.begin(), start_straight_path.end());
+            for (auto& point : load_path) {
+                point.angle = point.angle * M_PI / 180.0;
+            }
             if (collision_checker.OptiPathCollisionCheckWithAll(load_path).empty()) {
                 cout << "没碰撞load_path.size()=" << load_path.size() << endl;
                 for (auto& point : load_path) {
                     point.direction = GlobalPlanning::MotionDirection::Backward;
+                    point.angle     = point.angle * 180.0 / M_PI;
                 }
                 cout << "load_path_first.x,y,yaw=" << load_path.front().x << "," << load_path.front().y << "," << load_path.front().angle << endl;
                 return load_path;

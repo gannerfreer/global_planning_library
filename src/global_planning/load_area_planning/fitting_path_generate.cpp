@@ -68,14 +68,21 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
         return a.second > b.second; // 按 double 值降序
     });
     for (auto& path_info : load_path_candidates_) {
+        for (auto& point : path_info.first) {
+            point.angle = point.angle * M_PI / 180.0;
+        }
         if (collision_checker.OptiPathCollisionCheckWithAll(path_info.first).empty()) {
             std::cout << "成功了" << std::endl;
             for (auto& point : path_info.first) {
+                point.angle     = point.angle * 180.0 / M_PI;
                 point.direction = GlobalPlanning::MotionDirection::Backward;
             }
             return std::make_pair(path_info.first, path_info.second);
         }
         else {
+            for (auto& point : path_info.first) {
+                point.angle = point.angle * 180.0 / M_PI;
+            }
             std::cout << "失败了" << std::endl;
         }
     }
@@ -120,8 +127,11 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
 
 std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, bool need_completed) {
     GlobalPlanning::Path result;
-    double               grade = 0.0;
-    if (collision_checker.IsVehicleCollisionWithAll(wait_point)) {
+    wait_path_candidates_.clear();
+    double grade           = 0.0;
+    auto   temp_wait_point = wait_point;
+    temp_wait_point.angle  = temp_wait_point.angle * M_PI / 180.0;
+    if (collision_checker.IsVehicleCollisionWithAll(temp_wait_point)) {
         std::cout << "该排队点有碰撞，无法使用" << endl;
         return std::make_pair(result, 0.0);
     }
@@ -140,10 +150,20 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
         straight_start_point.angle     = wait_point.angle;
         straight_start_point.curvature = 0;
         auto straight_path             = GenerateStraitLine(straight_start_point, wait_point);
+        for (auto& point : straight_path) {
+            point.angle = point.angle * M_PI / 180.0;
+        }
         if (collision_checker.OptiPathCollisionCheckWithAll(straight_path).empty()) {
+            cout << "碰撞检测成功!!!!!!!!!" << endl;
+            for (auto& point : straight_path) {
+                point.angle = point.angle * 180.0 / M_PI;
+            }
             straight_path.emplace_back(wait_point);
             straight_path_with_wait_point = straight_path;
             break;
+        }
+        for (auto& point : straight_path) {
+            point.angle = point.angle * 180.0 / M_PI;
         }
     }
 
@@ -171,16 +191,24 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
             wait_path_candidates.emplace_back(std::make_pair(wait_path, 0.0));
         }
     }
-    // cout << "候选路径生成完毕" << wait_path_candidates.size() << endl;
+    // cout << "驶入等待点候选路径生成完毕：" << wait_path_candidates.size() << endl;
 
     PathRateAndSort(wait_path_candidates);
     // cout << "候选路径评分完毕完毕" << endl;
 
     wait_path_candidates_ = wait_path_candidates;
-    for (int i = 0; i < wait_path_candidates.size(); i++) {
+    for (int i = 0; i < wait_path_candidates_.size(); i++) {
+        for (auto& point : wait_path_candidates_[i].first) {
+            point.angle = point.angle * M_PI / 180.0;
+        }
         if (collision_checker.OptiPathCollisionCheckWithAll(wait_path_candidates_[i].first).empty()) {
+            cout << "驶入排队点路径碰撞检测成功" << endl;
+            for (auto& point : wait_path_candidates_[i].first) {
+                point.angle = point.angle * 180.0 / M_PI;
+            }
             result = wait_path_candidates_[i].first;
             grade  = wait_path_candidates_[i].second;
+            break;
         }
     }
 
@@ -225,10 +253,16 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
             curve::Point end_point(end_point_sample[j].x, end_point_sample[j].y, end_point_sample[j].angle, end_point_sample[j].curvature);
             // std::cout << "取得终点：" << end_point_sample[j].x << "," << end_point_sample[j].y << std::endl;
             if (dubins_planner.GetDubinsPath(start_point, end_point, temp_candi_path)) {
-                auto temp_path      = PathTransFormer(temp_candi_path);
+                auto temp_path = PathTransFormer(temp_candi_path);
+                for (auto& point : temp_path) {
+                    point.angle = point.angle * M_PI / 180.0;
+                }
                 auto collision_info = collision_checker.DepartPathCollisionCheck(temp_path);
                 if (collision_info.empty()) { // 你没有引用返回，严一峰
                     std::cout << "碰撞检测成功" << std::endl;
+                    for (auto& point : temp_path) {
+                        point.angle = point.angle * 180.0 / M_PI;
+                    }
                     depart_path_candidates.emplace_back(std::make_pair(temp_path, 0.0));
                     temp_depart_path_candidates.emplace_back(std::make_pair(temp_path, 0.0));
                 }
@@ -262,10 +296,18 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
         grade              = depart_path_candidates_.front().second;
         auto straight_line = GenerateStraitLine(load_point, result.front());
         result.insert(result.begin(), straight_line.begin(), straight_line.end());
+        for (auto& point : result) {
+            point.angle = point.angle * M_PI / 180.0;
+        }
         if (collision_checker.OptiPathCollisionCheckWithAll(result).empty()) {
+            cout << "驶出候选路径碰撞检测成功" << endl;
+            for (auto& point : result) {
+                point.angle = point.angle * 180.0 / M_PI;
+            }
             break;
         }
         else {
+            cout << "驶出候选路径碰撞检测失败" << endl;
             result.clear();
         }
     }
@@ -437,7 +479,6 @@ std::vector<GlobalPlanning::Point> FittingPathGenerator::SamplePathSegment(const
     // 检查最近点是否在50m范围内
     std::cout << "路径上最近点离装载点的距离" << min_dist << std::endl;
     std::cout << "search_range_ = " << search_range_ << std::endl;
-
     if (min_dist > search_range_) {
         return end_point_sample; // 返回空vector
     }

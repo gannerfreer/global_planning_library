@@ -7,6 +7,18 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
     GlobalPlanning::Path                      depart_path;
     GlobalPlanning::Point                     queue_point;
     depart_path = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker).first;
+    ofstream file;
+    string   file_name = "depart_parthes.txt";
+    file.open(file_name);
+
+    for (auto& path : fit_path_planner.GetDepartPathCandis()) {
+        for (auto& point : path.first) {
+            file << point.x << " " << point.y << endl;
+        }
+        file << "--------------" << endl;
+    }
+    file.close();
+
     cout << "DepartPathGenerateInterface完成" << endl;
     cout << "depart_path.size() = " << depart_path.size() << endl;
     CalCurvature(depart_path, 1);
@@ -27,7 +39,16 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         file.close();
         if (PathSmoother(temp_depart_path, veh_param)) {
             cout << "line28 depart_path ipopt优化完成" << endl;
-            depart_path = temp_depart_path;
+            for (auto& point : temp_depart_path) {
+                point.angle = point.angle * M_PI / 180.0;
+            }
+            if (collision_checker.OptiPathCollisionCheckWithAll(temp_depart_path).empty()) {
+                cout << "line34 优化成功后碰撞检测成功" << endl;
+                for (auto& point : temp_depart_path) {
+                    point.angle = point.angle / M_PI * 180.0;
+                }
+                depart_path = temp_depart_path;
+            }
             // 将temp_depart_path中的x y yaw curvature direction 保存为txt文件
             file.open("depart_path_after.txt");
             for (auto& point : temp_depart_path) {
@@ -66,7 +87,15 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         file.close();
         if (PathSmoother(temp_wait_path, veh_param)) {
             cout << "line62 wait_path ipopt优化完成" << endl;
-            wait_path = temp_wait_path;
+            for (auto& point : temp_wait_path) {
+                point.angle = point.angle * M_PI / 180.0;
+            }
+            if (collision_checker.OptiPathCollisionCheckWithAll(wait_path).empty()) {
+                for (auto& point : temp_wait_path) {
+                    point.angle = point.angle / M_PI * 180.0;
+                }
+                wait_path = temp_wait_path;
+            }
             // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
             file.open("wait_path_after.txt");
             for (auto& point : temp_wait_path) {
@@ -87,7 +116,15 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         file.close();
         if (PathSmoother(temp_load_path, veh_param)) {
             cout << "line79 load_path ipopt优化完成" << endl;
-            load_path = temp_load_path;
+            for (auto& point : temp_load_path) {
+                point.angle = point.angle * M_PI / 180.0;
+            }
+            if (collision_checker.OptiPathCollisionCheckWithAll(temp_load_path).empty()) {
+                for (auto& point : temp_load_path) {
+                    point.angle = point.angle / M_PI * 180.0;
+                }
+                load_path = temp_load_path;
+            }
             // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
             file.open("load_path_after.txt");
             for (auto& point : temp_load_path) {
@@ -119,7 +156,15 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             file.close();
             if (PathSmoother(temp_load_path, veh_param)) {
                 cout << "line108 load_path ipopt优化完成" << endl;
-                load_path = temp_load_path;
+                for (auto& point : temp_load_path) {
+                    point.angle = point.angle * M_PI / 180.0;
+                }
+                if (collision_checker.OptiPathCollisionCheckWithAll(temp_load_path).empty()) {
+                    for (auto& point : temp_load_path) {
+                        point.angle = point.angle / M_PI * 180.0;
+                    }
+                    load_path = temp_load_path;
+                }
                 // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
                 file.open("load_path_after.txt");
                 for (auto& point : temp_load_path) {
@@ -140,7 +185,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         CalCurvature(load_path, 1);
         sample_points = wait_point_planner.wait_point_sample_;
         if (load_path.empty()) {
-            cout << "驶入等待点路径生成失败" << endl;
+            cout << "驶入装载点路径生成失败" << endl;
             return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
         }
         cout << "load_path.size() = " << load_path.size() << endl;
@@ -162,7 +207,15 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         file.close();
         if (PathSmoother(temp_wait_path, veh_param)) {
             cout << "line146 wait_path ipopt优化完成" << endl;
-            wait_path = temp_wait_path;
+            for (auto& point : temp_wait_path) {
+                point.angle = point.angle * M_PI / 180.0;
+            }
+            if (collision_checker.OptiPathCollisionCheckWithAll(temp_wait_path).empty()) {
+                for (auto& point : temp_wait_path) {
+                    point.angle = point.angle / M_PI * 180.0;
+                }
+                wait_path = temp_wait_path;
+            }
             // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
             file.open("wait_path_after.txt");
             for (auto& point : temp_wait_path) {
@@ -180,9 +233,18 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
         }
         file.close();
+
         if (PathSmoother(temp_load_path, veh_param)) {
             cout << "line163 load_path ipopt优化完成" << endl;
-            load_path = temp_load_path;
+            for (auto& point : temp_load_path) {
+                point.angle = point.angle * M_PI / 180.0;
+            }
+            if (collision_checker.OptiPathCollisionCheckWithAll(temp_load_path).empty()) {
+                for (auto& point : temp_load_path) {
+                    point.angle = point.angle / M_PI * 180.0;
+                }
+                load_path = temp_load_path;
+            }
             // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
             file.open("load_path_after.txt");
             for (auto& point : temp_load_path) {
@@ -220,9 +282,7 @@ bool LoadAreaPlanning::PathSmoother(GlobalPlanning::Path& input_path, const Glob
     }
     CalculatePathDistance(input_path);
     GlobalPlanning::TensionSmoother2 smoother(input_path, veh_param);
-    smoother.threadLogger_ = threadLogger_;
     if (smoother.smooth(input_path)) {
-
         for (auto& point : input_path) {
             point.angle = point.angle * 180.0 / M_PI;
         }
