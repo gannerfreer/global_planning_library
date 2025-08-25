@@ -291,7 +291,7 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
                     total_length += std::hypot(total_dubins_path[i].GetX() - total_dubins_path[i - 1].GetX(), total_dubins_path[i].GetY() - total_dubins_path[i - 1].GetY());
                 }
                 // if (fabs(lat_dis) >= vehicle_param_.dis_threshold && temp_path.size() > 50) {
-                if (fabs(lat_dis) >= vehicle_param_.dis_threshold&&temp_path.size()>48) {
+                if (fabs(lat_dis) >= vehicle_param_.dis_threshold && temp_path.size() > 48) {
                     score = total_length;
                 }
                 else {
@@ -1330,7 +1330,7 @@ PlanResult Planning::HybirdAStarFitting() {
 
     for (unsigned int i = 0; i < wall_borders_.size(); ++i) {
         vector<_BorderPoint> temp_bound = wall_borders_.at(i);
-        vector<Coordinate> temp_bound_2;
+        vector<Coordinate>   temp_bound_2;
         for (int j = 0; j < temp_bound.size(); ++j) {
             Coordinate temp_point;
             temp_point.z = 0;
@@ -1346,7 +1346,7 @@ PlanResult Planning::HybirdAStarFitting() {
 
     for (unsigned int i = 0; i < machine_borders_.size(); ++i) {
         vector<_BorderPoint> temp_bound = machine_borders_.at(i);
-        vector<Coordinate> temp_bound_2;
+        vector<Coordinate>   temp_bound_2;
         for (int j = 0; j < temp_bound.size(); ++j) {
             Coordinate temp_point;
             temp_point.z = 0;
@@ -1617,7 +1617,7 @@ bool Planning::IsShortDistance() {
 }
 bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _SinglePoint& end_pose, const bool flag, const int L, std::vector<curve::Point>& output_path) {
     output_path.clear();
-    // threadLogger_->info("PoseVerificationInterface--start_pose:{},{},{}     end_pose:{} ,{},{}", start_pose.x, start_pose.y, start_pose.yaw / M_PI * 180.0, end_pose.x, end_pose.y, end_pose.yaw / M_PI * 180.0);
+    threadLogger_->info("PoseVerificationInterface--start_pose:{},{},{}     end_pose:{} ,{},{}", start_pose.x, start_pose.y, start_pose.yaw / M_PI * 180.0, end_pose.x, end_pose.y, end_pose.yaw / M_PI * 180.0);
     curve::Point dubins_start, dubins_end;
     if (flag == 0) {
         auto x = start_pose.x + L * std::cos(start_pose.yaw);
@@ -1647,6 +1647,7 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
         std::cout << "入参有误！！！" << std::endl;
         return false;
     }
+    threadLogger_->info("flag:{}  dubins_start:({},{},{})   dubins_end:({},{},{})", flag, dubins_start.GetX(), dubins_start.GetY(), dubins_start.GetAngle(), dubins_end.GetX(), dubins_end.GetY(), dubins_end.GetAngle());
     curve::Dubins dubins;
     dubins.threadLogger_ = threadLogger_;
     if (vehicle_param_.is_light) {
@@ -1655,45 +1656,47 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
     else {
         dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.heavy_forward_max_steering));
     }
-    // threadLogger_->info("dubins_start:({},{},{})   L:{}   dubins radius:{}", dubins_start.GetX(), dubins_start.GetY(), dubins_start.GetAngle(), L, dubins.GetRadius());
     bool is_reasonable = dubins.GetDubinsPath(dubins_start, dubins_end, output_path);
+
     // 将path和直线延长的部分拼接到一起
     curve::Point temp_point;
     if (flag == 0) {
+        threadLogger_->info("正向起步");
         for (int i = 1; i <= L; i++) {
             temp_point.SetX(dubins_start.GetX() - i * std::cos(start_pose.yaw));
             temp_point.SetY(dubins_start.GetY() - i * std::sin(start_pose.yaw));
-            temp_point.SetAngle(start_pose.yaw / M_PI * 180.0);
+            temp_point.SetAngle(dubins_start.GetAngle());
             output_path.insert(output_path.begin(), temp_point);
         }
     }
     else {
+        threadLogger_->info("倒车起步");
         for (int i = 1; i <= L; i++) {
             temp_point.SetX(dubins_end.GetX() + i * std::cos(start_pose.yaw));
             temp_point.SetY(dubins_end.GetY() + i * std::sin(start_pose.yaw));
-            temp_point.SetAngle(dubins_end.GetAngle() / M_PI * 180.0);
+            temp_point.SetAngle(dubins_end.GetAngle());
             output_path.push_back(temp_point);
         }
         // 对output_path倒序
         std::reverse(output_path.begin(), output_path.end());
     }
-
+   
 
     if (is_reasonable == false) {
-        // threadLogger_->info("dubins预校验失败");
+        threadLogger_->info("dubins预校验失败");
         return false;
     }
     for (int i = 0; i < output_path.size(); i++) {
         if (flag == 1) {
             if (collison_check_.IsVehicleCollisionWithAll(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(1)))) {
-                // threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
+                threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
                 // break;
                 return false;
             }
         }
         else {
             if (collison_check_.IsVehicleCollisionWithAll(Point(output_path.at(i).GetX(), output_path.at(i).GetY(), 0, output_path.at(i).GetAngle() / 180.0 * M_PI, static_cast<GlobalPlanning::MotionDirection>(0)))) {
-                // threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
+                threadLogger_->info("第 {} 个路径点({},{},{})碰撞检测失败", i, output_path.at(i).GetX(), output_path.at(i).GetY(), output_path.at(i).GetAngle());
                 // break;
                 return false;
             }
@@ -1791,7 +1794,7 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
         while (in_iterations++ < max_opti_num) {
             for (unsigned int i = 2; i < input_path.size() - 2; i++) {
                 if (fixpoint_set.count(i)) {
-                    threadLogger_->info("第 {} 个点跳过", i);
+                    // threadLogger_->info("第 {} 个点跳过", i);
                     continue;
                 }
                 // 优化路径的当前点前两点、当前点、当前点后两点及原路径当前点

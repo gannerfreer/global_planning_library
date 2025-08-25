@@ -50,12 +50,13 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
     if (min_length_index == 1 || min_length_index == 2) {
         // threadLogger_->info("dubins lsl lsr rsl rsr {},{},{}", std::get<0>(opt_path) * radius_, std::get<1>(opt_path) * radius_, std::get<2>(opt_path) * radius_);
         if ((std::get<1>(opt_path) * radius_ < 15 && std::get<0>(opt_path) * radius_ > 3.7) || (std::get<1>(opt_path) * radius_ < 15 && std::get<2>(opt_path) * radius_ > 3.7)) {
-            // threadLogger_->info("路径长度小于15m，不合理");
+            threadLogger_->info("路径长度小于15m，不合理");
             return false;
         }
         // threadLogger_->info("达标");
     }
     else if (min_length_index == 4 || min_length_index == 5) {
+        threadLogger_->info("构型不合理");
         return false;
     }
 
@@ -86,7 +87,7 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
 
 
     if (DubinsPathSelfIntersectCheck(path)) {
-        // threadLogger_->info("路径绕圈，不合理");
+        threadLogger_->info("路径绕圈，不合理");
         return false;
     }
 

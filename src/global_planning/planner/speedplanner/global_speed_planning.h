@@ -13,6 +13,7 @@
 
 #include "../../common/common_struct.h"
 #include "../../math/helper.h"
+#include "../pathplanner/spline/spline.h"
 
 using namespace GlobalPlanning;
 
@@ -36,9 +37,13 @@ class GlobalSpeedPlanning {
      * 0：最短时间策略；1：准点策略
      * @return true：规划成功；false：规划失败
      */
-    void                       SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param);
+    void SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param);
+
+    void                       CalculateStation(const vector<double>& xs, const vector<double>& ys);
+    void                       CalculateCubicSplineCurve(vector<_TrajectoryPoint>& points, vector<_TrajectoryPoint>& cubicspline_path);
     shared_ptr<spdlog::logger> threadLogger_;
     double                     hybridAstar_path_length_ = 0;
+
 
   private:
     /**
@@ -49,7 +54,7 @@ class GlobalSpeedPlanning {
     void Smooth(vector<_TrajectoryPoint>& trajectory);
     void FixLocalMininum(vector<_TrajectoryPoint>& trajectory);
     void FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory);
-    int BinarySearch(int a,vector<int>& input);
+    int  BinarySearch(int a, vector<int>& input);
 
     /**
      *@brief: 初始化速度规划参数
@@ -77,6 +82,11 @@ class GlobalSpeedPlanning {
 
     void planSpeed(vector<_TrajectoryPoint>& trajectory);
     void ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajectory);
+
+    std::vector<double> s_;
+    curve::spline       sx_;
+    curve::spline       sy_;
+    double              kDeltaS = 0.1;
 };
 
 #endif // GLOBAL_SPEED_PLANNING_H

@@ -41,38 +41,56 @@ void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
  * @return true：规划成功；false：规划失败
  */
 void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, const _VehicleParam m_veh_param) {
+    // // 先对trajectory进行加密
+    // vector<_TrajectoryPoint> copy_trajectory;
+    // copy_trajectory=trajectory;
+    // //保存copy_trajectory
+    // std::ofstream file;
+    // file.open("copy_trajectory.txt");
+    // for (const auto& point : copy_trajectory) {
+    //     file << point.x << " " << point.y << " " << point.yaw <<" "<< point.curvature << std::endl;
+    // }
+    // file.close();
+    // CalculateCubicSplineCurve(copy_trajectory,trajectory);
+    // //保存trajectory
+    // file.open("trajectory.txt");
+    // for (const auto& point : trajectory) {
+    //     file << point.x << " " << point.y << " " << point.yaw <<" "<< point.curvature << std::endl;
+    // }
+    // file.close();
+
     InitSpeedParam(m_veh_param);
     /*限速设置*/
     ReplanPointMaxSpeed(trajectory);
 
     // 对trajectory中的每个点进行速度规划
     planSpeed(trajectory);
-    std::ofstream file;
-    // 保存平滑前的速度
-    file.open("speed_before_smooth.txt");
-    for (const auto& point : trajectory) {
-        file << point.distance << " " << point.speed << " " << point.acc << std::endl;
-    }
-    file.close();
+    // std::ofstream file;
+    // // 保存平滑前的速度
+    // file.open("speed_before_smooth.txt");
+    // for (const auto& point : trajectory) {
+    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+    // }
+    // file.close();
 
-    //速度曲线平滑
-    // Smooth(trajectory);
-    threadLogger_->info("进入FixLocalMininum");
-    FixLocalMininum(trajectory);
-    Helper::calculateAcceleration(trajectory);
+    // 速度曲线平滑
+     Smooth(trajectory);
+    // threadLogger_->info("进入FixLocalMininum");
+    // FixLocalMininum(trajectory);
+    // Helper::calculateAcceleration(trajectory);
 
-    file.open("speed_after_smooth.txt");
-    for (const auto& point : trajectory) {
-        file << point.distance << " " << point.speed << " " << point.acc << std::endl;
-    }
-    file.close();
-    threadLogger_->info("进入FixLocalMaxnum");
-    FixLocalMaxnum(trajectory);
-    file.open("speed_after_smooth2.txt");
-    for (const auto& point : trajectory) {
-        file << point.distance << " " << point.speed << " " << point.acc << std::endl;
-    }
-    file.close();
+    // file.open("speed_after_smooth.txt");
+    // for (const auto& point : trajectory) {
+    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+    // }
+    // file.close();
+    // threadLogger_->info("进入FixLocalMaxnum");
+    // FixLocalMaxnum(trajectory);
+    // file.open("speed_after_smooth2.txt");
+    // for (const auto& point : trajectory) {
+    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+    // }
+    // file.close();
 
 
     // 恢复倒车速度
@@ -331,22 +349,21 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
         threadLogger_->info("start_idx:{}, end_idx:{} 左侧速度：{} 右侧速度：{}", start_idx, end_idx, trajectory[start_idx].speed, trajectory[end_idx].speed);
 
         // 从极小值向两边扩展
-        double current_jerk  = JERK;
-        bool   valid_profile = false;
-        bool has_run_special_case = false;
-        bool has_run_special_case_2 = false;
+        double current_jerk           = JERK;
+        bool   valid_profile          = false;
+        bool   has_run_special_case   = false;
+        bool   has_run_special_case_2 = false;
         while (!valid_profile) {
             threadLogger_->info("current_jerk:{}", current_jerk);
-           
+
             vector<double> forward_speeds;  // 从start向前推演的速度
             vector<double> backward_speeds; // 从end向后推演的速度
 
             // 从start_idx开始向前推演
             double v = trajectory[start_idx].speed;
             double a = 0.0; // 假设极小值处加速度为0
-            
+
             if (!has_run_special_case && fabs(trajectory[start_idx].speed) < 0.01) {
-               
                 current_jerk = 1.5 * JERK;
                 threadLogger_->info("特殊段落，current_jerk:{}", current_jerk);
                 has_run_special_case = true;
@@ -373,7 +390,6 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
             // 从end_idx开始向后推演
             v = trajectory[end_idx].speed;
             if (!has_run_special_case_2 && fabs(trajectory[end_idx].speed) < 0.01) {
-              
                 current_jerk = 1.5 * JERK;
                 threadLogger_->info("特殊段落，current_jerk:{}", current_jerk);
                 has_run_special_case_2 = true;
@@ -399,7 +415,7 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
 
                 if (j == start_idx) break;
             }
-            //打印forward_speeds和backward_speeds
+            // 打印forward_speeds和backward_speeds
             threadLogger_->info("forward_speeds:{}", forward_speeds.size());
             for (size_t j = 0; j < forward_speeds.size(); j++) {
                 threadLogger_->info("forward_speeds[{}]:{}", j, forward_speeds[j]);
@@ -424,7 +440,7 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
             }
             threadLogger_->info("当前轮推演结束，current_jerk:{}", current_jerk);
 
-            //打印temp_speeds
+            // 打印temp_speeds
             threadLogger_->info("temp_speeds:{}", temp_speeds.size());
             for (size_t j = 0; j < temp_speeds.size(); j++) {
                 threadLogger_->info("temp_speeds[{}]:{}", j, temp_speeds[j]);
@@ -435,9 +451,9 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
             for (size_t j = 1; j <= end_idx - start_idx; j++) {
                 double ds  = trajectory[start_idx + j].distance - trajectory[start_idx + j - 1].distance;
                 double acc = (temp_speeds[j] * temp_speeds[j] - temp_speeds[j - 1] * temp_speeds[j - 1]) / (2 * ds);
-                
+
                 if (acc > max_acceleration_ + eps || acc < min_acceleration_ - eps) {
-                    threadLogger_->info("第{}个点acc:{} 超出加速度约束,ds:{},temp_speeds[j]:{} temp_speeds[j-1]:{}", j+start_idx, acc, ds, backward_speeds[j], backward_speeds[j-1]);
+                    threadLogger_->info("第{}个点acc:{} 超出加速度约束,ds:{},temp_speeds[j]:{} temp_speeds[j-1]:{}", j + start_idx, acc, ds, backward_speeds[j], backward_speeds[j - 1]);
                     valid_profile = false;
                     break;
                 }
@@ -451,7 +467,7 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
             }
             else {
                 // 如果不满足约束，增加jerk值继续尝试
-                
+
                 current_jerk *= 1.2;
                 threadLogger_->info("不满足约束，增加jerk值继续尝试，current_jerk:{}", current_jerk);
             }
@@ -500,7 +516,7 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
         trajectory.at(i).speed = trajectory_copy.at(i).speed;
     }
 
-    //打印轨迹速度
+    // 打印轨迹速度
     threadLogger_->info("打印轨迹速度和加速度");
     for (int i = 0; i < trajectory_copy.size(); i++) {
         threadLogger_->info("index:{} speed:{} acc:{}", i, trajectory_copy[i].speed, trajectory_copy[i].acc);
@@ -558,11 +574,11 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
 
 
     double min_delta_jerk = -0.1;
-    int                           pre_end_index = -1;
+    int    pre_end_index  = -1;
     for (int i = 0; i < maxima_minima_indices.size(); i++) {
-        int maxima_idx       = get<0>(maxima_minima_indices[i]);
-        int left_minima_idx  = get<1>(maxima_minima_indices[i]);
-        if(left_minima_idx<pre_end_index){
+        int maxima_idx      = get<0>(maxima_minima_indices[i]);
+        int left_minima_idx = get<1>(maxima_minima_indices[i]);
+        if (left_minima_idx < pre_end_index) {
             left_minima_idx = pre_end_index;
         }
         int right_minima_idx = get<2>(maxima_minima_indices[i]);
@@ -570,7 +586,7 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
 
         threadLogger_->info("第 {} 对区间 [{},{}]，上一次的end_index:{} 最右侧端点的速度 {}，加速度 {}", i, left_minima_idx, right_minima_idx, pre_end_index, trajectory[right_minima_idx].speed, trajectory[right_minima_idx].acc);
         // 从maxima_idx开始，往前遍历，直到遍历到left_minima_idx
-       
+
         for (int j = maxima_idx - 1; j >= left_minima_idx; j--) {
             bool   flag  = false;
             double cur_a = trajectory.at(j).acc + min_delta_jerk;
@@ -613,8 +629,8 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
         threadLogger_->info("开始对第 {} 对区间进行试验，找出合理的delta_jerk", i);
         double                        cur_delta_jerk = min_delta_jerk;
         vector<tuple<double, double>> v_t;
-        
-        bool                          success_flag = false;
+
+        bool success_flag = false;
         while (cur_delta_jerk < 0) {
             double cur_a = trajectory.at(reasonable_idx).acc + cur_delta_jerk;
             double cur_v = trajectory.at(reasonable_idx).speed;
@@ -622,16 +638,14 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
             for (int k = reasonable_idx; k < right_minima_idx; k++) {
                 double ds       = trajectory[k + 1].distance - trajectory[k].distance;
                 double next_v_2 = cur_v * cur_v + 2 * cur_a * ds > 0 ? cur_v * cur_v + 2 * cur_a * ds : 0;
-                if(fabs(next_v_2) < 1e-2)
-                {
+                if (fabs(next_v_2) < 1e-2) {
                     threadLogger_->info("next_v_2:{} 已经降低为0，跳过", next_v_2);
-                    if(k != right_minima_idx - 1)
-                    {
+                    if (k != right_minima_idx - 1) {
                         threadLogger_->info("未成功对接");
                         break;
                     }
                 }
-                double next_v   = sqrt(next_v_2);
+                double next_v = sqrt(next_v_2);
                 cur_a += cur_delta_jerk;
                 if (cur_a < min_acceleration_) cur_a = min_acceleration_;
                 cur_v = next_v;
@@ -639,8 +653,8 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                 threadLogger_->info("index:{} v:{} a:{} target_v:{} target_a:{}", k, cur_v, cur_a, trajectory.at(k + 1).speed, trajectory.at(k + 1).acc);
                 if (fabs(cur_v - trajectory.at(k + 1).speed) < 1e-2 && fabs(cur_a - trajectory.at(k + 1).acc) < 1e-1) {
                     threadLogger_->info("成功对接，对接处的索引{},speed:{} acc:{}", k + 1, cur_v, cur_a);
-                    success_flag = true;
-                    pre_end_index    = k + 1;
+                    success_flag  = true;
+                    pre_end_index = k + 1;
                     threadLogger_->info("有 {} 个点需要调整速度 加速度", v_t.size());
                     for (int m = 0; m < v_t.size(); m++) {
                         reasonable_idx++;
@@ -658,7 +672,7 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                 break;
             }
             // 循环结束，判断推演出的最后一个点的速度、加速度是否满足要求
-           
+
             threadLogger_->info("cur_delta_jerk:{}无法顺利接轨", cur_delta_jerk);
             cur_delta_jerk += 0.001;
             threadLogger_->info("换成 {} 尝试", cur_delta_jerk);
@@ -682,4 +696,84 @@ int GlobalSpeedPlanning::BinarySearch(int a, vector<int>& vec) {
         }
     }
     return -1;
+}
+
+void GlobalSpeedPlanning::CalculateCubicSplineCurve(vector<_TrajectoryPoint>& points, vector<_TrajectoryPoint>& cubicspline_path) {
+    vector<double> x_set;
+    vector<double> y_set;
+    x_set.reserve(points.size());
+    y_set.reserve(points.size());
+    for (const auto& pt : points) {
+        x_set.push_back(pt.x);
+        y_set.push_back(pt.y);
+    }
+
+    CalculateStation(x_set, y_set);
+    sx_.set_points(s_, x_set);
+    sy_.set_points(s_, y_set);
+    kDeltaS = 0.1;
+
+    float  epsilon = 0.0001; // 容差值
+    double s       = 0.0;
+    for (s = 0.0; s <= s_.back(); s += kDeltaS) {
+        double dx = sx_.deriv(1, s);
+        double dy = sy_.deriv(1, s);
+
+        double ddx = sx_.deriv(2, s);
+        double ddy = sy_.deriv(2, s);
+
+        // float angle = atan(dy / dx);
+        // if (dx < 0)
+        //     angle = angle + M_PI;
+        // else if (dx >= 0 && dy < 0)
+        //     angle = angle + 2 * M_PI;
+        float angle = atan2(dy, dx);
+        if (angle < 0) {
+            angle += 2 * M_PI;
+        }
+        double cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
+        // if (fabs(cur) > 0.1) kDeltaS = 0.4;
+        _TrajectoryPoint temp_point;
+        temp_point.x         = sx_(s);
+        temp_point.y         = sy_(s);
+        temp_point.z         = 0;
+        temp_point.yaw     = angle;
+        temp_point.curvature = cur;
+        temp_point.attribute = PointAttribute::dump_road;
+        temp_point.direction = MotionDirection::Forward;
+        cubicspline_path.emplace_back(temp_point);
+    }
+    s        = s_.back();
+    float dx = sx_.deriv(1, s);
+    float dy = sy_.deriv(1, s);
+
+    float ddx   = sx_.deriv(2, s);
+    float ddy   = sy_.deriv(2, s);
+    float angle = atan2(dy, dx);
+    if (angle < 0) {
+        angle += 2 * M_PI;
+    }
+    float            cur = (ddy * dx - ddx * dy) / pow(dx * dx + dy * dy, 3.0 / 2);
+    _TrajectoryPoint temp_point;
+    temp_point.x         = sx_(s);
+    temp_point.y         = sy_(s);
+    temp_point.z         = 0;
+    temp_point.yaw     = angle;
+    temp_point.curvature = cur;
+    temp_point.direction = MotionDirection::Forward;
+    temp_point.attribute = PointAttribute::dump_road;
+    cubicspline_path.emplace_back(temp_point);
+}
+
+void GlobalSpeedPlanning::CalculateStation(const vector<double>& xs, const vector<double>& ys) {
+    double cum = 0.0;
+    s_.clear();
+    s_.push_back(cum);
+
+    for (unsigned int i = 1; i < xs.size(); i++) {
+        double dx = xs.at(i) - xs.at(i - 1);
+        double dy = ys.at(i) - ys.at(i - 1);
+        cum += hypot(dx, dy);
+        s_.push_back(cum);
+    }
 }
