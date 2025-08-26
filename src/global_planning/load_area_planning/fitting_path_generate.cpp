@@ -292,8 +292,8 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
     PathRateAndSort(depart_path_candidates);
     depart_path_candidates_ = depart_path_candidates;
     for (int i = 0; i < depart_path_candidates_.size(); i++) {
-        result             = depart_path_candidates_.front().first;
-        grade              = depart_path_candidates_.front().second;
+        result             = depart_path_candidates_[i].first;
+        grade              = depart_path_candidates_[i].second;
         auto straight_line = GenerateStraitLine(load_point, result.front());
         result.insert(result.begin(), straight_line.begin(), straight_line.end());
         for (auto& point : result) {
