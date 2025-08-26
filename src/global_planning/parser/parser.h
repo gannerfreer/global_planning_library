@@ -1409,7 +1409,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.max_curve_length: " << planning_info.max_curve_length << std::endl;
             }
             else {
-                planning_info.max_curve_length = 40;
+                planning_info.max_curve_length = 80.0;
                 std::cerr << "无法找到车参 max_curve_length ，赋予默认值: " << planning_info.max_curve_length << std::endl;
             }
 
