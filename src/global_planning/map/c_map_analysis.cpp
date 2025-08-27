@@ -733,7 +733,7 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
             }
             else {
                 cout << "无法找到车参 sample_num ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.sample_num = 8;
+                veh_start_end.veh_param.sample_num = 40;
             }
 
             if (val.HasMember("plan_time") && val["plan_time"].IsNumber()) {

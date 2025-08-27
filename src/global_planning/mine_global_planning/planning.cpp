@@ -183,7 +183,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
     // 速度规划：限速设置、梯形速度规划
     my_speed_planning_.threadLogger_            = threadLogger_;
-    my_speed_planning_.hybridAstar_path_length_ = hybridAstar_path_length_;
+    my_speed_planning_.hybridAstar_path_length_ = min((int)hybridAstar_path_length_, (int)global_path_.size()); // 防止hybridAstar_path_length_大于global_path_，因为global_path_经过去除重复点后，长度会变短
     my_speed_planning_.SpeedPlanning(global_path_, vehicle_param_);
     threadLogger_->info("梯形速度规划完成");
 
@@ -255,7 +255,10 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
         temp_point.SetY(input_path[i].y);
         temp_path.push_back(temp_point);
     }
+    threadLogger_->info("max_search_index:{}  vehicle_param_.sample_num:{}", max_search_index, vehicle_param_.sample_num);
+
     max_search_index = min(max_search_index, vehicle_param_.sample_num);
+
     for (int i = 0; i <= max_search_index; i += 1) {
         cal++;
 
@@ -1510,27 +1513,26 @@ PlanResult Planning::HybirdAStarFitting() {
                 start_point_offset_distance--;
             }
             // 对于不是从装载点或卸载点出来的调度，如果上述规划都失败，可以采用下述策略再进行规划
-            if (!load_unload_start_flag) {
-                start_point_offset_distance = 4;
-                while (start_point_offset_distance >= 0) {
-                    my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
-                    dubins_straight_distance_               = start_point_offset_distance;
-                    my_optimal_path_.end_offset_distance_   = 0;
-                    search_index                            = 0;
-                    temp_traj.clear();
-                    if (JudgeFittingDirection(global_path_)) {
-                        threadLogger_->error("Forward_All_Time模式不行，即将调整拟合规则为 Start_Back_End_Front模式");
-                        result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front, max_search_index, start_point_offset_distance, global_path_);
-                        if (result == PlanResult::Plan_OK) {
-                            // 成功规划出路径
-                            global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
-                            global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
-                            hybridAstar_path_length_ = temp_traj.size();
-                            return result;
-                        }
+
+            start_point_offset_distance = 4;
+            while (start_point_offset_distance >= 0) {
+                my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
+                dubins_straight_distance_               = start_point_offset_distance;
+                my_optimal_path_.end_offset_distance_   = 0;
+                search_index                            = 0;
+                temp_traj.clear();
+                if (JudgeFittingDirection(global_path_)) {
+                    threadLogger_->error("Forward_All_Time模式不行，即将调整拟合规则为 Start_Back_End_Front模式");
+                    result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front, max_search_index, start_point_offset_distance, global_path_);
+                    if (result == PlanResult::Plan_OK) {
+                        // 成功规划出路径
+                        global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
+                        global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                        hybridAstar_path_length_ = temp_traj.size();
+                        return result;
                     }
                     else {
-                        threadLogger_->error("Forward_All_Time模式不行，即将调整拟合规则为 Start_Back_End_Front模式");
+                        threadLogger_->error("Start_Back_End_Front 模式不行，即将调整拟合规则为 Start_Front_End_Back 模式");
                         result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Front_End_Back, max_search_index, start_point_offset_distance, global_path_);
                         if (result == PlanResult::Plan_OK) {
                             // 成功规划出路径
@@ -1540,8 +1542,30 @@ PlanResult Planning::HybirdAStarFitting() {
                             return result;
                         }
                     }
-                    start_point_offset_distance--;
                 }
+                else {
+                    threadLogger_->error("Forward_All_Time模式不行，即将调整拟合规则为 Start_Back_End_Front模式");
+                    result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Front_End_Back, max_search_index, start_point_offset_distance, global_path_);
+                    if (result == PlanResult::Plan_OK) {
+                        // 成功规划出路径
+                        global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
+                        global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                        hybridAstar_path_length_ = temp_traj.size();
+                        return result;
+                    }
+                    else {
+                        threadLogger_->error("Start_Front_End_Back 模式不行，即将调整拟合规则为 Start_Back_End_Front 模式");
+                        result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Back_End_Front, max_search_index, start_point_offset_distance, global_path_);
+                        if (result == PlanResult::Plan_OK) {
+                            // 成功规划出路径
+                            global_path_.erase(global_path_.begin(), global_path_.begin() + search_index + 1);
+                            global_path_.insert(global_path_.begin(), temp_traj.begin(), temp_traj.end());
+                            hybridAstar_path_length_ = temp_traj.size();
+                            return result;
+                        }
+                    }
+                }
+                start_point_offset_distance--;
             }
         }
     }
@@ -1680,7 +1704,7 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
         // 对output_path倒序
         std::reverse(output_path.begin(), output_path.end());
     }
-   
+
 
     if (is_reasonable == false) {
         threadLogger_->info("dubins预校验失败");
