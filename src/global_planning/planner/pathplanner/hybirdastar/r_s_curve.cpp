@@ -221,6 +221,8 @@ void RSCurve::Interpolate(Point start, Path& rs_path) {
     }
     double total_length = opti_rs_path.length;
     double step_size    = m_vehicle_prarm_.hybridastar_step_length / m_vehicle_prarm_.radious;
+    // double step_size    = 0.1 / m_vehicle_prarm_.radious;
+
     // double step_size = 0.4 / m_vehicle_prarm_.radious;
     Point np;
     // threadLogger_->info("line 226 rspoint.size():{}", rspoint.size());

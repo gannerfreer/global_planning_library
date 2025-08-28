@@ -13,8 +13,8 @@ speed_before = data[:, 1]
 data = np.loadtxt('speed_after_smooth.txt')  
 speed_after = data[:, 1]
 
-data = np.loadtxt('speed_after_smooth2.txt')  
-speed_after2 = data[:, 1]
+data = np.loadtxt('speed_after_smooth.txt')  
+speed_after2 = data[:, 3]
 
 # 绘制第一张图：速度  
 plt.figure(1)  # 创建一个新的图形窗口，编号为1  

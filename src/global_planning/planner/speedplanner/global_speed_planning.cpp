@@ -63,27 +63,30 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
     /*限速设置*/
     ReplanPointMaxSpeed(trajectory);
 
+
     // 对trajectory中的每个点进行速度规划
     planSpeed(trajectory);
-    // std::ofstream file;
-    // // 保存平滑前的速度
-    // file.open("speed_before_smooth.txt");
-    // for (const auto& point : trajectory) {
-    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
-    // }
-    // file.close();
+
+    std::ofstream file;
+    // 保存平滑前的速度
+    file.open("speed_before_smooth.txt");
+    for (const auto& point : trajectory) {
+        file << point.distance << " " << point.speed << " " << point.acc << " " << point.speed_limit << std::endl;
+    }
+    file.close();
 
     // 速度曲线平滑
-     Smooth(trajectory);
+    Smooth(trajectory);
+
     // threadLogger_->info("进入FixLocalMininum");
     // FixLocalMininum(trajectory);
     // Helper::calculateAcceleration(trajectory);
 
-    // file.open("speed_after_smooth.txt");
-    // for (const auto& point : trajectory) {
-    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
-    // }
-    // file.close();
+    file.open("speed_after_smooth.txt");
+    for (const auto& point : trajectory) {
+        file << point.distance << " " << point.speed << " " << point.acc << " " << point.speed_limit << std::endl;
+    }
+    file.close();
     // threadLogger_->info("进入FixLocalMaxnum");
     // FixLocalMaxnum(trajectory);
     // file.open("speed_after_smooth2.txt");
@@ -209,12 +212,12 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
             }
         }
     }
-    // std::ofstream file_out;
-    // file_out.open("speed_limit0.txt");
-    // for (size_t index = 0; index < trajectory.size(); index++) {
-    //     file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
-    // }
-    // file_out.close();
+    std::ofstream file_out;
+    file_out.open("speed_limit0.txt");
+    for (size_t index = 0; index < trajectory.size(); index++) {
+        file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
+    }
+    file_out.close();
 
     // 计算trajectory前hybridAstar_path_length_个路径点的曲率变化率,如果曲率变化率大于0.06，则将对应路径点的限速设置为1
     threadLogger_->info("速度规划，hybridAstar_path_length_：{}", hybridAstar_path_length_);
@@ -261,11 +264,11 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
         }
     }
 
-    // file_out.open("speed_limit1.txt");
-    // for (size_t index = 0; index < trajectory.size(); index++) {
-    //     file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
-    // }
-    // file_out.close();
+    file_out.open("speed_limit1.txt");
+    for (size_t index = 0; index < trajectory.size(); index++) {
+        file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
+    }
+    file_out.close();
 
 
     double coff = 0.4;
@@ -284,11 +287,11 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     for (size_t index = 0; index < trajectory.size(); index++) {
         // threadLogger_->info("index:{}  speed_limit:{}", index, trajectory.at(index).speed_limit);
     }
-    // file_out.open("speed_limit2.txt");
-    // for (size_t index = 0; index < trajectory.size(); index++) {
-    //     file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
-    // }
-    // file_out.close();
+    file_out.open("speed_limit2.txt");
+    for (size_t index = 0; index < trajectory.size(); index++) {
+        file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
+    }
+    file_out.close();
 }
 
 void GlobalSpeedPlanning::Smooth(vector<_TrajectoryPoint>& trajectory) {
@@ -516,11 +519,7 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
         trajectory.at(i).speed = trajectory_copy.at(i).speed;
     }
 
-    // 打印轨迹速度
-    threadLogger_->info("打印轨迹速度和加速度");
-    for (int i = 0; i < trajectory_copy.size(); i++) {
-        threadLogger_->info("index:{} speed:{} acc:{}", i, trajectory_copy[i].speed, trajectory_copy[i].acc);
-    }
+   
 }
 
 
@@ -737,7 +736,7 @@ void GlobalSpeedPlanning::CalculateCubicSplineCurve(vector<_TrajectoryPoint>& po
         temp_point.x         = sx_(s);
         temp_point.y         = sy_(s);
         temp_point.z         = 0;
-        temp_point.yaw     = angle;
+        temp_point.yaw       = angle;
         temp_point.curvature = cur;
         temp_point.attribute = PointAttribute::dump_road;
         temp_point.direction = MotionDirection::Forward;
@@ -758,7 +757,7 @@ void GlobalSpeedPlanning::CalculateCubicSplineCurve(vector<_TrajectoryPoint>& po
     temp_point.x         = sx_(s);
     temp_point.y         = sy_(s);
     temp_point.z         = 0;
-    temp_point.yaw     = angle;
+    temp_point.yaw       = angle;
     temp_point.curvature = cur;
     temp_point.direction = MotionDirection::Forward;
     temp_point.attribute = PointAttribute::dump_road;

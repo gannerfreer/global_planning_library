@@ -1229,7 +1229,8 @@ float OptimalPath::AStarSearch2D(Node2D& start, Node2D& goal, int& num) {
         clock_t current_time = clock();
         double  elapsed_time = static_cast<double>(current_time - start_time) / CLOCKS_PER_SEC;
 
-        if (elapsed_time > 1.0) {
+        if (elapsed_time > 2.0) {
+            threadLogger_->info("增量a_star搜索超时");
             break;
         }
         num++;

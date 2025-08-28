@@ -201,6 +201,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     threadLogger_->info("轨迹连续性校验通过");
 
     // 超速检测
+
     if (!Helper::OverSpeedCheck(global_path_, vehicle_param_.wheel_base)) {
         threadLogger_->error("存在超速，检测失败");
         error_type_ = ErrorType::ALGORITHM_ERROR_TRAJECTORY_VERIFY_SPEED_OVER;
@@ -638,6 +639,7 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
             return result;
         }
         global_path_.insert(global_path_.end(), temp_traj.begin(), temp_traj.end());
+        hybridAstar_path_length_ = temp_traj.size();
         threadLogger_->info("临时挪车,路长:{}", global_path_.size());
     }
     else if (task_type_ == TaskType::LOAD) { // 装载任务，先纯倒车，纯倒车不行再往前开，再倒车

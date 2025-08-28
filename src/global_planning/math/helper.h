@@ -251,15 +251,7 @@ inline bool OverSpeedCheck(vector<_TrajectoryPoint>& traj, float L) {
     for (int i = 0; i < traj.size() - 1; i++) {
         // cout << "index:" << i << "speed_limit:" << traj.at(i).speed_limit << endl;
         if (traj.at(i).speed > traj.at(i).speed_limit + 0.5 + eps) {
-            cout << "超速类型1" << endl;
-            flag = true;
-        }
-        if (traj.at(i).speed > sqrt(0.5 / traj.at(i).curvature) + eps) {
-            cout << "超速类型2" << "index:" << i << "real_speed:" << traj.at(i).speed << "  ideal_speed_limit:" << sqrt(0.5 / traj.at(i).curvature) << endl;
-            flag = true;
-        }
-        if (traj.at(i).speed > 1.0 * 0.175 * 1.5 / (fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature)) + eps) + eps) {
-            cout << "超速类型3" << "index:" << i << "real_speed:" << traj.at(i).speed << "  ideal_speed_limit:" << 1.0 * 0.175 * 1.5 / (fabs(atan(L * traj.at(i).curvature) - atan(L * traj.at(i + 1).curvature)) + eps) << endl;
+            cout << "超速类型" << endl;
             flag = true;
         }
     }
