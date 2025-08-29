@@ -54,6 +54,7 @@
     "dis_threshold": 2.0,
     "w_deviation_": 0.0001,
     "w_curvature_": 100,
-    "w_curvature_change_": 1
+    "w_curvature_change_": 1,
+    "ipopt_max_offset": 3.1
   }
 }

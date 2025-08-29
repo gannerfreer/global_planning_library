@@ -101,7 +101,7 @@ bool TensionSmoother2::smooth(std::vector<Point>& result) {
 bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std::vector<double>& y_list, const std::vector<double>& angle_list, const std::vector<double>& k_list, const std::vector<double>& s_list, std::vector<double>* result_x_list, std::vector<double>* result_y_list, std::vector<double>* result_s_list, std::vector<double>* result_curvature_list, std::vector<double>* result_angle_list) {
     typedef CPPAD_TESTVECTOR(double) Dvector;
     auto   point_num = x_list.size();
-    size_t n_vars    = 4 * point_num; // 最后一个路径点的k不需要优化
+    size_t n_vars    = 4 * point_num; 
 
     size_t  x_idx_begin     = 0;
     size_t  y_idx_begin     = x_idx_begin + point_num;
@@ -111,8 +111,8 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     for (size_t i = 0; i < point_num; i++) {
         vars[x_idx_begin + i]     = x_list[i];
         vars[y_idx_begin + i]     = y_list[i];
-        vars[theta_idx_begin + i] = angle_list[i]; // 优化变量为角度变化，所以初值给0
-        vars[k_idx_begin + i]     = k_list[i];     // 最后一个路径点的k不需要优化
+        vars[theta_idx_begin + i] = angle_list[i]; 
+        vars[k_idx_begin + i]     = k_list[i];     
     }
 
     std::cout << "打印 vars[] 初值信息" << std::endl;
@@ -127,7 +127,8 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     // bounds of variables
     Dvector vars_lowerbound(n_vars);
     Dvector vars_upperbound(n_vars);
-    double  max_offset = 10;
+    double  max_offset = m_vehicle_param_.ipopt_max_offset;
+    threadLogger_->info("ipopt max_offset: {}", max_offset);
     double  curvature_threshold;
     // 根据车辆类型和方向设置曲率阈值
     if (input_points_.front().direction == MotionDirection::Forward) {

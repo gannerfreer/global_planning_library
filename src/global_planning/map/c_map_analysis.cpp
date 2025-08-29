@@ -778,6 +778,14 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 w_curvature_change_ ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.w_curvature_change_ = 1;
             }
+
+            if (val.HasMember("ipopt_max_offset") && val["ipopt_max_offset"].IsNumber()) {
+                veh_start_end.veh_param.ipopt_max_offset = val["ipopt_max_offset"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 ipopt_max_offset ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.ipopt_max_offset = 3;
+            }
         }
     }
     vehicle_param = veh_start_end.veh_param;

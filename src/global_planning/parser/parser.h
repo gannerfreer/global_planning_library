@@ -563,6 +563,14 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "无法找到车参 w_curvature_change_ ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.w_curvature_change_ = 1;
             }
+
+            if (val.HasMember("ipopt_max_offset")) {
+                veh_start_end.veh_param.ipopt_max_offset = val["ipopt_max_offset"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 ipopt_max_offset ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.ipopt_max_offset = 3;
+            }
         }
     }
 
@@ -1781,6 +1789,14 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 cout << "无法找到车参 w_curvature_change_ ，即将赋予默认值" << endl;
             }
             std::cout << "车辆参数解析完成" << std::endl;
+
+            if (val.HasMember("ipopt_max_offset")) {
+                planning_info.veh_param.ipopt_max_offset = val["ipopt_max_offset"].GetFloat();
+            }
+            else {
+                planning_info.veh_param.ipopt_max_offset = 3;
+                cout << "无法找到车参 ipopt_max_offset ，即将赋予默认值" << endl;
+            }
         }
     }
 
