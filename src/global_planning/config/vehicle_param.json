@@ -7,7 +7,7 @@
     "path_error_term": 0.0,
     "grid_angle": 1,
     "wheel_base": 5.15,
-    "hybridastar_step_length": 0.2,
+    "hybridastar_step_length": 1,
     "heavy_forward_max_steering": 25,
     "heavy_backward_max_steering": 22.39,
     "light_forward_max_steering": 30.63,
@@ -15,7 +15,7 @@
     "path_curvature_term": 0.0,
     "switch_penalty": 10,
     "forward_penalty": 1,
-    "path_smoothness_term": 0.2,
+    "path_smoothness_term": 0.3,
     "backward_penalty": 5.5,
     "turnning_penalty": 1.468,
     "safe_margin_bound": 0.0,
@@ -24,7 +24,7 @@
     "angle_discrete_num": 3,
     "max_fitting_radius": 50,
     "veh_center_2_front": 7.102,
-    "max_iterations_opti": 1000,
+    "max_iterations_opti": 5000,
     "safe_margin_obstacle": 2,
     "cusp_extension_distance": 1,
     "veh_center_2_rear_bound": 2.85,
@@ -51,6 +51,9 @@
     "max_steering_wheel_speed": 0.175,
     "sample_num": 40,
     "plan_time": 0.2,
-    "dis_threshold": 2.0
+    "dis_threshold": 2.0,
+    "w_deviation_": 0.0001,
+    "w_curvature_": 100,
+    "w_curvature_change_": 1
   }
 }

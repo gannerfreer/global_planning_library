@@ -1,5 +1,6 @@
 //
 // Created by ljn on 20-5-4.
+// improved by yanyifeng/chenxinpeng on 25-8-29
 //
 #include "tension_smoother_2.hpp"
 
@@ -8,20 +9,8 @@
 #include "OsqpEigen/OsqpEigen.h"
 
 namespace GlobalPlanning {
-// double w_deviation_ = 0.001;
-// double w_curvature_ = 1;
-// double w_curvature_change_ = 1;
 
-double w_deviation_        = 0.01;
-double w_curvature_        = 100;
-double w_curvature_change_ = 1;
-
-// FgEvalQPSmoothing::FgEvalQPSmoothing(const std::vector<double>& seg_x_list,
-// const std::vector<double>& seg_y_list, const std::vector<double>& seg_s_list,
-// const std::vector<double>& seg_angle_list, const std::vector<double>&
-// seg_k_list) : FgEvalReferenceSmoothing(seg_x_list, seg_y_list, seg_s_list,
-// seg_angle_list), seg_k_list_(seg_k_list) {}
-FgEvalQPSmoothing::FgEvalQPSmoothing(const std::vector<double>& seg_x_list, const std::vector<double>& seg_y_list, const std::vector<double>& seg_s_list, const std::vector<double>& seg_angle_list, const std::vector<double>& seg_k_list) : seg_k_list_(seg_k_list), seg_s_list_(seg_s_list), seg_x_list_(seg_x_list), seg_y_list_(seg_y_list), seg_angle_list_(seg_angle_list) {}
+FgEvalQPSmoothing::FgEvalQPSmoothing(const std::vector<double>& seg_x_list, const std::vector<double>& seg_y_list, const std::vector<double>& seg_s_list, const std::vector<double>& seg_angle_list, const std::vector<double>& seg_k_list, const _VehicleParam& m_vehicle_param) : seg_k_list_(seg_k_list), seg_s_list_(seg_s_list), seg_x_list_(seg_x_list), seg_y_list_(seg_y_list), seg_angle_list_(seg_angle_list), m_vehicle_param_(m_vehicle_param) {}
 
 void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& fg, const GlobalPlanning::FgEvalQPSmoothing::ADvector& vars) {
     size_t point_num       = seg_s_list_.size();
@@ -34,9 +23,9 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
     size_t cons_y_idx_begin              = cons_x_idx_begin + point_num - 1;
     size_t cons_theta_idx_begin          = cons_y_idx_begin + point_num - 1;
     size_t cons_curvature_rate_idx_begin = cons_theta_idx_begin + point_num - 1;
-    std::cout << "w_curvature_change_" << w_curvature_change_ << std::endl;
-    std::cout << "w_curvature_" << w_curvature_ << std::endl;
-    std::cout << "w_deviation_" << w_deviation_ << std::endl;
+    std::cout << "w_curvature_change_" << m_vehicle_param_.w_curvature_change_ << std::endl;
+    std::cout << "w_curvature_" << m_vehicle_param_.w_curvature_ << std::endl;
+    std::cout << "w_deviation_" << m_vehicle_param_.w_deviation_ << std::endl;
     for (size_t i = 0; i < point_num - 1; ++i) {
         ad cur_x      = vars[x_idx_begin + i];
         ad next_x     = vars[x_idx_begin + i + 1];
@@ -46,40 +35,21 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
         ad ref_y      = seg_y_list_[i];
         ad cur_theta  = vars[theta_idx_begin + i];
         ad next_theta = vars[theta_idx_begin + i + 1];
-        ad ref_theta  = seg_angle_list_[i];
         ad ds         = seg_s_list_[i + 1] - seg_s_list_[i];
         ad cur_k      = vars[k_idx_begin + i];
-        ad ref_k      = seg_k_list_[i];
 
         // cost
-        fg[0] += w_deviation_ * (pow(cur_x - ref_x, 2) + pow(cur_y - ref_y, 2));
-        fg[0] += w_curvature_ * pow(cur_k, 2);
-        
-            ad next_k = vars[k_idx_begin + i + 1];
-            fg[0] += w_curvature_change_ * pow(cur_k - next_k, 2);
-        
+        fg[0] += m_vehicle_param_.w_deviation_ * (pow(cur_x - ref_x, 2) + pow(cur_y - ref_y, 2)); // 代价函数：xy方向偏差代价
+        fg[0] += m_vehicle_param_.w_curvature_ * pow(cur_k, 2);                                   // 代价函数：曲率代价
+        ad next_k = vars[k_idx_begin + i + 1];
+        fg[0] += m_vehicle_param_.w_curvature_change_ * pow(cur_k - next_k, 2); // 代价函数：曲率变化代价
+
         // cons
-        std::cout << std::endl;
-        std::cout << "cons_x_idx_begin + i: " << cons_x_idx_begin + i << std::endl;
-        std::cout << "cons_y_idx_begin + i: " << cons_y_idx_begin + i << std::endl;
-        std::cout << "cons_theta_idx_begin + i: " << cons_theta_idx_begin + i << std::endl;
-        std::cout << "cons_curvature_rate_idx_begin + i: " << cons_curvature_rate_idx_begin + i << std::endl;
-        std::cout << "ds: " << ds << std::endl;
-        // fg[cons_x_idx_begin + i] =
-        //     next_x - (cur_x + ds * (cos(ref_theta) - sin(ref_theta) *
-        //     cur_theta));
-        // fg[cons_y_idx_begin + i] =
-        //     next_y - (cur_y + ds * (sin(ref_theta) + cos(ref_theta) *
-        //     cur_theta));
-        // fg[cons_theta_idx_begin + i] =
-        //     next_theta - (cur_theta + ds * (cur_k - ref_k));
-        fg[cons_x_idx_begin + i]     = next_x - cur_x + ds * sin(ref_theta) * cur_theta;
-        fg[cons_y_idx_begin + i]     = next_y - cur_y - ds * cos(ref_theta) * cur_theta;
-        fg[cons_theta_idx_begin + i] = next_theta - cur_theta - ds * cur_k;
-        
-             next_k = vars[k_idx_begin + i + 1];
-            fg[cons_curvature_rate_idx_begin + i] = pow(cur_k - next_k, 2);
-        
+        fg[cons_x_idx_begin + i]              = next_x - cur_x - ds * cos(cur_theta);     // 约束xy方向运动学约束
+        fg[cons_y_idx_begin + i]              = next_y - cur_y - ds * sin(cur_theta);     // 约束y方向运动学约束
+        fg[cons_theta_idx_begin + i]          = sin(next_theta - cur_theta - ds * cur_k); // 角度变化约束,采用sin函数约束,防止角度在0～360度之间跳变
+        next_k                                = vars[k_idx_begin + i + 1];
+        fg[cons_curvature_rate_idx_begin + i] = pow((cur_k - next_k) / ds, 2); // 曲率变化约束，要求相邻路径点之前的曲率变化不能太大，否则会导致路径不平滑
     }
 }
 
@@ -87,7 +57,6 @@ TensionSmoother2::TensionSmoother2(const std::vector<Point>& input_points, _Vehi
 
 bool TensionSmoother2::smooth(std::vector<Point>& result) {
     std::vector<double> x_list, y_list, s_list, angle_list, k_list;
-    // 这里需要自己构建上述变量
     // 先行打印input_points_
     std::cout << "待优化路径信息: " << input_points_.size() << std::endl;
     for (int i = 0; i < input_points_.size(); i++) {
@@ -142,22 +111,23 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     for (size_t i = 0; i < point_num; i++) {
         vars[x_idx_begin + i]     = x_list[i];
         vars[y_idx_begin + i]     = y_list[i];
-        vars[theta_idx_begin + i] = 0; // 优化变量为角度变化，所以初值给0
-        
-            vars[k_idx_begin + i] = k_list[i]; // 最后一个路径点的k不需要优化
-        
+        vars[theta_idx_begin + i] = angle_list[i]; // 优化变量为角度变化，所以初值给0
+        vars[k_idx_begin + i]     = k_list[i];     // 最后一个路径点的k不需要优化
     }
 
     std::cout << "打印 vars[] 初值信息" << std::endl;
     for (int i = 0; i < vars.size(); i++) {
         std::cout << vars[i] << " ";
+        if (i % point_num == 0 && i != 0) {
+            cout << endl;
+        }
     }
     std::cout << std::endl;
 
     // bounds of variables
     Dvector vars_lowerbound(n_vars);
     Dvector vars_upperbound(n_vars);
-    double  max_offset = 2;
+    double  max_offset = 10;
     double  curvature_threshold;
     // 根据车辆类型和方向设置曲率阈值
     if (input_points_.front().direction == MotionDirection::Forward) {
@@ -187,22 +157,20 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
             vars_lowerbound[y_idx_begin + i] = vars_upperbound[y_idx_begin + i] = y_list[i];
         }
         else {
-            vars_lowerbound[x_idx_begin + i]     = x_list[i] - max_offset;
-            vars_upperbound[x_idx_begin + i]     = x_list[i] + max_offset;
-            vars_lowerbound[y_idx_begin + i]     = y_list[i] - max_offset;
-            vars_upperbound[y_idx_begin + i]     = y_list[i] + max_offset;
-            vars_lowerbound[theta_idx_begin + i] = -DBL_MAX;//角度变化范围不限制
-            vars_upperbound[theta_idx_begin + i] = DBL_MAX;//角度变化范围不限制
+            vars_lowerbound[x_idx_begin + i] = x_list[i] - max_offset;
+            vars_upperbound[x_idx_begin + i] = x_list[i] + max_offset;
+            vars_lowerbound[y_idx_begin + i] = y_list[i] - max_offset;
+            vars_upperbound[y_idx_begin + i] = y_list[i] + max_offset;
         }
+        vars_lowerbound[theta_idx_begin + i] = -DBL_MAX; // 角度变化范围不限制
+        vars_upperbound[theta_idx_begin + i] = DBL_MAX;  // 角度变化范围不限制
 
         // 约束曲率变化范围
-        
-            vars_lowerbound[k_idx_begin + i] = -curvature_threshold;
-            vars_upperbound[k_idx_begin + i] = curvature_threshold;
-        
+        vars_lowerbound[k_idx_begin + i] = -curvature_threshold;
+        vars_upperbound[k_idx_begin + i] = curvature_threshold;
     }
     // 额外对前a个点的曲率进行约束
-    int a=0;
+    int a = 0;
     for (size_t i = 0; i < a; i++) {
         vars_lowerbound[k_idx_begin + i] = 0;
         vars_upperbound[k_idx_begin + i] = 0;
@@ -211,7 +179,7 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     for (size_t i = 0; i < point_num; i++) {
         // 起点和终点角度不优化
         if (i == 0 || i == point_num - 1) {
-            vars_lowerbound[theta_idx_begin + i] = vars_upperbound[theta_idx_begin + i] = 0;
+            vars_lowerbound[theta_idx_begin + i] = vars_upperbound[theta_idx_begin + i] = angle_list[i];
         }
     }
 
@@ -228,23 +196,21 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     std::cout << std::endl;
 
     // Constraints.
-    size_t  n_constraints = (point_num - 1) * 4 ;
+    size_t  n_constraints = (point_num - 1) * 4;
     Dvector constraints_lowerbound(n_constraints);
     Dvector constraints_upperbound(n_constraints);
     // for(int i=0;i<n_constraints;i++){
     //   constraints_lowerbound[i]=constraints_upperbound[i]=0;
     // }
-    double Eps = 0.0;
-    double ds  = 0;
+    double Eps = 0;
     // x、y、theta方向运动学约束
     for (int i = 0; i < (point_num - 1); i++) {
-        ds = s_list[i + 1] - s_list[i];
-        constraints_lowerbound[i]                       = ds * cos(angle_list[i]) - Eps;
-        constraints_upperbound[i]                       = ds * cos(angle_list[i]) + Eps;
-        constraints_lowerbound[i + (point_num - 1)]     = ds * sin(angle_list[i]) - Eps;
-        constraints_upperbound[i + (point_num - 1)]     = ds * sin(angle_list[i]) + Eps;
-        constraints_lowerbound[i + (point_num - 1) * 2] = -1 * ds * k_list[i] - Eps;
-        constraints_upperbound[i + (point_num - 1) * 2] = -1 * ds * k_list[i] + Eps;
+        constraints_lowerbound[i]                       = -Eps;
+        constraints_upperbound[i]                       = Eps;
+        constraints_lowerbound[i + (point_num - 1)]     = -Eps;
+        constraints_upperbound[i + (point_num - 1)]     = Eps;
+        constraints_lowerbound[i + (point_num - 1) * 2] = -Eps;
+        constraints_upperbound[i + (point_num - 1) * 2] = Eps;
     }
     // 曲率约束
     for (int i = (point_num - 1) * 3; i < n_constraints; ++i) {
@@ -274,7 +240,7 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     CppAD::ipopt::solve_result<Dvector> solution;
     // weights of the cost function
 
-    FgEvalQPSmoothing fg_eval_reference_smoothing(x_list, y_list, s_list, angle_list, k_list);
+    FgEvalQPSmoothing fg_eval_reference_smoothing(x_list, y_list, s_list, angle_list, k_list, m_vehicle_param_);
 
     // solve the problem
     CppAD::ipopt::solve<Dvector, FgEvalQPSmoothing>(options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound, constraints_upperbound, fg_eval_reference_smoothing, solution);
@@ -292,9 +258,8 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     std::cout << "索引\tx\ty\ttheta\tk" << std::endl;
     for (size_t i = 0; i != point_num; ++i) {
         std::cout << i << "\t" << solution.x[x_idx_begin + i] << "\t" << solution.x[y_idx_begin + i] << "\t" << solution.x[theta_idx_begin + i] << "\t";
-        if (i != point_num - 1) {
-            std::cout << solution.x[k_idx_begin + i];
-        }
+        std::cout << solution.x[k_idx_begin + i];
+
         std::cout << std::endl;
     }
 
@@ -311,12 +276,8 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
         if (i != 0) tmp_s += sqrt(pow(result_x_list->at(i) - result_x_list->at(i - 1), 2) + pow(result_y_list->at(i) - result_y_list->at(i - 1), 2));
         result_s_list->emplace_back(tmp_s);
         result_angle_list->emplace_back(solution.x[theta_idx_begin + i]);
-        if (i != point_num - 1) {
-            result_curvature_list->emplace_back(solution.x[k_idx_begin + i]);
-        }
-        else {
-            result_curvature_list->emplace_back(result_curvature_list->back());
-        }
+
+        result_curvature_list->emplace_back(solution.x[k_idx_begin + i]);
     }
     // LOG(INFO) << "Tension smoothing 2 ipopt solver succeeded!";
     return true;
@@ -440,14 +401,14 @@ void TensionSmoother2::setHessianMatrix(size_t size, Eigen::SparseMatrix<double>
     Eigen::MatrixXd hessian           = Eigen::MatrixXd::Constant(matrix_size, matrix_size, 0);
     // Deviation and curvature.
     for (int i = 0; i != size; ++i) {
-        hessian(x_start_index + i, x_start_index + i) = hessian(y_start_index + i, y_start_index + i) = w_deviation_ * 2;
-        if (i != size - 1) hessian(k_start_index + i, k_start_index + i) = w_curvature_ * 2;
+        hessian(x_start_index + i, x_start_index + i) = hessian(y_start_index + i, y_start_index + i) = m_vehicle_param_.w_deviation_ * 2;
+        if (i != size - 1) hessian(k_start_index + i, k_start_index + i) = m_vehicle_param_.w_curvature_ * 2;
     }
     // Curvature change.
     Eigen::Vector2d coeff_vec{1, -1};
     Eigen::Matrix2d coeff = coeff_vec * coeff_vec.transpose();
     for (int i = 0; i != size - 2; ++i) {
-        hessian.block(k_start_index + i, k_start_index + i, 2, 2) += 2 * w_curvature_change_ * coeff;
+        hessian.block(k_start_index + i, k_start_index + i, 2, 2) += 2 * m_vehicle_param_.w_curvature_change_ * coeff;
     }
     // 打印hessian,按照格式打印,每个数占6位,保留2位小数
     std::cout << "打印hessian   " << hessian.rows() << " " << hessian.cols() << std::endl;
@@ -634,8 +595,8 @@ void TensionSmoother2::setGradient(const std::vector<double>& x_list, const std:
     const size_t y_start_index = x_start_index + size;
     *gradient                  = Eigen::VectorXd::Constant(4 * size - 1, 0);
     for (int i = 0; i != size; ++i) {
-        (*gradient)(x_start_index + i) = -2 * w_deviation_ * x_list[i];
-        (*gradient)(y_start_index + i) = -2 * w_deviation_ * y_list[i];
+        (*gradient)(x_start_index + i) = -2 * m_vehicle_param_.w_deviation_ * x_list[i];
+        (*gradient)(y_start_index + i) = -2 * m_vehicle_param_.w_deviation_ * y_list[i];
     }
     // 打印gradient,按照格式打印,每个数占6位,保留2位小数
     std::cout << "打印gradient  " << gradient->size() << std::endl;

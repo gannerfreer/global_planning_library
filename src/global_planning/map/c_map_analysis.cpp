@@ -754,6 +754,30 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 dis_threshold ，即将赋予默认值" << endl;
                 veh_start_end.veh_param.dis_threshold = 2.0;
             }
+
+            if (val.HasMember("w_deviation_") && val["w_deviation_"].IsNumber()) {
+                veh_start_end.veh_param.w_deviation_ = val["w_deviation_"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 w_deviation_ ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_deviation_ = 0.00012;
+            }
+
+            if (val.HasMember("w_curvature_") && val["w_curvature_"].IsNumber()) {
+                veh_start_end.veh_param.w_curvature_ = val["w_curvature_"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 w_curvature_ ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_curvature_ = 100;
+            }
+
+            if (val.HasMember("w_curvature_change_") && val["w_curvature_change_"].IsNumber()) {
+                veh_start_end.veh_param.w_curvature_change_ = val["w_curvature_change_"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 w_curvature_change_ ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_curvature_change_ = 1;
+            }
         }
     }
     vehicle_param = veh_start_end.veh_param;

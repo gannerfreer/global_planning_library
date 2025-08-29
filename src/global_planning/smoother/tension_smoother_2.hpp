@@ -52,7 +52,7 @@ using CppAD::AD;
 
 class FgEvalQPSmoothing {
   public:
-    FgEvalQPSmoothing(const std::vector<double>& seg_x_list, const std::vector<double>& seg_y_list, const std::vector<double>& seg_s_list, const std::vector<double>& seg_angle_list, const std::vector<double>& seg_k_list);
+    FgEvalQPSmoothing(const std::vector<double>& seg_x_list, const std::vector<double>& seg_y_list, const std::vector<double>& seg_s_list, const std::vector<double>& seg_angle_list, const std::vector<double>& seg_k_list, const _VehicleParam& m_vehicle_param);
     ~FgEvalQPSmoothing() = default;
     typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
     typedef AD<double> ad;
@@ -64,6 +64,7 @@ class FgEvalQPSmoothing {
     const std::vector<double>& seg_x_list_;
     const std::vector<double>& seg_y_list_;
     const std::vector<double>& seg_angle_list_;
+    const _VehicleParam&       m_vehicle_param_;
 };
 
 class TensionSmoother2 {

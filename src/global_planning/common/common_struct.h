@@ -243,6 +243,10 @@ struct _VehicleParam {
     float           plan_time                = 0.2;
 
     float dis_threshold = 2.0;
+
+    float w_deviation_        = 0.001;
+    float w_curvature_        = 100;
+    float w_curvature_change_ = 1;
 };
 
 // 调用全局规划时，需要传入的参数
