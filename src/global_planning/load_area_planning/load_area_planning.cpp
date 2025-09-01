@@ -282,6 +282,7 @@ bool LoadAreaPlanning::PathSmoother(GlobalPlanning::Path& input_path, const Glob
     }
     CalculatePathDistance(input_path);
     GlobalPlanning::TensionSmoother2 smoother(input_path, veh_param);
+    smoother.threadLogger_ = threadLogger_;
     if (smoother.smooth(input_path)) {
         for (auto& point : input_path) {
             point.angle = point.angle * 180.0 / M_PI;
