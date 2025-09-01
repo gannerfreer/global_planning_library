@@ -1,6 +1,6 @@
 #include "load_area_planning.h"
 namespace LoadAreaPlanning {
-std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanning::LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck collision_checker) {
+std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanning::LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck& collision_checker, const vector<_BorderPoint>& static_bound, const vector<vector<_BorderPoint>>& wall_bound, const vector<vector<_BorderPoint>>& machine_bound) {
     FittingPathGenerate::FittingPathGenerator fit_path_planner(out_put_path_dense_, search_range_, jump_dense_, length_weight_, curvature_weight_, critical_length_, min_straight_length_depart_, max_straight_length_depart_, delta_straight_length_depart_, min_straight_length_wait_, max_straight_length_wait_, delta_straight_length_wait_, min_straight_length_load_, max_straight_length_load_, delta_straight_length_load_, load_path_straight_length_weight_, load_path_curvature_weight_);
     GlobalPlanning::Path                      wait_path;
     GlobalPlanning::Path                      load_path;
@@ -74,9 +74,47 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         load_path            = fit_path_planner.LoadPathGenerateInterface(load_point, wait_point, collision_checker).first;
         CalCurvature(load_path, 1);
         if (load_path.empty()) {
-            cout << "装载倒车路径规划失败！" << endl;
-            return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
+            cout << "装载倒车路径规划失败,调用混合A*" << endl;
+
+            GlobalPlanning::OptimalPath hybrid_a_star; // 初始化混合a*规划器
+
+            hybrid_a_star.threadLogger_ = threadLogger_; // 给日志系统赋值
+
+            GlobalPlanning::_SinglePoint start_point; // 给起点赋值
+            start_point.x   = wait_point.x;
+            start_point.y   = wait_point.y;
+            start_point.yaw = wait_point.angle * M_PI / 180.0; // 注意传入混合a*的起点应是弧度
+
+            hybrid_a_star.InitBound(start_point, static_bound, wall_bound, machine_bound, veh_param); // 初始化边界
+
+            hybrid_a_star.start_offset_distance_ = 2.0;
+            hybrid_a_star.end_offset_distance_   = 2.0; // 暂定起点终点补偿都是2m
+
+            GlobalPlanning::Path load_path_final; // 定义规划起点接收路径
+
+            GlobalPlanning::PlanRule plan_rule = GlobalPlanning::PlanRule::Backward_All_Time; // 规定规划规则
+
+            long long threshold_time = 10000; // 最大迭代次数
+
+            auto temp_wait_point  = wait_point;
+            temp_wait_point.angle = temp_wait_point.angle * M_PI / 180.0;
+            auto temp_load_point  = load_point;
+            temp_load_point.angle = temp_load_point.angle * M_PI / 180.0; // 调用时注意把起点终点角度转化为弧度
+
+            auto plan_result = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
+
+            if (plan_result == GlobalPlanning::PlanResult::Plan_OK) {
+                load_path = load_path_final;
+                cout << "人工指定排队点模式，混合A*规划成功！";
+                for (auto& point : load_path) {
+                    point.angle = point.angle * 180.0 / M_PI;
+                }
+            }
+            else {
+                return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
+            }
         }
+        
         auto temp_wait_path = wait_path;
         // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
         ofstream file;
