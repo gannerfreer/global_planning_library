@@ -47,7 +47,6 @@ planner/pathplanner/hybirdastar/optimal_path.o: \
  planner/pathplanner/hybirdastar/../../../smoother/../common/common_struct.h \
  planner/pathplanner/hybirdastar/../../../smoother/../math/helper.h \
  planner/pathplanner/hybirdastar/../../../smoother/../planner/pathplanner/spline/spline.h \
- planner/pathplanner/hybirdastar/../../../smoother/vector2d.h \
  planner/pathplanner/hybirdastar/../../../smoother/tension_smoother_2.hpp \
  /usr/include/eigen3/Eigen/Dense /usr/include/eigen3/Eigen/Core \
  /usr/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -294,6 +293,7 @@ planner/pathplanner/hybirdastar/optimal_path.o: \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h \
+ planner/pathplanner/hybirdastar/../../../smoother/vector2d.h \
  planner/pathplanner/hybirdastar/../../../time/StringHelper.h \
  planner/pathplanner/hybirdastar/../../../time/TimeHelper.h \
  planner/pathplanner/hybirdastar/node2d.h \
@@ -392,8 +392,6 @@ planner/pathplanner/hybirdastar/../../../smoother/../common/common_struct.h:
 planner/pathplanner/hybirdastar/../../../smoother/../math/helper.h:
 
 planner/pathplanner/hybirdastar/../../../smoother/../planner/pathplanner/spline/spline.h:
-
-planner/pathplanner/hybirdastar/../../../smoother/vector2d.h:
 
 planner/pathplanner/hybirdastar/../../../smoother/tension_smoother_2.hpp:
 
@@ -896,6 +894,8 @@ planner/pathplanner/hybirdastar/../../../smoother/tension_smoother_2.hpp:
 /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h:
 
 /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h:
+
+planner/pathplanner/hybirdastar/../../../smoother/vector2d.h:
 
 planner/pathplanner/hybirdastar/../../../time/StringHelper.h:
 

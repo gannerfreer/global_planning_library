@@ -53,7 +53,6 @@ mine_global_planning/planning.o: mine_global_planning/planning.cpp \
  mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/../common/common_struct.h \
  mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/../math/helper.h \
  mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/../planner/pathplanner/spline/spline.h \
- mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/vector2d.h \
  mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/tension_smoother_2.hpp \
  /usr/include/eigen3/Eigen/Dense /usr/include/eigen3/Eigen/Core \
  /usr/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -300,6 +299,7 @@ mine_global_planning/planning.o: mine_global_planning/planning.cpp \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h \
+ mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/vector2d.h \
  mine_global_planning/../planner/pathplanner/hybirdastar/../../../time/StringHelper.h \
  mine_global_planning/../planner/pathplanner/hybirdastar/../../../time/TimeHelper.h \
  mine_global_planning/../planner/pathplanner/hybirdastar/node2d.h \
@@ -419,8 +419,6 @@ mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/../com
 mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/../math/helper.h:
 
 mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/../planner/pathplanner/spline/spline.h:
-
-mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/vector2d.h:
 
 mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/tension_smoother_2.hpp:
 
@@ -923,6 +921,8 @@ mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/tensio
 /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h:
 
 /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h:
+
+mine_global_planning/../planner/pathplanner/hybirdastar/../../../smoother/vector2d.h:
 
 mine_global_planning/../planner/pathplanner/hybirdastar/../../../time/StringHelper.h:
 

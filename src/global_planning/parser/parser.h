@@ -304,7 +304,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.max_iterations_opti " << veh_start_end.veh_param.max_iterations_opti << endl;
             }
             else {
-                veh_start_end.veh_param.max_iterations_opti = 100;
+                veh_start_end.veh_param.max_iterations_opti = 1000;
                 cout << "无法找到车参 max_iterations_opti ，即将赋予默认值" << endl;
             }
 

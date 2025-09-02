@@ -39,7 +39,7 @@ smoother/path_opti.o: smoother/path_opti.cpp smoother/path_opti.h \
  smoother/../collision_check/../time/TimeHelper.h \
  smoother/../common/common_struct.h smoother/../math/helper.h \
  smoother/../math/../common/common_struct.h \
- smoother/../planner/pathplanner/spline/spline.h smoother/vector2d.h \
+ smoother/../planner/pathplanner/spline/spline.h \
  smoother/tension_smoother_2.hpp /usr/include/eigen3/Eigen/Dense \
  /usr/include/eigen3/Eigen/Core \
  /usr/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -285,7 +285,8 @@ smoother/path_opti.o: smoother/path_opti.cpp smoother/path_opti.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/LeastSquareConjugateGradient.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
- /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h
+ /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h \
+ smoother/vector2d.h
 
 smoother/path_opti.h:
 
@@ -372,8 +373,6 @@ smoother/../math/helper.h:
 smoother/../math/../common/common_struct.h:
 
 smoother/../planner/pathplanner/spline/spline.h:
-
-smoother/vector2d.h:
 
 smoother/tension_smoother_2.hpp:
 
@@ -876,3 +875,5 @@ smoother/tension_smoother_2.hpp:
 /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h:
 
 /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h:
+
+smoother/vector2d.h:

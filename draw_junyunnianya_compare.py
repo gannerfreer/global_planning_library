@@ -41,7 +41,7 @@ plt.figure(figsize=(12, 10))
 
 # 1. y-x comparison
 plt.subplot(2, 2, 1)
-plt.plot(x1, y1, label='Before Uniformization', color='blue')
+# plt.plot(x1, y1, label='Before Uniformization', color='blue')
 plt.plot(x2, y2, label='After Uniformization', color='red')
 plt.plot(x3, y3, label='After Smoothing', color='green')
 plt.xlabel('x')
@@ -52,7 +52,7 @@ plt.axis('equal')
 
 # 2. Yaw comparison
 plt.subplot(2, 2, 2)
-plt.plot(distance1, yaw1, label='Before Uniformization', color='blue')
+# plt.plot(distance1, yaw1, label='Before Uniformization', color='blue')
 plt.plot(distance2, yaw2, label='After Uniformization', color='red')
 plt.plot(distance3, yaw3, label='After Smoothing', color='green')
 plt.xlabel('Distance (s)')
@@ -62,7 +62,7 @@ plt.legend()
 
 # 3. Curvature comparison
 plt.subplot(2, 2, 3)
-plt.plot(distance1, curvature1, label='Before Uniformization', color='blue')
+# plt.plot(distance1, curvature1, label='Before Uniformization', color='blue')
 plt.plot(distance2, curvature2, label='After Uniformization', color='red')
 plt.plot(distance3, curvature3, label='After Smoothing', color='green')
 plt.xlabel('Distance (s)')
@@ -72,7 +72,7 @@ plt.legend()
 
 # 4. Curvature rate comparison
 plt.subplot(2, 2, 4)
-plt.plot(distance1, curvature_rate1, label='Before Uniformization', color='blue')
+# plt.plot(distance1, curvature_rate1, label='Before Uniformization', color='blue')
 plt.plot(distance2, curvature_rate2, label='After Uniformization', color='red')
 plt.plot(distance3, curvature_rate3, label='After Smoothing', color='green')
 plt.xlabel('Distance (s)')

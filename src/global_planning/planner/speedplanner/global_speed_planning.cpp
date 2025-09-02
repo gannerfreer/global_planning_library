@@ -157,9 +157,10 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
 
     // 先通过direction属性，将前进后退轨迹进行区分(direction 0:前进 1:后退),后退轨迹限速均为1m/s
     vector<_TrajectoryPoint>::iterator iter = trajectory.begin();
-    threadLogger_->info("trajectory.end()->speed_limit:{}", trajectory.end()->speed_limit);
+    threadLogger_->info("trajectory.back().speed_limit:{}", trajectory.back().speed_limit);
     if (trajectory.back().speed_limit == -1) {
         // speed_limit=-1表示没有设置限速，说明地图中没有提供限速信息，说明这是矿区版本的地图
+        threadLogger_->info("地图中没有提供限速信息，说明这是矿区版本的地图");
         double last_speed_limit = 0;
         for (; iter != trajectory.end(); iter++) {
             if (iter->direction == 0) {
@@ -215,7 +216,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     std::ofstream file_out;
     file_out.open("speed_limit0.txt");
     for (size_t index = 0; index < trajectory.size(); index++) {
-        file_out << 0 << " " << trajectory.at(index).speed_limit << endl;
+        file_out << 0 << " " << trajectory.at(index).speed_limit << " " << trajectory.at(index).curvature << endl;
     }
     file_out.close();
 
@@ -518,8 +519,6 @@ void GlobalSpeedPlanning::planSpeed(vector<_TrajectoryPoint>& trajectory) {
     for (int i = 0; i < trajectory_copy.size(); i++) {
         trajectory.at(i).speed = trajectory_copy.at(i).speed;
     }
-
-   
 }
 
 

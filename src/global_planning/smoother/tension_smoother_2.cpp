@@ -74,12 +74,9 @@ bool TensionSmoother2::smooth(std::vector<Point>& result) {
     solver_ok = ipoptSmooth(x_list, y_list, angle_list, k_list, s_list, &result_x_list, &result_y_list, &result_s_list, &result_curvature_list, &result_angle_list);
     // 计算优化耗时
     // auto start_time = std::chrono::high_resolution_clock::now();
-    // solver_ok = osqpSmooth(x_list, y_list, angle_list, k_list, s_list,
-    //                        &result_x_list, &result_y_list, &result_s_list,
-    //                        &result_curvature_list, &result_angle_list);
-    // auto end_time = std::chrono::high_resolution_clock::now();
-    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-    //     end_time - start_time);
+    // solver_ok       = osqpSmooth(x_list, y_list, angle_list, k_list, s_list, &result_x_list, &result_y_list, &result_s_list, &result_curvature_list, &result_angle_list);
+    // auto end_time   = std::chrono::high_resolution_clock::now();
+    // auto duration   = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     // std::cout << "优化耗时: " << duration.count() << "ms" << std::endl;
     if (!solver_ok) {
         std::cout << "Tension smoother failed!" << std::endl;
@@ -100,8 +97,8 @@ bool TensionSmoother2::smooth(std::vector<Point>& result) {
 
 bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std::vector<double>& y_list, const std::vector<double>& angle_list, const std::vector<double>& k_list, const std::vector<double>& s_list, std::vector<double>* result_x_list, std::vector<double>* result_y_list, std::vector<double>* result_s_list, std::vector<double>* result_curvature_list, std::vector<double>* result_angle_list) {
     typedef CPPAD_TESTVECTOR(double) Dvector;
-    auto   point_num = x_list.size();
-    size_t n_vars    = 4 * point_num; 
+    int    point_num = x_list.size();
+    size_t n_vars    = 4 * point_num;
 
     size_t  x_idx_begin     = 0;
     size_t  y_idx_begin     = x_idx_begin + point_num;
@@ -111,16 +108,17 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     for (size_t i = 0; i < point_num; i++) {
         vars[x_idx_begin + i]     = x_list[i];
         vars[y_idx_begin + i]     = y_list[i];
-        vars[theta_idx_begin + i] = angle_list[i]; 
-        vars[k_idx_begin + i]     = k_list[i];     
+        vars[theta_idx_begin + i] = angle_list[i];
+        vars[k_idx_begin + i]     = k_list[i];
     }
 
     std::cout << "打印 vars[] 初值信息" << std::endl;
     for (int i = 0; i < vars.size(); i++) {
-        std::cout << vars[i] << " ";
-        if (i % point_num == 0 && i != 0) {
+        if ((i % point_num) == 0 && i != 0) {
+            cout << endl;
             cout << endl;
         }
+        std::cout << vars[i] << " ";
     }
     std::cout << std::endl;
 
@@ -129,7 +127,7 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     Dvector vars_upperbound(n_vars);
     double  max_offset = m_vehicle_param_.ipopt_max_offset;
     threadLogger_->info("ipopt max_offset: {}", max_offset);
-    double  curvature_threshold;
+    double curvature_threshold;
     // 根据车辆类型和方向设置曲率阈值
     if (input_points_.front().direction == MotionDirection::Forward) {
         if (m_vehicle_param_.is_light) {
@@ -289,7 +287,7 @@ bool TensionSmoother2::osqpSmooth(const std::vector<double>& x_list, const std::
     OsqpEigen::Solver solver;
     solver.settings()->setVerbosity(true);
     solver.settings()->setWarmStart(true);
-    solver.data()->setNumberOfVariables(4 * point_num - 1);
+    solver.data()->setNumberOfVariables(4 * point_num);
     // 设置收敛容差参数
     // 修改OSQP参数设置
     solver.settings()->setAbsoluteTolerance(1e-8); // 先放宽容差
@@ -299,9 +297,8 @@ bool TensionSmoother2::osqpSmooth(const std::vector<double>& x_list, const std::
     solver.settings()->setRho(0.1);           // 调整rho值
     solver.settings()->setAlpha(1.4);         // 减小alpha值(1.4-1.8之间)
 
-    // solver.data()->setNumberOfConstraints(3 * (point_num - 1) + 2 * point_num +
-    //                                       point_num - 2);
-    solver.data()->setNumberOfConstraints(3 * (point_num - 1) + 2 * point_num + 2 + point_num - 1 + point_num - 2);
+
+    solver.data()->setNumberOfConstraints(4 * (point_num - 1) + 4 * point_num);
     // Allocate QP problem matrices and vectors.
     Eigen::SparseMatrix<double> hessian;
     Eigen::VectorXd             gradient;
@@ -323,14 +320,12 @@ bool TensionSmoother2::osqpSmooth(const std::vector<double>& x_list, const std::
     // Solve.
     if (!solver.initSolver()) return false;
     // 设置初始解
-    Eigen::VectorXd initialSolution(4 * point_num - 1);
+    Eigen::VectorXd initialSolution(4 * point_num);
     for (int i = 0; i < point_num; ++i) {
         initialSolution(i)                 = x_list[i];
         initialSolution(point_num + i)     = y_list[i];
-        initialSolution(2 * point_num + i) = 0;
-        if (i != point_num - 1) {
-            initialSolution(3 * point_num + i) = k_list[i];
-        }
+        initialSolution(2 * point_num + i) = angle_list[i];
+        initialSolution(3 * point_num + i) = k_list[i];
     }
     // 旧版本OsqpEigen设置初始解的方法
     if (!solver.setPrimalVariable(initialSolution)) {
@@ -373,19 +368,12 @@ bool TensionSmoother2::osqpSmooth(const std::vector<double>& x_list, const std::
         if (i != 0) tmp_s += sqrt(pow(result_x_list->at(i) - result_x_list->at(i - 1), 2) + pow(result_y_list->at(i) - result_y_list->at(i - 1), 2));
         result_s_list->emplace_back(tmp_s);
         result_angle_list->emplace_back(QPSolution(2 * point_num + i));
-        if (i != point_num - 1) {
-            result_curvature_list->emplace_back(QPSolution(3 * point_num + i));
-        }
-        else {
-            result_curvature_list->emplace_back(result_curvature_list->back());
-        }
-
+        result_curvature_list->emplace_back(QPSolution(3 * point_num + i));
         // 打印 temp_x temp_y temp_s temp_angle temp_curvature
         std::ofstream outfile("/home/yyf/test_ipopt/tension_smoother_2.txt", std::ios::app);
         if (i != point_num - 1) {
             std::cout << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
             // 将上述数据保存为文件
-
             outfile << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
         }
         outfile.close();
@@ -398,34 +386,38 @@ void TensionSmoother2::setHessianMatrix(size_t size, Eigen::SparseMatrix<double>
     const size_t    y_start_index     = x_start_index + size;
     const size_t    theta_start_index = y_start_index + size;
     const size_t    k_start_index     = theta_start_index + size;
-    const size_t    matrix_size       = 4 * size - 1;
+    const size_t    matrix_size       = 4 * size;
     Eigen::MatrixXd hessian           = Eigen::MatrixXd::Constant(matrix_size, matrix_size, 0);
     // Deviation and curvature.
-    for (int i = 0; i != size; ++i) {
-        hessian(x_start_index + i, x_start_index + i) = hessian(y_start_index + i, y_start_index + i) = m_vehicle_param_.w_deviation_ * 2;
-        if (i != size - 1) hessian(k_start_index + i, k_start_index + i) = m_vehicle_param_.w_curvature_ * 2;
+    for (int i = 0; i < size; ++i) {
+        hessian(x_start_index + i, x_start_index + i) = hessian(y_start_index + i, y_start_index + i) = m_vehicle_param_.w_deviation_ * 2; // 代价函数第一项（x,y）与原始路径的偏差,乘以2是为了符合qp问题标准形式 1/2*XTQX+bTX
+        hessian(k_start_index + i, k_start_index + i)                                                 = m_vehicle_param_.w_curvature_ * 2; // 代价函数第二项（k）要尽量小,乘以2是为了符合qp问题标准形式 1/2*XTQX+bTX
     }
     // Curvature change.
     Eigen::Vector2d coeff_vec{1, -1};
     Eigen::Matrix2d coeff = coeff_vec * coeff_vec.transpose();
-    for (int i = 0; i != size - 2; ++i) {
-        hessian.block(k_start_index + i, k_start_index + i, 2, 2) += 2 * m_vehicle_param_.w_curvature_change_ * coeff;
+    for (int i = 0; i < size - 1; ++i) {
+        hessian.block(k_start_index + i, k_start_index + i, 2, 2) += 2 * m_vehicle_param_.w_curvature_change_ * coeff; // 代价函数第三项（k的变化率）要尽量小,乘以2是为了符合qp问题标准形式 1/2*XTQX+bTX
     }
     // 打印hessian,按照格式打印,每个数占6位,保留2位小数
     std::cout << "打印hessian   " << hessian.rows() << " " << hessian.cols() << std::endl;
-    for (int i = 0; i != hessian.rows(); ++i) {
-        for (int j = 0; j != hessian.cols(); ++j) {
-            std::cout << std::fixed << std::setprecision(2) << hessian(i, j) << " ";
-        }
-        std::cout << std::endl;
-    }
+    // for (int i = 0; i != hessian.rows(); ++i) {
+    //     for (int j = 0; j != hessian.cols(); ++j) {
+    //         std::cout << std::fixed << std::setprecision(2) << hessian(i, j) << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
     *matrix_h = hessian.sparseView();
 }
 
 void TensionSmoother2::setConstraintMatrix(const std::vector<double>& x_list, const std::vector<double>& y_list, const std::vector<double>& angle_list, const std::vector<double>& k_list, const std::vector<double>& s_list, Eigen::SparseMatrix<double>* matrix_constraints, Eigen::VectorXd* lower_bound, Eigen::VectorXd* upper_bound) const {
     // 打印x_list,y_list,angle_list,k_list,s_list
+    int point_num = x_list.size();
     std::cout << "打印x_list  " << x_list.size() << std::endl;
     for (int i = 0; i != x_list.size(); ++i) {
+        if (i % point_num == 0 && i != 0) {
+            cout << endl;
+        }
         std::cout << x_list[i] << " ";
     }
     std::cout << std::endl;
@@ -449,40 +441,34 @@ void TensionSmoother2::setConstraintMatrix(const std::vector<double>& x_list, co
         std::cout << s_list[i] << " ";
     }
     std::cout << std::endl;
-    const size_t size                          = x_list.size();
-    const size_t x_start_index                 = 0;
-    const size_t y_start_index                 = x_start_index + size;
-    const size_t theta_start_index             = y_start_index + size;
-    const size_t k_start_index                 = theta_start_index + size;
-    const size_t cons_x_update_start_index     = 0;
-    const size_t cons_y_update_start_index     = cons_x_update_start_index + size - 1;
-    const size_t cons_theta_update_start_index = cons_y_update_start_index + size - 1;
+    const size_t size              = x_list.size();
+    const size_t x_start_index     = 0;                        // x变量纵向索引
+    const size_t y_start_index     = x_start_index + size;     // y变量纵向索引
+    const size_t theta_start_index = y_start_index + size;     // theta变量纵向索引
+    const size_t k_start_index     = theta_start_index + size; // k变量纵向索引
 
-    const size_t cons_x_bound_start_index              = cons_theta_update_start_index + size - 1;
-    const size_t cons_y_bound_start_index              = cons_x_bound_start_index + size;
-    const size_t cons_theta_bound_start_index          = cons_y_bound_start_index + size;
-    const size_t cons_curvature_bound_start_index      = cons_theta_bound_start_index + 2;
-    const size_t cons_curvature_rate_bound_start_index = cons_curvature_bound_start_index + size - 1;
-    // 配置曲率约束
-    // const size_t cons_k_bound_start_index = cons_y_bound_start_index + size;
-    // 打印cons_x_update_start_index,cons_y_update_start_index,cons_theta_update_start_index,cons_x_bound_start_index,cons_y_bound_start_index,cons_k_bound_start_index
+    const size_t cons_x_update_start_index         = 0;                                        // x方向运动学约束横向索引
+    const size_t cons_y_update_start_index         = cons_x_update_start_index + size - 1;     // y方向运动学约束横向索引
+    const size_t cons_theta_update_start_index     = cons_y_update_start_index + size - 1;     // 角度运动学约束横向索引
+    const size_t cons_curvature_update_start_index = cons_theta_update_start_index + size - 1; // 曲率变化率约束横向索引
+
+    const size_t cons_x_bound_start_index         = cons_curvature_update_start_index + size - 1; // x方向上下界约束横向索引
+    const size_t cons_y_bound_start_index         = cons_x_bound_start_index + size;              // y方向上下界约束横向索引
+    const size_t cons_theta_bound_start_index     = cons_y_bound_start_index + size;              // theta方向上下界约束横向索引
+    const size_t cons_curvature_bound_start_index = cons_theta_bound_start_index + size;          // k方向上下界约束横向索引
+
     std::cout << "打印cons_x_update_start_index  " << cons_x_update_start_index << std::endl;
     std::cout << "打印cons_y_update_start_index  " << cons_y_update_start_index << std::endl;
     std::cout << "打印cons_theta_update_start_index  " << cons_theta_update_start_index << std::endl;
+    std::cout << "打印cons_curvature_update_start_index  " << cons_curvature_update_start_index << std::endl;
     std::cout << "打印cons_x_bound_start_index  " << cons_x_bound_start_index << std::endl;
     std::cout << "打印cons_y_bound_start_index  " << cons_y_bound_start_index << std::endl;
     std::cout << "打印cons_theta_bound_start_index  " << cons_theta_bound_start_index << std::endl;
     std::cout << "打印cons_curvature_bound_start_index  " << cons_curvature_bound_start_index << std::endl;
 
-    // 修改约束矩阵维度，只保留运动学约束和上下界约束
-    // const size_t n_constraints = 3 * (size - 1) + 2 * size + size -
-    //                              2;     // 运动学约束 + x,y的上下界约束 +
-    //                              曲率约束
-    // const size_t n_constraints = 3 * (size - 1) + 2 * size + 2 + size -
-    //                              1;     // 运动学约束 + x,y的上下界约束 +
-    //                              曲率约束
-    const size_t n_constraints = 3 * (size - 1) + 2 * size + 2 + size - 1 + size - 2; // 运动学约束 + x,y的上下界约束 + 曲率约束
-    const size_t n_vars        = 4 * size - 1;                                        // x, y, theta, k 变量
+
+    const size_t n_constraints = 4 * (size - 1) + 4 * size; // 运动学约束 + 优化变量的边界约束
+    const size_t n_vars        = 4 * size;                  // x, y, theta, k 变量
 
     Eigen::MatrixXd cons = Eigen::MatrixXd::Zero(n_constraints, n_vars);
     *lower_bound         = Eigen::MatrixXd::Zero(n_constraints, 1);
@@ -490,56 +476,55 @@ void TensionSmoother2::setConstraintMatrix(const std::vector<double>& x_list, co
 
     // Cons.
     for (int i = 0; i < size - 1; ++i) {
-        // const double ds = s_list[i + 1] - s_list[i];
-        const double ds                                            = hypot(x_list[i + 1] - x_list[i], y_list[i + 1] - y_list[i]);
-        cons(cons_x_update_start_index + i, x_start_index + i + 1) = cons(cons_y_update_start_index + i, y_start_index + i + 1) = cons(cons_theta_update_start_index + i, theta_start_index + i + 1) = 1;
-        cons(cons_x_update_start_index + i, x_start_index + i) = cons(cons_y_update_start_index + i, y_start_index + i) = cons(cons_theta_update_start_index + i, theta_start_index + i) = -1;
-        cons(cons_x_update_start_index + i, theta_start_index + i)                                                                                                                       = ds * sin(angle_list[i]);
-        cons(cons_y_update_start_index + i, theta_start_index + i)                                                                                                                       = -ds * cos(angle_list[i]);
-        cons(cons_theta_update_start_index + i, k_start_index + i)                                                                                                                       = -ds;
+        const double ds = s_list[i + 1] - s_list[i];
+        // 配置x方向运动学约束,泰勒展开式到一阶
+        cons(cons_x_update_start_index + i, x_start_index + i)     = -1;
+        cons(cons_x_update_start_index + i, x_start_index + i + 1) = 1;
+        cons(cons_x_update_start_index + i, theta_start_index + i) = ds * sin(angle_list[i]);
+
+        // 配置y方向运动学约束,泰勒展开式到一阶
+        cons(cons_y_update_start_index + i, y_start_index + i)     = -1;
+        cons(cons_y_update_start_index + i, y_start_index + i + 1) = 1;
+        cons(cons_y_update_start_index + i, theta_start_index + i) = -ds * cos(angle_list[i]);
+
+        // 配置theta方向运动学约束,泰勒展开式到一阶
+        cons(cons_theta_update_start_index + i, theta_start_index + i)     = -cos(angle_list[i + 1] - angle_list[i] - ds * k_list[i]);
+        cons(cons_theta_update_start_index + i, theta_start_index + i + 1) = cos(angle_list[i + 1] - angle_list[i] - ds * k_list[i]);
+        cons(cons_theta_update_start_index + i, k_start_index + i)         = -ds * cos(angle_list[i + 1] - angle_list[i] - ds * k_list[i]);
+
+        // 配置相邻路径点曲率变化率约束,泰勒展开式到一阶
+        cons(cons_curvature_update_start_index + i, k_start_index + i)     = -2 * (k_list[i + 1] - k_list[i]);
+        cons(cons_curvature_update_start_index + i, k_start_index + i + 1) = 2 * (k_list[i + 1] - k_list[i]);
     }
-    // // 配置xy的上下界约束
+
+    // 配置xy的上下界约束
     for (int i = 0; i < size; ++i) {
-        cons(cons_x_bound_start_index + i, x_start_index + i) = 1;
-        cons(cons_y_bound_start_index + i, y_start_index + i) = 1;
-    }
-    // 配置theta的上下界约束
-
-    cons(cons_theta_bound_start_index, theta_start_index)                = 1;
-    cons(cons_theta_bound_start_index + 1, theta_start_index + size - 1) = 1;
-
-    // 配置曲率约束
-    for (int i = 0; i < size - 1; ++i) {
+        cons(cons_x_bound_start_index + i, x_start_index + i)         = 1;
+        cons(cons_y_bound_start_index + i, y_start_index + i)         = 1;
+        cons(cons_theta_bound_start_index + i, theta_start_index + i) = 1;
         cons(cons_curvature_bound_start_index + i, k_start_index + i) = 1;
-    }
-
-    // 配置曲率变化率约束
-    for (int i = 0; i < size - 2; ++i) {
-        cons(cons_curvature_rate_bound_start_index + i, k_start_index + i + 1) = 1;
-        cons(cons_curvature_rate_bound_start_index + i, k_start_index + i)     = -1;
     }
     // 打印cons,按照格式打印,每个数占6位,保留2位小数
     std::cout << "打印cons  " << cons.rows() << " " << cons.cols() << std::endl;
-    for (int i = 0; i != cons.rows(); ++i) {
-        for (int j = 0; j != cons.cols(); ++j) {
-            std::cout << std::fixed << std::setprecision(4) << cons(i, j) << " ";
-        }
-        std::cout << std::endl;
-    }
+    // for (int i = 0; i != cons.rows(); ++i) {
+    //     for (int j = 0; j != cons.cols(); ++j) {
+    //         std::cout << std::fixed << std::setprecision(4) << cons(i, j) << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
     *matrix_constraints = cons.sparseView();
     // Bounds.
     double Eps = 0.0;
     for (int i = 0; i < size - 1; ++i) {
-        const double ds                                   = hypot(x_list[i + 1] - x_list[i], y_list[i + 1] - y_list[i]);
-        (*lower_bound)(cons_x_update_start_index + i)     = ds * cos(angle_list[i]) - Eps;
-        (*upper_bound)(cons_x_update_start_index + i)     = ds * cos(angle_list[i]) + Eps;
-        (*lower_bound)(cons_y_update_start_index + i)     = ds * sin(angle_list[i]) - Eps;
-        (*upper_bound)(cons_y_update_start_index + i)     = ds * sin(angle_list[i]) + Eps;
-        (*lower_bound)(cons_theta_update_start_index + i) = -ds * k_list[i];
-        (*upper_bound)(cons_theta_update_start_index + i) = -ds * k_list[i];
+        const double ds                               = s_list[i + 1] - s_list[i];
+        (*lower_bound)(cons_x_update_start_index + i) = (*upper_bound)(cons_x_update_start_index + i) = -1 * x_list[i] + x_list[i + 1] + ds * sin(angle_list[i]) * angle_list[i] - (x_list[i + 1] - x_list[i] - ds * cos(angle_list[i]));
+        (*lower_bound)(cons_y_update_start_index + i) = (*upper_bound)(cons_y_update_start_index + i) = -1 * y_list[i] + y_list[i + 1] - ds * cos(angle_list[i]) * angle_list[i] - (y_list[i + 1] - y_list[i] - ds * sin(angle_list[i]));
+        (*lower_bound)(cons_theta_update_start_index + i) = (*upper_bound)(cons_theta_update_start_index + i) = -cos(angle_list[i + 1] - angle_list[i] - ds * k_list[i]) * angle_list[i] + cos(angle_list[i + 1] - angle_list[i] - ds * k_list[i]) * angle_list[i + 1] - ds * cos(angle_list[i + 1] - angle_list[i] - ds * k_list[i]) * k_list[i] - sin(angle_list[i + 1] - angle_list[i] - ds * k_list[i]);
+        (*lower_bound)(cons_curvature_update_start_index + i)                                                 = 0;
+        (*upper_bound)(cons_curvature_update_start_index + i)                                                 = pow(0.02 * ds, 2);
     }
 
-    const double bound_offset = 10; // 10cm的浮动范围
+    const double bound_offset = 10; // 10m的浮动范围
     for (int i = 0; i < size; ++i) {
         if (i == 0 || i == size - 1) {
             // 前两个点和后两个点固定
@@ -553,28 +538,13 @@ void TensionSmoother2::setConstraintMatrix(const std::vector<double>& x_list, co
             (*lower_bound)(cons_y_bound_start_index + i) = y_list[i] - bound_offset;
             (*upper_bound)(cons_y_bound_start_index + i) = y_list[i] + bound_offset;
         }
-    }
-    // 设置theta的上下界约束
 
-    (*lower_bound)(cons_theta_bound_start_index) = (*upper_bound)(cons_theta_bound_start_index) = 0;
-    (*lower_bound)(cons_theta_bound_start_index + 1) = (*upper_bound)(cons_theta_bound_start_index + 1) = 0;
+        (*lower_bound)(cons_theta_bound_start_index + i)     = -3.14 * 2;
+        (*upper_bound)(cons_theta_bound_start_index + i)     = 3.14 * 2;
+        (*lower_bound)(cons_curvature_bound_start_index + 1) = -0.1;
+        (*upper_bound)(cons_curvature_bound_start_index + 1) = 0.1;
+    }
 
-    // 设置曲率的上下界约束
-    for (int i = 0; i < size - 1; ++i) {
-        if (i < 1) {
-            (*lower_bound)(cons_curvature_bound_start_index + i) = 0;
-            (*upper_bound)(cons_curvature_bound_start_index + i) = 0;
-        }
-        else {
-            (*lower_bound)(cons_curvature_bound_start_index + i) = -0.1;
-            (*upper_bound)(cons_curvature_bound_start_index + i) = 0.1;
-        }
-    }
-    // 设置曲率变化率约束
-    for (int i = 0; i < size - 2; ++i) {
-        (*lower_bound)(cons_curvature_rate_bound_start_index + i) = -0.02;
-        (*upper_bound)(cons_curvature_rate_bound_start_index + i) = 0.02;
-    }
 
     // 打印lower_bound,按照格式打印,每个数占6位,保留4位小数
     std::cout << "打印lower_bound  " << lower_bound->size() << std::endl;
@@ -594,7 +564,7 @@ void TensionSmoother2::setGradient(const std::vector<double>& x_list, const std:
     const auto   size          = x_list.size();
     const size_t x_start_index = 0;
     const size_t y_start_index = x_start_index + size;
-    *gradient                  = Eigen::VectorXd::Constant(4 * size - 1, 0);
+    *gradient                  = Eigen::VectorXd::Constant(4 * size, 0);
     for (int i = 0; i != size; ++i) {
         (*gradient)(x_start_index + i) = -2 * m_vehicle_param_.w_deviation_ * x_list[i];
         (*gradient)(y_start_index + i) = -2 * m_vehicle_param_.w_deviation_ * y_list[i];
