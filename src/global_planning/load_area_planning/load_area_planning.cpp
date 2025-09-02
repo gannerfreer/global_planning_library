@@ -1,6 +1,9 @@
 #include "load_area_planning.h"
 namespace LoadAreaPlanning {
 std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanning::LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck& collision_checker, const vector<_BorderPoint>& static_bound, const vector<vector<_BorderPoint>>& wall_bound, const vector<vector<_BorderPoint>>& machine_bound) {
+    cout << "收到地图" << static_bound.size() << "组" << endl;
+    cout << "收到挡墙" << wall_bound.size() << "组" << "wall_bound.at(0).size():" << wall_bound.front().size() << endl;
+    cout << "收到挖掘" << machine_bound.size() << "组" << "machine_bound.at(0).size():" << machine_bound.front().size() << endl;
     FittingPathGenerate::FittingPathGenerator fit_path_planner(out_put_path_dense_, search_range_, jump_dense_, length_weight_, curvature_weight_, critical_length_, min_straight_length_depart_, max_straight_length_depart_, delta_straight_length_depart_, min_straight_length_wait_, max_straight_length_wait_, delta_straight_length_wait_, min_straight_length_load_, max_straight_length_load_, delta_straight_length_load_, load_path_straight_length_weight_, load_path_curvature_weight_);
     GlobalPlanning::Path                      wait_path;
     GlobalPlanning::Path                      load_path;
@@ -114,7 +117,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                 return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
             }
         }
-        
+
         auto temp_wait_path = wait_path;
         // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
         ofstream file;

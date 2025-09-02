@@ -1,8 +1,54 @@
 load_area_planning/load_area_planning.o: \
  load_area_planning/load_area_planning.cpp \
  load_area_planning/load_area_planning.h \
- load_area_planning/fitting_path_generate.h \
- load_area_planning/../collision_check/box2d.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/optimal_path.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/collision_check.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/common_struct.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/document.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/reader.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/allocators.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/rapidjson.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/meta.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/../rapidjson.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/stream.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/encodings.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/encodedstream.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/memorystream.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/clzll.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/stack.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/../allocators.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/swap.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/strtod.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/ieee754.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/biginteger.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/diyfp.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/clzll.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/pow10.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/error/error.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/error/../rapidjson.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/strfunc.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/../stream.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/../rapidjson.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/filereadstream.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/filewritestream.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/prettywriter.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/writer.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/dtoa.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/itoa.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/itoa.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/stringbuffer.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/stringbuffer.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/writer.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../time/TimeHelper.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../common/common_struct.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../math/helper.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../math/../common/common_struct.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/path_opti.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/../collision_check/collision_check.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/../common/common_struct.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/../math/helper.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/../planner/pathplanner/spline/spline.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/tension_smoother_2.hpp \
  /usr/include/eigen3/Eigen/Dense /usr/include/eigen3/Eigen/Core \
  /usr/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
  /usr/include/eigen3/Eigen/src/Core/util/Macros.h \
@@ -174,49 +220,6 @@ load_area_planning/load_area_planning.o: \
  /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
  /usr/include/eigen3/Eigen/src/Eigenvalues/./RealQZ.h \
  /usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
- load_area_planning/../collision_check/collision_check.h \
- load_area_planning/../collision_check/../common/common_struct.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/document.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/reader.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/allocators.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/rapidjson.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/meta.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/../rapidjson.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/stream.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/encodings.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/encodedstream.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/memorystream.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/clzll.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/stack.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/../allocators.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/swap.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/strtod.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/ieee754.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/biginteger.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/diyfp.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/clzll.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/pow10.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/error/error.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/error/../rapidjson.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/strfunc.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/../stream.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/../rapidjson.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/filereadstream.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/filewritestream.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/prettywriter.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/writer.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/dtoa.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/itoa.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/itoa.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/stringbuffer.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/stringbuffer.h \
- load_area_planning/../collision_check/../common/../third_lib/rapidjson/writer.h \
- load_area_planning/../collision_check/../time/TimeHelper.h \
- load_area_planning/../common/common_struct.h \
- load_area_planning/../planner/pathplanner/dubins/dubins.h \
- load_area_planning/../planner/pathplanner/dubins/../../../common/common_struct.h \
- load_area_planning/../planner/pathplanner/dubins/point.h \
- load_area_planning/../smoother/tension_smoother_2.hpp \
  /usr/include/eigen3/Eigen/Sparse /usr/include/eigen3/Eigen/SparseCore \
  /usr/include/eigen3/Eigen/src/SparseCore/SparseUtil.h \
  /usr/include/eigen3/Eigen/src/SparseCore/SparseMatrixBase.h \
@@ -291,14 +294,118 @@ load_area_planning/load_area_planning.o: \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h \
- load_area_planning/../smoother/../common/common_struct.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/vector2d.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../time/StringHelper.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/../../../time/TimeHelper.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/node2d.h \
+ load_area_planning/../planner/pathplanner/hybirdastar/r_s_curve.h \
+ load_area_planning/fitting_path_generate.h \
+ load_area_planning/../collision_check/box2d.h \
+ load_area_planning/../collision_check/collision_check.h \
+ load_area_planning/../common/common_struct.h \
+ load_area_planning/../planner/pathplanner/dubins/dubins.h \
+ load_area_planning/../planner/pathplanner/dubins/../../../common/common_struct.h \
+ load_area_planning/../planner/pathplanner/dubins/point.h \
+ load_area_planning/../smoother/tension_smoother_2.hpp \
  load_area_planning/wait_point_generate.h
 
 load_area_planning/load_area_planning.h:
 
-load_area_planning/fitting_path_generate.h:
+load_area_planning/../planner/pathplanner/hybirdastar/optimal_path.h:
 
-load_area_planning/../collision_check/box2d.h:
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/collision_check.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/common_struct.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/document.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/reader.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/allocators.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/rapidjson.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/meta.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/../rapidjson.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/stream.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/encodings.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/encodedstream.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/memorystream.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/clzll.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/stack.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/../allocators.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/swap.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/strtod.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/ieee754.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/biginteger.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/diyfp.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/clzll.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/pow10.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/error/error.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/error/../rapidjson.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/strfunc.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/../stream.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/../rapidjson.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/filereadstream.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/filewritestream.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/prettywriter.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/writer.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/dtoa.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/itoa.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/internal/itoa.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/stringbuffer.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/stringbuffer.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../common/../third_lib/rapidjson/writer.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../collision_check/../time/TimeHelper.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../common/common_struct.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../math/helper.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../math/../common/common_struct.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/path_opti.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/../collision_check/collision_check.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/../common/common_struct.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/../math/helper.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/../planner/pathplanner/spline/spline.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/tension_smoother_2.hpp:
 
 /usr/include/eigen3/Eigen/Dense:
 
@@ -650,92 +757,6 @@ load_area_planning/../collision_check/box2d.h:
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h:
 
-load_area_planning/../collision_check/collision_check.h:
-
-load_area_planning/../collision_check/../common/common_struct.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/document.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/reader.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/allocators.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/rapidjson.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/meta.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/../rapidjson.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/stream.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/encodings.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/encodedstream.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/memorystream.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/clzll.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/stack.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/../allocators.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/swap.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/strtod.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/ieee754.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/biginteger.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/diyfp.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/clzll.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/pow10.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/error/error.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/error/../rapidjson.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/strfunc.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/../stream.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/../rapidjson.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/filereadstream.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/filewritestream.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/prettywriter.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/writer.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/dtoa.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/itoa.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/internal/itoa.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/stringbuffer.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/stringbuffer.h:
-
-load_area_planning/../collision_check/../common/../third_lib/rapidjson/writer.h:
-
-load_area_planning/../collision_check/../time/TimeHelper.h:
-
-load_area_planning/../common/common_struct.h:
-
-load_area_planning/../planner/pathplanner/dubins/dubins.h:
-
-load_area_planning/../planner/pathplanner/dubins/../../../common/common_struct.h:
-
-load_area_planning/../planner/pathplanner/dubins/point.h:
-
-load_area_planning/../smoother/tension_smoother_2.hpp:
-
 /usr/include/eigen3/Eigen/Sparse:
 
 /usr/include/eigen3/Eigen/SparseCore:
@@ -886,6 +907,30 @@ load_area_planning/../smoother/tension_smoother_2.hpp:
 
 /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h:
 
-load_area_planning/../smoother/../common/common_struct.h:
+load_area_planning/../planner/pathplanner/hybirdastar/../../../smoother/vector2d.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../time/StringHelper.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/../../../time/TimeHelper.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/node2d.h:
+
+load_area_planning/../planner/pathplanner/hybirdastar/r_s_curve.h:
+
+load_area_planning/fitting_path_generate.h:
+
+load_area_planning/../collision_check/box2d.h:
+
+load_area_planning/../collision_check/collision_check.h:
+
+load_area_planning/../common/common_struct.h:
+
+load_area_planning/../planner/pathplanner/dubins/dubins.h:
+
+load_area_planning/../planner/pathplanner/dubins/../../../common/common_struct.h:
+
+load_area_planning/../planner/pathplanner/dubins/point.h:
+
+load_area_planning/../smoother/tension_smoother_2.hpp:
 
 load_area_planning/wait_point_generate.h:

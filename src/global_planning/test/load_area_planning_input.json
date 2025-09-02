@@ -1,6 +1,13 @@
 {
-    "execute_mode": 0,
-    "queue_point": null,
+    "execute_mode": 1,
+    "queue_point": {
+        "x": -123.74,
+        "y": 591.08,
+        "longitude": null,
+        "latitude": null,
+        "z": null,
+        "yaw": 60.0
+    },
     "load_point": {
         "x": -158.0635792066,
         "y": 621.1904400378,
