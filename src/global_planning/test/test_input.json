@@ -20,7 +20,6 @@
         "radious": 12.5,
         "is_light": true,
         "grid_dist": 0.7,
-        "max_kappa": 0.07,
         "plan_time": 0.2,
         "delta_dist": 1,
         "grid_angle": 1,

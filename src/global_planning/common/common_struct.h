@@ -204,8 +204,7 @@ struct _VehicleParam {
     double path_curvature_term;
     // 平滑项权重
     double path_smoothness_term;
-    // 最大曲率
-    double max_kappa;
+    
     // 最大优化迭代次数
     double max_iterations_opti;
 
@@ -244,9 +243,9 @@ struct _VehicleParam {
 
     float dis_threshold = 2.0;
 
-    float w_deviation_        = 0.001;
-    float w_curvature_        = 100;
-    float w_curvature_change_ = 1;
+    float w_deviation        = 0.001;
+    float w_curvature        = 100;
+    float w_curvature_change = 1;
 };
 
 // 调用全局规划时，需要传入的参数

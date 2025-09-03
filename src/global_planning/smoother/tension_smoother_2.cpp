@@ -23,9 +23,9 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
     size_t cons_y_idx_begin              = cons_x_idx_begin + point_num - 1;
     size_t cons_theta_idx_begin          = cons_y_idx_begin + point_num - 1;
     size_t cons_curvature_rate_idx_begin = cons_theta_idx_begin + point_num - 1;
-    std::cout << "w_curvature_change_" << m_vehicle_param_.w_curvature_change_ << std::endl;
-    std::cout << "w_curvature_" << m_vehicle_param_.w_curvature_ << std::endl;
-    std::cout << "w_deviation_" << m_vehicle_param_.w_deviation_ << std::endl;
+    std::cout << "w_curvature_change" << m_vehicle_param_.w_curvature_change << std::endl;
+    std::cout << "w_curvature" << m_vehicle_param_.w_curvature << std::endl;
+    std::cout << "w_deviation" << m_vehicle_param_.w_deviation << std::endl;
     for (size_t i = 0; i < point_num - 1; ++i) {
         ad cur_x      = vars[x_idx_begin + i];
         ad next_x     = vars[x_idx_begin + i + 1];
@@ -39,10 +39,10 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
         ad cur_k      = vars[k_idx_begin + i];
 
         // cost
-        fg[0] += m_vehicle_param_.w_deviation_ * (pow(cur_x - ref_x, 2) + pow(cur_y - ref_y, 2)); // 代价函数：xy方向偏差代价
-        fg[0] += m_vehicle_param_.w_curvature_ * pow(cur_k, 2);                                   // 代价函数：曲率代价
+        fg[0] += m_vehicle_param_.w_deviation * (pow(cur_x - ref_x, 2) + pow(cur_y - ref_y, 2)); // 代价函数：xy方向偏差代价
+        fg[0] += m_vehicle_param_.w_curvature * pow(cur_k, 2);                                   // 代价函数：曲率代价
         ad next_k = vars[k_idx_begin + i + 1];
-        fg[0] += m_vehicle_param_.w_curvature_change_ * pow(cur_k - next_k, 2); // 代价函数：曲率变化代价
+        fg[0] += m_vehicle_param_.w_curvature_change * pow(cur_k - next_k, 2); // 代价函数：曲率变化代价
 
         // cons
         fg[cons_x_idx_begin + i]              = next_x - cur_x - ds * cos(cur_theta);     // 约束xy方向运动学约束
@@ -401,14 +401,14 @@ void TensionSmoother2::setHessianMatrix(size_t size, Eigen::SparseMatrix<double>
     Eigen::MatrixXd hessian           = Eigen::MatrixXd::Constant(matrix_size, matrix_size, 0);
     // Deviation and curvature.
     for (int i = 0; i != size; ++i) {
-        hessian(x_start_index + i, x_start_index + i) = hessian(y_start_index + i, y_start_index + i) = m_vehicle_param_.w_deviation_ * 2;
-        if (i != size - 1) hessian(k_start_index + i, k_start_index + i) = m_vehicle_param_.w_curvature_ * 2;
+        hessian(x_start_index + i, x_start_index + i) = hessian(y_start_index + i, y_start_index + i) = m_vehicle_param_.w_deviation * 2;
+        if (i != size - 1) hessian(k_start_index + i, k_start_index + i) = m_vehicle_param_.w_curvature * 2;
     }
     // Curvature change.
     Eigen::Vector2d coeff_vec{1, -1};
     Eigen::Matrix2d coeff = coeff_vec * coeff_vec.transpose();
     for (int i = 0; i != size - 2; ++i) {
-        hessian.block(k_start_index + i, k_start_index + i, 2, 2) += 2 * m_vehicle_param_.w_curvature_change_ * coeff;
+        hessian.block(k_start_index + i, k_start_index + i, 2, 2) += 2 * m_vehicle_param_.w_curvature_change * coeff;
     }
     // 打印hessian,按照格式打印,每个数占6位,保留2位小数
     std::cout << "打印hessian   " << hessian.rows() << " " << hessian.cols() << std::endl;
@@ -595,8 +595,8 @@ void TensionSmoother2::setGradient(const std::vector<double>& x_list, const std:
     const size_t y_start_index = x_start_index + size;
     *gradient                  = Eigen::VectorXd::Constant(4 * size - 1, 0);
     for (int i = 0; i != size; ++i) {
-        (*gradient)(x_start_index + i) = -2 * m_vehicle_param_.w_deviation_ * x_list[i];
-        (*gradient)(y_start_index + i) = -2 * m_vehicle_param_.w_deviation_ * y_list[i];
+        (*gradient)(x_start_index + i) = -2 * m_vehicle_param_.w_deviation * x_list[i];
+        (*gradient)(y_start_index + i) = -2 * m_vehicle_param_.w_deviation * y_list[i];
     }
     // 打印gradient,按照格式打印,每个数占6位,保留2位小数
     std::cout << "打印gradient  " << gradient->size() << std::endl;

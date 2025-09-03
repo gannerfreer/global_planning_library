@@ -2,7 +2,6 @@
   "m_Veh_Param": {
     "radious": 12.5,
     "grid_dist": 0.7,
-    "max_kappa": 0.07,
     "delta_dist": 1,
     "path_error_term": 0.0,
     "grid_angle": 1,
@@ -52,8 +51,8 @@
     "sample_num": 40,
     "plan_time": 0.2,
     "dis_threshold": 2.0,
-    "w_deviation_": 0.0001,
-    "w_curvature_": 100,
-    "w_curvature_change_": 1
+    "w_deviation": 0.0001,
+    "w_curvature": 100,
+    "w_curvature_change": 1
   }
 }

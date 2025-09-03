@@ -302,7 +302,8 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
     int                sum                       = 0;
     All                                          = 0;
     utility::CTimeClock start_time;
-    threadLogger_->info("hybirdA*搜索启动");
+    threadLogger_->info("hybirdA*搜索启动,最大timeThreshold:{} ms", timeThreshold);
+
     while (!open_map_f_.empty()) {
         long long cal_time = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time); // 开始时间精确到微秒
         // threadLogger_->info("open_map_f_.size():{}", open_map_f_.size());
