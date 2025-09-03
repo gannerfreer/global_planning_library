@@ -30,7 +30,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     curve::Point         temp_wait_point(wait_point.x, wait_point.y, wait_point.angle, 0.0);
     curve::Dubins        dubins_planner;
     dubins_planner.threadLogger_ = threadLogger_;
-    dubins_planner.SetRadius(11.2);
+    dubins_planner.SetRadius(10);
     std::vector<curve::Point> dubins_path;
     std::cout << "delta_straight_length_load_ = " << delta_straight_length_load_ << endl;
     std::cout << "max_straight_length_load_ = " << max_straight_length_load_ << endl;
@@ -236,7 +236,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
     double               grade;
     curve::Dubins        dubins_planner;
     dubins_planner.threadLogger_ = threadLogger_;
-    dubins_planner.SetRadius(11.2);
+    dubins_planner.SetRadius(10);
     std::vector<GlobalPlanning::Point>                   end_point_sample = SamplePathSegment(target_path, load_point, 0);
     std::vector<std::pair<GlobalPlanning::Path, double>> depart_path_candidates;
     std::vector<std::pair<GlobalPlanning::Path, double>> temp_depart_path_candidates;

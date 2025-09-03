@@ -324,7 +324,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         // 从优先队列open集中取出第一个点索引，及取出f值最小的点索引
         unsigned long long current_point_index = open_map_f_.begin()->second.id;
         current_point                          = open_map_[current_point_index]; // 通过key值获取当前点
-        // threadLogger_->info("新的一轮  current_point:{},{}", current_point.x, current_point.y);
+        threadLogger_->info("新的一轮  current_point:{},{}", current_point.x, current_point.y);
         open_map_.erase(current_point_index);
         open_map_f_.erase(open_map_f_.begin()); // 将该点从open集中删除
         close_map_[current_point_index] = current_point;
@@ -350,7 +350,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
         // 基于当前点进行节点拓展
         utility::CTimeClock start_time_expand;
-        // threadLogger_->info("FindExpandVertex");
+        threadLogger_->info("FindExpandVertex");
         FindExpandVertex(current_point, time_spend_dynamic, time_spend_collsion, time_spend_other);
         expand_time_collision += time_spend_collsion;
         expand_time_dynamic += time_spend_dynamic;
@@ -504,7 +504,7 @@ void OptimalPath::InitOpenClose() {
 bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
     // 判断是否可以进行RS曲线拟合
     double dis = hypot(min_point.x - end_.x, min_point.y - end_.y);
-
+threadLogger_->info("判断是否可以进行RS曲线拟合,m_vehicle_param_.max_fitting_radius:{}", m_vehicle_param_.max_fitting_radius);
     if (dis < m_vehicle_param_.max_fitting_radius) {
         All++;
         flag_dubins_ = true;

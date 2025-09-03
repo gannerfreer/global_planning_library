@@ -1619,8 +1619,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.veh_param.radious " << planning_info.veh_param.radious << std::endl;
             }
             else {
-                planning_info.veh_param.radious = 13;
-                cout << "无法找到车参 radious ，即将赋予默认值 13" << endl;
+                planning_info.veh_param.radious = 10;
+                cout << "无法找到车参 radious ，即将赋予默认值 10" << endl;
             }
 
             if (val.HasMember("wheel_base") && val["wheel_base"].IsNumber()) {
@@ -1883,8 +1883,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 cout << "planning_info.veh_param.is_light " << planning_info.veh_param.is_light << endl;
             }
             else {
-                cout << "无法找到车参 is_light ，即将赋予默认值 false" << endl;
-                planning_info.veh_param.is_light = false;
+                cout << "无法找到车参 is_light ，即将赋予默认值 true" << endl;
+                planning_info.veh_param.is_light = true;
             }
 
 
