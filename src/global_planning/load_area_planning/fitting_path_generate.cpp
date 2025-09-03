@@ -29,6 +29,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     double               result_grade;
     curve::Point         temp_wait_point(wait_point.x, wait_point.y, wait_point.angle, 0.0);
     curve::Dubins        dubins_planner;
+    dubins_planner.threadLogger_ = threadLogger_;
     dubins_planner.SetRadius(11.2);
     std::vector<curve::Point> dubins_path;
     std::cout << "delta_straight_length_load_ = " << delta_straight_length_load_ << endl;
@@ -94,6 +95,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     double               grade = 0.0;
 
     curve::Dubins dubins_planner;
+    dubins_planner.threadLogger_ = threadLogger_;
     dubins_planner.SetRadius(10.0);
     std::vector<GlobalPlanning::Point>                   start_point_sample = SamplePathSegment(origin_path, wait_point, 0);
     std::vector<std::pair<GlobalPlanning::Path, double>> wait_path_candidates;
@@ -173,6 +175,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     }
 
     curve::Dubins dubins_planner;
+    dubins_planner.threadLogger_ = threadLogger_;
     dubins_planner.SetRadius(10.0);
     std::vector<GlobalPlanning::Point> start_point_sample = SamplePathSegment(origin_path, straight_path_with_wait_point.front(), 0);
     // cout << "驶出点寻找完毕" << endl;
@@ -232,6 +235,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
     GlobalPlanning::Path result;
     double               grade;
     curve::Dubins        dubins_planner;
+    dubins_planner.threadLogger_ = threadLogger_;
     dubins_planner.SetRadius(11.2);
     std::vector<GlobalPlanning::Point>                   end_point_sample = SamplePathSegment(target_path, load_point, 0);
     std::vector<std::pair<GlobalPlanning::Path, double>> depart_path_candidates;
