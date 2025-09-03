@@ -24,12 +24,14 @@ void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
     min_acceleration_ = m_veh_param.min_acceleration;
     speed_error_term  = m_veh_param.speed_error_term;
     speed_smooth_term = m_veh_param.speed_smooth_term;
-    reverse_speed     = m_veh_param.reverse_speed;
+    light_reverse_speed     = m_veh_param.light_reverse_speed;
+    heavy_reverse_speed     = m_veh_param.heavy_reverse_speed;
     threadLogger_->info("max_acceleration_ ={} ", max_acceleration_);
     threadLogger_->info("min_acceleration_ ={} ", min_acceleration_);
     threadLogger_->info("speed_error_term ={} ", speed_error_term);
     threadLogger_->info("speed_smooth_term ={} ", speed_smooth_term);
-    threadLogger_->info("reverse_speed ={} ", reverse_speed);
+    threadLogger_->info("light_reverse_speed ={} ", light_reverse_speed);
+    threadLogger_->info("heavy_reverse_speed ={} ", heavy_reverse_speed);
     vehicle_param = m_veh_param;
 }
 
@@ -112,7 +114,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     double intersection_road_speed_limit = 1;    // 路口限速
     double slope_road_speed_limit        = 1;    // 坡路限速
     double bumpy_road_speed_limit        = 1;    // 颠簸路段限速
-    double reverse_speed                 = 1;    // 倒车限速
+    double reverse_speed           = 1;    // 本次规划倒车限速
     double a                             = 0.9;  // a表示一级限速到二级限速之间的缩放比例
     double b                             = 0.85; // b表示一级限速到三级限速之间的缩放比例
     double c                             = 0.9;  // c表示轻载到重载之间的缩放比例
@@ -143,7 +145,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
         bumpy_road_speed_limit        = b * vehicle_param.bumpy_road_speed_limit;
     }
 
-    reverse_speed = vehicle_param.reverse_speed;
+    reverse_speed = vehicle_param.light_reverse_speed;
     if (vehicle_param.is_light == false) {
         threadLogger_->info("重载");
         regular_road_speed_limit      = c * regular_road_speed_limit;
@@ -151,7 +153,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
         intersection_road_speed_limit = c * intersection_road_speed_limit;
         slope_road_speed_limit        = c * slope_road_speed_limit;
         bumpy_road_speed_limit        = c * bumpy_road_speed_limit;
-        reverse_speed                 = 0.5;
+        reverse_speed                 = vehicle_param.heavy_reverse_speed;
     }
 
 

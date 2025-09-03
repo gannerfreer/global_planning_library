@@ -75,7 +75,8 @@ class GlobalSpeedPlanning {
     float speed_smooth_term;
 
     /* 倒车速度 */
-    float reverse_speed;
+    float light_reverse_speed;
+    float heavy_reverse_speed;
 
     _VehicleParam vehicle_param;
 

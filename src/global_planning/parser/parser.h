@@ -373,16 +373,25 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "无法找到车参 min_acceleration ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("reverse_speed") && val["reverse_speed"].IsNumber()) {
-                veh_start_end.veh_param.reverse_speed = val["reverse_speed"].GetFloat();
-                cout << "veh_start_end.veh_param.reverse_speed " << veh_start_end.veh_param.reverse_speed << endl;
+            if (val.HasMember("light_reverse_speed") && val["light_reverse_speed"].IsNumber()) {
+                veh_start_end.veh_param.light_reverse_speed = val["light_reverse_speed"].GetFloat();
+                cout << "veh_start_end.veh_param.light_reverse_speed " << veh_start_end.veh_param.light_reverse_speed << endl;
             }
             else {
-                veh_start_end.veh_param.reverse_speed = 1.0;
-                cout << "无法找到车参 reverse_speed ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.light_reverse_speed = 1.5;
+                cout << "无法找到车参 light_reverse_speed ，即将赋予默认值" << endl;
             }
 
+            if (val.HasMember("heavy_reverse_speed") && val["heavy_reverse_speed"].IsNumber()) {
+                veh_start_end.veh_param.heavy_reverse_speed = val["heavy_reverse_speed"].GetFloat();
+                cout << "veh_start_end.veh_param.heavy_reverse_speed " << veh_start_end.veh_param.heavy_reverse_speed << endl;
+            }
+            else {
+                veh_start_end.veh_param.heavy_reverse_speed = 0.5;
+                cout << "无法找到车参 heavy_reverse_speed ，即将赋予默认值" << endl;
+            }
 
+            
             if (val.HasMember("narrow_road_speed_limit") && val["narrow_road_speed_limit"].IsNumber()) {
                 veh_start_end.veh_param.narrow_road_speed_limit = val["narrow_road_speed_limit"].GetFloat();
                 cout << "veh_start_end.veh_param.narrow_road_speed_limit " << veh_start_end.veh_param.narrow_road_speed_limit << endl;

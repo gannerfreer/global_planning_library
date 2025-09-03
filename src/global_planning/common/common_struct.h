@@ -227,7 +227,8 @@ struct _VehicleParam {
     /* 平滑项权重 */
     float speed_smooth_term;
     /* 倒车速度 */
-    float reverse_speed;
+    float light_reverse_speed;
+    float heavy_reverse_speed;
 
 
     bool is_light;
