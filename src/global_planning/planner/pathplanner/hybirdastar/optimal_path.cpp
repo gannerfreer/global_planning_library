@@ -29,9 +29,7 @@ void OptimalPath::InitBound(const _SinglePoint start_point, const vector<_Border
         temp_Coordinate.x = map_border.at(index).x;
         temp_Coordinate.y = map_border.at(index).y;
         temp_Coordinate.z = map_border.at(index).z;
-        if (hypot(start_point.x - temp_Coordinate.x, start_point.y - temp_Coordinate.y) < 100) {
-            v_road_outer_bound_.emplace_back(temp_Coordinate);
-        }
+        v_road_outer_bound_.emplace_back(temp_Coordinate);
     }
     // threadLogger_->info("內边界大小  machine_borders.size():{} ,machine_borders.at(0).size():{}", machine_borders.size(), machine_borders.at(0).size());
     // 获取道路内边界 (暂时以传入参数的障碍物边界作为道路内边界)
@@ -99,7 +97,7 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     nodes2D_set_.clear();
     h_cost_map_.clear();
     nodes2D_map_.clear();
-    
+
     if (true == collison_check_.IsVehicleCollisionWithAll(actual_start_)) {
         threadLogger_->info("起点碰撞检测不通过");
         return PlanResult::StartPoint_Collision;

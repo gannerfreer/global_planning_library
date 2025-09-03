@@ -143,30 +143,29 @@ class Planning {
 
     vector<vector<double>>       road_directed_graph_; // 路段有向图
     vector<_BorderPoint>         map_border_;          // 地图外边界
-    vector<vector<_BorderPoint>> machine_borders_;      //挖掘机边界
-    vector<vector<_BorderPoint>> wall_borders_;     // 动态挡墙边界
-    map<int, _SingleTraj>        all_referencelines_; // 所有可供无人车行使的参考路段
-    vector<_TrajectoryPoint>     global_path_;        // 全局路径
-    vector<int>                  road_sequence_;      // 路段拓扑结果
-    vector<int>                  sequence_mapping_;   // 序列映射关系
+    vector<vector<_BorderPoint>> machine_borders_;     // 挖掘机边界
+    vector<vector<_BorderPoint>> wall_borders_;        // 动态挡墙边界
+    map<int, _SingleTraj>        all_referencelines_;  // 所有可供无人车行使的参考路段
+    vector<_TrajectoryPoint>     global_path_;         // 全局路径
+    vector<int>                  road_sequence_;       // 路段拓扑结果
+    vector<int>                  sequence_mapping_;    // 序列映射关系
 
-    Dijkstra            dijkstra_;        // dijkstra对象
-    OptimalPath         my_optimal_path_; // hibrid A star类的实例对象
-    GlobalSpeedPlanning my_speed_planning_;
-
+    Dijkstra               dijkstra_;        // dijkstra对象
+    OptimalPath            my_optimal_path_; // hibrid A star类的实例对象
+    GlobalSpeedPlanning    my_speed_planning_;
+    CollisonCheck          collison_check_;
     _VehicleParam          vehicle_param_; // 传入的车辆参数以及算法参数
     TaskType               task_type_;     // 任务类型 用于终点处规划，规划方案选型
     unsigned char          light_or_heavy_;
-    CollisonCheck          collison_check_;
     vector<pair<int, int>> v_has_calculate_pair_;
 
-    ErrorType                  error_type_ = ErrorType::SUCCESS;
-    shared_ptr<spdlog::logger> threadLogger_;
-    string                     vehicle_code_;
-    int                        dubins_straight_distance_ = 0;
-    string                     key_;
-    double                     hybridAstar_path_length_ = 0;
-    vector<vector<_TrajectoryPoint>> reference_paths_;//后台下发的要求拟合的参考路径
+    ErrorType                        error_type_ = ErrorType::SUCCESS;
+    shared_ptr<spdlog::logger>       threadLogger_;
+    string                           vehicle_code_;
+    int                              dubins_straight_distance_ = 0;
+    string                           key_;
+    double                           hybridAstar_path_length_ = 0;
+    vector<vector<_TrajectoryPoint>> reference_paths_; // 后台下发的要求拟合的参考路径
 
 #ifdef SKIP_HEADER
 #else

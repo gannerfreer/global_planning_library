@@ -66,7 +66,7 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         CalculatePathAngle();
         CurvatureCal(new_path_);
 
-        auto collision_point  = collison_check.OptiPathCollisionCheck(new_path_); // 判断优化路径是否碰撞
+        auto collision_point  = collison_check.OptiPathCollisionCheckWithAll(new_path_); // 判断优化路径是否碰撞
         auto curvature_exceed = CurvatureCheck(new_path_);
         // threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
         if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
@@ -374,7 +374,7 @@ bool Path_Opti::SmoothSegmentPath(const Path& input_path, Path& output_path, Col
     Helper::CalDistance(output_path);
 
     // 检查碰撞和曲率
-    auto collision_points = collison_check.OptiPathCollisionCheck(output_path);
+    auto collision_points = collison_check.OptiPathCollisionCheckWithAll(output_path);
     threadLogger_->info("碰撞点数量: {}", collision_points.size());
     auto curvature_exceed = CurvatureCheck(output_path);
     threadLogger_->info("曲率超标点数量: {}", curvature_exceed.size());

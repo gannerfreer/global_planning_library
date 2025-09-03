@@ -67,7 +67,7 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
     // for (const auto pt : cp) {
     //     std::cout << "x = " << pt.GetX() << "   y = " << pt.GetY() << "   theta = " << pt.GetAngle() << std::endl;
     // }
-    // auto  hybridastar_step_length = min_length / 100;
+   
 
     for (float v = 0; v < min_length; v += delta_s_ / radius_) {
         Point pt;

@@ -107,12 +107,12 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
         threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).direction, global_path_.at(i).curvature, global_path_.at(i).yaw / M_PI * 180, static_cast<int>(global_path_.at(i).attribute));
     }
     // 将global_path_保存到 before_uniform_compaction.txt文件中
-     std::ofstream file_out;
-     file_out.open("before_uniform_compaction.txt");
-     for (auto i : global_path_) {
-         file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
-     }
-     file_out.close();
+    std::ofstream file_out;
+    file_out.open("before_uniform_compaction.txt");
+    for (auto i : global_path_) {
+        file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
+    }
+    file_out.close();
 
 
     // 均匀碾压：对除了过磅、洗车和倒车之外的路段进行横向偏移
@@ -141,11 +141,11 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
         }
     }
     // 将global_path_保存到 after_uniform_compaction.txt文件中
-     file_out.open("after_uniform_compaction.txt");
-     for (auto i : global_path_) {
-         file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
-     }
-     file_out.close();
+    file_out.open("after_uniform_compaction.txt");
+    for (auto i : global_path_) {
+        file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
+    }
+    file_out.close();
 
 
     // 对进行速度规划前的路径基于梯度下降进行平滑
@@ -155,7 +155,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     //     file_out << global_path_.at(index).x << " " << global_path_.at(index).y << " " << global_path_.at(index).yaw / M_PI * 180 << " " << (int)global_path_.at(index).direction << " " << global_path_.at(index).curvature << " " << static_cast<int>(global_path_.at(index).attribute) << endl;
     // }
     // file_out.close();
-    SmoothPath(global_path_);
+    SmoothPath(global_path_); // 均匀碾压的开启以及参考路径衔接出可能存在曲率维度的跳变，从而影响后续的限速配置，故这里需要采用梯度下降策略对路径进行平滑
     // 计算累计s
     Helper::CalDistance(global_path_);
     CurvatureCal(global_path_);
@@ -170,11 +170,11 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
         threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} speed_limit:{} acc:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute), i.speed_limit, i.acc);
     }
     // 将global_path_保存到 after_smooth.txt文件中
-     file_out.open("after_smooth.txt");
-     for (auto i : global_path_) {
-         file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
-     }
-     file_out.close();
+    file_out.open("after_smooth.txt");
+    for (auto i : global_path_) {
+        file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
+    }
+    file_out.close();
 
 
     // 角度转换
@@ -624,6 +624,7 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
     my_optimal_path_.threadLogger_ = threadLogger_;
 
     my_optimal_path_.InitBound(start_point_, map_border_, machine_borders_, wall_borders_, vehicle_param_);
+    threadLogger_->info("挪车-初始化边界，边界数量:{}", map_border_.size());
     vector<_TrajectoryPoint> temp_traj;
     long long                time_threshold = 0.9 * 1000 * 1000;
     PlanRule                 rule_id_1 = PlanRule::Forward_All_Time, rule_id_2 = PlanRule::Backward_All_Time, rule_id_3 = PlanRule::Start_Front_End_Back;
@@ -868,6 +869,7 @@ bool Planning::PathOffset() {
     threadLogger_->info("均匀碾压功能开启");
     vector<_TrajectoryPoint> path_before_offset, path_after_offset, input_points;
 
+    //均匀碾压碰撞检测，只需要考虑边界
     Bound              map_border;
     vector<Coordinate> vC;
     for (unsigned int i = 0; i < map_border_.size(); ++i) {
@@ -879,9 +881,9 @@ bool Planning::PathOffset() {
     }
     map_border.push_back(vC);
 
-
-    collison_check_.InitParam(vehicle_param_);
-    collison_check_.InitBoundMap(map_border);
+    CollisonCheck collison_check;
+    collison_check.InitParam(vehicle_param_);
+    collison_check.InitBoundMap(map_border);
 
 
     for (int i = 0; i < global_path_.size(); i++) {
@@ -1070,7 +1072,7 @@ bool Planning::PathOffset() {
     }
     // 对global_path进行碰撞检测，碰撞检测失败的点，其offset标志位置为false，曲率超标的点，其offset标志为也置为false
     for (int i = 0; i < path_after_offset.size(); i++) {
-        if (collison_check_.IsVehicleCollisionWithAll(Point(path_after_offset.at(i).x, path_after_offset.at(i).y, path_after_offset.at(i).z, path_after_offset.at(i).yaw, static_cast<GlobalPlanning::MotionDirection>(path_after_offset.at(i).direction)))) {
+        if (collison_check.IsVehicleCollisionWithAll(Point(path_after_offset.at(i).x, path_after_offset.at(i).y, path_after_offset.at(i).z, path_after_offset.at(i).yaw, static_cast<GlobalPlanning::MotionDirection>(path_after_offset.at(i).direction)))) {
             record_where_is_collision.insert(i);
             threadLogger_->info("偏移后路径点存在碰撞 {}", i);
         }
@@ -1364,7 +1366,7 @@ PlanResult Planning::HybirdAStarFitting() {
         machine_borders.push_back(temp_bound_2);
     }
     threadLogger_->info("machine_borders.size():{}", machine_borders.size());
-
+    //HybirdA*拟合碰撞检测，需要考虑边界、动态挡墙（100m内）、挖掘机边界（100m内）
     collison_check_.InitParam(vehicle_param_);
     collison_check_.InitBoundMap(part_map_border);
     threadLogger_->info("InitBoundMap完毕");
@@ -1777,6 +1779,58 @@ void Planning::CurvatureCal(vector<_TrajectoryPoint>& input_path) {
 
 
 void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
+    // 规划库最后的路径平滑，需要考虑边界、动态挡墙（100m内）、挖掘机边界（100m内）
+    Bound              map_border, wall_borders, machine_borders;
+    vector<Coordinate> vC;
+    for (unsigned int i = 0; i < map_border_.size(); ++i) {
+        Coordinate temp_point;
+        temp_point.z = 0;
+        temp_point.x = map_border_.at(i).x;
+        temp_point.y = map_border_.at(i).y;
+        vC.push_back(temp_point);
+    }
+    map_border.push_back(vC);
+    threadLogger_->info("part_map_border.size():{}", map_border.size());
+
+    for (unsigned int i = 0; i < wall_borders_.size(); ++i) {
+        vector<_BorderPoint> temp_bound = wall_borders_.at(i);
+        vector<Coordinate>   temp_bound_2;
+        for (int j = 0; j < temp_bound.size(); ++j) {
+            Coordinate temp_point;
+            temp_point.z = 0;
+            temp_point.x = temp_bound.at(j).x;
+            temp_point.y = temp_bound.at(j).y;
+            if (hypot(start_point_.x - temp_point.x, start_point_.y - temp_point.y) < 100) {
+                temp_bound_2.push_back(temp_point);
+            }
+        }
+        wall_borders.push_back(temp_bound_2);
+    }
+    threadLogger_->info("wall_borders.size():{}", wall_borders.size());
+
+    for (unsigned int i = 0; i < machine_borders_.size(); ++i) {
+        vector<_BorderPoint> temp_bound = machine_borders_.at(i);
+        vector<Coordinate>   temp_bound_2;
+        for (int j = 0; j < temp_bound.size(); ++j) {
+            Coordinate temp_point;
+            temp_point.z = 0;
+            temp_point.x = temp_bound.at(j).x;
+            temp_point.y = temp_bound.at(j).y;
+            if (hypot(start_point_.x - temp_point.x, start_point_.y - temp_point.y) < 100) {
+                temp_bound_2.push_back(temp_point);
+            }
+        }
+        machine_borders.push_back(temp_bound_2);
+    }
+    threadLogger_->info("machine_borders.size():{}", machine_borders.size());
+
+    CollisonCheck collison_check;
+    collison_check.InitParam(vehicle_param_);
+    collison_check.InitBoundMap(map_border);
+    collison_check.InitWallMap(wall_borders);
+    collison_check.InitObstacleMap(machine_borders);
+
+
     // 得到节点和固定点索引
     vector<_TrajectoryPoint>    origin_path = input_path;
     unordered_set<unsigned int> cusp_set, fixpoint_set;
@@ -1796,7 +1850,7 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
     fixpoint_set.insert(input_path.size() - 2);
 
 
-    unsigned int max_opti_num = 50;
+    unsigned int max_opti_num = 50; // 梯度下降法迭代次数不能太大，否则会导致优化后的参考路径与边界碰撞，只需要轻微微调待优化的路径即可
 
     int            L     = input_path.size();
     double         x_sat = 6;
@@ -1812,9 +1866,8 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
 
 
     // 梯度下降法迭代优化
-    while (out_iterations++ < 10) {
+    while (out_iterations++ < 10) { // 只考虑10轮，如果10轮后还存在点曲率超标或者碰撞，那就不优化了，保持原样路径输出
         /* code */
-
         input_path    = origin_path;
         in_iterations = 0;
         while (in_iterations++ < max_opti_num) {
@@ -1840,18 +1893,35 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
                 input_path.at(i).y -= 0.2 * (e2 - 4 * d2 + 6 * c2 - 4 * b2 + a2);
             }
         }
+        vector<unsigned int> collision_point;
+        for (int i = 0; i < input_path.size(); i++) {
+            if (collison_check.IsVehicleCollisionWithAll(Point(input_path.at(i).x, input_path.at(i).y, input_path.at(i).z, input_path.at(i).yaw, static_cast<GlobalPlanning::MotionDirection>(input_path.at(i).direction)))) {
+                collision_point.push_back(i);
+            }
+        }
+
         auto curvature_exceed = CurvatureCheck(input_path);
         threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
-        if (!curvature_exceed.empty()) // 若无碰撞且曲率不超标
+        threadLogger_->info("collision_point.size():{}", collision_point.size());
+        if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
+        {
+            break;
+        }
+        else // 否则固定碰撞点和曲率超标点，继续优化
         {
             for (unsigned int i = 0; i < curvature_exceed.size(); i++) {
                 unsigned int index = curvature_exceed.at(i);
                 fixpoint_set.insert(index);
             }
+            for (unsigned int i = 0; i < collision_point.size(); i++) {
+                unsigned int index = collision_point.at(i);
+                fixpoint_set.insert(index);
+            }
         }
-        else {
-            break;
-        }
+    }
+    if (out_iterations >= 10) {
+        threadLogger_->info("梯度下降法迭代10轮后，仍存在点曲率超标或者碰撞，保持原样路径输出");
+        input_path = origin_path;
     }
 
 
@@ -2195,15 +2265,17 @@ bool Planning::IsGlobalPathCollision() {
 
 
     // 2. 初始化碰撞检测参数和边界
-    collison_check_.InitParam(vehicle_param_);
-    collison_check_.InitBoundMap(all_map_borders);
+    CollisonCheck collison_check;
+    collison_check.InitParam(vehicle_param_);
+    collison_check.InitBoundMap(all_map_borders);
+
 
 
     // 3. 检查global_path_每个点
     for (size_t i = 0; i < global_path_.size(); ++i) {
         const auto& pt = global_path_[i];
         Point       check_point(pt.x, pt.y, pt.z, pt.yaw / 180.0 * M_PI, static_cast<MotionDirection>(pt.direction));
-        if (collison_check_.IsVehicleCollisionWithAll(check_point)) {
+        if (collison_check.IsVehicleCollisionWithAll(check_point)) {
             threadLogger_->info("全局路径与地图边界发生碰撞，碰撞点：{} {} {}", pt.x, pt.y, pt.yaw);
             return false;
         }
