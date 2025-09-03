@@ -9,6 +9,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
     GlobalPlanning::Path                      load_path;
     GlobalPlanning::Path                      depart_path;
     GlobalPlanning::Point                     queue_point;
+    fit_path_planner.threadLogger_ = threadLogger_;
     depart_path = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker).first;
     ofstream file;
     string   file_name = "depart_parthes.txt";
@@ -103,7 +104,6 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             temp_wait_point.angle = temp_wait_point.angle * M_PI / 180.0;
             auto temp_load_point  = load_point;
             temp_load_point.angle = temp_load_point.angle * M_PI / 180.0; // 调用时注意把起点终点角度转化为弧度
-
             auto plan_result = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
 
             if (plan_result == GlobalPlanning::PlanResult::Plan_OK) {

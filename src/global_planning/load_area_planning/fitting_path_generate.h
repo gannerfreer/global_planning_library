@@ -63,6 +63,7 @@ class FittingPathGenerator {
     std::vector<std::pair<GlobalPlanning::Path, double>> GetLoadPathCandis() {
         return load_path_candidates_;
     }
+    shared_ptr<spdlog::logger>                                                                               threadLogger_;
 };
 } // namespace FittingPathGenerate
 #endif
