@@ -114,6 +114,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                 }
             }
             else {
+                cout << "混合A*规划失败" << endl;
                 return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
             }
         }
