@@ -136,5 +136,17 @@ with open('../load_area_planning/load_area_planning.h', 'r') as file, tempfile.N
             tmpfile.write(line)  
 os.rename(tmpfile.name, '../load_area_planning/load_area_planning.h') 
 
+with open('../load_area_planning/fitting_path_generate.cpp', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../load_area_planning/fitting_path_generate.cpp') 
+
+with open('../load_area_planning/fitting_path_generate.h', 'r') as file, tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpfile:  
+    for line in file:  
+        if 'threadLogger_' not in line:  
+            tmpfile.write(line)  
+os.rename(tmpfile.name, '../load_area_planning/fitting_path_generate.h') 
+
 
 

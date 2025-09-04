@@ -1,6351 +1,1047 @@
 {
-    "execute_mode": 1,
-    "queue_point": {
-        "x": -123.74,
-        "y": 591.08,
-        "longitude": null,
-        "latitude": null,
-        "z": null,
-        "yaw": 30.0
-    },
+    "execute_mode": 0,
+    "queue_point": null,
     "load_point": {
-        "x": -147.136,
-        "y": 608.168,
+        "x": -140.9028907325,
+        "y": 628.1775108525,
         "longitude": null,
         "latitude": null,
         "z": null,
-        "yaw": 310.0
+        "yaw": 311.2944335938
     },
     "entrance_load_guide_path": null,
     "exit_load_guide_path": null,
     "static_border": null,
-    "dynamic_border": [
-        {
-            "x": -89.75,
-            "y": 588.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -90.25,
-            "y": 588.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -90.75,
-            "y": 589.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -91.25,
-            "y": 589.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -91.75,
-            "y": 589.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -92.25,
-            "y": 590.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -92.75,
-            "y": 590.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -93.25,
-            "y": 590.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -93.75,
-            "y": 590.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -94.25,
-            "y": 590.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -94.75,
-            "y": 590.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -95.25,
-            "y": 590.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -95.75,
-            "y": 590.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -96.25,
-            "y": 591.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -96.25,
-            "y": 591.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -96.25,
-            "y": 592.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -96.75,
-            "y": 592.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -96.75,
-            "y": 593.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -97.25,
-            "y": 593.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -97.75,
-            "y": 593.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -97.75,
-            "y": 594.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -98.25,
-            "y": 594.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -98.75,
-            "y": 594.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -99.25,
-            "y": 594.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -99.75,
-            "y": 595.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -100.25,
-            "y": 595.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -100.75,
-            "y": 596.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -101.25,
-            "y": 596.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -101.75,
-            "y": 597.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -102.25,
-            "y": 597.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -102.75,
-            "y": 597.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -102.75,
-            "y": 598.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -103.25,
-            "y": 598.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -103.75,
-            "y": 598.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -103.75,
-            "y": 599.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -104.25,
-            "y": 599.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -104.75,
-            "y": 599.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -105.25,
-            "y": 600.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -105.75,
-            "y": 600.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -105.75,
-            "y": 601.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -106.25,
-            "y": 601.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -106.75,
-            "y": 601.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -106.75,
-            "y": 602.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -107.25,
-            "y": 602.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -107.75,
-            "y": 603.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -108.25,
-            "y": 603.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -108.25,
-            "y": 604.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -108.25,
-            "y": 604.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -108.25,
-            "y": 605.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -108.25,
-            "y": 605.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -108.75,
-            "y": 606.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -108.75,
-            "y": 606.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -108.75,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -108.75,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -109.25,
-            "y": 608.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -109.25,
-            "y": 608.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -109.25,
-            "y": 609.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -109.75,
-            "y": 609.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -110.25,
-            "y": 609.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -110.75,
-            "y": 610.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -110.75,
-            "y": 610.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -111.25,
-            "y": 610.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -111.75,
-            "y": 611.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -112.25,
-            "y": 611.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -112.75,
-            "y": 612.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -113.25,
-            "y": 612.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -113.75,
-            "y": 612.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -113.75,
-            "y": 613.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -113.75,
-            "y": 613.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -114.25,
-            "y": 613.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -114.75,
-            "y": 614.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -115.25,
-            "y": 614.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -115.75,
-            "y": 615.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -115.75,
-            "y": 615.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -116.25,
-            "y": 615.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -116.75,
-            "y": 616.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -117.25,
-            "y": 616.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -117.75,
-            "y": 617.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -117.75,
-            "y": 617.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -118.25,
-            "y": 618.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -118.75,
-            "y": 618.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -119.25,
-            "y": 618.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -119.25,
-            "y": 619.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -119.75,
-            "y": 619.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -120.25,
-            "y": 619.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -120.75,
-            "y": 619.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -121.25,
-            "y": 620.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -121.25,
-            "y": 620.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -121.75,
-            "y": 621.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -122.25,
-            "y": 621.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -122.75,
-            "y": 621.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -123.25,
-            "y": 621.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -123.75,
-            "y": 621.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -124.25,
-            "y": 621.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -124.75,
-            "y": 621.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -125.25,
-            "y": 622.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -125.75,
-            "y": 622.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 622.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 623.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 623.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 624.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 624.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.75,
-            "y": 624.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -127.25,
-            "y": 624.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -127.75,
-            "y": 625.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -128.25,
-            "y": 625.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -128.25,
-            "y": 626.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -128.75,
-            "y": 626.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -129.25,
-            "y": 626.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -129.75,
-            "y": 626.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -129.75,
-            "y": 627.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -129.75,
-            "y": 627.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -130.25,
-            "y": 628.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -130.25,
-            "y": 628.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -130.75,
-            "y": 629.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -131.25,
-            "y": 629.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -131.75,
-            "y": 630.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -132.25,
-            "y": 630.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -132.75,
-            "y": 630.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -133.25,
-            "y": 630.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -133.75,
-            "y": 631.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -133.75,
-            "y": 631.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -134.25,
-            "y": 631.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -134.75,
-            "y": 632.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -135.25,
-            "y": 632.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -135.75,
-            "y": 632.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -136.25,
-            "y": 633.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -136.75,
-            "y": 633.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -137.25,
-            "y": 634.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -137.75,
-            "y": 634.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -138.25,
-            "y": 635.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -138.25,
-            "y": 635.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -138.75,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -139.25,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -139.75,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -140.25,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -140.75,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -140.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -141.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -141.75,
-            "y": 638.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -141.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -142.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -142.75,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.25,
-            "y": 640.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -144.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -144.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.75,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 640.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 641.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 641.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 642.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.75,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.25,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.75,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.25,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.75,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.25,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.75,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 642.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 641.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 641.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -148.25,
-            "y": 640.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -148.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -148.75,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.75,
-            "y": 638.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.75,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -156.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -156.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -157.25,
-            "y": 638.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -157.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.75,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -159.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -159.75,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.25,
-            "y": 638.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -162.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -162.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -163.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -163.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -164.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -164.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -165.25,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -165.75,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.75,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.25,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 635.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 635.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 634.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 634.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.25,
-            "y": 633.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 633.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 633.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 632.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 632.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.75,
-            "y": 632.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 632.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 631.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 631.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 630.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 630.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 629.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 629.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 628.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 628.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 627.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 627.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 626.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.75,
-            "y": 626.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 625.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 625.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 624.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 624.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 623.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 623.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 622.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 622.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 621.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 621.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 620.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.25,
-            "y": 620.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 620.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 620.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 619.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 619.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 618.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.25,
-            "y": 618.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 618.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 617.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 617.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 616.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 616.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 615.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 615.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.75,
-            "y": 615.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 614.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 614.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 613.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 613.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 612.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -165.75,
-            "y": 612.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -165.25,
-            "y": 612.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -164.75,
-            "y": 612.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -164.25,
-            "y": 611.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -163.75,
-            "y": 611.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -163.25,
-            "y": 611.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -162.75,
-            "y": 611.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -162.25,
-            "y": 610.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.75,
-            "y": 610.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.25,
-            "y": 610.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 610.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 609.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 609.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 608.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 608.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.25,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -159.75,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -159.25,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.75,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.25,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -157.75,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -157.25,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -156.75,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -156.25,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.75,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 606.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 606.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 605.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 605.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 605.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 604.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 604.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 603.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 603.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 602.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 602.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 601.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 601.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 600.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 600.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 599.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 599.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 598.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 598.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 597.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 597.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 597.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 596.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 596.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 596.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 595.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 595.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 594.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 594.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 594.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 594.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 593.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 593.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 592.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 592.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 591.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 591.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 590.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 590.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 589.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 589.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 588.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 588.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 587.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 587.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 586.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 586.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 586.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 585.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 585.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.25,
-            "y": 584.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.25,
-            "y": 584.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 583.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 583.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 582.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 582.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 581.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 581.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 581.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 580.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 580.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 580.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 580.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 580.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.25,
-            "y": 579.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.75,
-            "y": 579.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.75,
-            "y": 578.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.75,
-            "y": 578.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.25,
-            "y": 577.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -125.25,
-            "y": 622.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -125.75,
-            "y": 622.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 622.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 623.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 623.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 624.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.25,
-            "y": 624.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -126.75,
-            "y": 624.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -127.25,
-            "y": 624.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -127.75,
-            "y": 625.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -128.25,
-            "y": 625.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -128.25,
-            "y": 626.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -128.75,
-            "y": 626.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -129.25,
-            "y": 626.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -129.75,
-            "y": 626.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -129.75,
-            "y": 627.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -129.75,
-            "y": 627.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -130.25,
-            "y": 628.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -130.25,
-            "y": 628.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -130.75,
-            "y": 629.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -131.25,
-            "y": 629.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -131.75,
-            "y": 630.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -132.25,
-            "y": 630.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -132.75,
-            "y": 630.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -133.25,
-            "y": 630.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -133.75,
-            "y": 631.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -133.75,
-            "y": 631.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -134.25,
-            "y": 631.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -134.75,
-            "y": 632.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -135.25,
-            "y": 632.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -135.75,
-            "y": 632.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -136.25,
-            "y": 633.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -136.75,
-            "y": 633.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -137.25,
-            "y": 634.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -137.75,
-            "y": 634.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -138.25,
-            "y": 635.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -138.25,
-            "y": 635.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -138.75,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -139.25,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -139.75,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -140.25,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -140.75,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -140.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -141.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -141.75,
-            "y": 638.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -141.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -142.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -142.75,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.25,
-            "y": 640.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -143.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -144.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -144.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.75,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 640.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 641.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 641.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 642.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.75,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.25,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.75,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.25,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -145.75,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.25,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -146.75,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.25,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 643.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 642.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 642.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 641.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -147.75,
-            "y": 641.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -148.25,
-            "y": 640.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -148.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -148.75,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -149.75,
-            "y": 638.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.75,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -156.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -156.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -157.25,
-            "y": 638.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -157.75,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.75,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -159.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -159.75,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.25,
-            "y": 640.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.25,
-            "y": 639.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.25,
-            "y": 639.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.25,
-            "y": 638.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -162.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -162.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -163.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -163.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -164.25,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -164.75,
-            "y": 638.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -165.25,
-            "y": 637.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -165.75,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 637.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.75,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 636.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.25,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 636.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 635.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 635.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 634.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 634.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.25,
-            "y": 633.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 633.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 633.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 632.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 632.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.75,
-            "y": 632.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 632.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 631.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 631.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 630.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 630.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 629.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 629.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 628.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 628.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 627.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 627.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 626.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.75,
-            "y": 626.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 625.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 625.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 624.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 624.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 623.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 623.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 622.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 622.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 621.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 621.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 620.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.25,
-            "y": 620.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 620.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 620.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 619.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 619.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.75,
-            "y": 618.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -170.25,
-            "y": 618.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 618.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 617.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.75,
-            "y": 617.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -169.25,
-            "y": 616.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.75,
-            "y": 616.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 615.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -168.25,
-            "y": 615.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.75,
-            "y": 615.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -167.25,
-            "y": 614.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 614.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.75,
-            "y": 613.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 613.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -166.25,
-            "y": 612.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -165.75,
-            "y": 612.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -165.25,
-            "y": 612.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -164.75,
-            "y": 612.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -164.25,
-            "y": 611.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -163.75,
-            "y": 611.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -163.25,
-            "y": 611.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -162.75,
-            "y": 611.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -162.25,
-            "y": 610.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.75,
-            "y": 610.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -161.25,
-            "y": 610.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 610.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 609.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 609.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 608.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.75,
-            "y": 608.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -160.25,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -159.75,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -159.25,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.75,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -158.25,
-            "y": 607.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -157.75,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -157.25,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -156.75,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -156.25,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.75,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 607.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 606.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 606.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 605.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 605.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 605.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 604.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 604.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 603.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 603.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 602.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 602.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 601.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 601.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 600.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 600.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 599.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 599.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 598.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 598.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 597.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -155.25,
-            "y": 597.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.75,
-            "y": 597.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -154.25,
-            "y": 596.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.75,
-            "y": 596.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 596.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 595.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 595.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -153.25,
-            "y": 594.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 594.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 594.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 594.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 593.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 593.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 592.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 592.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 591.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 591.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 590.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 590.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 589.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 589.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 588.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 588.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 587.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 587.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 586.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 586.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 586.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 585.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 585.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.25,
-            "y": 584.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.25,
-            "y": 584.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 583.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 583.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 582.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 582.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 581.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 581.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 581.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.75,
-            "y": 580.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -152.25,
-            "y": 580.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.75,
-            "y": 580.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -151.25,
-            "y": 580.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.75,
-            "y": 580.25,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        },
-        {
-            "x": -150.25,
-            "y": 579.75,
-            "longitude": null,
-            "latitude": null,
-            "z": 0.0,
-            "type": null
-        }
-    ],
+    "dynamic_border": [],
     "excavator_border": [
         {
             "zone_id": 8,
             "inner_borders": [
                 {
-                    "point_num": 95,
+                    "point_num": 85,
                     "border_points": [
                         {
-                            "x": -172.5876531106945,
-                            "y": 625.4572744180753,
+                            "x": -147.2437870113825,
+                            "y": 638.4213286067045,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.7851177314001,
-                            "y": 625.4657646142555,
+                            "x": -147.3940526614859,
+                            "y": 638.2893428711154,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.98258235210574,
-                            "y": 625.4742548104357,
+                            "x": -147.54431831158928,
+                            "y": 638.1573571355262,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.18004697281134,
-                            "y": 625.4827450066159,
+                            "x": -147.69458396169267,
+                            "y": 638.0253713999371,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.37751159351697,
-                            "y": 625.4912352027961,
+                            "x": -147.84484961179606,
+                            "y": 637.893385664348,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.57497621422257,
-                            "y": 625.4997253989765,
+                            "x": -147.99511526189946,
+                            "y": 637.7613999287589,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.7724408349282,
-                            "y": 625.5082155951567,
+                            "x": -148.14538091200288,
+                            "y": 637.6294141931697,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.9699054556338,
-                            "y": 625.5167057913369,
+                            "x": -148.29564656210627,
+                            "y": 637.4974284575806,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.16737007633944,
-                            "y": 625.5251959875171,
+                            "x": -148.44591221220966,
+                            "y": 637.3654427219915,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.36483469704504,
-                            "y": 625.5336861836973,
+                            "x": -148.59617786231306,
+                            "y": 637.2334569864024,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.56229931775067,
-                            "y": 625.5421763798776,
+                            "x": -148.74644351241645,
+                            "y": 637.1014712508132,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.75976393845627,
-                            "y": 625.5506665760578,
+                            "x": -148.89670916251984,
+                            "y": 636.969485515224,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.9572285591619,
-                            "y": 625.559156772238,
+                            "x": -149.04697481262323,
+                            "y": 636.837499779635,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.1546931798675,
-                            "y": 625.5676469684183,
+                            "x": -149.19724046272663,
+                            "y": 636.7055140440459,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.35215780057314,
-                            "y": 625.5761371645985,
+                            "x": -149.34750611283002,
+                            "y": 636.5735283084567,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.54962242127874,
-                            "y": 625.5846273607788,
+                            "x": -149.49777176293344,
+                            "y": 636.4415425728675,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.74708704198437,
-                            "y": 625.593117556959,
+                            "x": -149.64803741303683,
+                            "y": 636.3095568372785,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.94455166268997,
-                            "y": 625.6016077531392,
+                            "x": -149.79830306314022,
+                            "y": 636.1775711016894,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.94455166268997,
-                            "y": 625.6016077531392,
+                            "x": -149.94856871324362,
+                            "y": 636.0455853661002,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.9361751744943,
-                            "y": 625.796427758389,
+                            "x": -150.098834363347,
+                            "y": 635.913599630511,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.92779868629862,
-                            "y": 625.9912477636386,
+                            "x": -150.2491000134504,
+                            "y": 635.781613894922,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.91942219810295,
-                            "y": 626.1860677688884,
+                            "x": -150.2491000134504,
+                            "y": 635.781613894922,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.91104570990726,
-                            "y": 626.3808877741382,
+                            "x": -150.38108574903953,
+                            "y": 635.9318795450254,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.9026692217116,
-                            "y": 626.5757077793879,
+                            "x": -150.51307148462865,
+                            "y": 636.0821451951288,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.8942927335159,
-                            "y": 626.7705277846376,
+                            "x": -150.6450572202178,
+                            "y": 636.2324108452322,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.88591624532023,
-                            "y": 626.9653477898873,
+                            "x": -150.77704295580693,
+                            "y": 636.3826764953355,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.87753975712457,
-                            "y": 627.1601677951371,
+                            "x": -150.90902869139606,
+                            "y": 636.5329421454389,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.86916326892887,
-                            "y": 627.3549878003868,
+                            "x": -151.04101442698519,
+                            "y": 636.6832077955423,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.8607867807332,
-                            "y": 627.5498078056365,
+                            "x": -151.1730001625743,
+                            "y": 636.8334734456457,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.8524102925375,
-                            "y": 627.7446278108863,
+                            "x": -151.30498589816347,
+                            "y": 636.9837390957491,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.84403380434185,
-                            "y": 627.9394478161361,
+                            "x": -151.4369716337526,
+                            "y": 637.1340047458525,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.83565731614615,
-                            "y": 628.1342678213857,
+                            "x": -151.56895736934172,
+                            "y": 637.2842703959559,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.8272808279505,
-                            "y": 628.3290878266355,
+                            "x": -151.70094310493084,
+                            "y": 637.4345360460593,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.81890433975482,
-                            "y": 628.5239078318853,
+                            "x": -151.83292884051997,
+                            "y": 637.5848016961627,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.81052785155913,
-                            "y": 628.7187278371349,
+                            "x": -151.96491457610912,
+                            "y": 637.7350673462661,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.80215136336346,
-                            "y": 628.9135478423847,
+                            "x": -152.09690031169825,
+                            "y": 637.8853329963695,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.79377487516777,
-                            "y": 629.1083678476344,
+                            "x": -152.22888604728738,
+                            "y": 638.0355986464729,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.7853983869721,
-                            "y": 629.3031878528842,
+                            "x": -152.3608717828765,
+                            "y": 638.1858642965763,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.7770218987764,
-                            "y": 629.4980078581339,
+                            "x": -152.49285751846563,
+                            "y": 638.3361299466796,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.76864541058075,
-                            "y": 629.6928278633836,
+                            "x": -152.62484325405478,
+                            "y": 638.486395596783,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.76026892238508,
-                            "y": 629.8876478686334,
+                            "x": -152.7568289896439,
+                            "y": 638.6366612468864,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.7518924341894,
-                            "y": 630.082467873883,
+                            "x": -152.88881472523303,
+                            "y": 638.7869268969898,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.74351594599372,
-                            "y": 630.2772878791328,
+                            "x": -152.88881472523303,
+                            "y": 638.7869268969898,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.73513945779803,
-                            "y": 630.4721078843826,
+                            "x": -152.73854907512964,
+                            "y": 638.9189126325789,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.72676296960236,
-                            "y": 630.6669278896323,
+                            "x": -152.58828342502625,
+                            "y": 639.0508983681681,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.71838648140667,
-                            "y": 630.861747894882,
+                            "x": -152.43801777492286,
+                            "y": 639.1828841037573,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.710009993211,
-                            "y": 631.0565679001318,
+                            "x": -152.28775212481946,
+                            "y": 639.3148698393463,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.710009993211,
-                            "y": 631.0565679001318,
+                            "x": -152.13748647471607,
+                            "y": 639.4468555749354,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.5125453725054,
-                            "y": 631.0480777039515,
+                            "x": -151.98722082461265,
+                            "y": 639.5788413105246,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.31508075179977,
-                            "y": 631.0395875077713,
+                            "x": -151.83695517450926,
+                            "y": 639.7108270461138,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -175.11761613109417,
-                            "y": 631.0310973115911,
+                            "x": -151.68668952440586,
+                            "y": 639.8428127817028,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.92015151038854,
-                            "y": 631.0226071154109,
+                            "x": -151.53642387430247,
+                            "y": 639.9747985172919,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.72268688968293,
-                            "y": 631.0141169192306,
+                            "x": -151.38615822419908,
+                            "y": 640.1067842528811,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.5252222689773,
-                            "y": 631.0056267230503,
+                            "x": -151.2358925740957,
+                            "y": 640.2387699884703,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.3277576482717,
-                            "y": 630.9971365268701,
+                            "x": -151.0856269239923,
+                            "y": 640.3707557240593,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -174.13029302756607,
-                            "y": 630.9886463306899,
+                            "x": -150.9353612738889,
+                            "y": 640.5027414596484,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.93282840686047,
-                            "y": 630.9801561345097,
+                            "x": -150.7850956237855,
+                            "y": 640.6347271952376,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.73536378615483,
-                            "y": 630.9716659383295,
+                            "x": -150.6348299736821,
+                            "y": 640.7667129308268,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.53789916544923,
-                            "y": 630.9631757421492,
+                            "x": -150.4845643235787,
+                            "y": 640.8986986664158,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.3404345447436,
-                            "y": 630.954685545969,
+                            "x": -150.3342986734753,
+                            "y": 641.0306844020049,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -173.142969924038,
-                            "y": 630.9461953497887,
+                            "x": -150.1840330233719,
+                            "y": 641.1626701375941,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.94550530333237,
-                            "y": 630.9377051536085,
+                            "x": -150.03376737326852,
+                            "y": 641.2946558731833,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.74804068262677,
-                            "y": 630.9292149574283,
+                            "x": -149.88350172316512,
+                            "y": 641.4266416087723,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.55057606192113,
-                            "y": 630.920724761248,
+                            "x": -149.88350172316512,
+                            "y": 641.4266416087723,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.35311144121553,
-                            "y": 630.9122345650678,
+                            "x": -149.751515987576,
+                            "y": 641.276375958669,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.35311144121553,
-                            "y": 630.9122345650678,
+                            "x": -149.61953025198687,
+                            "y": 641.1261103085656,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.3614879294112,
-                            "y": 630.717414559818,
+                            "x": -149.48754451639772,
+                            "y": 640.9758446584622,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.3698644176069,
-                            "y": 630.5225945545684,
+                            "x": -149.3555587808086,
+                            "y": 640.8255790083588,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.37824090580256,
-                            "y": 630.3277745493186,
+                            "x": -149.22357304521947,
+                            "y": 640.6753133582554,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.38661739399825,
-                            "y": 630.1329545440689,
+                            "x": -149.09158730963034,
+                            "y": 640.525047708152,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.39499388219392,
-                            "y": 629.9381345388191,
+                            "x": -148.95960157404122,
+                            "y": 640.3747820580486,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.4033703703896,
-                            "y": 629.7433145335694,
+                            "x": -148.82761583845206,
+                            "y": 640.2245164079452,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.41174685858527,
-                            "y": 629.5484945283197,
+                            "x": -148.69563010286294,
+                            "y": 640.0742507578418,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.42012334678094,
-                            "y": 629.3536745230699,
+                            "x": -148.5636443672738,
+                            "y": 639.9239851077384,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.42849983497663,
-                            "y": 629.1588545178203,
+                            "x": -148.43165863168468,
+                            "y": 639.773719457635,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.4368763231723,
-                            "y": 628.9640345125705,
+                            "x": -148.29967289609556,
+                            "y": 639.6234538075316,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.445252811368,
-                            "y": 628.7692145073207,
+                            "x": -148.1676871605064,
+                            "y": 639.4731881574282,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.45362929956366,
-                            "y": 628.574394502071,
+                            "x": -148.03570142491728,
+                            "y": 639.3229225073248,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.46200578775935,
-                            "y": 628.3795744968213,
+                            "x": -147.90371568932815,
+                            "y": 639.1726568572215,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.47038227595502,
-                            "y": 628.1847544915715,
+                            "x": -147.77172995373903,
+                            "y": 639.0223912071181,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.47875876415068,
-                            "y": 627.9899344863218,
+                            "x": -147.6397442181499,
+                            "y": 638.8721255570147,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.48713525234638,
-                            "y": 627.7951144810721,
+                            "x": -147.50775848256075,
+                            "y": 638.7218599069113,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.49551174054204,
-                            "y": 627.6002944758224,
+                            "x": -147.37577274697162,
+                            "y": 638.5715942568079,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.50388822873774,
-                            "y": 627.4054744705726,
+                            "x": -147.2437870113825,
+                            "y": 638.4213286067045,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -172.5122647169334,
-                            "y": 627.2106544653228,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.5206412051291,
-                            "y": 627.0158344600732,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.52901769332476,
-                            "y": 626.8210144548234,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.53739418152043,
-                            "y": 626.6261944495736,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.54577066971612,
-                            "y": 626.431374444324,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.55414715791179,
-                            "y": 626.2365544390742,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.56252364610748,
-                            "y": 626.0417344338244,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.57090013430314,
-                            "y": 625.8469144285747,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.57927662249884,
-                            "y": 625.652094423325,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.5876531106945,
-                            "y": 625.4572744180753,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -172.5876531106945,
-                            "y": 625.4572744180753,
+                            "x": -147.2437870113825,
+                            "y": 638.4213286067045,
                             "z": 0.0,
                             "type": 0
                         }
                     ]
                 },
                 {
-                    "point_num": 95,
+                    "point_num": 85,
                     "border_points": [
                         {
-                            "x": -135.56371705418567,
-                            "y": 624.6111220489561,
+                            "x": 103.32974140492587,
+                            "y": 2.191348311132737,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -135.72022625568337,
-                            "y": 624.4904189847524,
+                            "x": 103.18469054783898,
+                            "y": 2.3290445306101026,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -135.87673545718107,
-                            "y": 624.3697159205489,
+                            "x": 103.0396396907521,
+                            "y": 2.4667407500874683,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.03324465867874,
-                            "y": 624.2490128563452,
+                            "x": 102.8945888336652,
+                            "y": 2.6044369695648344,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.18975386017644,
-                            "y": 624.1283097921415,
+                            "x": 102.74953797657831,
+                            "y": 2.7421331890422,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.34626306167414,
-                            "y": 624.0076067279379,
+                            "x": 102.60448711949142,
+                            "y": 2.8798294085195657,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.50277226317183,
-                            "y": 623.8869036637343,
+                            "x": 102.45943626240454,
+                            "y": 3.017525627996932,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.65928146466953,
-                            "y": 623.7662005995306,
+                            "x": 102.31438540531765,
+                            "y": 3.155221847474297,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.81579066616723,
-                            "y": 623.645497535327,
+                            "x": 102.16933454823075,
+                            "y": 3.292918066951663,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.9722998676649,
-                            "y": 623.5247944711234,
+                            "x": 102.02428369114386,
+                            "y": 3.4306142864290288,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.1288090691626,
-                            "y": 623.4040914069197,
+                            "x": 101.87923283405698,
+                            "y": 3.5683105059063944,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.2853182706603,
-                            "y": 623.2833883427161,
+                            "x": 101.73418197697009,
+                            "y": 3.7060067253837605,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.441827472158,
-                            "y": 623.1626852785125,
+                            "x": 101.5891311198832,
+                            "y": 3.843702944861126,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.5983366736557,
-                            "y": 623.0419822143089,
+                            "x": 101.4440802627963,
+                            "y": 3.981399164338492,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.7548458751534,
-                            "y": 622.9212791501052,
+                            "x": 101.29902940570942,
+                            "y": 4.119095383815857,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.91135507665106,
-                            "y": 622.8005760859015,
+                            "x": 101.15397854862253,
+                            "y": 4.256791603293223,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.06786427814876,
-                            "y": 622.679873021698,
+                            "x": 101.00892769153565,
+                            "y": 4.394487822770589,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.22437347964646,
-                            "y": 622.5591699574943,
+                            "x": 100.86387683444876,
+                            "y": 4.532184042247955,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.22437347964646,
-                            "y": 622.5591699574943,
+                            "x": 100.71882597736186,
+                            "y": 4.669880261725321,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.3434599849545,
-                            "y": 622.7135830536148,
+                            "x": 100.57377512027497,
+                            "y": 4.807576481202686,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.46254649026255,
-                            "y": 622.8679961497353,
+                            "x": 100.42872426318809,
+                            "y": 4.945272700680052,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.5816329955706,
-                            "y": 623.0224092458558,
+                            "x": 100.42872426318809,
+                            "y": 4.945272700680052,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.70071950087865,
-                            "y": 623.1768223419763,
+                            "x": 100.56642048266545,
+                            "y": 5.090323557766941,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.8198060061867,
-                            "y": 623.3312354380968,
+                            "x": 100.70411670214281,
+                            "y": 5.23537441485383,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.93889251149474,
-                            "y": 623.4856485342173,
+                            "x": 100.84181292162019,
+                            "y": 5.3804252719407195,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.0579790168028,
-                            "y": 623.6400616303378,
+                            "x": 100.97950914109755,
+                            "y": 5.525476129027608,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.17706552211084,
-                            "y": 623.7944747264582,
+                            "x": 101.11720536057491,
+                            "y": 5.670526986114497,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.29615202741888,
-                            "y": 623.9488878225787,
+                            "x": 101.25490158005228,
+                            "y": 5.815577843201386,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.41523853272693,
-                            "y": 624.1033009186992,
+                            "x": 101.39259779952964,
+                            "y": 5.960628700288275,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.53432503803498,
-                            "y": 624.2577140148197,
+                            "x": 101.53029401900702,
+                            "y": 6.105679557375165,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.65341154334303,
-                            "y": 624.4121271109402,
+                            "x": 101.66799023848438,
+                            "y": 6.250730414462054,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.77249804865107,
-                            "y": 624.5665402070607,
+                            "x": 101.80568645796174,
+                            "y": 6.395781271548943,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.89158455395912,
-                            "y": 624.7209533031812,
+                            "x": 101.9433826774391,
+                            "y": 6.540832128635832,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.01067105926717,
-                            "y": 624.8753663993017,
+                            "x": 102.08107889691647,
+                            "y": 6.6858829857227215,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.12975756457521,
-                            "y": 625.0297794954222,
+                            "x": 102.21877511639384,
+                            "y": 6.8309338428096105,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.24884406988326,
-                            "y": 625.1841925915427,
+                            "x": 102.3564713358712,
+                            "y": 6.975984699896499,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.3679305751913,
-                            "y": 625.3386056876632,
+                            "x": 102.49416755534857,
+                            "y": 7.121035556983388,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.48701708049936,
-                            "y": 625.4930187837837,
+                            "x": 102.63186377482593,
+                            "y": 7.266086414070278,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.6061035858074,
-                            "y": 625.6474318799042,
+                            "x": 102.7695599943033,
+                            "y": 7.411137271157166,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.72519009111545,
-                            "y": 625.8018449760247,
+                            "x": 102.90725621378067,
+                            "y": 7.556188128244056,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.8442765964235,
-                            "y": 625.9562580721451,
+                            "x": 103.04495243325803,
+                            "y": 7.701238985330944,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.96336310173155,
-                            "y": 626.1106711682656,
+                            "x": 103.1826486527354,
+                            "y": 7.846289842417834,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -141.0824496070396,
-                            "y": 626.2650842643861,
+                            "x": 103.1826486527354,
+                            "y": 7.846289842417834,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -141.20153611234764,
-                            "y": 626.4194973605066,
+                            "x": 103.32769950982228,
+                            "y": 7.708593622940468,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -141.3206226176557,
-                            "y": 626.5739104566271,
+                            "x": 103.47275036690917,
+                            "y": 7.5708974034631025,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -141.43970912296373,
-                            "y": 626.7283235527476,
+                            "x": 103.61780122399607,
+                            "y": 7.433201183985736,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -141.55879562827178,
-                            "y": 626.8827366488681,
+                            "x": 103.76285208108295,
+                            "y": 7.295504964508371,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -141.55879562827178,
-                            "y": 626.8827366488681,
+                            "x": 103.90790293816984,
+                            "y": 7.157808745031005,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -141.40228642677408,
-                            "y": 627.0034397130718,
+                            "x": 104.05295379525673,
+                            "y": 7.020112525553639,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -141.24577722527638,
-                            "y": 627.1241427772753,
+                            "x": 104.19800465234361,
+                            "y": 6.882416306076274,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -141.08926802377871,
-                            "y": 627.244845841479,
+                            "x": 104.34305550943051,
+                            "y": 6.744720086598908,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.93275882228102,
-                            "y": 627.3655489056827,
+                            "x": 104.4881063665174,
+                            "y": 6.607023867121542,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.77624962078332,
-                            "y": 627.4862519698863,
+                            "x": 104.63315722360429,
+                            "y": 6.469327647644176,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.61974041928562,
-                            "y": 627.6069550340899,
+                            "x": 104.77820808069117,
+                            "y": 6.33163142816681,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.46323121778792,
-                            "y": 627.7276580982935,
+                            "x": 104.92325893777806,
+                            "y": 6.193935208689444,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.30672201629022,
-                            "y": 627.8483611624972,
+                            "x": 105.06830979486496,
+                            "y": 6.056238989212079,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -140.15021281479255,
-                            "y": 627.9690642267008,
+                            "x": 105.21336065195185,
+                            "y": 5.918542769734714,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.99370361329485,
-                            "y": 628.0897672909044,
+                            "x": 105.35841150903873,
+                            "y": 5.780846550257348,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.83719441179716,
-                            "y": 628.2104703551081,
+                            "x": 105.50346236612562,
+                            "y": 5.6431503307799815,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.68068521029946,
-                            "y": 628.3311734193117,
+                            "x": 105.6485132232125,
+                            "y": 5.505454111302615,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.52417600880176,
-                            "y": 628.4518764835153,
+                            "x": 105.7935640802994,
+                            "y": 5.36775789182525,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.36766680730406,
-                            "y": 628.572579547719,
+                            "x": 105.93861493738629,
+                            "y": 5.230061672347885,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.2111576058064,
-                            "y": 628.6932826119227,
+                            "x": 106.08366579447318,
+                            "y": 5.092365452870519,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -139.0546484043087,
-                            "y": 628.8139856761262,
+                            "x": 106.08366579447318,
+                            "y": 5.092365452870519,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.898139202811,
-                            "y": 628.9346887403299,
+                            "x": 105.94596957499581,
+                            "y": 4.94731459578363,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.898139202811,
-                            "y": 628.9346887403299,
+                            "x": 105.80827335551845,
+                            "y": 4.802263738696741,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.77905269750295,
-                            "y": 628.7802756442094,
+                            "x": 105.67057713604108,
+                            "y": 4.657212881609851,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.6599661921949,
-                            "y": 628.6258625480889,
+                            "x": 105.53288091656371,
+                            "y": 4.512162024522962,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.54087968688685,
-                            "y": 628.4714494519684,
+                            "x": 105.39518469708635,
+                            "y": 4.367111167436073,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.4217931815788,
-                            "y": 628.3170363558479,
+                            "x": 105.25748847760899,
+                            "y": 4.2220603103491845,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.30270667627076,
-                            "y": 628.1626232597274,
+                            "x": 105.11979225813162,
+                            "y": 4.077009453262296,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.1836201709627,
-                            "y": 628.0082101636069,
+                            "x": 104.98209603865425,
+                            "y": 3.9319585961754058,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -138.06453366565466,
-                            "y": 627.8537970674864,
+                            "x": 104.84439981917689,
+                            "y": 3.786907739088517,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.94544716034662,
-                            "y": 627.6993839713659,
+                            "x": 104.70670359969952,
+                            "y": 3.641856882001628,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.82636065503857,
-                            "y": 627.5449708752454,
+                            "x": 104.56900738022216,
+                            "y": 3.496806024914739,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.70727414973052,
-                            "y": 627.390557779125,
+                            "x": 104.4313111607448,
+                            "y": 3.351755167827849,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.58818764442248,
-                            "y": 627.2361446830045,
+                            "x": 104.29361494126742,
+                            "y": 3.2067043107409603,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.46910113911443,
-                            "y": 627.081731586884,
+                            "x": 104.15591872179006,
+                            "y": 3.0616534536540714,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.35001463380638,
-                            "y": 626.9273184907635,
+                            "x": 104.0182225023127,
+                            "y": 2.9166025965671825,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.23092812849833,
-                            "y": 626.772905394643,
+                            "x": 103.88052628283533,
+                            "y": 2.771551739480293,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -137.1118416231903,
-                            "y": 626.6184922985225,
+                            "x": 103.74283006335797,
+                            "y": 2.626500882393404,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.99275511788224,
-                            "y": 626.464079202402,
+                            "x": 103.6051338438806,
+                            "y": 2.4814500253065153,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.8736686125742,
-                            "y": 626.3096661062815,
+                            "x": 103.46743762440323,
+                            "y": 2.3363991682196263,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.75458210726615,
-                            "y": 626.155253010161,
+                            "x": 103.32974140492587,
+                            "y": 2.191348311132737,
                             "z": 0.0,
                             "type": 0
                         },
                         {
-                            "x": -136.6354956019581,
-                            "y": 626.0008399140405,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -136.51640909665005,
-                            "y": 625.84642681792,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -136.397322591342,
-                            "y": 625.6920137217995,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -136.27823608603396,
-                            "y": 625.537600625679,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -136.1591495807259,
-                            "y": 625.3831875295585,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -136.04006307541786,
-                            "y": 625.228774433438,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -135.92097657010981,
-                            "y": 625.0743613373176,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -135.80189006480177,
-                            "y": 624.9199482411971,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -135.68280355949372,
-                            "y": 624.7655351450766,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -135.56371705418567,
-                            "y": 624.6111220489561,
-                            "z": 0.0,
-                            "type": 0
-                        },
-                        {
-                            "x": -135.56371705418567,
-                            "y": 624.6111220489561,
+                            "x": 103.32974140492587,
+                            "y": 2.191348311132737,
                             "z": 0.0,
                             "type": 0
                         }

@@ -1289,6 +1289,17 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         Value& val = doc["m_Veh_Param"];
         if (val.IsObject()) {
             // 装载排队点自动生成算法参数
+
+
+            if (val.HasMember("remove_dis") && val["remove_dis"].IsNumber()) {
+                planning_info.remove_dis = val["remove_dis"].GetDouble();
+                cout << "planning_info.remove_dis " << planning_info.remove_dis << endl;
+            }
+            else {
+                planning_info.remove_dis = 5.0;
+                cout << "无法找到车参 remove_dis ，即将赋予默认值 5.0" << endl;
+            }
+
             if (val.HasMember("safe_margin_front") && val["safe_margin_front"].IsNumber()) {
                 planning_info.safe_margin_front = val["safe_margin_front"].GetDouble();
                 cout << "planning_info.safe_margin_front " << planning_info.safe_margin_front << endl;

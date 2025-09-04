@@ -660,9 +660,19 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     map_border_v.push_back(vC);
     collison_check.InitBoundMap(map_border_v);
 
-    Bound                              wall_border_v;
-    const vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
+    Bound                        wall_border_v;
+    vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
     cout << "收到挡墙" << wall_border.size() << "组" << "wall_border.at(0).size():" << wall_border.front().size() << endl;
+    // 对wall_border进行过滤，过滤掉距离load_point小于remove_dis的点
+    for (unsigned int i = 0; i < wall_border.size(); ++i) {
+        for (unsigned int j = 0; j < wall_border.at(i).size(); ++j) {
+            if (hypot(veh_start_end.load_point.x-wall_border.at(i).at(j).x, veh_start_end.load_point.y-wall_border.at(i).at(j).y) < veh_start_end.remove_dis) {
+                wall_border.at(i).erase(wall_border.at(i).begin() + j);
+            }
+        }
+    }
+
+    cout << "收到挡墙（过滤后）" << wall_border.size() << "组" << "wall_border.at(0).size():" << wall_border.front().size() << endl;
     vC.clear();
     for (unsigned int i = 0; i < wall_border.size(); ++i) {
         for (unsigned int j = 0; j < wall_border.at(i).size(); ++j) {
