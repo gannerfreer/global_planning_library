@@ -394,10 +394,12 @@ char* PathPredicting(char* input_info) {
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
         predicting.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines().size());
+        cout << "地图路网规模:" << GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines().size() << endl;
         if (GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines().size() == 0) {
             predicting.error_type_ = ErrorType::NO_MAP;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+                cout << "进锁成功" << endl;
                 predicting.threadLogger_->info("进锁成功");
                 string temp_string      = GlobalPlanning::Parser::HumanVehFurtureVecWaypoint2json(all_path, predicting);
                 int    temp_string_size = temp_string.size();
@@ -405,10 +407,14 @@ char* PathPredicting(char* input_info) {
                 if (temp_string_size < 10) {
                     cout << "temp_string还没接就被释放了" << endl;
                     predicting.threadLogger_->info("出锁成功");
+                    cout << "出锁成功" << endl;
                 }
                 predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
+                cout << "HumanVehFurtureVecWaypoint2json successfully" << endl;
                 predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+                cout << "GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}" << strlen(GlobalVariable::getInstance()->GetReceivePtr()) << endl;
                 predicting.threadLogger_->info("出锁成功");
+                cout << "出锁成功" << endl;
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
@@ -428,6 +434,7 @@ char* PathPredicting(char* input_info) {
         // 起点
         predicting.start_point_ = veh_info.pos;
         try {
+            cout << "调用PredictingInterface" << endl;
             predicting.PredictingInterface(path, all_human_vechicle_infos.predicting_distance);
             all_path[veh_info.id] = path;
         } catch (const std::exception& e) {
