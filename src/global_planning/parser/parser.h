@@ -190,14 +190,6 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "无法找到车参 grid_dist ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("max_kappa") && val["max_kappa"].IsNumber()) {
-                veh_start_end.veh_param.max_kappa = val["max_kappa"].GetDouble();
-                cout << "veh_start_end.veh_param.max_kappa " << veh_start_end.veh_param.max_kappa << endl;
-            }
-            else {
-                veh_start_end.veh_param.max_kappa = 0.07;
-                cout << "无法找到车参 max_kappa ，即将赋予默认值" << endl;
-            }
 
             if (val.HasMember("path_error_term") && val["path_error_term"].IsNumber()) {
                 veh_start_end.veh_param.path_error_term = val["path_error_term"].GetDouble();
@@ -551,26 +543,26 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.dis_threshold = 2.0;
             }
 
-            if (val.HasMember("w_deviation_")) {
-                veh_start_end.veh_param.w_deviation_ = val["w_deviation_"].GetFloat();
+            if (val.HasMember("w_deviation")) {
+                veh_start_end.veh_param.w_deviation = val["w_deviation"].GetFloat();
             }
             else {
-                cout << "无法找到车参 w_deviation_ ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.w_deviation_ = 0.00012;
+                cout << "无法找到车参 w_deviation ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_deviation = 0.00012;
             }
-            if (val.HasMember("w_curvature_")) {
-                veh_start_end.veh_param.w_curvature_ = val["w_curvature_"].GetFloat();
-            }
-            else {
-                cout << "无法找到车参 w_curvature_ ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.w_curvature_ = 100;
-            }
-            if (val.HasMember("w_curvature_change_")) {
-                veh_start_end.veh_param.w_curvature_change_ = val["w_curvature_change_"].GetFloat();
+            if (val.HasMember("w_curvature")) {
+                veh_start_end.veh_param.w_curvature = val["w_curvature"].GetFloat();
             }
             else {
-                cout << "无法找到车参 w_curvature_change_ ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.w_curvature_change_ = 1;
+                cout << "无法找到车参 w_curvature ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_curvature = 100;
+            }
+            if (val.HasMember("w_curvature_change")) {
+                veh_start_end.veh_param.w_curvature_change = val["w_curvature_change"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 w_curvature_change ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_curvature_change = 1;
             }
 
             if (val.HasMember("ipopt_max_offset")) {
@@ -1776,26 +1768,26 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 planning_info.veh_param.wheel_base = 5.15;
                 cout << "无法找到车参 wheel_base ，即将赋予默认值" << endl;
             }
-            if (val.HasMember("w_deviation_")) {
-                planning_info.veh_param.w_deviation_ = val["w_deviation_"].GetFloat();
+            if (val.HasMember("w_deviation")) {
+                planning_info.veh_param.w_deviation = val["w_deviation"].GetFloat();
             }
             else {
-                planning_info.veh_param.w_deviation_ = 0.00012;
-                cout << "无法找到车参 w_deviation_ ，即将赋予默认值" << endl;
+                planning_info.veh_param.w_deviation = 0.00012;
+                cout << "无法找到车参 w_deviation ，即将赋予默认值" << endl;
             }
-            if (val.HasMember("w_curvature_")) {
-                planning_info.veh_param.w_curvature_ = val["w_curvature_"].GetFloat();
-            }
-            else {
-                planning_info.veh_param.w_curvature_ = 100;
-                cout << "无法找到车参 w_curvature_ ，即将赋予默认值" << endl;
-            }
-            if (val.HasMember("w_curvature_change_")) {
-                planning_info.veh_param.w_curvature_change_ = val["w_curvature_change_"].GetFloat();
+            if (val.HasMember("w_curvature")) {
+                planning_info.veh_param.w_curvature = val["w_curvature"].GetFloat();
             }
             else {
-                planning_info.veh_param.w_curvature_change_ = 1;
-                cout << "无法找到车参 w_curvature_change_ ，即将赋予默认值" << endl;
+                planning_info.veh_param.w_curvature = 100;
+                cout << "无法找到车参 w_curvature ，即将赋予默认值" << endl;
+            }
+            if (val.HasMember("w_curvature_change")) {
+                planning_info.veh_param.w_curvature_change = val["w_curvature_change"].GetFloat();
+            }
+            else {
+                planning_info.veh_param.w_curvature_change = 1;
+                cout << "无法找到车参 w_curvature_change ，即将赋予默认值" << endl;
             }
             std::cout << "车辆参数解析完成" << std::endl;
 

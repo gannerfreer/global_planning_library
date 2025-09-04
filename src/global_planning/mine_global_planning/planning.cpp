@@ -236,13 +236,12 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
 PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& search_index, vector<_TrajectoryPoint>& result_trajectory, const PlanRule& rule_id, int max_search_index, double start_point_offset_distance, vector<_TrajectoryPoint>& input_path) {
     long long time_threshold = vehicle_param_.plan_time * 1000 * 1000;
-    threadLogger_->info("规划时间：{} ms", vehicle_param_.plan_time * 1000);
+    threadLogger_->info("给定规划时间阈值：{} ms", vehicle_param_.plan_time * 1000);
     bool                       verification_flag = false;
-    _SinglePoint               temp_start, temp_end;
+    _SinglePoint               temp_end;
     int                        cal = 0;
     PlanResult                 result;
     std::vector<curve::Point>  dubins_path, total_dubins_path;
-    curve::Point               xip2, xip1, xi, xim1, xim2;
     double                     score = 0.0;
     std::multimap<double, int> mul_score_index;                                                                                                                                             // 存储dubins预拟合的路径得分和对应的拟合点在global_path_中的index
     double                     lat_dis = fabs((input_point.y - input_path.front().y) * cos(input_path.front().yaw) - (input_point.x - input_path.front().x) * sin(input_path.front().yaw)); // 横向距离先不区分左正右负
@@ -260,6 +259,10 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
 
     max_search_index = min(max_search_index, vehicle_param_.sample_num);
 
+
+    // 计时
+    Timer timer("ProgressiveHybirdAStar");
+    timer.start();
     for (int i = 0; i <= max_search_index; i += 1) {
         cal++;
 
@@ -275,6 +278,7 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
             else {
                 verification_flag = true;
             }
+
 
             // 如果flag==0，则表示默认由起点向终点拟合，否则由终点向起点拟合
             if (PoseVerificationInterface(input_point, temp_end, verification_flag, start_point_offset_distance, dubins_path)) {
@@ -313,13 +317,21 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
         } // 这种规划规则，不采用dubins进行预先校验
         else {
             threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{}", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id));
+            if (hypot(input_point.x - temp_end.x, input_point.y - temp_end.y) > 100) {
+                threadLogger_->info("起点和该候选点距离过大，放弃此次规划");
+                continue;
+            }
             result = ApplyHibridAStarWithTime(input_point, temp_end, result_trajectory, rule_id, time_threshold);
             if (result == PlanResult::Plan_OK) {
                 search_index = i;
                 return result;
             }
             else {
-                threadLogger_->info("本次规划失败，失败码：{}", static_cast<int>(result));
+                double time = timer.get_accumulated_time();
+                threadLogger_->info("本次规划失败，失败码：{},累积耗时：{} ms", static_cast<int>(result), time);
+                if (time > 10 * 1000) {
+                    return result;
+                }
             }
         }
     }
@@ -869,7 +881,7 @@ bool Planning::PathOffset() {
     threadLogger_->info("均匀碾压功能开启");
     vector<_TrajectoryPoint> path_before_offset, path_after_offset, input_points;
 
-    //均匀碾压碰撞检测，只需要考虑边界
+    // 均匀碾压碰撞检测，只需要考虑边界
     Bound              map_border;
     vector<Coordinate> vC;
     for (unsigned int i = 0; i < map_border_.size(); ++i) {
@@ -1366,7 +1378,7 @@ PlanResult Planning::HybirdAStarFitting() {
         machine_borders.push_back(temp_bound_2);
     }
     threadLogger_->info("machine_borders.size():{}", machine_borders.size());
-    //HybirdA*拟合碰撞检测，需要考虑边界、动态挡墙（100m内）、挖掘机边界（100m内）
+    // HybirdA*拟合碰撞检测，需要考虑边界、动态挡墙（100m内）、挖掘机边界（100m内）
     collison_check_.InitParam(vehicle_param_);
     collison_check_.InitBoundMap(part_map_border);
     threadLogger_->info("InitBoundMap完毕");
@@ -1482,9 +1494,9 @@ PlanResult Planning::HybirdAStarFitting() {
                 threadLogger_->info("结合特殊点位置，最终确定hybridA*前向搜索截至距离为{}", max_search_index);
                 temp_traj.clear();
                 search_index = 0;
-                // 判断拟合模式，JudgeFittingDirection()返回true，表示车辆在参考路径后方，需要先采用Bcack_Fitting模式，不行再采用Start_Front_End_Back模式，反之同理
+                // 判断拟合模式，JudgeFittingDirection()返回true，则采用Forward_All_Time模式，否则采用Backward_All_Time模式
                 if (JudgeFittingDirection(global_path_)) {
-                    threadLogger_->info("参考路径位于车头前方，这种情况下采用 Forward_All_Time模式，不行再采用Start_Back_End_Front模式");
+                    threadLogger_->info("Forward_All_Time模式");
                     result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Forward_All_Time, max_search_index, start_point_offset_distance, global_path_);
                     if (result == PlanResult::Plan_OK) {
                         // 成功规划出路径
@@ -1499,7 +1511,7 @@ PlanResult Planning::HybirdAStarFitting() {
                     }
                 }
                 else {
-                    threadLogger_->info("参考路径位于车头后方，这种情况下先采用Back_Fitting模式，不行再采用Start_Front_End_Back模式");
+                    threadLogger_->info("Back_Fitting模式");
                     result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Backward_All_Time, max_search_index, start_point_offset_distance, global_path_);
                     if (result == PlanResult::Plan_OK) {
                         // 成功规划出路径
@@ -1513,11 +1525,11 @@ PlanResult Planning::HybirdAStarFitting() {
                         return result;
                     }
                 }
-                //   如果代码运行到这里,表明起点直线延伸太长了，得降低直线延长距离
+                // 如果代码运行到这里,表明起点直线延伸太长了，得降低直线延长距离
                 start_point_offset_distance--;
             }
-            // 对于不是从装载点或卸载点出来的调度，如果上述规划都失败，可以采用下述策略再进行规划
 
+            // 如果上述规划都失败，可以采用下述策略进行脱困规划，逻辑基本没变，变了拟合规则
             start_point_offset_distance = 4;
             while (start_point_offset_distance >= 0) {
                 my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
@@ -1573,7 +1585,7 @@ PlanResult Planning::HybirdAStarFitting() {
             }
         }
     }
-    // 如果代码运行到这里，表面没有规划出路径
+    // 如果代码运行到这里，表明没有规划出路径
     if (load_unload_start_flag) {
         if (result == PlanResult::StartPoint_Collision) {
             return result;
@@ -2268,7 +2280,6 @@ bool Planning::IsGlobalPathCollision() {
     CollisonCheck collison_check;
     collison_check.InitParam(vehicle_param_);
     collison_check.InitBoundMap(all_map_borders);
-
 
 
     // 3. 检查global_path_每个点

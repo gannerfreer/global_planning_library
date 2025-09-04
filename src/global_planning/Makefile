@@ -1,4 +1,3 @@
-#rules
 # 如果工程未编译，编译所有C文件；若文件修改，仅编译修改文件；若头文件修改，编译引用该头文件的C文件
 CC = gcc 
 CXX = g++
@@ -7,6 +6,7 @@ LDFLAGS = -L/usr/local/lib -Wl,-rpath,$(CURDIR)/lib/deps -Wl,-rpath,/usr/local/l
 
 TARGET = lib/libGlobalPlanning.so
 
+# 源文件列表
 SRC = interface.cpp \
       mine_global_planning/planning.cpp\
       mine_global_planning/predicting.cpp\
@@ -27,29 +27,33 @@ SRC = interface.cpp \
 	  load_area_planning/fitting_path_generate.cpp
 		  
 
+# 构建目录，用于存放临时文件
+BUILD_DIR = build
 
-OBJS = $(SRC:.cpp=.o)
+# 将目标文件和依赖文件放在build目录下，保持与源文件相同的目录结构
+OBJS = $(addprefix $(BUILD_DIR)/, $(SRC:.cpp=.o))
+DEPS = $(OBJS:.o=.d)
 
-# 确保目录存在
-$(shell mkdir -p lib lib/deps)
+# 确保所需目录存在
+$(shell mkdir -p lib lib/deps $(addprefix $(BUILD_DIR)/, $(dir $(SRC))))
 
 # 主目标：链接动态库
 $(TARGET): $(OBJS)  
 	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -lipopt -lcppad_lib -losqp -lOsqpEigen -o $@
 	@echo "已生成动态库: $@"
 
-# 通用编译规则：包含依赖检测
-%.o: %.cpp
+# 通用编译规则：包含依赖检测，将.o文件放入build目录
+$(BUILD_DIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 	@echo "已编译: $< -> $@"
 
 # 包含依赖文件
--include $(SRC:.cpp=.d)
+-include $(DEPS)
 
 .PHONY: clean package
 clean: 
-	-rm -f $(TARGET) $(OBJS) $(SRC:.cpp=.d)
-	-rm -rf lib
+	-rm -f $(TARGET)
+	-rm -rf $(BUILD_DIR) lib
 	@echo "清理完成"
 
 package: $(TARGET)

@@ -426,13 +426,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到车参 grid_dist ，即将赋予默认值" << endl;
             }
 
-            if (val.HasMember("max_kappa")) {
-                veh_start_end.veh_param.max_kappa = val["max_kappa"].GetDouble();
-            }
-            else {
-                veh_start_end.veh_param.max_kappa = 0.07;
-                cout << "无法找到车参 max_kappa ，即将赋予默认值" << endl;
-            }
 
             if (val.HasMember("path_error_term")) {
                 veh_start_end.veh_param.path_error_term = val["path_error_term"].GetDouble();
@@ -640,7 +633,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 cout << "无法找到 regular_road_speed_limit" << endl;
                 veh_start_end.veh_param.regular_road_speed_limit = 3.0;
             }
-            cout << "line528" << endl;
             if (val.HasMember("vehicle_code")) {
                 veh_start_end.veh_param.vehicle_code = val["vehicle_code"].GetUint();
             }
@@ -763,28 +755,28 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.dis_threshold = 2.0;
             }
 
-            if (val.HasMember("w_deviation_") && val["w_deviation_"].IsNumber()) {
-                veh_start_end.veh_param.w_deviation_ = val["w_deviation_"].GetFloat();
+            if (val.HasMember("w_deviation") && val["w_deviation"].IsNumber()) {
+                veh_start_end.veh_param.w_deviation = val["w_deviation"].GetFloat();
             }
             else {
-                cout << "无法找到车参 w_deviation_ ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.w_deviation_ = 0.00012;
+                cout << "无法找到车参 w_deviation ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_deviation = 0.00012;
             }
 
-            if (val.HasMember("w_curvature_") && val["w_curvature_"].IsNumber()) {
-                veh_start_end.veh_param.w_curvature_ = val["w_curvature_"].GetFloat();
+            if (val.HasMember("w_curvature") && val["w_curvature"].IsNumber()) {
+                veh_start_end.veh_param.w_curvature = val["w_curvature"].GetFloat();
             }
             else {
-                cout << "无法找到车参 w_curvature_ ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.w_curvature_ = 100;
+                cout << "无法找到车参 w_curvature ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_curvature = 100;
             }
 
-            if (val.HasMember("w_curvature_change_") && val["w_curvature_change_"].IsNumber()) {
-                veh_start_end.veh_param.w_curvature_change_ = val["w_curvature_change_"].GetFloat();
+            if (val.HasMember("w_curvature_change") && val["w_curvature_change"].IsNumber()) {
+                veh_start_end.veh_param.w_curvature_change = val["w_curvature_change"].GetFloat();
             }
             else {
-                cout << "无法找到车参 w_curvature_change_ ，即将赋予默认值" << endl;
-                veh_start_end.veh_param.w_curvature_change_ = 1;
+                cout << "无法找到车参 w_curvature_change ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.w_curvature_change = 1;
             }
 
             if (val.HasMember("ipopt_max_offset") && val["ipopt_max_offset"].IsNumber()) {

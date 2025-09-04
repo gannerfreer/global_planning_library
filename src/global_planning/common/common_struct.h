@@ -37,7 +37,7 @@ enum struct TaskType : unsigned int {
     TEMP_MOVE_CAR = 1, // 临时挪车
     DISPATCH      = 2, // 常规调度
     LOAD          = 3, // 装载
-    EXIT_LOAD        = 4  // 出装载区
+    EXIT_LOAD     = 4  // 出装载区
 };
 
 enum class PlanResult {
@@ -204,8 +204,7 @@ struct _VehicleParam {
     double path_curvature_term;
     // 平滑项权重
     double path_smoothness_term;
-    // 最大曲率
-    double max_kappa;
+
     // 最大优化迭代次数
     double max_iterations_opti;
 
@@ -245,10 +244,10 @@ struct _VehicleParam {
 
     float dis_threshold = 2.0;
 
-    float w_deviation_        = 0.001;
-    float w_curvature_        = 100;
-    float w_curvature_change_ = 1;
-    float ipopt_max_offset          = 10;
+    float w_deviation        = 0.001;
+    float w_curvature        = 100;
+    float w_curvature_change = 1;
+    float ipopt_max_offset   = 10;
 };
 
 // 调用全局规划时，需要传入的参数
@@ -257,8 +256,8 @@ struct _TarStartEnd {
     _SinglePoint                     end_point;       // 终点
     _VehicleParam                    veh_param;       // 车辆参数
     TaskType                         task_type;       // 当前车辆任务类型
-    vector<vector<_BorderPoint>>     machine_borders;   // 挖掘机边界
-    vector<vector<_BorderPoint>>     wall_borders;  // 动态挡墙边界
+    vector<vector<_BorderPoint>>     machine_borders; // 挖掘机边界
+    vector<vector<_BorderPoint>>     wall_borders;    // 动态挡墙边界
     vector<vector<_TrajectoryPoint>> reference_paths; // 参考路径
     string                           my_key;
 };
@@ -443,6 +442,79 @@ struct Line {
 typedef vector<vector<Coordinate>> Bound;
 // 带前进后退信息的路径
 typedef std::vector<Point> Path;
+
+class Timer {
+  private:
+    using Clock     = std::chrono::high_resolution_clock;
+    using TimePoint = std::chrono::time_point<Clock>;
+    using Duration  = std::chrono::duration<double, std::milli>; // 毫秒，double类型
+
+    TimePoint   start_time;  // 开始时间点
+    Duration    accumulated; // 累计时间
+    std::string name;        // 计时器名称
+    bool        running;     // 是否正在计时
+
+  public:
+    // 构造函数，可指定计时器名称
+    explicit Timer(const std::string& timer_name = "Timer") : name(timer_name), running(false), accumulated(Duration::zero()) {}
+
+    // 开始计算（如果已在运行则忽略）
+    void start() {
+        if (!running) {
+            start_time = Clock::now();
+            running    = true;
+        }
+    }
+
+    // 暂停计时并将时间累加到总时间（不重置累计值）
+    void pause() {
+        if (running) {
+            auto end_time = Clock::now();
+            accumulated += end_time - start_time;
+            running = false;
+        }
+    }
+
+    // 返回累计计时时间（毫秒），不影响计时状态
+    double get_accumulated_time() const {
+        if (running) {
+            // 如果正在运行，返回累计时间加上当前段已运行时间
+            auto current_time = Clock::now();
+            return (accumulated + (current_time - start_time)).count();
+        }
+        else {
+            // 未运行时直接返回累计时间
+            return accumulated.count();
+        }
+    }
+
+    // 清空累计计时时间，重置计时器
+    void reset() {
+        accumulated = Duration::zero();
+        running     = false;
+    }
+
+    // 停止计时并打印结果（包含累计时间）
+    void stop_and_print() {
+        pause(); // 先暂停并累加时间
+        std::cout << name << " 累计执行时间: " << accumulated.count() << " 毫秒" << std::endl;
+    }
+
+    // RAII风格的计时（自动开始和暂停）
+    class ScopedTimer {
+      private:
+        Timer& timer;
+
+      public:
+        explicit ScopedTimer(Timer& t) : timer(t) {
+            timer.start();
+        }
+
+        ~ScopedTimer() {
+            timer.pause(); // 离开作用域时暂停并累加时间
+        }
+    };
+};
 
 
 } // namespace GlobalPlanning
