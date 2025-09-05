@@ -664,14 +664,16 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
     cout << "收到挡墙" << wall_border.size() << "组" << "wall_border.at(0).size():" << wall_border.front().size() << endl;
     // 对wall_border进行过滤，过滤掉距离load_point小于remove_dis的点
-    for (unsigned int i = 0; i < wall_border.size(); ++i) {
-        for (unsigned int j = 0; j < wall_border.at(i).size(); ++j) {
-            if (hypot(veh_start_end.load_point.x-wall_border.at(i).at(j).x, veh_start_end.load_point.y-wall_border.at(i).at(j).y) < veh_start_end.remove_dis) {
-                wall_border.at(i).erase(wall_border.at(i).begin() + j);
+    for (auto& border : wall_border) {
+        for (auto it = border.begin(); it != border.end();) {
+            if (hypot(veh_start_end.load_point.x - it->x, veh_start_end.load_point.y - it->y) < veh_start_end.remove_dis) {
+                it = border.erase(it); // erase返回下一个有效迭代器
+            }
+            else {
+                ++it;
             }
         }
     }
-
     cout << "收到挡墙（过滤后）" << wall_border.size() << "组" << "wall_border.at(0).size():" << wall_border.front().size() << endl;
     vC.clear();
     for (unsigned int i = 0; i < wall_border.size(); ++i) {

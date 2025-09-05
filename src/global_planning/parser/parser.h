@@ -186,7 +186,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.grid_dist " << veh_start_end.veh_param.grid_dist << endl;
             }
             else {
-                veh_start_end.veh_param.grid_dist = 1.0;
+                veh_start_end.veh_param.grid_dist = 0.7;
                 cout << "无法找到车参 grid_dist ，即将赋予默认值 1.0" << endl;
             }
 
@@ -205,8 +205,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.grid_angle " << veh_start_end.veh_param.grid_angle << endl;
             }
             else {
-                veh_start_end.veh_param.grid_angle = 1.0;
-                cout << "无法找到车参 grid_angle ，即将赋予默认值 1.0" << endl;
+                veh_start_end.veh_param.grid_angle = 1.0 * M_PI / 180.0;
+                cout << "无法找到车参 grid_angle ，即将赋予默认值 1.0 * M_PI / 180.0" << endl;
             }
 
             if (val.HasMember("hybridastar_step_length") && val["hybridastar_step_length"].IsNumber()) {
@@ -1501,7 +1501,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.search_range: " << planning_info.search_range << std::endl;
             }
             else {
-                planning_info.search_range = 60; // 搜索范围默认值(mm)
+                planning_info.search_range = 80; // 搜索范围默认值(mm)
                 std::cerr << "无法找到车参 search_range ，赋予默认值: " << planning_info.search_range << std::endl;
             }
 
@@ -1745,7 +1745,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.veh_param.grid_dist " << planning_info.veh_param.grid_dist << std::endl;
             }
             else {
-                planning_info.veh_param.grid_dist = 1.0;
+                planning_info.veh_param.grid_dist = 0.7;
                 cout << "无法找到车参 grid_dist ，即将赋予默认值 1.0" << endl;
             }
 
@@ -1764,8 +1764,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.veh_param.grid_angle " << planning_info.veh_param.grid_angle << std::endl;
             }
             else {
-                planning_info.veh_param.grid_angle = 1.0;
-                cout << "无法找到车参 grid_angle ，即将赋予默认值 1.0" << endl;
+                planning_info.veh_param.grid_angle = 1.0* M_PI / 180.0;
+                cout << "无法找到车参 grid_angle ，即将赋予默认值 1.0* M_PI / 180.0" << endl;
             }
 
             if (val.HasMember("hybridastar_step_length") && val["hybridastar_step_length"].IsNumber()) {

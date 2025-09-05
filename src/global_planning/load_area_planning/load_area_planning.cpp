@@ -98,11 +98,13 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
 
             GlobalPlanning::PlanRule plan_rule = GlobalPlanning::PlanRule::Backward_All_Time; // 规定规划规则
 
-            long long threshold_time = 10000; // 最大迭代次数
+            long long threshold_time = 0.2*1000*1000; //搜索时间(us)
 
             auto temp_wait_point  = wait_point;
+            threadLogger_->info("wait_point.x:{} wait_point.y:{} wait_point.angle:{}", wait_point.x, wait_point.y, wait_point.angle);
             temp_wait_point.angle = temp_wait_point.angle * M_PI / 180.0;
             auto temp_load_point  = load_point;
+            threadLogger_->info("load_point.x:{} load_point.y:{} load_point.angle:{}", load_point.x, load_point.y, load_point.angle);
             temp_load_point.angle = temp_load_point.angle * M_PI / 180.0; // 调用时注意把起点终点角度转化为弧度
             auto plan_result = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
 
