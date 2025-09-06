@@ -610,6 +610,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
         planning.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size());
         if (GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0) {
+            cout << "GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0 无地图数据！！！！" << endl;
             get<0>(path) = 0;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
