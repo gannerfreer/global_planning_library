@@ -12,17 +12,17 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
     GlobalPlanning::Point                     queue_point;
     fit_path_planner.threadLogger_ = threadLogger_;
     depart_path                    = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker).first;
-    ofstream file;
-    string   file_name = "depart_parthes.txt";
-    file.open(file_name);
+    // ofstream file;
+    // string   file_name = "depart_parthes.txt";
+    // file.open(file_name);
 
-    for (auto& path : fit_path_planner.GetDepartPathCandis()) {
-        for (auto& point : path.first) {
-            file << point.x << " " << point.y << endl;
-        }
-        file << "--------------" << endl;
-    }
-    file.close();
+    // for (auto& path : fit_path_planner.GetDepartPathCandis()) {
+    //     for (auto& point : path.first) {
+    //         file << point.x << " " << point.y << endl;
+    //     }
+    //     file << "--------------" << endl;
+    // }
+    // file.close();
 
     cout << "DepartPathGenerateInterface完成" << endl;
     cout << "depart_path.size() = " << depart_path.size() << endl;
@@ -36,12 +36,12 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         auto temp_depart_path = depart_path;
         veh_param.is_light    = false;
         // 将temp_depart_path中的x y yaw curvature direction 保存为txt文件
-        ofstream file;
-        file.open("depart_path_before.txt");
-        for (auto& point : temp_depart_path) {
-            file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-        }
-        file.close();
+        // ofstream file;
+        // file.open("depart_path_before.txt");
+        // for (auto& point : temp_depart_path) {
+        //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+        // }
+        // file.close();
         if (PathSmoother(temp_depart_path, veh_param)) {
             cout << "line28 depart_path ipopt优化完成" << endl;
             for (auto& point : temp_depart_path) {
@@ -55,11 +55,11 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                 depart_path = temp_depart_path;
             }
             // 将temp_depart_path中的x y yaw curvature direction 保存为txt文件
-            file.open("depart_path_after.txt");
-            for (auto& point : temp_depart_path) {
-                file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            }
-            file.close();
+            // file.open("depart_path_after.txt");
+            // for (auto& point : temp_depart_path) {
+            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+            // }
+            // file.close();
         }
         else {
             cout << "line37 depart_path ipopt优化失败" << endl;
@@ -124,12 +124,12 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
 
         auto temp_wait_path = wait_path;
         // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
-        ofstream file;
-        file.open("wait_path_before.txt");
-        for (auto& point : temp_wait_path) {
-            file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-        }
-        file.close();
+        // ofstream file;
+        // file.open("wait_path_before.txt");
+        // for (auto& point : temp_wait_path) {
+        //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+        // }
+        // file.close();
         if (PathSmoother(temp_wait_path, veh_param)) {
             cout << "line62 wait_path ipopt优化完成" << endl;
             for (auto& point : temp_wait_path) {
@@ -142,11 +142,11 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                 wait_path = temp_wait_path;
             }
             // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
-            file.open("wait_path_after.txt");
-            for (auto& point : temp_wait_path) {
-                file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            }
-            file.close();
+            // file.open("wait_path_after.txt");
+            // for (auto& point : temp_wait_path) {
+            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+            // }
+            // file.close();
         }
         else {
             cout << "line74 wait_path ipopt优化失败" << endl;
@@ -154,11 +154,11 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
 
         auto temp_load_path = load_path;
         // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-        file.open("load_path_before.txt");
-        for (auto& point : temp_load_path) {
-            file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-        }
-        file.close();
+        // file.open("load_path_before.txt");
+        // for (auto& point : temp_load_path) {
+        //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+        // }
+        // file.close();
         if (PathSmoother(temp_load_path, veh_param)) {
             cout << "line79 load_path ipopt优化完成" << endl;
             for (auto& point : temp_load_path) {
@@ -171,11 +171,11 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                 load_path = temp_load_path;
             }
             // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-            file.open("load_path_after.txt");
-            for (auto& point : temp_load_path) {
-                file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            }
-            file.close();
+            // file.open("load_path_after.txt");
+            // for (auto& point : temp_load_path) {
+            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+            // }
+            // file.close();
         }
         else {
             cout << "line95 load_path ipopt优化失败" << endl;
@@ -194,11 +194,11 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         else {
             ofstream file;
             auto     temp_wait_path = wait_path;
-            file.open("wait_path_before.txt");
-            for (auto& point : temp_wait_path) {
-                file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            }
-            file.close();
+            // file.open("wait_path_before.txt");
+            // for (auto& point : temp_wait_path) {
+            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+            // }
+            // file.close();
             if (PathSmoother(temp_wait_path, veh_param)) {
                 cout << "line199 wait_path ipopt优化完成" << endl;
                 for (auto& point : temp_wait_path) {
@@ -211,11 +211,11 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                     wait_path = temp_wait_path;
                 }
                 // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
-                file.open("wait_path_after.txt");
-                for (auto& point : temp_wait_path) {
-                    file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-                }
-                file.close();
+                // file.open("wait_path_after.txt");
+                // for (auto& point : temp_wait_path) {
+                //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+                // }
+                // file.close();
             }
             else {
                 cout << "line217 wait_path ipopt优化失败" << endl;
@@ -263,12 +263,12 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         else {
             auto temp_load_path = load_path;
             // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-            ofstream file;
-            file.open("load_path_before.txt");
-            for (auto& point : temp_load_path) {
-                file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            }
-            file.close();
+            // ofstream file;
+            // file.open("load_path_before.txt");
+            // for (auto& point : temp_load_path) {
+            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+            // }
+            // file.close();
             if (PathSmoother(temp_load_path, veh_param)) {
                 cout << "line108 load_path ipopt优化完成" << endl;
                 for (auto& point : temp_load_path) {
@@ -281,11 +281,11 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                     load_path = temp_load_path;
                 }
                 // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-                file.open("load_path_after.txt");
-                for (auto& point : temp_load_path) {
-                    file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-                }
-                file.close();
+                // file.open("load_path_after.txt");
+                // for (auto& point : temp_load_path) {
+                //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+                // }
+                // file.close();
             }
             else {
                 cout << "line126 load_path ipopt优化失败" << endl;
@@ -314,12 +314,12 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         }
         auto temp_wait_path = wait_path;
         // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
-        ofstream file;
-        file.open("wait_path_before.txt");
-        for (auto& point : temp_wait_path) {
-            file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-        }
-        file.close();
+        // ofstream file;
+        // file.open("wait_path_before.txt");
+        // for (auto& point : temp_wait_path) {
+        //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+        // }
+        // file.close();
         if (PathSmoother(temp_wait_path, veh_param)) {
             cout << "line146 wait_path ipopt优化完成" << endl;
             for (auto& point : temp_wait_path) {
@@ -332,22 +332,22 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                 wait_path = temp_wait_path;
             }
             // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
-            file.open("wait_path_after.txt");
-            for (auto& point : temp_wait_path) {
-                file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            }
-            file.close();
+            // file.open("wait_path_after.txt");
+            // for (auto& point : temp_wait_path) {
+            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+            // }
+            // file.close();
         }
         else {
             cout << "line152 wait_path ipopt优化失败" << endl;
         }
         auto temp_load_path = load_path;
         // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-        file.open("load_path_before.txt");
-        for (auto& point : temp_load_path) {
-            file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-        }
-        file.close();
+        // file.open("load_path_before.txt");
+        // for (auto& point : temp_load_path) {
+        //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+        // }
+        // file.close();
 
         if (PathSmoother(temp_load_path, veh_param)) {
             cout << "line163 load_path ipopt优化完成" << endl;
@@ -361,11 +361,11 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                 load_path = temp_load_path;
             }
             // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-            file.open("load_path_after.txt");
-            for (auto& point : temp_load_path) {
-                file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            }
-            file.close();
+            // file.open("load_path_after.txt");
+            // for (auto& point : temp_load_path) {
+            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
+            // }
+            // file.close();
         }
         else {
             cout << "line172 load_path ipopt优化失败" << endl;
