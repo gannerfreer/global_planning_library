@@ -187,6 +187,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         load_path = fit_path_planner.LoadPathGenerateInterface(load_point, wait_point, collision_checker).first;
         CalCurvature(load_path, 1);
         wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, wait_point, collision_checker).first;
+        CalCurvature(wait_path, 1);
         if (wait_path.empty()) {
             cout << "排队点驶入路径规划失败！" << endl;
             planning_mode = 0;
