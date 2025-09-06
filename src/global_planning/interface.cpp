@@ -661,6 +661,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     map_border_v.push_back(vC);
     collison_check.InitBoundMap(map_border_v);
 
+
     Bound                        wall_border_v;
     vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
     cout << "收到挡墙" << wall_border.size() << "组" << "wall_border.at(0).size():" << wall_border.front().size() << endl;

@@ -11,7 +11,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
     GlobalPlanning::Path                      depart_path;
     GlobalPlanning::Point                     queue_point;
     fit_path_planner.threadLogger_ = threadLogger_;
-    depart_path = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker).first;
+    depart_path                    = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker).first;
     ofstream file;
     string   file_name = "depart_parthes.txt";
     file.open(file_name);
@@ -101,13 +101,13 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
 
             long long threshold_time = 0.2 * 1000 * 1000; // 搜索时间(us)
 
-            auto temp_wait_point  = wait_point;
+            auto temp_wait_point = wait_point;
             threadLogger_->info("wait_point.x:{} wait_point.y:{} wait_point.angle:{}", wait_point.x, wait_point.y, wait_point.angle);
             temp_wait_point.angle = temp_wait_point.angle * M_PI / 180.0;
             auto temp_load_point  = load_point;
             threadLogger_->info("load_point.x:{} load_point.y:{} load_point.angle:{}", load_point.x, load_point.y, load_point.angle);
-            temp_load_point.angle = temp_load_point.angle * M_PI / 180.0; // 调用时注意把起点终点角度转化为弧度
-            auto plan_result = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
+            temp_load_point.angle = temp_load_point.angle * M_PI / 180.0;                                                                                    // 调用时注意把起点终点角度转化为弧度
+            auto plan_result      = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
 
             if (plan_result == GlobalPlanning::PlanResult::Plan_OK) {
                 load_path = load_path_final;
@@ -189,7 +189,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, wait_point, collision_checker).first;
         if (wait_path.empty()) {
             cout << "排队点驶入路径规划失败！" << endl;
-            return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
+            planning_mode = 0;
         }
         else {
             ofstream file;
