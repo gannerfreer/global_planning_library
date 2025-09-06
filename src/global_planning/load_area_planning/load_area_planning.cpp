@@ -229,7 +229,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             start_point.x   = wait_point.x;
             start_point.y   = wait_point.y;
             start_point.yaw = wait_point.angle * M_PI / 180.0; // 注意传入混合a*的起点应是弧度
-
+            hybrid_a_star.threadLogger_ = threadLogger_;
             hybrid_a_star.InitBound(start_point, static_bound, wall_bound, machine_bound, veh_param); // 初始化边界
 
             hybrid_a_star.start_offset_distance_ = 2.0;
@@ -244,7 +244,8 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             auto temp_wait_point  = wait_point;
             temp_wait_point.angle = temp_wait_point.angle * M_PI / 180.0;
             auto temp_load_point  = load_point;
-            temp_load_point.angle = temp_load_point.angle * M_PI / 180.0;                                                                                    // 调用时注意把起点终点角度转化为弧度
+            temp_load_point.angle = temp_load_point.angle * M_PI / 180.0;  
+                                                                                          // 调用时注意把起点终点角度转化为弧度
             auto plan_result      = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
 
             if (plan_result == GlobalPlanning::PlanResult::Plan_OK) {
