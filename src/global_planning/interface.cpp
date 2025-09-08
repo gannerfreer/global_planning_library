@@ -383,9 +383,10 @@ char* PathPredicting(char* input_info) {
     filesystem::create_directories(dirPath);
     // 构造文件路径
     std::string filePath = dirPath + "/log_" + timeStr + ".log";
+    string      log_id   = all_human_vechicle_infos.my_key + "_" + timeStr;
 
 
-    predicting.threadLogger_ = spdlog::rotating_logger_mt(all_human_vechicle_infos.my_key, filePath, 10 * 2048 * 2048, 5, true);
+    predicting.threadLogger_ = spdlog::rotating_logger_mt(log_id, filePath, 10 * 2048 * 2048, 5, true);
     predicting.threadLogger_->flush_on(spdlog::level::info);
     predicting.threadLogger_->info("input_info.strlen().size:{}", strlen(input_info));
     predicting.threadLogger_->info("all_human_vechicle_infos.my_key:{}", all_human_vechicle_infos.my_key);
