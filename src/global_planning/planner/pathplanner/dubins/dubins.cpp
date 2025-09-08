@@ -49,8 +49,8 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
 
     if (min_length_index == 1 || min_length_index == 2) {
         // threadLogger_->info("dubins lsl lsr rsl rsr {},{},{}", std::get<0>(opt_path) * radius_, std::get<1>(opt_path) * radius_, std::get<2>(opt_path) * radius_);
-        if ((std::get<1>(opt_path) * radius_ < 15 && std::get<0>(opt_path) * radius_ > 3.7) || (std::get<1>(opt_path) * radius_ < 15 && std::get<2>(opt_path) * radius_ > 3.7)) {
-            threadLogger_->info("路径长度小于15m，不合理");
+        if ((std::get<1>(opt_path) * radius_ < 2 * max_steering_angle_ / 10 * 1.414 && std::get<0>(opt_path) * radius_ > 2 * max_steering_angle_ / 10 * 1.414) || (std::get<1>(opt_path) * radius_ < 2 * max_steering_angle_ / 10 * 1.414 && std::get<2>(opt_path) * radius_ > 2 * max_steering_angle_ / 10 * 1.414)) {
+            threadLogger_->info("路径长度小于{}m，不合理", 2 * max_steering_angle_ / 10 * 1.414);
             return false;
         }
         // threadLogger_->info("达标");
@@ -67,7 +67,7 @@ bool Dubins ::GetDubinsPath(const Point start_pose, const Point end_pose, std::v
     // for (const auto pt : cp) {
     //     std::cout << "x = " << pt.GetX() << "   y = " << pt.GetY() << "   theta = " << pt.GetAngle() << std::endl;
     // }
-   
+
 
     for (float v = 0; v < min_length; v += delta_s_ / radius_) {
         Point pt;

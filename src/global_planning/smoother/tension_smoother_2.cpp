@@ -169,11 +169,11 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
         vars_upperbound[k_idx_begin + i] = curvature_threshold;
     }
     // 额外对前a个点的曲率进行约束
-    int a = 0;
-    for (size_t i = 0; i < a; i++) {
-        vars_lowerbound[k_idx_begin + i] = 0;
-        vars_upperbound[k_idx_begin + i] = 0;
-    }
+    // int a = 0;
+    // for (size_t i = 0; i < a; i++) {
+    //     vars_lowerbound[k_idx_begin + i] = 0;
+    //     vars_upperbound[k_idx_begin + i] = 0;
+    // }
     // 约束角度
     for (size_t i = 0; i < point_num; i++) {
         // 起点和终点角度不优化

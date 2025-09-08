@@ -1692,9 +1692,21 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
     dubins.threadLogger_ = threadLogger_;
     if (vehicle_param_.is_light) {
         dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.light_forward_max_steering));
+        if(flag == 0) {
+            dubins.SetMaxSteeringAngle(vehicle_param_.light_forward_max_steering);
+        }
+        else {
+            dubins.SetMaxSteeringAngle(vehicle_param_.light_backward_max_steering);
+        }
     }
     else {
         dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.heavy_forward_max_steering));
+        if(flag == 0) {
+            dubins.SetMaxSteeringAngle(vehicle_param_.heavy_forward_max_steering);
+        }
+        else {
+            dubins.SetMaxSteeringAngle(vehicle_param_.heavy_backward_max_steering);
+        }
     }
     bool is_reasonable = dubins.GetDubinsPath(dubins_start, dubins_end, output_path);
 

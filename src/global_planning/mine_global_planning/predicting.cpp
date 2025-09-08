@@ -111,7 +111,7 @@ std::vector<_SingleTraj> Predicting::findCurrentRoad(double x, double y, double 
         double yawDiff           = calculateYawDifference(yaw, nearestPoint.yaw);
         double longitudinalError = std::abs((x - nearestPoint.x) * std::cos(nearestPoint.yaw) + (y - nearestPoint.y) * std::sin(nearestPoint.yaw));
         threadLogger_->info("当前路径id:{} 最近距离：{} 角度差：{} 最近点纵向距离：{}", road.first, minDistance, yawDiff / M_PI * 180.0, longitudinalError);
-        if (minDistance < distance_threshold && yawDiff < M_PI / 2 && longitudinalError < 1) {
+        if (minDistance < distance_threshold && yawDiff < M_PI / 4 && longitudinalError < 1) {
             int         id = road.first;
             _SingleTraj single_traj;
             single_traj.id         = id;

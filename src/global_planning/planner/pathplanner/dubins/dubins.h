@@ -58,6 +58,12 @@ class Dubins {
     float GetRadius() {
         return radius_;
     }
+    void SetMaxSteeringAngle(float max_steering_angle) {
+        max_steering_angle_ = max_steering_angle;
+    }
+    float GetMaxSteeringAngle() {
+        return max_steering_angle_;
+    }
 
   private:
     enum DubinsPathSegmentType : unsigned char {
@@ -141,6 +147,7 @@ class Dubins {
     const float delta_s_ = 1;
     float       alpha_, beta_, d_;
     float       sin_alpha_, sin_beta_, cos_alpha_, cos_beta_, cos_alpha_m_beta_;
+    float       max_steering_angle_=30.0;
 };
 
 } // namespace

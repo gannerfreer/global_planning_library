@@ -7,6 +7,7 @@
 #include "global_speed_planning.h"
 
 #include <cctype>
+#include <cmath>
 #include <type_traits>
 
 
@@ -20,12 +21,12 @@ using namespace GlobalPlanning;
  *return
  */
 void GlobalSpeedPlanning::InitSpeedParam(_VehicleParam m_veh_param) {
-    max_acceleration_ = m_veh_param.max_acceleration;
-    min_acceleration_ = m_veh_param.min_acceleration;
-    speed_error_term  = m_veh_param.speed_error_term;
-    speed_smooth_term = m_veh_param.speed_smooth_term;
-    light_reverse_speed     = m_veh_param.light_reverse_speed;
-    heavy_reverse_speed     = m_veh_param.heavy_reverse_speed;
+    max_acceleration_   = m_veh_param.max_acceleration;
+    min_acceleration_   = m_veh_param.min_acceleration;
+    speed_error_term    = m_veh_param.speed_error_term;
+    speed_smooth_term   = m_veh_param.speed_smooth_term;
+    light_reverse_speed = m_veh_param.light_reverse_speed;
+    heavy_reverse_speed = m_veh_param.heavy_reverse_speed;
     threadLogger_->info("max_acceleration_ ={} ", max_acceleration_);
     threadLogger_->info("min_acceleration_ ={} ", min_acceleration_);
     threadLogger_->info("speed_error_term ={} ", speed_error_term);
@@ -78,24 +79,24 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
     file.close();
 
     // 速度曲线平滑
-    Smooth(trajectory);
+    // Smooth(trajectory);
 
-    // threadLogger_->info("进入FixLocalMininum");
-    // FixLocalMininum(trajectory);
-    // Helper::calculateAcceleration(trajectory);
+    threadLogger_->info("进入FixLocalMininum");
+    FixLocalMininum(trajectory);
+    Helper::calculateAcceleration(trajectory);
 
     file.open("speed_after_smooth.txt");
     for (const auto& point : trajectory) {
         file << point.distance << " " << point.speed << " " << point.acc << " " << point.speed_limit << std::endl;
     }
     file.close();
-    // threadLogger_->info("进入FixLocalMaxnum");
-    // FixLocalMaxnum(trajectory);
-    // file.open("speed_after_smooth2.txt");
-    // for (const auto& point : trajectory) {
-    //     file << point.distance << " " << point.speed << " " << point.acc << std::endl;
-    // }
-    // file.close();
+    threadLogger_->info("进入FixLocalMaxnum");
+    FixLocalMaxnum(trajectory);
+    file.open("speed_after_smooth2.txt");
+    for (const auto& point : trajectory) {
+        file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+    }
+    file.close();
 
 
     // 恢复倒车速度
@@ -114,7 +115,7 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     double intersection_road_speed_limit = 1;    // 路口限速
     double slope_road_speed_limit        = 1;    // 坡路限速
     double bumpy_road_speed_limit        = 1;    // 颠簸路段限速
-    double reverse_speed           = 1;    // 本次规划倒车限速
+    double reverse_speed                 = 1;    // 本次规划倒车限速
     double a                             = 0.9;  // a表示一级限速到二级限速之间的缩放比例
     double b                             = 0.85; // b表示一级限速到三级限速之间的缩放比例
     double c                             = 0.9;  // c表示轻载到重载之间的缩放比例
@@ -323,7 +324,7 @@ void GlobalSpeedPlanning::Smooth(vector<_TrajectoryPoint>& trajectory) {
     }
 }
 void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) {
-    const double JERK = 0.05; // 基准jerk值 (m/s³/m)
+    const double JERK = 0.01; // 基准jerk值 (m/s³/m)
 
     // 找出所有极小值点的索引（不包括起点和终点）
     vector<size_t> minima_indices;
@@ -379,17 +380,40 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
                 forward_speeds.push_back(v);
 
                 if (j < end_idx) {
+                    // threadLogger_->info("a:{} v:{} current_jerk:{}", a, v, current_jerk);
                     double ds = trajectory[j + 1].distance - trajectory[j].distance;
-                    a         = std::min(float(a + current_jerk * ds), max_acceleration_);
-                    // threadLogger_->info("前向推演 a:{} ds:{}", a, ds);
-                    double v_next = sqrt(v * v + 2 * a * ds);
+                    double k1, k2, k3, k4;
+                    k1                   = 1.0 / (6 * current_jerk * current_jerk);
+                    k2                   = a / (2.0 * current_jerk * current_jerk);
+                    k3                   = v / current_jerk;
+                    k4                   = -ds;
+                    vector<double> roots = solveCubic(k1, k2, k3, k4);
+                    // threadLogger_->info("前向推演 roots:{}", roots.size());
+                    // for (size_t k = 0; k < roots.size(); k++) {
+                    //     threadLogger_->info("roots[{}]:{}", k, roots[k]);
+                    // }
+                    double next_a = 0.0;
+                    // next_a取最大的根
+                    double max_root = -1e10;
+                    for (int i = 0; i < roots.size(); i++) {
+                        if (roots[i] >= max_root) {
+                            max_root = roots[i];
+                        }
+                    }
+                    next_a = max_root + a;
 
+                    next_a = std::min(float(next_a), max_acceleration_);
+                    // double v_next = v + (next_a - a) * a / current_jerk + pow((next_a - a), 2) / current_jerk / 2;
+                    double v_next = sqrt(v * v + 2 * next_a * ds);
+
+                    a = next_a;
                     if (fabs(v_next) > fabs(trajectory[j + 1].speed)) {
                         v = fabs(trajectory[j + 1].speed);
                     }
                     else {
                         v = v_next;
                     }
+                    threadLogger_->info("前向推演 a:{} v:{}", a, v);
                 }
             }
             threadLogger_->info("开始向后推演");
@@ -407,9 +431,23 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
 
                 if (j > start_idx) {
                     double ds = trajectory[j].distance - trajectory[j - 1].distance;
-                    a         = std::min(float(a + current_jerk * ds), -min_acceleration_);
-                    // threadLogger_->info("后向推演 a:{} ds:{}", a, ds);
-                    double v_prev = sqrt(v * v + 2 * a * ds);
+                    double k1, k2, k3, k4;
+                    k1                      = 1.0 / (6 * current_jerk * current_jerk);
+                    k2                      = a / (2.0 * current_jerk * current_jerk);
+                    k3                      = v / current_jerk;
+                    k4                      = -ds;
+                    vector<double> roots    = solveCubic(k1, k2, k3, k4);
+                    double         next_a   = 0.0;
+                    double         max_root = -1e10;
+                    for (int i = 0; i < roots.size(); i++) {
+                        if (roots[i] >= max_root) {
+                            max_root = roots[i];
+                        }
+                    }
+                    next_a        = max_root + a;
+                    next_a        = std::min(float(next_a), -min_acceleration_);
+                    double v_prev = sqrt(v * v + 2 * next_a * ds);
+                    a             = next_a;
 
                     if (fabs(v_prev) > fabs(trajectory[j - 1].speed)) {
                         v = fabs(trajectory[j - 1].speed);
@@ -417,6 +455,7 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
                     else {
                         v = v_prev;
                     }
+                    threadLogger_->info("后向推演 a:{} v:{}", a, v);
                 }
 
                 if (j == start_idx) break;
@@ -431,7 +470,7 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
                 threadLogger_->info("backward_speeds[{}]:{}", j, backward_speeds[j]);
             }
 
-            // // 找出forward和backward的交点，选择较小的速度作为最终速度
+            // 找出forward和backward的交点，选择较小的速度作为最终速度
             vector<double> temp_speeds(end_idx - start_idx + 1);
             for (size_t j = 0; j <= end_idx - start_idx; j++) {
                 if (j == 0) {
@@ -584,27 +623,62 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
         int right_minima_idx = get<2>(maxima_minima_indices[i]);
         int reasonable_idx   = -1;
 
-        threadLogger_->info("第 {} 对区间 [{},{}]，上一次的end_index:{} 最右侧端点的速度 {}，加速度 {}", i, left_minima_idx, right_minima_idx, pre_end_index, trajectory[right_minima_idx].speed, trajectory[right_minima_idx].acc);
+        threadLogger_->info("第 {} 对区间 [{},{}],极大值{},上一次的end_index:{} 最右侧端点的速度 {}，加速度 {}", i, left_minima_idx, right_minima_idx, maxima_idx, pre_end_index, trajectory[right_minima_idx].speed, trajectory[right_minima_idx].acc);
         // 从maxima_idx开始，往前遍历，直到遍历到left_minima_idx
 
         for (int j = maxima_idx - 1; j >= left_minima_idx; j--) {
             bool   flag  = false;
-            double cur_a = trajectory.at(j).acc + min_delta_jerk;
+            double cur_a = trajectory.at(j).acc;
             double cur_v = trajectory.at(j).speed;
             for (int k = j; k < right_minima_idx; k++) {
-                double ds       = trajectory[k + 1].distance - trajectory[k].distance;
-                double next_v_2 = cur_v * cur_v + 2 * cur_a * ds > 0 ? cur_v * cur_v + 2 * cur_a * ds : 0;
+                double ds = trajectory[k + 1].distance - trajectory[k].distance;
+                threadLogger_->info("index:{} cur_a:{} cur_v:{} ds:{}", k, cur_a, cur_v, ds);
+                double k1, k2, k3, k4;
+                k1 = 1.0 / (6 * min_delta_jerk * min_delta_jerk);
+                k2 = cur_a / (2.0 * min_delta_jerk * min_delta_jerk);
+                k3 = cur_v / min_delta_jerk;
+                k4 = -ds;
+                threadLogger_->info("k1:{} k2:{} k3:{} k4:{}", k1, k2, k3, k4);
 
-                double next_v = sqrt(next_v_2);
 
-                cur_a += min_delta_jerk;
-                if (cur_a < min_acceleration_) cur_a = min_acceleration_;
-                cur_v = next_v;
-                threadLogger_->info("index:{} v:{} acc:{} target_v:{} target_acc:{}", k, cur_v, cur_a, trajectory.at(k + 1).speed, trajectory.at(k + 1).acc);
+                vector<double> roots = solveCubic(k1, k2, k3, k4);
+                for (int i = 0; i < roots.size(); i++) {
+                    roots[i] = roots[i] + cur_a;
+                    threadLogger_->info("roots:{}", roots[i]);
+                }
+
+                double next_a = 0.0;
+                // 从roots中选择比cur_a小且距离cur_a最近的值
+                double min_root         = 1e10;
+                int    reasonable_index = -1;
+
+                for (int i = 0; i < roots.size(); i++) {
+                    if (roots[i] <= cur_a) {
+                        if (fabs(roots[i] - cur_a) < min_root) {
+                            min_root         = fabs(roots[i] - cur_a);
+                            reasonable_index = i;
+                        }
+                    }
+                }
+
+                if (reasonable_index == -1) {
+                    next_a = cur_a;
+                }
+                else {
+                    next_a = roots[reasonable_index];
+                }
+
+
+                if (next_a < min_acceleration_) next_a = min_acceleration_;
+                double next_v = sqrt(max(0.0, cur_v * cur_v + 2 * next_a * ds));
+                cur_v         = next_v;
+                cur_a         = next_a;
+                threadLogger_->info("index:{} min_delta_jerk:{} v:{} acc:{} target_v:{} target_acc:{}", k, min_delta_jerk, cur_v, cur_a, trajectory.at(k + 1).speed, trajectory.at(k + 1).acc);
                 if (cur_v > trajectory.at(k + 1).speed) {
                     flag = true;
                     break;
                 }
+
                 cout << "第" << i << "区间,第" << k << "个索引点" << " ds:" << ds << " a:" << cur_a << " v:" << cur_v << endl;
             }
             if (flag) {
@@ -620,6 +694,7 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
             }
             cout << endl;
         }
+
         if (reasonable_idx == -1) {
             // 这个区间，极大值左侧找不到合理的衔接点,跳过后续所有代码
             threadLogger_->info("第 {} 对区间，没有找到合理的衔接点", i);
@@ -632,26 +707,52 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
 
         bool success_flag = false;
         while (cur_delta_jerk < 0) {
-            double cur_a = trajectory.at(reasonable_idx).acc + cur_delta_jerk;
+            double cur_a = trajectory.at(reasonable_idx).acc;
             double cur_v = trajectory.at(reasonable_idx).speed;
             v_t.clear();
             for (int k = reasonable_idx; k < right_minima_idx; k++) {
-                double ds       = trajectory[k + 1].distance - trajectory[k].distance;
-                double next_v_2 = cur_v * cur_v + 2 * cur_a * ds > 0 ? cur_v * cur_v + 2 * cur_a * ds : 0;
-                if (fabs(next_v_2) < 1e-2) {
-                    threadLogger_->info("next_v_2:{} 已经降低为0，跳过", next_v_2);
+                threadLogger_->info("index:{} cur_a:{} cur_v:{}", k, cur_a, cur_v);
+                double ds = trajectory[k + 1].distance - trajectory[k].distance;
+                double k1, k2, k3, k4;
+                k1                   = 1.0 / (6 * cur_delta_jerk * cur_delta_jerk);
+                k2                   = cur_a / (2.0 * cur_delta_jerk * cur_delta_jerk);
+                k3                   = cur_v / cur_delta_jerk;
+                k4                   = -ds;
+                vector<double> roots = solveCubic(k1, k2, k3, k4);
+                for (int i = 0; i < roots.size(); i++) {
+                    roots[i] = roots[i] + cur_a;
+                    threadLogger_->info("roots:{}", roots[i] + cur_a);
+                }
+                double next_a           = 0.0;
+                double min_root         = 1e10;
+                int    reasonable_index = -1;
+                for (int i = 0; i < roots.size(); i++) {
+                    if (roots[i] <= cur_a) {
+                        if (fabs(roots[i] - cur_a) < min_root) {
+                            min_root         = fabs(roots[i] - cur_a);
+                            reasonable_index = i;
+                        }
+                    }
+                }
+                if(reasonable_index==-1){
+                    next_a=cur_a;
+                }else{
+                    next_a=roots[reasonable_index];
+                }
+
+                double next_v = sqrt(max(0.0,cur_v * cur_v + 2 * next_a * ds));
+                cur_a         = next_a;
+                cur_v         = next_v;
+                v_t.push_back(make_tuple(cur_a, cur_v));
+                threadLogger_->info("推演一步 index:{} cur_delta_jerk:{} v:{} a:{} target_v:{} target_a:{}", k, cur_delta_jerk, cur_v, cur_a, trajectory.at(k + 1).speed, trajectory.at(k + 1).acc);
+                if (fabs(next_v) < 1e-2) {
+                    threadLogger_->info("next_v:{} 已经降低为0，跳过", next_v);
                     if (k != right_minima_idx - 1) {
                         threadLogger_->info("未成功对接");
                         break;
                     }
                 }
-                double next_v = sqrt(next_v_2);
-                cur_a += cur_delta_jerk;
-                if (cur_a < min_acceleration_) cur_a = min_acceleration_;
-                cur_v = next_v;
-                v_t.push_back(make_tuple(cur_a, cur_v));
-                threadLogger_->info("index:{} v:{} a:{} target_v:{} target_a:{}", k, cur_v, cur_a, trajectory.at(k + 1).speed, trajectory.at(k + 1).acc);
-                if (fabs(cur_v - trajectory.at(k + 1).speed) < 1e-2 && fabs(cur_a - trajectory.at(k + 1).acc) < 1e-1) {
+                if (fabs(cur_v - trajectory.at(k + 1).speed) < 0.09 && fabs(cur_a - trajectory.at(k + 1).acc) < 1e-2) {
                     threadLogger_->info("成功对接，对接处的索引{},speed:{} acc:{}", k + 1, cur_v, cur_a);
                     success_flag  = true;
                     pre_end_index = k + 1;
@@ -680,6 +781,7 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
         threadLogger_->info("line603");
     }
 }
+
 int GlobalSpeedPlanning::BinarySearch(int a, vector<int>& vec) {
     int size = vec.size();
     int left = 0, right = size;
@@ -776,4 +878,69 @@ void GlobalSpeedPlanning::CalculateStation(const vector<double>& xs, const vecto
         cum += hypot(dx, dy);
         s_.push_back(cum);
     }
+}
+
+// 求解三次方程 ax³ + bx² + cx + d = 0 的实根
+vector<double> GlobalSpeedPlanning::solveCubic(double a, double b, double c, double d) {
+    vector<double> roots;
+
+    // 确保首项系数不为零
+    if (fabs(a) < 1e-10) {
+        cerr << "不是三次方程（a不能为0）" << endl;
+        return roots;
+    }
+
+    // 归一化方程：x³ + px² + qx + r = 0
+    double p = b / a;
+    double q = c / a;
+    double r = d / a;
+
+    // 消去二次项，转换为 y³ + ay + b = 0 形式
+    double delta = p / 3.0;
+    double a1    = (3.0 * q - p * p) / 3.0;
+    double b1    = (2.0 * p * p * p - 9.0 * p * q + 27.0 * r) / 27.0;
+
+    // 计算判别式
+    double discriminant = (b1 / 2.0) * (b1 / 2.0) + (a1 / 3.0) * (a1 / 3.0) * (a1 / 3.0);
+
+    const double PI = acos(-1.0);
+
+    if (discriminant > 1e-10) {
+        // 一个实根，两个复根
+        double sqrtD = sqrt(discriminant);
+        double u     = cbrt(-b1 / 2.0 + sqrtD);
+        double v     = cbrt(-b1 / 2.0 - sqrtD);
+        double y     = u + v;
+        roots.push_back(y - delta);
+    }
+    else if (fabs(discriminant) <= 1e-10) {
+        // 三个实根，其中至少有两个相等
+        double u = cbrt(-b1 / 2.0);
+        roots.push_back(2 * u - delta);
+        roots.push_back(-u - delta);
+        roots.push_back(-u - delta);
+    }
+    else {
+        // 三个不同的实根
+        double sqrtD = sqrt(-discriminant);
+        double rho   = sqrt((b1 / 2.0) * (b1 / 2.0) - discriminant);
+        double theta = acos(-b1 / (2.0 * rho));
+
+        double y1 = 2.0 * cbrt(rho) * cos(theta / 3.0);
+        double y2 = 2.0 * cbrt(rho) * cos((theta + 2.0 * PI) / 3.0);
+        double y3 = 2.0 * cbrt(rho) * cos((theta - 2.0 * PI) / 3.0);
+
+        roots.push_back(y1 - delta);
+        roots.push_back(y2 - delta);
+        roots.push_back(y3 - delta);
+    }
+
+    // 排序根
+    sort(roots.begin(), roots.end());
+
+    // 去除可能的重复根（由于浮点数计算误差）
+    auto last = unique(roots.begin(), roots.end(), [](double a, double b) { return fabs(a - b) < 1e-10; });
+    roots.erase(last, roots.end());
+
+    return roots;
 }

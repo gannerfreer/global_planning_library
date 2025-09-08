@@ -43,6 +43,7 @@ class GlobalSpeedPlanning {
     void                       CalculateCubicSplineCurve(vector<_TrajectoryPoint>& points, vector<_TrajectoryPoint>& cubicspline_path);
     shared_ptr<spdlog::logger> threadLogger_;
     double                     hybridAstar_path_length_ = 0;
+    vector<double>             solveCubic(double a, double b, double c, double d);
 
 
   private:
