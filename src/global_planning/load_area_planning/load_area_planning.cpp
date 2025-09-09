@@ -65,6 +65,8 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             cout << "line37 depart_path ipopt优化失败" << endl;
         }
     }
+    auto stitch_path = fit_path_planner.PathCuttoEnd(depart_path.back(), out_path);
+    depart_path.insert(depart_path.end(), stitch_path.begin(), stitch_path.end());
     veh_param.is_light = true;
 
     if (planning_mode == 1) { // 尝试人工指定排队点
@@ -151,6 +153,8 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         else {
             cout << "line74 wait_path ipopt优化失败" << endl;
         }
+        auto stitch_path = fit_path_planner.PathCuttoStart(wait_path.front(), in_path);
+        wait_path.insert(wait_path.begin(), stitch_path.begin(), stitch_path.end());
 
         auto temp_load_path = load_path;
         // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
@@ -222,14 +226,16 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
                 cout << "line217 wait_path ipopt优化失败" << endl;
             }
         }
+        auto stitch_path = fit_path_planner.PathCuttoStart(wait_path.front(), in_path);
+        wait_path.insert(wait_path.begin(), stitch_path.begin(), stitch_path.end());
 
         if (load_path.empty()) {
             cout << "复用模式装载倒车路径规划失败,调用混合A*" << endl;
             GlobalPlanning::OptimalPath  hybrid_a_star; // 初始化混合a*规划器
             GlobalPlanning::_SinglePoint start_point;   // 给起点赋值
-            start_point.x   = wait_point.x;
-            start_point.y   = wait_point.y;
-            start_point.yaw = wait_point.angle * M_PI / 180.0; // 注意传入混合a*的起点应是弧度
+            start_point.x               = wait_point.x;
+            start_point.y               = wait_point.y;
+            start_point.yaw             = wait_point.angle * M_PI / 180.0; // 注意传入混合a*的起点应是弧度
             hybrid_a_star.threadLogger_ = threadLogger_;
             hybrid_a_star.InitBound(start_point, static_bound, wall_bound, machine_bound, veh_param); // 初始化边界
 
@@ -245,9 +251,9 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             auto temp_wait_point  = wait_point;
             temp_wait_point.angle = temp_wait_point.angle * M_PI / 180.0;
             auto temp_load_point  = load_point;
-            temp_load_point.angle = temp_load_point.angle * M_PI / 180.0;  
-                                                                                          // 调用时注意把起点终点角度转化为弧度
-            auto plan_result      = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
+            temp_load_point.angle = temp_load_point.angle * M_PI / 180.0;
+            // 调用时注意把起点终点角度转化为弧度
+            auto plan_result = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
 
             if (plan_result == GlobalPlanning::PlanResult::Plan_OK) {
                 load_path = load_path_final;
@@ -343,6 +349,9 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         else {
             cout << "line152 wait_path ipopt优化失败" << endl;
         }
+        auto stitch_path = fit_path_planner.PathCuttoStart(wait_path.front(), in_path);
+        wait_path.insert(wait_path.begin(), stitch_path.begin(), stitch_path.end());
+
         auto temp_load_path = load_path;
         // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
         // file.open("load_path_before.txt");

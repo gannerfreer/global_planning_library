@@ -43,8 +43,6 @@ class FittingPathGenerator {
     GlobalPlanning::Path                                 GenerateStraitLine(const GlobalPlanning::Point& start, const GlobalPlanning::Point& end);
     GlobalPlanning::Path                                 final_depart_path_;
     GlobalPlanning::Path                                 final_wait_path_;
-    GlobalPlanning::Path                                 PathCuttoEnd(const GlobalPlanning::Point& point, const GlobalPlanning::Path& path);
-    GlobalPlanning::Path                                 PathCuttoStart(const GlobalPlanning::Point& point, const GlobalPlanning::Path& path);
 
 
   public:
@@ -63,6 +61,8 @@ class FittingPathGenerator {
     std::vector<std::pair<GlobalPlanning::Path, double>> GetLoadPathCandis() {
         return load_path_candidates_;
     }
+    GlobalPlanning::Path       PathCuttoEnd(const GlobalPlanning::Point& point, const GlobalPlanning::Path& path);
+    GlobalPlanning::Path       PathCuttoStart(const GlobalPlanning::Point& point, const GlobalPlanning::Path& path);
     shared_ptr<spdlog::logger> threadLogger_;
 };
 } // namespace FittingPathGenerate
