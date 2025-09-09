@@ -5,3 +5,7 @@ src/global_planning/test/log/
 src/global_planning/test/*_output.json
 src/global_planning/test/*.txt
 src/global_planning/test/record_file/
+src/global_planning/*.o
+src/global_planning/*.d
+src/global_planning/*/*.o
+src/global_planning/*/*.d
