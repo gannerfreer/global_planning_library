@@ -811,7 +811,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.10.10.20250909" << endl;
         record.close();
     }
 
@@ -1176,7 +1176,7 @@ string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<std::vector<
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << obj.key_ << "  库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << obj.key_ << "  库版本号:G_V1.10.10.20250909" << endl;
         record.close();
     }
 
@@ -2221,7 +2221,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<int, GlobalPlanning::Point, Globa
         }
         record.open(logFilePath, ios_base::app);
         record << timeStr << " ，处理完加载区域路径请求"
-               << "，成功状态: " << (success ? "成功" : "失败") << " ，库版本号:G_V1.4.0.20250310_beta" << endl;
+               << "，成功状态: " << (success ? "成功" : "失败") << " ，库版本号:G_V1.10.10.20250909" << endl;
         record.close();
     }
 

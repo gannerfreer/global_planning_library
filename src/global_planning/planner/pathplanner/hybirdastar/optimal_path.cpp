@@ -16,7 +16,7 @@ using namespace GlobalPlanning;
 void OptimalPath::InitBound(const _SinglePoint start_point, const vector<_BorderPoint>& map_border, const vector<vector<_BorderPoint>>& machine_borders, const vector<vector<_BorderPoint>>& wall_borders, const _VehicleParam& m_vehicle_param) {
     // 初始化当前任务HybridA*所需要的地图边界和障碍物边界
     //  区域外边界、区域内边界转换
-    threadLogger_->info("初始化当前任务HybridA*所需要的地图边界、障碍物边界及Voronoi图");
+    threadLogger_->info("初始化当前任务HybridA*所需要的地图边界、障碍物边界和挡墙边界");
     Coordinate temp_Coordinate;
     v_road_outer_bound_.clear();
     v_machine_bound_.clear();

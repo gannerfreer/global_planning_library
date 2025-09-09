@@ -54,7 +54,6 @@ bool Planning::ReadAllMapFile() {
 #endif
 }
 void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
-    threadLogger_->info("Enter GlobalPathPlanningIntface");
     path.clear();
     global_path_.clear();
     PlanResult result = PlanResult::Plan_OK;
@@ -459,7 +458,6 @@ float Planning::WeightFunction(int k, int sum) {
 
 // 全局轨迹规划--路径规划
 PlanResult Planning::PathPlanning() {
-    threadLogger_->info("Enter PathPlanning");
     PlanResult result = PlanResult::Plan_OK;
     time_t     start_time, end_time;
     time(&start_time);
