@@ -19,8 +19,8 @@
 bool GetMap(char* parea) {
     {
         std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->parse_func_write_lock);
-        cout << "GlobalPathPlanning-IDS_Global_Planning_version: G_V1.4.0.20250310_beta" << endl;
-        cout << "规划库版本号:G_V1.4.0.20250310_beta" << endl;
+        cout << "GlobalPathPlanning-IDS_Global_Planning_version: G_V1.10.9.20250908" << endl;
+        cout << "规划库版本号:G_V1.10.9.20250908" << endl;
         auto              currentTime = std::chrono::system_clock::now();
         std::time_t       timestamp   = std::chrono::system_clock::to_time_t(currentTime);
         std::stringstream ss;
@@ -45,7 +45,7 @@ bool GetMap(char* parea) {
             ss.str("");
             ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
             timeStr = ss.str();
-            record << timeStr << "， 地图更新成功***************************G_V1.4.0.20250310_beta" << endl;
+            record << timeStr << "， 地图更新成功***************************G_V1.10.9.20250908" << endl;
             record.close();
             return true;
         }
@@ -54,7 +54,7 @@ bool GetMap(char* parea) {
             ss.str("");
             ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
             timeStr = ss.str();
-            record << timeStr << " ，地图更新失败***************************G_V1.4.0.20250310_beta" << endl;
+            record << timeStr << " ，地图更新失败***************************G_V1.10.9.20250908" << endl;
             record.close();
             return false;
         }
@@ -66,7 +66,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     std::stringstream ss;
     ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
     std::string timeStr = ss.str();
-    cout << "**********************欢迎光临后台全局规划库,版本号:G_V1.4.0.20250310_beta************************************" << timeStr << endl;
+    cout << "**********************欢迎光临后台全局规划库,版本号:G_V1.10.9.20250908************************************" << timeStr << endl;
     time_t start_time, end_time;
     time(&start_time);
     Planning                      planning;
@@ -97,7 +97,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             }
         }
         record.open(filePath, std::ios_base::app);
-        record << timeStr << " ，收到规划请求，请求号：" << veh_start_end.my_key << "，车辆编号：" << vehicle_code << "    规划库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，收到规划请求，请求号：" << veh_start_end.my_key << "，车辆编号：" << vehicle_code << "    规划库版本号:G_V1.10.9.20250908" << endl;
         record.close();
     }
     cout << "收到规划请求，请求号:" << veh_start_end.my_key << endl;
@@ -119,7 +119,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     planning.threadLogger_->info(vehicle_code);
     planning.threadLogger_->info("point_veh_start_end.strlen().size:{}", strlen(point_veh_start_end));
     planning.threadLogger_->info("veh_start_end.my_key:{}", veh_start_end.my_key);
-    planning.threadLogger_->info("GlobalPathPlanning-IDS_Global_Planning_version: G_V1.4.0.20250310_beta");
+    planning.threadLogger_->info("GlobalPathPlanning-IDS_Global_Planning_version: G_V1.10.9.20250908");
 
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
@@ -373,7 +373,7 @@ char* PathPredicting(char* input_info) {
             }
         }
         record.open(filePath, std::ios_base::app);
-        record << timeStr << " ，收到预测请求，请求号：" << all_human_vechicle_infos.my_key << "    预测库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，收到预测请求，请求号：" << all_human_vechicle_infos.my_key << "    预测库版本号:G_V1.10.9.20250908" << endl;
         record.close();
     }
     cout << "收到预测请求，请求号:" << all_human_vechicle_infos.my_key << endl;
@@ -552,7 +552,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     std::stringstream ss;
     ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
     std::string timeStr = ss.str();
-    cout << "**********************欢迎装载排队点自动生成库,版本号:G_V1.4.0.20250310_beta************************************" << timeStr << endl;
+    cout << "**********************欢迎装载排队点自动生成库,版本号:G_V1.10.9.20250908************************************" << timeStr << endl;
     time_t start_time, end_time;
     time(&start_time);
     LoadAreaPlanning::LoadAreaPlanning                                                                       planning;
@@ -585,7 +585,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
             }
         }
         record.open(filePath, std::ios_base::app);
-        record << timeStr << " ，收到请求" << "    装载区路径生成库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，收到请求" << "    装载区路径生成库版本号:G_V1.10.9.20250908" << endl;
         record.close();
     }
 
@@ -605,7 +605,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     planning.threadLogger_->flush_on(spdlog::level::info);
     planning.threadLogger_->info(id);
     planning.threadLogger_->info("point_veh_start_end.strlen().size:{}", strlen(point_veh_start_end));
-    planning.threadLogger_->info("LoadAreaPlanning-IDS_LoadAreaPlanning_version: G_V1.4.0.20250310_beta");
+    planning.threadLogger_->info("LoadAreaPlanning-IDS_LoadAreaPlanning_version: G_V1.10.9.20250908");
 
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);

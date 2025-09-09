@@ -401,12 +401,12 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
     cout << "生成采样点完毕" << endl;
     cout << "wait_point_sample_.size() = " << wait_point_sample_.size() << endl;
 
-    // ofstream file;
-    // file.open("wait_point_sample.txt");
-    // for (auto& point : wait_point_sample_) {
-    //     file << point.path_point.x << " " << point.path_point.y << " " << point.path_point.angle << endl;
-    // }
-    // file.close();
+    //ofstream file;
+    //file.open("wait_point_sample.txt");
+    //for (auto& point : wait_point_sample_) {
+    //    file << point.path_point.x << " " << point.path_point.y << " " << point.path_point.angle << endl;
+    //}
+    //file.close();
 
 
     CalculateWaitPointGrade(in_path, load_point);
@@ -449,7 +449,7 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
         temp_end_point.x     = point.path_point.x + 2.0 * cos(point.path_point.angle * M_PI / 180.0);
         temp_end_point.y     = point.path_point.y + 2.0 * sin(point.path_point.angle * M_PI / 180.0);
         temp_end_point.angle = point.path_point.angle;
-        auto     wait_path   = fitting_path_generator.WaitPathGenerateInterface(in_path, temp_end_point, collision_checker);
+        auto wait_path       = fitting_path_generator.WaitPathGenerateInterface(in_path, temp_end_point, collision_checker);
         // ofstream file;
         // string   file_name = "wait_pathes";
         // file_name += std::to_string(i);
