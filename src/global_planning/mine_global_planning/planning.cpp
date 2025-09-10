@@ -1395,7 +1395,8 @@ PlanResult Planning::HybirdAStarFitting() {
     nearest_distance = hypot(start_point_.x - global_path_.front().x, start_point_.y - global_path_.front().y);
     threadLogger_->info("起点与参考路径最近点的几何距离:{},其中，横向距离：{},纵向距离：{}", nearest_distance, start_lat_dis_, start_lon_dis_);
 
-    if (fabs(start_lat_dis_) > 0.2 || fabs(start_lon_dis_) > 0.8 || start_angle_diff_ > 8.0 / 180.0 * M_PI) {
+    if (fabs(start_lat_dis_) > 0.3 || fabs(start_lon_dis_) > 0.8 || start_angle_diff_ > 8.0 / 180.0 * M_PI) {
+        //车端自适应阈值为20cm，所以规划库拟合阈值为30cm
         start_need_fitting = true;
 
         if (nearest_distance > 20) {
@@ -1560,7 +1561,7 @@ PlanResult Planning::HybirdAStarFitting() {
                     }
                 }
                 else {
-                    threadLogger_->error("Forward_All_Time模式不行，即将调整拟合规则为 Start_Back_End_Front模式");
+                    threadLogger_->error("Backward_All_Time模式不行，即将调整拟合规则为 Start_Front_End_Back模式");
                     result = ProgressiveHybirdAStar(start_point_, search_index, temp_traj, PlanRule::Start_Front_End_Back, max_search_index, start_point_offset_distance, global_path_);
                     if (result == PlanResult::Plan_OK) {
                         // 成功规划出路径

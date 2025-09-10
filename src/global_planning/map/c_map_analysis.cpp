@@ -549,7 +549,7 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.speed_error_term = val["speed_error_term"].GetFloat();
             }
             else {
-                veh_start_end.veh_param.speed_error_term = 0.1;
+                veh_start_end.veh_param.speed_error_term = 0.05;
                 cout << "无法找到车参 speed_error_term ，即将赋予默认值" << endl;
             }
 
@@ -557,7 +557,7 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.speed_smooth_term = val["speed_smooth_term"].GetFloat();
             }
             else {
-                veh_start_end.veh_param.speed_smooth_term = 0.01;
+                veh_start_end.veh_param.speed_smooth_term = 0.2;
                 cout << "无法找到车参 speed_smooth_term ，即将赋予默认值" << endl;
             }
 

@@ -333,7 +333,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.speed_error_term " << veh_start_end.veh_param.speed_error_term << endl;
             }
             else {
-                veh_start_end.veh_param.speed_error_term = 0.1;
+                veh_start_end.veh_param.speed_error_term = 0.05;
                 cout << "无法找到车参 speed_error_term ，即将赋予默认值" << endl;
             }
 
@@ -343,7 +343,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.speed_smooth_term " << veh_start_end.veh_param.speed_smooth_term << endl;
             }
             else {
-                veh_start_end.veh_param.speed_smooth_term = 0.01;
+                veh_start_end.veh_param.speed_smooth_term = 0.2;
                 cout << "无法找到车参 speed_smooth_term ，即将赋予默认值" << endl;
             }
 

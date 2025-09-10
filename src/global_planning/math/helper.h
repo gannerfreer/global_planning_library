@@ -567,13 +567,12 @@ inline void calculateAcceleration( std::vector<_TrajectoryPoint>& v_points) {
         double                  distance         = hypot(prevPoint.x - currentPoint.x, prevPoint.y - currentPoint.y);
         double                  speedSquaredDiff = currentPoint.speed * currentPoint.speed - prevPoint.speed * prevPoint.speed;
 
-        double acceleration = speedSquaredDiff / 2 * distance;
+        double acceleration = speedSquaredDiff / (2 * distance);
         v_points.at(i).acc  = acceleration;
 
         // std::cout << "点(" << currentPoint.x << ", " << currentPoint.y << ") 的加速度为: " << acceleration << std::endl;
     }
     v_points.front().acc = v_points.at(1).acc;
-    v_points.back().acc  = v_points.at(v_points.size() - 2).acc;
 }
 
 static inline float clamp(float n, float lower, float upper) {

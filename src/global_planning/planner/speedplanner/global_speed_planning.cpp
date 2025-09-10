@@ -69,6 +69,7 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
 
     // 对trajectory中的每个点进行速度规划
     planSpeed(trajectory);
+    Helper::calculateAcceleration(trajectory);
 
     std::ofstream file;
     // 保存平滑前的速度
@@ -84,17 +85,21 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
     threadLogger_->info("进入FixLocalMininum");
     FixLocalMininum(trajectory);
     Helper::calculateAcceleration(trajectory);
+    
 
     file.open("speed_after_smooth.txt");
     for (const auto& point : trajectory) {
         file << point.distance << " " << point.speed << " " << point.acc << " " << point.speed_limit << std::endl;
     }
     file.close();
-    threadLogger_->info("进入FixLocalMaxnum");
-    FixLocalMaxnum(trajectory);
+    threadLogger_->info("进入Smooth");
+    Smooth(trajectory);
+    Helper::calculateAcceleration(trajectory);
+    // threadLogger_->info("进入FixLocalMaxnum");
+    // FixLocalMaxnum(trajectory);
     file.open("speed_after_smooth2.txt");
     for (const auto& point : trajectory) {
-        file << point.distance << " " << point.speed << " " << point.acc << std::endl;
+        file << point.distance << " " << point.speed << " " << point.acc << " " << point.speed_limit << std::endl;
     }
     file.close();
 
@@ -413,7 +418,7 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
                     else {
                         v = v_next;
                     }
-                    threadLogger_->info("前向推演 a:{} v:{}", a, v);
+                    threadLogger_->info("第{}个点前向推演 v:{} a:{}  ds:{}", j + 1, v, a, ds);
                 }
             }
             threadLogger_->info("开始向后推演");
@@ -455,7 +460,7 @@ void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) 
                     else {
                         v = v_prev;
                     }
-                    threadLogger_->info("后向推演 a:{} v:{}", a, v);
+                    threadLogger_->info("第{}个点后向推演 a:{} v:{}", j - 1, a, v);
                 }
 
                 if (j == start_idx) break;
@@ -638,7 +643,7 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                 k2 = cur_a / (2.0 * min_delta_jerk * min_delta_jerk);
                 k3 = cur_v / min_delta_jerk;
                 k4 = -ds;
-                threadLogger_->info("k1:{} k2:{} k3:{} k4:{}", k1, k2, k3, k4);
+                // threadLogger_->info("k1:{} k2:{} k3:{} k4:{}", k1, k2, k3, k4);
 
 
                 vector<double> roots = solveCubic(k1, k2, k3, k4);
@@ -682,15 +687,19 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                 cout << "第" << i << "区间,第" << k << "个索引点" << " ds:" << ds << " a:" << cur_a << " v:" << cur_v << endl;
             }
             if (flag) {
-                threadLogger_->info("候选点 {} 以最大减速度推演出现超速情况，pass", j);
+                threadLogger_->info("候选点 {} 以最大减速度推演出现超速情况，pass,重新找下一个候选点", j);
+                threadLogger_->info(" ");
                 continue;
             }
-            threadLogger_->info("候选点 {} ,起始速度：{}  起始加速度：{} 最终推导结果如下 cur_v:{} cur_a:{}", j, trajectory.at(j).speed, trajectory.at(j).acc + min_delta_jerk, cur_v, cur_a);
+            threadLogger_->info("候选点 {} ,起始速度：{}  起始加速度：{} 最终推导结果如下 cur_v:{} cur_a:{}", j, trajectory.at(j).speed, trajectory.at(j).acc, cur_v, cur_a);
             // 循环结束，判断推演出的最后一个点的速度、加速度是否满足要求
             if ((cur_v <= trajectory[right_minima_idx].speed) && (cur_a <= trajectory.at(right_minima_idx).acc)) {
                 threadLogger_->info("第 {} 对区间，找到合理的衔接点{}", i, j);
                 reasonable_idx = j;
                 break;
+            }
+            else {
+                threadLogger_->info("不达标，继续推演");
             }
             cout << endl;
         }
@@ -721,7 +730,7 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                 vector<double> roots = solveCubic(k1, k2, k3, k4);
                 for (int i = 0; i < roots.size(); i++) {
                     roots[i] = roots[i] + cur_a;
-                    threadLogger_->info("roots:{}", roots[i] + cur_a);
+                    threadLogger_->info("roots:{}", roots[i]);
                 }
                 double next_a           = 0.0;
                 double min_root         = 1e10;
@@ -734,13 +743,15 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                         }
                     }
                 }
-                if(reasonable_index==-1){
-                    next_a=cur_a;
-                }else{
-                    next_a=roots[reasonable_index];
+                threadLogger_->info("reasonable_index:{}", reasonable_index);
+                if (reasonable_index == -1) {
+                    next_a = cur_a;
+                }
+                else {
+                    next_a = roots[reasonable_index];
                 }
 
-                double next_v = sqrt(max(0.0,cur_v * cur_v + 2 * next_a * ds));
+                double next_v = sqrt(max(0.0, cur_v * cur_v + 2 * next_a * ds));
                 cur_a         = next_a;
                 cur_v         = next_v;
                 v_t.push_back(make_tuple(cur_a, cur_v));
@@ -752,7 +763,8 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                         break;
                     }
                 }
-                if (fabs(cur_v - trajectory.at(k + 1).speed) < 0.09 && fabs(cur_a - trajectory.at(k + 1).acc) < 1e-2) {
+
+                if (k + 1 > maxima_idx && fabs(cur_v - trajectory.at(k + 1).speed) < 0.01 && fabs(cur_a - trajectory.at(k + 1).acc) < 1e-2) {
                     threadLogger_->info("成功对接，对接处的索引{},speed:{} acc:{}", k + 1, cur_v, cur_a);
                     success_flag  = true;
                     pre_end_index = k + 1;
@@ -769,13 +781,18 @@ void GlobalSpeedPlanning::FixLocalMaxnum(vector<_TrajectoryPoint>& trajectory) {
                     threadLogger_->info("未成功对接");
                 }
             }
+            if (cur_a > 0.001) {
+                threadLogger_->info("当前jerk:{} 不达标，后续jerk也都不会达标，保持原有速度分布，提前结束", cur_delta_jerk);
+                break;
+            }
             if (success_flag) {
                 break;
             }
+
             // 循环结束，判断推演出的最后一个点的速度、加速度是否满足要求
 
             threadLogger_->info("cur_delta_jerk:{}无法顺利接轨", cur_delta_jerk);
-            cur_delta_jerk += 0.001;
+            cur_delta_jerk += 0.0001;
             threadLogger_->info("换成 {} 尝试", cur_delta_jerk);
         }
         threadLogger_->info("line603");
