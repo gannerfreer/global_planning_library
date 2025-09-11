@@ -130,7 +130,8 @@ class Dubins {
      */
     Point CalNextPoint(float v, float x, float y, float theta, DubinsPathSegmentType type);
     bool  DubinsPathSelfIntersectCheck(std::vector<Point>& path);
-    public: 
+
+  public:
     std::shared_ptr<spdlog::logger> threadLogger_;
 
   private:
@@ -147,7 +148,7 @@ class Dubins {
     const float delta_s_ = 1;
     float       alpha_, beta_, d_;
     float       sin_alpha_, sin_beta_, cos_alpha_, cos_beta_, cos_alpha_m_beta_;
-    float       max_steering_angle_=30.0;
+    float       max_steering_angle_ = 30.0;
 };
 
 } // namespace
