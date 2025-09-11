@@ -1,11 +1,1 @@
-{
-    "veh_info": [
-        {
-            "x": 18.652903912369514,
-            "y": -42.57986009460489,
-            "yaw": 70.55193328857422,
-            "vehicle_code": "truck_1026"
-        }
-    ],
-    "predicting_distance": 200
-}
+{"veh_info":[{"x":-260.8986281844408,"y":-864.8175721799155,"yaw":26.246068954467773,"vehicle_code":"wrecker_QZC001"}],"predicting_distance":200} 

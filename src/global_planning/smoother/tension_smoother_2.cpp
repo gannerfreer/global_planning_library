@@ -26,6 +26,9 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
     std::cout << "w_curvature_change" << m_vehicle_param_.w_curvature_change << std::endl;
     std::cout << "w_curvature" << m_vehicle_param_.w_curvature << std::endl;
     std::cout << "w_deviation" << m_vehicle_param_.w_deviation << std::endl;
+    std::cout << "w_curvature_change" << m_vehicle_param_.w_curvature_change << std::endl;
+    std::cout << "w_curvature" << m_vehicle_param_.w_curvature << std::endl;
+    std::cout << "w_deviation" << m_vehicle_param_.w_deviation << std::endl;
     for (size_t i = 0; i < point_num - 1; ++i) {
         ad cur_x      = vars[x_idx_begin + i];
         ad next_x     = vars[x_idx_begin + i + 1];
@@ -36,7 +39,7 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
         ad cur_theta  = vars[theta_idx_begin + i];
         ad next_theta = vars[theta_idx_begin + i + 1];
         ad ds         = seg_s_list_[i + 1] - seg_s_list_[i];
-        ad cur_k      = vars[k_idx_begin + i];
+        ad cur_k = vars[k_idx_begin + i];
 
         // cost
         fg[0] += m_vehicle_param_.w_deviation * (pow(cur_x - ref_x, 2) + pow(cur_y - ref_y, 2)); // 代价函数：xy方向偏差代价
@@ -49,7 +52,7 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
         fg[cons_y_idx_begin + i]              = next_y - cur_y - ds * sin(cur_theta);     // 约束y方向运动学约束
         fg[cons_theta_idx_begin + i]          = sin(next_theta - cur_theta - ds * cur_k); // 角度变化约束,采用sin函数约束,防止角度在0～360度之间跳变
         next_k                                = vars[k_idx_begin + i + 1];
-        fg[cons_curvature_rate_idx_begin + i] = pow((cur_k - next_k) / ds, 2); // 曲率变化约束，要求相邻路径点之前的曲率变化不能太大，否则会导致路径不平滑
+        fg[cons_curvature_rate_idx_begin + i] = pow((cur_k - next_k), 2); // 曲率变化约束，要求相邻路径点之前的曲率变化不能太大，否则会导致路径不平滑
     }
 }
 
@@ -213,8 +216,9 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     }
     // 曲率约束
     for (int i = (point_num - 1) * 3; i < n_constraints; ++i) {
+        double ds                 = s_list[i + 1 - (point_num - 1) * 3] - s_list[i - (point_num - 1) * 3];
         constraints_lowerbound[i] = -1;
-        constraints_upperbound[i] = 0.00041;
+        constraints_upperbound[i] = 0.00041 * ds * ds;
     }
 
     std::cout << "打印 constraints_lowerbound[] 信息" << std::endl;

@@ -158,7 +158,7 @@ class GlobalVariable // 单例类
     std::map<int, std::vector<int>>  self_driving_referenceline_relation_, human_driving_referenceline_relation_;
     std::vector<std::vector<double>> self_driving_referenceline_graph_;
     std::vector<int>                 self_driving_sequence_mapping_; // 序列映射关系
-    int                              dispatch_nums;
+    int                              dispatch_nums=0;
     std::vector<_SingleTraj>         in_guiding_paths_, out_guiding_paths_;
     std::string                      global_str;
     char*                            receive_ptr;

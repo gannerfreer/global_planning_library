@@ -1,5 +1,6 @@
 #ifndef LOAD_AREA_PLANNING
 #define LOAD_AREA_PLANNING
+#include "../planner/pathplanner/hybirdastar/optimal_path.h"
 #include "fitting_path_generate.h"
 #include "wait_point_generate.h"
 namespace LoadAreaPlanning {
@@ -46,7 +47,7 @@ class LoadAreaPlanning {
 
   public:
     ~LoadAreaPlanning();
-    std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_poit, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck collision_checker);
+    std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck& collision_checker, const vector<_BorderPoint>& static_bound, const vector<vector<_BorderPoint>>& wall_bound, const vector<vector<_BorderPoint>>& machine_bound);
     bool                                                                                                     PathSmoother(GlobalPlanning::Path& input_path, const GlobalPlanning::_VehicleParam& veh_param);
     void                                                                                                     CalculatePathDistance(GlobalPlanning::Path& input_path);
     void                                                                                                     CalCurvature(GlobalPlanning::Path& path, int check_dense);

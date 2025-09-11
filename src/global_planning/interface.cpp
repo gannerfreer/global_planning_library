@@ -19,8 +19,8 @@
 bool GetMap(char* parea) {
     {
         std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->parse_func_write_lock);
-        cout << "GlobalPathPlanning-IDS_Global_Planning_version: G_V1.4.0.20250310_beta" << endl;
-        cout << "规划库版本号:G_V1.4.0.20250310_beta" << endl;
+        cout << "GlobalPathPlanning-IDS_Global_Planning_version: G_V1.10.10.20250909" << endl;
+        cout << "规划库版本号:G_V1.10.10.20250909" << endl;
         auto              currentTime = std::chrono::system_clock::now();
         std::time_t       timestamp   = std::chrono::system_clock::to_time_t(currentTime);
         std::stringstream ss;
@@ -45,7 +45,7 @@ bool GetMap(char* parea) {
             ss.str("");
             ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
             timeStr = ss.str();
-            record << timeStr << "， 地图更新成功***************************G_V1.4.0.20250310_beta" << endl;
+            record << timeStr << "， 地图更新成功***************************G_V1.10.10.20250909" << endl;
             record.close();
             return true;
         }
@@ -54,7 +54,7 @@ bool GetMap(char* parea) {
             ss.str("");
             ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
             timeStr = ss.str();
-            record << timeStr << " ，地图更新失败***************************G_V1.4.0.20250310_beta" << endl;
+            record << timeStr << " ，地图更新失败***************************G_V1.10.10.20250909" << endl;
             record.close();
             return false;
         }
@@ -66,7 +66,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     std::stringstream ss;
     ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
     std::string timeStr = ss.str();
-    cout << "**********************欢迎光临后台全局规划库,版本号:G_V1.4.0.20250310_beta************************************" << timeStr << endl;
+    cout << "**********************欢迎光临后台全局规划库,版本号:G_V1.10.10.20250909************************************" << timeStr << endl;
     time_t start_time, end_time;
     time(&start_time);
     Planning                      planning;
@@ -97,7 +97,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             }
         }
         record.open(filePath, std::ios_base::app);
-        record << timeStr << " ，收到规划请求，请求号：" << veh_start_end.my_key << "，车辆编号：" << vehicle_code << "    规划库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，收到规划请求，请求号：" << veh_start_end.my_key << "，车辆编号：" << vehicle_code << "    规划库版本号:G_V1.10.10.20250909" << endl;
         record.close();
     }
     cout << "收到规划请求，请求号:" << veh_start_end.my_key << endl;
@@ -109,9 +109,11 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     std::string        filePath = dirPath + "/log_" + timeStr + ".log";
     std::ostringstream oss;
     int                num = GlobalVariable::getInstance()->GetDispatchNums();
-    GlobalVariable::getInstance()->SetDispatchNums(num++);
+    cout << "num:" << num << endl;
+    GlobalVariable::getInstance()->SetDispatchNums(++num);
     oss << GlobalVariable::getInstance()->GetDispatchNums();
     vehicle_code += oss.str();
+    cout << "vehicle_code:" << vehicle_code << endl;
 
 
     planning.threadLogger_ = spdlog::rotating_logger_mt(vehicle_code, filePath, 10 * 2048 * 2048, 5, true);
@@ -119,13 +121,16 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     planning.threadLogger_->info(vehicle_code);
     planning.threadLogger_->info("point_veh_start_end.strlen().size:{}", strlen(point_veh_start_end));
     planning.threadLogger_->info("veh_start_end.my_key:{}", veh_start_end.my_key);
-    planning.threadLogger_->info("GlobalPathPlanning-IDS_Global_Planning_version: G_V1.4.0.20250310_beta");
+    planning.threadLogger_->info("GlobalPathPlanning-IDS_Global_Planning_version: G_V1.10.10.20250909");
+    cout << "创建threadLogger_成功" << endl;
 
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
         planning.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size());
+        cout << "GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size():{}" << GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() << endl;
         if (GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0) {
             planning.error_type_ = ErrorType::NO_MAP;
+            cout << "GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0" << endl;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
                 planning.threadLogger_->info("进锁成功");
@@ -139,6 +144,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
                 planning.threadLogger_->info("VecWaypoint2json successfully");
                 planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 planning.threadLogger_->info("出锁成功");
+                spdlog::drop(vehicle_code);
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
@@ -152,7 +158,10 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
         planning.threadLogger_->info("map_border_:{}", planning.map_border_.size());
         planning.threadLogger_->info("all_referencelines_:{}", planning.all_referencelines_.size());
         planning.threadLogger_->info("sequence_mapping_:{}", planning.sequence_mapping_.size());
-
+        cout << "road_directed_graph_:" << planning.road_directed_graph_.size() << endl;
+        cout << "map_border_:" << planning.map_border_.size() << endl;
+        cout << "all_referencelines_:" << planning.all_referencelines_.size() << endl;
+        cout << "sequence_mapping_:" << planning.sequence_mapping_.size() << endl;
     } // 获取传入的内边界并将其存入对应的r区域内
 
     if (!veh_start_end.machine_borders.empty()) {
@@ -175,12 +184,14 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
                 planning.threadLogger_->info("VecWaypoint2json successfully");
                 planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 planning.threadLogger_->info("出锁成功");
+                spdlog::drop(vehicle_code);
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
     }
     else {
         planning.threadLogger_->error("此次任务无inner_borders信息");
+        cout << "此次任务无inner_borders信息" << endl;
     }
 
     if (!veh_start_end.wall_borders.empty()) {
@@ -203,16 +214,15 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
                 planning.threadLogger_->info("VecWaypoint2json successfully");
                 planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 planning.threadLogger_->info("出锁成功");
+                spdlog::drop(vehicle_code);
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
     }
     else {
         planning.threadLogger_->error("此次任务无dynamic_border信息");
+        cout << "此次任务无dynamic_border信息" << endl;
     }
-
-
-
 
 
     planning.task_type_     = veh_start_end.task_type;
@@ -225,12 +235,21 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
     planning.threadLogger_->info("end_point.y ={}", veh_start_end.end_point.y);
     planning.threadLogger_->info("end_point.z ={}", veh_start_end.end_point.z);
     planning.threadLogger_->info("end_point.yaw ={}", veh_start_end.end_point.yaw);
+    cout << "start_point.x =" << veh_start_end.start_point.x << endl;
+    cout << "start_point.y =" << veh_start_end.start_point.y << endl;
+    cout << "start_point.z =" << veh_start_end.start_point.z << endl;
+    cout << "start_point.yaw =" << veh_start_end.start_point.yaw << endl;
+    cout << "end_point.x =" << veh_start_end.end_point.x << endl;
+    cout << "end_point.y =" << veh_start_end.end_point.y << endl;
+    cout << "end_point.z =" << veh_start_end.end_point.z << endl;
+    cout << "end_point.yaw =" << veh_start_end.end_point.yaw << endl;
     // 起点
     planning.start_point_ = veh_start_end.start_point;
     // 终点
     planning.end_point_       = veh_start_end.end_point;
     planning.reference_paths_ = veh_start_end.reference_paths;
     planning.threadLogger_->info("第三通道 reference_paths_:{}", planning.reference_paths_.size());
+    cout << "第三通道 reference_paths_:{}" << planning.reference_paths_.size() << endl;
     try {
         planning.GlobalPathPlanningInterface(path);
     } catch (const std::exception& e) {
@@ -252,6 +271,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("即将出  return_write_lock 锁");
             cout << "即将出  return_write_lock 锁" << endl;
+            spdlog::drop(vehicle_code);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::out_of_range& e) {
@@ -272,6 +292,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             planning.threadLogger_->info("VecWaypoint2json successfully");
             planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
+            spdlog::drop(vehicle_code);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     }
@@ -295,6 +316,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             planning.threadLogger_->info("VecWaypoint2json successfully");
             planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
+            spdlog::drop(vehicle_code);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::exception& e) {
@@ -316,6 +338,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
 
             planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
+            spdlog::drop(vehicle_code);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::out_of_range& e) {
@@ -336,6 +359,7 @@ char* GlobalPathPlanning(char* point_veh_start_end) {
             planning.threadLogger_->info("VecWaypoint2json successfully");
             planning.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             planning.threadLogger_->info("出锁成功");
+            spdlog::drop(vehicle_code);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     }
@@ -347,7 +371,7 @@ char* PathPredicting(char* input_info) {
     std::stringstream ss;
     ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
     std::string timeStr = ss.str();
-    cout << "**********************欢迎光临有人车路径预测接口,版本号:P_V1.4.0.20250310_beta************************************" << timeStr << endl;
+    cout << "**********************欢迎光临有人车路径预测接口,版本号:P_V1.10.10.20250909************************************" << timeStr << endl;
     time_t start_time, end_time;
     time(&start_time);
     Predicting                                                   predicting;
@@ -376,7 +400,7 @@ char* PathPredicting(char* input_info) {
             }
         }
         record.open(filePath, std::ios_base::app);
-        record << timeStr << " ，收到预测请求，请求号：" << all_human_vechicle_infos.my_key << "    预测库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，收到预测请求，请求号：" << all_human_vechicle_infos.my_key << "    预测库版本号:G_V1.10.10.20250909" << endl;
         record.close();
     }
     cout << "收到预测请求，请求号:" << all_human_vechicle_infos.my_key << endl;
@@ -386,21 +410,26 @@ char* PathPredicting(char* input_info) {
     filesystem::create_directories(dirPath);
     // 构造文件路径
     std::string filePath = dirPath + "/log_" + timeStr + ".log";
+    string      log_id   = all_human_vechicle_infos.my_key + "_" + timeStr;
 
 
-    predicting.threadLogger_ = spdlog::rotating_logger_mt(all_human_vechicle_infos.my_key, filePath, 10 * 2048 * 2048, 5, true);
+    predicting.threadLogger_ = spdlog::rotating_logger_mt(log_id, filePath, 10 * 2048 * 2048, 5, true);
     predicting.threadLogger_->flush_on(spdlog::level::info);
     predicting.threadLogger_->info("input_info.strlen().size:{}", strlen(input_info));
     predicting.threadLogger_->info("all_human_vechicle_infos.my_key:{}", all_human_vechicle_infos.my_key);
-    predicting.threadLogger_->info("HumanVehPredicting-IDS_version: P_V1.4.0.20250310_beta");
+    predicting.threadLogger_->info("HumanVehPredicting-IDS_version: P_V1.10.10.20250909");
+    cout << "HumanVehPredicting-IDS_version: P_V1.10.10.20250909" << endl;
 
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
         predicting.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines().size());
+        cout << "地图路网规模:" << GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines().size() << endl;
         if (GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines().size() == 0) {
             predicting.error_type_ = ErrorType::NO_MAP;
+            cout << "GlobalVariable::getInstance()->GetAllHumanDrivingReferencelines().size() == 0" << endl;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
+                cout << "进锁成功" << endl;
                 predicting.threadLogger_->info("进锁成功");
                 string temp_string      = GlobalPlanning::Parser::HumanVehFurtureVecWaypoint2json(all_path, predicting);
                 int    temp_string_size = temp_string.size();
@@ -408,10 +437,15 @@ char* PathPredicting(char* input_info) {
                 if (temp_string_size < 10) {
                     cout << "temp_string还没接就被释放了" << endl;
                     predicting.threadLogger_->info("出锁成功");
+                    cout << "出锁成功" << endl;
                 }
                 predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
+                cout << "HumanVehFurtureVecWaypoint2json successfully" << endl;
                 predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
+                cout << "GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}" << strlen(GlobalVariable::getInstance()->GetReceivePtr()) << endl;
                 predicting.threadLogger_->info("出锁成功");
+                cout << "出锁成功" << endl;
+                spdlog::drop(log_id);
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
@@ -431,6 +465,7 @@ char* PathPredicting(char* input_info) {
         // 起点
         predicting.start_point_ = veh_info.pos;
         try {
+            cout << "调用PredictingInterface" << endl;
             predicting.PredictingInterface(path, all_human_vechicle_infos.predicting_distance);
             all_path[veh_info.id] = path;
         } catch (const std::exception& e) {
@@ -452,6 +487,7 @@ char* PathPredicting(char* input_info) {
                 predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 predicting.threadLogger_->info("即将出  return_write_lock 锁");
                 cout << "即将出  return_write_lock 锁" << endl;
+                spdlog::drop(log_id);
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         } catch (const std::out_of_range& e) {
@@ -472,6 +508,7 @@ char* PathPredicting(char* input_info) {
                 predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
                 predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
                 predicting.threadLogger_->info("出锁成功");
+                spdlog::drop(log_id);
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
@@ -495,6 +532,7 @@ char* PathPredicting(char* input_info) {
             predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
             predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             predicting.threadLogger_->info("出锁成功");
+            spdlog::drop(log_id);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::exception& e) {
@@ -516,6 +554,7 @@ char* PathPredicting(char* input_info) {
 
             predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             predicting.threadLogger_->info("出锁成功");
+            spdlog::drop(log_id);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::out_of_range& e) {
@@ -536,6 +575,7 @@ char* PathPredicting(char* input_info) {
             predicting.threadLogger_->info("HumanVehFurtureVecWaypoint2json successfully");
             predicting.threadLogger_->info("GlobalVariable::getInstance()->receive_ptr.strlen().size()::{}", strlen(GlobalVariable::getInstance()->GetReceivePtr()));
             predicting.threadLogger_->info("出锁成功");
+            spdlog::drop(log_id);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     }
@@ -547,7 +587,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     std::stringstream ss;
     ss << std::put_time(std::localtime(&timestamp), "%Y-%m-%d-%H-%M-%S");
     std::string timeStr = ss.str();
-    cout << "**********************欢迎装载排队点自动生成库,版本号:G_V1.4.0.20250310_beta************************************" << timeStr << endl;
+    cout << "**********************欢迎装载排队点自动生成库,版本号:G_V1.10.10.20250909************************************" << timeStr << endl;
     time_t start_time, end_time;
     time(&start_time);
     LoadAreaPlanning::LoadAreaPlanning                                                                       planning;
@@ -580,7 +620,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
             }
         }
         record.open(filePath, std::ios_base::app);
-        record << timeStr << " ，收到请求" << "    装载区路径生成库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，收到请求" << "    装载区路径生成库版本号:G_V1.10.10.20250909" << endl;
         record.close();
     }
 
@@ -590,31 +630,32 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     filesystem::create_directories(dirPath);
     // 构造文件路径
     std::string        filePath = dirPath + "/log_" + timeStr + ".log";
-    std::ostringstream oss;
-    int                num = GlobalVariable::getInstance()->GetDispatchNums();
-    GlobalVariable::getInstance()->SetDispatchNums(num++);
-    oss << GlobalVariable::getInstance()->GetDispatchNums();
-    id += oss.str();
+  
+    id += timeStr;
+    cout << "id:" << id << endl;
 
     planning.threadLogger_ = spdlog::rotating_logger_mt(id, filePath, 10 * 2048 * 2048, 5, true);
     planning.threadLogger_->flush_on(spdlog::level::info);
     planning.threadLogger_->info(id);
     planning.threadLogger_->info("point_veh_start_end.strlen().size:{}", strlen(point_veh_start_end));
-    planning.threadLogger_->info("LoadAreaPlanning-IDS_LoadAreaPlanning_version: G_V1.4.0.20250310_beta");
+    planning.threadLogger_->info("LoadAreaPlanning-IDS_LoadAreaPlanning_version: G_V1.10.10.20250909");
+    cout << "LoadAreaPlanning-IDS_LoadAreaPlanning_version: G_V1.10.10.20250909" << endl;
 
     {
         std::shared_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->assignment_operation_lock);
         planning.threadLogger_->info("地图路网规模:{}", GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size());
         if (GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0) {
+            cout << "GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines().size() == 0 无地图数据！！！！" << endl;
             get<0>(path) = 0;
             {
                 std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-                string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
-                int    temp_string_size = temp_string.size();
+                string                              temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+                int                                 temp_string_size = temp_string.size();
                 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
                 if (temp_string_size < 10) {
                     cout << "temp_string还没接就被释放了" << endl;
                 }
+                spdlog::drop(id);
                 return GlobalVariable::getInstance()->GetReceivePtr();
             }
         }
@@ -635,8 +676,14 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     planning.threadLogger_->info("load_point.y ={}", veh_start_end.load_point.y);
     planning.threadLogger_->info("load_point.z ={}", veh_start_end.load_point.z);
     planning.threadLogger_->info("load_point.yaw ={}", veh_start_end.load_point.yaw);
-
-
+    cout << "wait_point.x =" << veh_start_end.wait_point.x << endl;
+    cout << "wait_point.y =" << veh_start_end.wait_point.y << endl;
+    cout << "wait_point.z =" << veh_start_end.wait_point.z << endl;
+    cout << "wait_point.yaw =" << veh_start_end.wait_point.yaw << endl;
+    cout << "load_point.x =" << veh_start_end.load_point.x << endl;
+    cout << "load_point.y =" << veh_start_end.load_point.y << endl;
+    cout << "load_point.z =" << veh_start_end.load_point.z << endl;
+    cout << "load_point.yaw =" << veh_start_end.load_point.yaw << endl;
 
 
     // 构建碰撞检测对象
@@ -646,6 +693,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     Bound                map_border_v;
     vector<_BorderPoint> map_border;
     map_border = GlobalVariable::getInstance()->GetMapBorder();
+    cout << "收到地图" << map_border.size() << "组" << endl;
     vector<Coordinate> vC;
     for (unsigned int i = 0; i < map_border.size(); ++i) {
         Coordinate temp_point;
@@ -657,9 +705,22 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     map_border_v.push_back(vC);
     collison_check.InitBoundMap(map_border_v);
 
-    Bound                              wall_border_v;
-    const vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
-    cout << "收到挡墙" << wall_border.size() << "组" << endl;
+
+    Bound                        wall_border_v;
+    vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
+    cout << "收到挡墙" << wall_border.size() << "组" << "wall_border.at(0).size():" << wall_border.front().size() << endl;
+    // 对wall_border进行过滤，过滤掉距离load_point小于remove_dis的点
+    for (auto& border : wall_border) {
+        for (auto it = border.begin(); it != border.end();) {
+            if (hypot(veh_start_end.load_point.x - it->x, veh_start_end.load_point.y - it->y) < veh_start_end.remove_dis) {
+                it = border.erase(it); // erase返回下一个有效迭代器
+            }
+            else {
+                ++it;
+            }
+        }
+    }
+    cout << "收到挡墙（过滤后）" << wall_border.size() << "组" << "wall_border.at(0).size():" << wall_border.front().size() << endl;
     vC.clear();
     for (unsigned int i = 0; i < wall_border.size(); ++i) {
         for (unsigned int j = 0; j < wall_border.at(i).size(); ++j) {
@@ -676,7 +737,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     Bound                        machine_border_v;
     vector<vector<_BorderPoint>> machine_border = veh_start_end.machine_borders;
     vC.clear();
-    cout << "收到挖掘" << machine_border.size() << "组" << endl;
+    cout << "收到挖掘" << machine_border.size() << "组" << "machine_border.at(0).size():" << machine_border.at(0).size() << endl;
     for (unsigned int i = 0; i < machine_border.size(); ++i) {
         for (unsigned int j = 0; j < machine_border.at(i).size(); ++j) {
             Coordinate temp_point;
@@ -797,13 +858,12 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         planning.veh_param                         = veh_start_end.veh_param;
     }
 
-    cout<<"line670    planning.veh_param.light_forward_max_steering: "<<planning.veh_param.light_forward_max_steering<<endl;
-
+    cout << "line670    planning.veh_param.light_forward_max_steering: " << planning.veh_param.light_forward_max_steering << endl;
 
     try {
         cout << "开始调用LoadAreaPlanningInterface()" << endl;
         planning.threadLogger_->info("开始调用LoadAreaPlanningInterface()");
-        path = planning.LoadAreaPlanningInterface(veh_start_end.planning_mode, wait_point, load_point, input_path, out_path, collison_check);
+        path = planning.LoadAreaPlanningInterface(veh_start_end.planning_mode, wait_point, load_point, input_path, out_path, collison_check, map_border, wall_border, machine_border);
         cout << "LoadAreaPlanningInterface()返回信息汇总" << endl;
         cout << get<0>(path) << endl;
         cout << "(" << get<1>(path).x << "," << get<1>(path).y << ")" << endl;
@@ -836,6 +896,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
                 cout << "temp_string还没接就被释放了" << endl;
             }
             cout << "即将出  return_write_lock 锁" << endl;
+            spdlog::drop(id);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::out_of_range& e) {
@@ -843,12 +904,13 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         cout << "规划库执行GlobalPathPlanningIntface时出现 out_of_range 抛出" << endl;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
-            int    temp_string_size = temp_string.size();
+            string                              temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+            int                                 temp_string_size = temp_string.size();
             GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
             if (temp_string_size < 10) {
                 cout << "temp_string还没接就被释放了" << endl;
             }
+            spdlog::drop(id);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     }
@@ -857,8 +919,8 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         cout << "最后一步，将规划结果转为json格式字符串并返回" << endl;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
-            int    temp_string_size = temp_string.size();
+            string                              temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+            int                                 temp_string_size = temp_string.size();
             cout << "temp_string_size:" << temp_string_size << endl;
             GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
             cout << "执行完 GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data())" << endl;
@@ -866,20 +928,21 @@ char* QueuePointGenerator(char* point_veh_start_end) {
                 cout << "temp_string还没接就被释放了" << endl;
             }
             cout << "返回轨迹" << endl;
+            spdlog::drop(id);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::exception& e) {
         cout << "规划库执行 VecWaypoint2json 时出现 exception 抛出" << endl;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
-            int    temp_string_size = temp_string.size();
+            string                              temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+            int                                 temp_string_size = temp_string.size();
 
             GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
             if (temp_string_size < 10) {
                 cout << "temp_string还没接就被释放了" << endl;
             }
-
+            spdlog::drop(id);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     } catch (const std::out_of_range& e) {
@@ -887,12 +950,13 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         cout << "规划库执行 VecWaypoint2json 时出现 out_of_range 抛出" << endl;
         {
             std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->return_write_lock);
-            string temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
-            int    temp_string_size = temp_string.size();
+            string                              temp_string      = GlobalPlanning::Parser::LoadAreaPathVecWaypoint2json(path);
+            int                                 temp_string_size = temp_string.size();
             GlobalVariable::getInstance()->SetReceivePtr((char*)GlobalVariable::getInstance()->GetGlobalStr().data());
             if (temp_string_size < 10) {
                 cout << "temp_string还没接就被释放了" << endl;
             }
+            spdlog::drop(id);
             return GlobalVariable::getInstance()->GetReceivePtr();
         }
     }

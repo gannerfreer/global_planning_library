@@ -410,6 +410,7 @@ struct _LoadAreaPlanningInfos {
     double safe_margin_rear;
     double safe_margin_side;
     double collision_weight;
+    double remove_dis;
 
     _VehicleParam                veh_param;
     int                          planning_mode = 0;
