@@ -460,7 +460,7 @@ inline Vector2D Path_Opti::CurvatureTerm(Vector2D xim1, Vector2D xi, Vector2D xi
     dphi            = acos((delta_xi.x * delta_xip1.x + delta_xi.y * delta_xip1.y) / d); // 通过向量积求出两向量之间夹角
     kappa           = dphi / norm_delta_xi;
 
-    if (kappa >= 0.1) {
+    if (kappa >= 0.07) {
         double pdphi_pcosdphi = -1 / sqrt(1 - pow(cos(dphi), 2));
         double u              = pdphi_pcosdphi / norm_delta_xi;
         double s              = dphi / pow(norm_delta_xi, 2);

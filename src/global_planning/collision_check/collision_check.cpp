@@ -172,7 +172,7 @@ vector<unsigned int> CollisonCheck::OptiPathCollisionCheckWithAll(const Path& my
 vector<unsigned int> CollisonCheck::DepartPathCollisionCheck(const Path& my_optipath) {
     vector<unsigned int> collision_point;
     for (int i = 0; i < my_optipath.size(); ++i) {
-        if (!IsVehicleCollisionWallBound(my_optipath.at(i), m__VehicleParam_.safe_margin_bound - m__VehicleParam_.safe_margin_error)) {
+        if (!IsVehicleCollisionWallBound(my_optipath.at(i), m__VehicleParam_.safe_margin_wall - m__VehicleParam_.safe_margin_error)) {
             if (obstacle_bound_map_.empty() || !IsVehicleCollisionObstacleBound(my_optipath.at(i), m__VehicleParam_.safe_margin_obstacle - m__VehicleParam_.safe_margin_error)) {
                 continue;
             }

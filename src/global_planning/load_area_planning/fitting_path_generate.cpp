@@ -29,7 +29,8 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     double               result_grade;
     curve::Point         temp_wait_point(wait_point.x, wait_point.y, wait_point.angle, 0.0);
     curve::Dubins        dubins_planner;
-    dubins_planner.SetRadius(11.2);
+    dubins_planner.threadLogger_ = threadLogger_;
+    dubins_planner.SetRadius(10);
     std::vector<curve::Point> dubins_path;
     std::cout << "delta_straight_length_load_ = " << delta_straight_length_load_ << endl;
     std::cout << "max_straight_length_load_ = " << max_straight_length_load_ << endl;
@@ -46,9 +47,12 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
         curve::Point temp_straight_line_start(straight_line_start.x, straight_line_start.y, straight_line_start.angle, 0.0);
         // cout << "temp_straight_line_start.xyangle = " << temp_straight_line_start.GetX() << "," << temp_straight_line_start.GetY() << "," << temp_straight_line_start.GetAngle() << endl;
         // cout << "temp_wait_point.xyangle = " << temp_wait_point.GetX() << "," << temp_wait_point.GetY() << "," << temp_wait_point.GetAngle() << endl;
+        cout << "temp_wait_point.x,y=" << temp_wait_point.GetX() << "," << temp_wait_point.GetY() << endl;
+
 
         if (dubins_planner.GetDubinsPath(temp_straight_line_start, temp_wait_point, dubins_path)) {
             reverse(dubins_path.begin(), dubins_path.end());
+            cout << "dubins_path.front().x,y=" << dubins_path.front().GetX() << "," << dubins_path.front().GetY() << endl;
             auto load_curve_path = PathTransFormer(dubins_path);
             CalCurvature(load_curve_path, 1);
             double total_curvature;
@@ -64,6 +68,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
             load_path_candidates_.emplace_back(std::make_pair(load_curve_path, grade));
         }
     }
+
     std::sort(load_path_candidates_.begin(), load_path_candidates_.end(), [](const std::pair<GlobalPlanning::Path, double>& a, const std::pair<GlobalPlanning::Path, double>& b) {
         return a.second > b.second; // 按 double 值降序
     });
@@ -77,6 +82,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
                 point.angle     = point.angle * 180.0 / M_PI;
                 point.direction = GlobalPlanning::MotionDirection::Backward;
             }
+            path_info.first.insert(path_info.first.begin(), wait_point);
             return std::make_pair(path_info.first, path_info.second);
         }
         else {
@@ -94,6 +100,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     double               grade = 0.0;
 
     curve::Dubins dubins_planner;
+    dubins_planner.threadLogger_ = threadLogger_;
     dubins_planner.SetRadius(10.0);
     std::vector<GlobalPlanning::Point>                   start_point_sample = SamplePathSegment(origin_path, wait_point, 0);
     std::vector<std::pair<GlobalPlanning::Path, double>> wait_path_candidates;
@@ -173,6 +180,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     }
 
     curve::Dubins dubins_planner;
+    dubins_planner.threadLogger_ = threadLogger_;
     dubins_planner.SetRadius(10.0);
     std::vector<GlobalPlanning::Point> start_point_sample = SamplePathSegment(origin_path, straight_path_with_wait_point.front(), 0);
     // cout << "驶出点寻找完毕" << endl;
@@ -217,11 +225,11 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
         return std::make_pair(result, 0.0);
     }
 
-    auto stitch_path = PathCuttoStart(result.front(), origin_path);
     // std::cout << "stitch_path .size()=" << stitch_path.size() << endl;
-    result.insert(result.begin(), stitch_path.begin(), stitch_path.end());
-    // std::cout << "straight_path_with_wait_point .size()=" << straight_path_with_wait_point.size() << endl;
     if (need_completed) result.insert(result.end(), straight_path_with_wait_point.begin(), straight_path_with_wait_point.end());
+    // auto stitch_path = PathCuttoStart(result.front(), origin_path);
+    // result.insert(result.begin(), stitch_path.begin(), stitch_path.end());
+    // std::cout << "straight_path_with_wait_point .size()=" << straight_path_with_wait_point.size() << endl;
     for (auto& point : result) {
         point.direction = GlobalPlanning::MotionDirection::Forward;
     }
@@ -232,7 +240,8 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
     GlobalPlanning::Path result;
     double               grade;
     curve::Dubins        dubins_planner;
-    dubins_planner.SetRadius(11.2);
+    dubins_planner.threadLogger_ = threadLogger_;
+    dubins_planner.SetRadius(10);
     std::vector<GlobalPlanning::Point>                   end_point_sample = SamplePathSegment(target_path, load_point, 0);
     std::vector<std::pair<GlobalPlanning::Path, double>> depart_path_candidates;
     std::vector<std::pair<GlobalPlanning::Path, double>> temp_depart_path_candidates;
@@ -313,9 +322,9 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
     }
 
     if (!result.empty()) {
-        auto stitch_path = PathCuttoEnd(result.back(), target_path);
-        std::cout << "stitch_path .size()=" << stitch_path.size() << endl;
-        result.insert(result.end(), stitch_path.begin(), stitch_path.end());
+        // auto stitch_path = PathCuttoEnd(result.back(), target_path);
+        // std::cout << "stitch_path .size()=" << stitch_path.size() << endl;
+        // result.insert(result.end(), stitch_path.begin(), stitch_path.end());
         return std::make_pair(result, grade);
     }
     else {

@@ -6,6 +6,7 @@ Predicting::Predicting() {
 }
 Predicting::~Predicting() {
     threadLogger_->info("析构函数已被调用");
+    cout << "析构函数已被调用" << endl;
 }
 
 
@@ -43,6 +44,7 @@ bool Predicting::ReadAllMapFile() {
 void Predicting::PredictingInterface(vector<vector<_TrajectoryPoint>>& path, int predicting_distance) {
     predicting_distance_ = predicting_distance;
     threadLogger_->info("Enter PredictingIntface,预测距离{}m", predicting_distance_);
+    cout << "Enter PredictingIntface,预测距离" << predicting_distance_ << "m" << endl;
     path.clear();
     PlanResult result = PlanResult::Plan_OK;
     error_type_       = ErrorType::SUCCESS;
@@ -50,6 +52,8 @@ void Predicting::PredictingInterface(vector<vector<_TrajectoryPoint>>& path, int
 
     threadLogger_->info("referenceline_relation_.size():{}", referenceline_relation_.size());
     threadLogger_->info("all_referencelines_.size():{}", all_referencelines_.size());
+    cout << "referenceline_relation_.size():" << referenceline_relation_.size() << endl;
+    cout << "all_referencelines_.size():" << all_referencelines_.size() << endl;
     std::vector<std::vector<_TrajectoryPoint>> final_result = predictPath(start_point_.x, start_point_.y, start_point_.yaw / 180.0 * M_PI, 20);
 
     // 对final_result进行100m准确裁减
@@ -67,6 +71,7 @@ void Predicting::PredictingInterface(vector<vector<_TrajectoryPoint>>& path, int
             }
         }
         threadLogger_->info("nearest_index:{}", nearest_index);
+        cout << "nearest_index:" << nearest_index << endl;
         temp_traj.clear();
         for (int k = nearest_index; k < final_result.at(i).size(); k++) {
             // 裁减final_result.at(i)的前${predicting_distance_}m，如果不够，则裁减到尽头
@@ -85,6 +90,7 @@ void Predicting::PredictingInterface(vector<vector<_TrajectoryPoint>>& path, int
             path.push_back(temp_traj);
         }
         threadLogger_->info("当前推入的路径大小:{} path.size():{}", temp_traj.size(), path.size());
+        cout << "当前推入的路径大小:" << temp_traj.size() << " path.size():" << path.size() << endl;
     }
 
 
@@ -95,6 +101,7 @@ void Predicting::PredictingInterface(vector<vector<_TrajectoryPoint>>& path, int
 // 查找车辆一定阈值范围内的所有路径
 std::vector<_SingleTraj> Predicting::findCurrentRoad(double x, double y, double yaw, double distance_threshold) {
     threadLogger_->info("进入 findCurrentRoad 函数");
+    cout << "进入 findCurrentRoad 函数" << endl;
     std::vector<_SingleTraj> validRoads;
     for (const auto& road : all_referencelines_) {
         double           minDistance = std::numeric_limits<double>::max();
@@ -120,6 +127,7 @@ std::vector<_SingleTraj> Predicting::findCurrentRoad(double x, double y, double 
         }
     }
     threadLogger_->info("validRoads.size():{}", validRoads.size());
+    cout << "validRoads.size():" << validRoads.size() << endl;
     return validRoads;
 }
 double Predicting::calculateDistance(const _TrajectoryPoint& p1, const _TrajectoryPoint& p2) {
@@ -132,14 +140,16 @@ double Predicting::calculateYawDifference(double yaw1, double yaw2) {
 // 预测车辆接下来 ${predicting_distance_} m 的路径
 std::vector<std::vector<_TrajectoryPoint>> Predicting::predictPath(double x, double y, double yaw, double distance_threshold) {
     threadLogger_->info("进入 PreddictPath 函数");
+    cout << "进入 PreddictPath 函数" << endl;
     std::vector<_SingleTraj> currentRoads = findCurrentRoad(x, y, yaw, distance_threshold);
     threadLogger_->info("currentRoads.size():{} ", currentRoads.size());
+    cout << "currentRoads.size():" << currentRoads.size() << endl;
     double totalDistance = 0;
 
     // 基于relation来构建所有节点信息
     road_map_ = buildRoadLists();
     threadLogger_->info("road_map_.size():{} ", road_map_.size());
-
+    cout << "road_map_.size():" << road_map_.size() << endl;
     // 更新road_map_信息
     for (const auto currentRoad : currentRoads) {
         std::vector<_TrajectoryPoint> path          = currentRoad.trajectory;
@@ -158,9 +168,10 @@ std::vector<std::vector<_TrajectoryPoint>> Predicting::predictPath(double x, dou
         totalDistance                        = path.size() - currentIndex;
         road_map_.at(currentRoad.id)->length = totalDistance;
         threadLogger_->info("更新road_map_信息,id:{},截断的位置：{} 路段总长：{} 更新后的路径:{}", currentRoad.id, currentIndex, path.size(), totalDistance);
+        cout << "更新road_map_信息,id:" << currentRoad.id << ",截断的位置：" << currentIndex << " 路段总长：" << path.size() << " 更新后的路径:" << totalDistance << endl;
     }
     threadLogger_->info("更新road_map_信息完毕");
-
+    cout << "更新road_map_信息完毕" << endl;
     std::vector<std::vector<Road*>>            temp_road_nodes;
     std::vector<_TrajectoryPoint>              temp_single_traj;
     std::vector<std::vector<_TrajectoryPoint>> final_result;
@@ -169,6 +180,7 @@ std::vector<std::vector<_TrajectoryPoint>> Predicting::predictPath(double x, dou
         temp_road_nodes = findPathsToLeafRoads(road_map_.at(currentRoad.id), threshold);
         // 将 temp_road_nodes转化为
         threadLogger_->info("temp_road_nodes.size():{}", temp_road_nodes.size());
+        cout << "temp_road_nodes.size():" << temp_road_nodes.size() << endl;
         for (const auto& path : temp_road_nodes) {
             temp_single_traj.clear();
             for (const auto& part_path : path) {
@@ -179,10 +191,12 @@ std::vector<std::vector<_TrajectoryPoint>> Predicting::predictPath(double x, dou
         }
     }
     threadLogger_->info("final_result.size():{}", final_result.size());
+    cout << "final_result.size():" << final_result.size() << endl;
     return final_result;
 }
 std::vector<std::vector<Road*>> Predicting::findPathsToLeafRoads(Road* startRoad, int threshold) {
     threadLogger_->info("进入 findPathsToLeafRoads 函数");
+    cout << "进入 findPathsToLeafRoads 函数" << endl;
     std::vector<std::vector<Road*>> allPaths;
     std::vector<Road*>              currentPath;
     dfs(startRoad, 0, threshold, currentPath, allPaths);
@@ -195,6 +209,7 @@ void Predicting::dfs(Road* Current_Road, int currentWeight, int threshold, std::
     // 将当前节点加入路径
     currentPath.push_back(Current_Road);
     threadLogger_->info("dfs函数内部，当前push_back的路段id:{}", Current_Road->id);
+    cout << "dfs函数内部，当前push_back的路段id:" << Current_Road->id << endl;
     // 更新当前权重
     currentWeight += Current_Road->length;
 
@@ -203,6 +218,7 @@ void Predicting::dfs(Road* Current_Road, int currentWeight, int threshold, std::
         allPaths.push_back(currentPath);
         currentPath.pop_back();
         threadLogger_->info("dfs函数内部，当前探索到的路id为 {},已经满足 {} 阈值", Current_Road->id, threshold);
+        cout << "dfs函数内部，当前探索到的路id为 " << Current_Road->id << ",已经满足 " << threshold << " 阈值" << endl;
         return;
     }
 
@@ -243,6 +259,7 @@ std::map<int, Road*> Predicting::buildRoadLists() {
         roadMap[roadId]               = newRoad;
     }
     threadLogger_->info("roadMap.size():{}", roadMap.size());
+    cout << "roadMap.size():" << roadMap.size() << endl;
 
     // 第二步：根据 relation 为每个 Road 对象设置 following_nodes
     for (const auto& relationPair : referenceline_relation_) {
@@ -258,9 +275,11 @@ std::map<int, Road*> Predicting::buildRoadLists() {
                 }
             }
             threadLogger_->info("id:{} following_road.size():{}", currentRoadId, currentRoad->following_nodes.size());
+            cout << "id:" << currentRoadId << " following_road.size():" << currentRoad->following_nodes.size() << endl;
         }
     }
     threadLogger_->info("roadMap.size():{}", roadMap.size());
+    cout << "roadMap.size():" << roadMap.size() << endl;
 
     return roadMap;
 }

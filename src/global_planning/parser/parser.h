@@ -72,7 +72,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.radious = 13;
-                cout << "无法找到车参 radious ，即将赋予默认值" << endl;
+                cout << "无法找到车参 radious ，即将赋予默认值 13" << endl;
             }
 
             if (val.HasMember("wheel_base") && val["wheel_base"].IsNumber()) {
@@ -81,7 +81,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.wheel_base = 5.15;
-                cout << "无法找到车参 wheel_base ，即将赋予默认值" << endl;
+                cout << "无法找到车参 wheel_base ，即将赋予默认值 5.15" << endl;
             }
 
             if (val.HasMember("heavy_forward_max_steering")) {
@@ -89,7 +89,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.heavy_forward_max_steering = 27.24 * M_PI / 180.0;
-                cout << "无法找到车参 heavy_forward_max_steering ，即将赋予默认值" << endl;
+                cout << "无法找到车参 heavy_forward_max_steering ，即将赋予默认值 27.24 * M_PI / 180.0" << endl;
             }
 
             if (val.HasMember("heavy_backward_max_steering")) {
@@ -97,7 +97,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.heavy_backward_max_steering = 22.39 * M_PI / 180.0;
-                cout << "无法找到车参 heavy_backward_max_steering ，即将赋予默认值" << endl;
+                cout << "无法找到车参 heavy_backward_max_steering ，即将赋予默认值 22.39 * M_PI / 180.0" << endl;
             }
 
             if (val.HasMember("light_backward_max_steering")) {
@@ -105,7 +105,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.light_backward_max_steering = 27.24 * M_PI / 180.0;
-                cout << "无法找到车参 light_backward_max_steering ，即将赋予默认值" << endl;
+                cout << "无法找到车参 light_backward_max_steering ，即将赋予默认值 27.24 * M_PI / 180.0" << endl;
             }
 
             if (val.HasMember("light_forward_max_steering")) {
@@ -113,7 +113,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.light_forward_max_steering = 30.63 * M_PI / 180.0;
-                cout << "无法找到车参 light_forward_max_steering ，即将赋予默认值" << endl;
+                cout << "无法找到车参 light_forward_max_steering ，即将赋予默认值 30.63 * M_PI / 180.0" << endl;
             }
 
             if (val.HasMember("safe_margin_bound") && val["safe_margin_bound"].IsNumber()) {
@@ -131,7 +131,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.safe_margin_wall = 0.5;
-                cout << "无法找到车参 safe_margin_wall ，即将赋予默认值" << endl;
+                cout << "无法找到车参 safe_margin_wall ，即将赋予默认值 0.5" << endl;
             }
 
 
@@ -141,7 +141,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.veh_center_2_side = 1.735;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值" << endl;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.735" << endl;
             }
 
             if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
@@ -150,7 +150,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.veh_center_2_front = 7.3;
-                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值" << endl;
+                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.3" << endl;
             }
 
             if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {
@@ -159,7 +159,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.safe_margin_obstacle = 2.0;
-                cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值" << endl;
+                cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值 2.0" << endl;
             }
 
             if (val.HasMember("veh_center_2_rear_bound") && val["veh_center_2_rear_bound"].IsNumber()) {
@@ -167,8 +167,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.veh_center_2_rear_bound " << veh_start_end.veh_param.veh_center_2_rear_bound << endl;
             }
             else {
-                veh_start_end.veh_param.veh_center_2_rear_bound = 0.5;
-                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.veh_center_2_rear_bound = 2.85;
+                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 2.85" << endl;
             }
 
 
@@ -177,8 +177,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.delta_dist " << veh_start_end.veh_param.delta_dist << endl;
             }
             else {
-                veh_start_end.veh_param.delta_dist = 2.0;
-                cout << "无法找到车参 delta_dist ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.delta_dist = 1.0;
+                cout << "无法找到车参 delta_dist ，即将赋予默认值 1.0" << endl;
             }
 
             if (val.HasMember("grid_dist") && val["grid_dist"].IsNumber()) {
@@ -186,8 +186,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.grid_dist " << veh_start_end.veh_param.grid_dist << endl;
             }
             else {
-                veh_start_end.veh_param.grid_dist = 1.0;
-                cout << "无法找到车参 grid_dist ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.grid_dist = 0.7;
+                cout << "无法找到车参 grid_dist ，即将赋予默认值 1.0" << endl;
             }
 
 
@@ -197,7 +197,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.path_error_term = 0.0;
-                cout << "无法找到车参 path_error_term ，即将赋予默认值" << endl;
+                cout << "无法找到车参 path_error_term ，即将赋予默认值 0.0" << endl;
             }
 
             if (val.HasMember("grid_angle") && val["grid_angle"].IsNumber()) {
@@ -205,8 +205,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.grid_angle " << veh_start_end.veh_param.grid_angle << endl;
             }
             else {
-                veh_start_end.veh_param.grid_angle = 1.0;
-                cout << "无法找到车参 grid_angle ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.grid_angle = 1.0 * M_PI / 180.0;
+                cout << "无法找到车参 grid_angle ，即将赋予默认值 1.0 * M_PI / 180.0" << endl;
             }
 
             if (val.HasMember("hybridastar_step_length") && val["hybridastar_step_length"].IsNumber()) {
@@ -215,7 +215,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.hybridastar_step_length = 1.0;
-                cout << "无法找到车参 hybridastar_step_length ，即将赋予默认值" << endl;
+                cout << "无法找到车参 hybridastar_step_length ，即将赋予默认值 1.0" << endl;
             }
 
             if (val.HasMember("path_curvature_term") && val["path_curvature_term"].IsNumber()) {
@@ -224,7 +224,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.path_curvature_term = 0.0;
-                cout << "无法找到车参 path_curvature_term ，即将赋予默认值" << endl;
+                cout << "无法找到车参 path_curvature_term ，即将赋予默认值 0.0" << endl;
             }
 
             if (val.HasMember("switch_penalty") && val["switch_penalty"].IsNumber()) {
@@ -233,7 +233,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.switch_penalty = 10;
-                cout << "无法找到车参 switch_penalty ，即将赋予默认值" << endl;
+                cout << "无法找到车参 switch_penalty ，即将赋予默认值 10" << endl;
             }
 
             if (val.HasMember("forward_penalty") && val["forward_penalty"].IsNumber()) {
@@ -242,7 +242,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.forward_penalty = 1.0;
-                cout << "无法找到车参 forward_penalty ，即将赋予默认值" << endl;
+                cout << "无法找到车参 forward_penalty ，即将赋予默认值 1.0" << endl;
             }
 
 
@@ -251,8 +251,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.path_smoothness_term " << veh_start_end.veh_param.path_smoothness_term << endl;
             }
             else {
-                veh_start_end.veh_param.path_smoothness_term = 0.1;
-                cout << "无法找到车参 path_smoothness_term ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.path_smoothness_term = 0.2;
+                cout << "无法找到车参 path_smoothness_term ，即将赋予默认值 0.2" << endl;
             }
 
             if (val.HasMember("backward_penalty") && val["backward_penalty"].IsNumber()) {
@@ -261,7 +261,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.backward_penalty = 5.5;
-                cout << "无法找到车参 backward_penalty ，即将赋予默认值" << endl;
+                cout << "无法找到车参 backward_penalty ，即将赋予默认值 5.5" << endl;
             }
 
             if (val.HasMember("turnning_penalty") && val["turnning_penalty"].IsNumber()) {
@@ -270,7 +270,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.turnning_penalty = 2.468;
-                cout << "无法找到车参 turnning_penalty ，即将赋予默认值" << endl;
+                cout << "无法找到车参 turnning_penalty ，即将赋予默认值 2.468" << endl;
             }
 
             if (val.HasMember("angle_discrete_num") && val["angle_discrete_num"].IsNumber()) {
@@ -279,7 +279,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.angle_discrete_num = 3;
-                cout << "无法找到车参 angle_discrete_num ，即将赋予默认值" << endl;
+                cout << "无法找到车参 angle_discrete_num ，即将赋予默认值 3" << endl;
             }
 
             if (val.HasMember("max_fitting_radius") && val["max_fitting_radius"].IsNumber()) {
@@ -288,7 +288,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.max_fitting_radius = 100;
-                cout << "无法找到车参 max_fitting_radius ，即将赋予默认值" << endl;
+                cout << "无法找到车参 max_fitting_radius ，即将赋予默认值 100" << endl;
             }
 
             if (val.HasMember("max_iterations_opti") && val["max_iterations_opti"].IsNumber()) {
@@ -297,7 +297,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.max_iterations_opti = 1000;
-                cout << "无法找到车参 max_iterations_opti ，即将赋予默认值" << endl;
+                cout << "无法找到车参 max_iterations_opti ，即将赋予默认值 1000" << endl;
             }
 
 
@@ -307,7 +307,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.cusp_extension_distance = 3.0;
-                cout << "无法找到车参 cusp_extension_distance ，即将赋予默认值" << endl;
+                cout << "无法找到车参 cusp_extension_distance ，即将赋予默认值 3.0" << endl;
             }
 
             if (val.HasMember("linear_preferred_distance") && val["linear_preferred_distance"].IsNumber()) {
@@ -316,7 +316,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.linear_preferred_distance = 3.0;
-                cout << "无法找到车参 linear_preferred_distance ，即将赋予默认值" << endl;
+                cout << "无法找到车参 linear_preferred_distance ，即将赋予默认值 3.0" << endl;
             }
 
             if (val.HasMember("safe_margin_error") && val["safe_margin_error"].IsNumber()) {
@@ -325,7 +325,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.safe_margin_error = 0.0;
-                cout << "无法找到车参 safe_margin_error ，即将赋予默认值" << endl;
+                cout << "无法找到车参 safe_margin_error ，即将赋予默认值 0.0" << endl;
             }
 
             if (val.HasMember("speed_error_term") && val["speed_error_term"].IsNumber()) {
@@ -333,8 +333,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.speed_error_term " << veh_start_end.veh_param.speed_error_term << endl;
             }
             else {
-                veh_start_end.veh_param.speed_error_term = 0.05;
-                cout << "无法找到车参 speed_error_term ，即将赋予默认值" << endl;
+                veh_start_end.veh_param.speed_error_term = 0.1;
+                cout << "无法找到车参 speed_error_term ，即将赋予默认值 0.1" << endl;
             }
 
 
@@ -353,7 +353,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.max_acceleration = 0.3;
-                cout << "无法找到车参 max_acceleration ，即将赋予默认值" << endl;
+                cout << "无法找到车参 max_acceleration ，即将赋予默认值 0.3" << endl;
             }
 
             if (val.HasMember("min_acceleration") && val["min_acceleration"].IsNumber()) {
@@ -362,7 +362,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
             else {
                 veh_start_end.veh_param.min_acceleration = -0.4;
-                cout << "无法找到车参 min_acceleration ，即将赋予默认值" << endl;
+                cout << "无法找到车参 min_acceleration ，即将赋予默认值 -0.4" << endl;
             }
 
             if (val.HasMember("light_reverse_speed") && val["light_reverse_speed"].IsNumber()) {
@@ -398,7 +398,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.slope_road_speed_limit " << veh_start_end.veh_param.slope_road_speed_limit << endl;
             }
             else {
-                cout << "无法找到车参 slope_road_speed_limit" << endl;
+                cout << "无法找到车参 slope_road_speed_limit ，即将赋予默认值 3.0" << endl;
                 veh_start_end.veh_param.slope_road_speed_limit = 3.0;
             }
 
@@ -407,7 +407,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.intersection_road_speed_limit " << veh_start_end.veh_param.intersection_road_speed_limit << endl;
             }
             else {
-                cout << "无法找到车参 intersection_road_speed_limit" << endl;
+                cout << "无法找到车参 intersection_road_speed_limit ，即将赋予默认值 3.0" << endl;
                 veh_start_end.veh_param.intersection_road_speed_limit = 3.0;
             }
 
@@ -416,7 +416,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.bumpy_road_speed_limit " << veh_start_end.veh_param.bumpy_road_speed_limit << endl;
             }
             else {
-                cout << "无法找到车参 bumpy_road_speed_limit" << endl;
+                cout << "无法找到车参 bumpy_road_speed_limit ，即将赋予默认值 3.0" << endl;
                 veh_start_end.veh_param.bumpy_road_speed_limit = 3.0;
             }
 
@@ -425,7 +425,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.regular_road_speed_limit " << veh_start_end.veh_param.regular_road_speed_limit << endl;
             }
             else {
-                cout << "无法找到车参 regular_road_speed_limit" << endl;
+                cout << "无法找到车参 regular_road_speed_limit ，即将赋予默认值 3.0" << endl;
                 veh_start_end.veh_param.regular_road_speed_limit = 3.0;
             }
 
@@ -435,7 +435,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.vehicle_code " << veh_start_end.veh_param.vehicle_code << endl;
             }
             else {
-                cout << "无法找到车参 vehicle_code" << endl;
+                cout << "无法找到车参 vehicle_code ，即将赋予默认值 9999" << endl;
                 veh_start_end.veh_param.vehicle_code = 9999;
             }
 
@@ -444,7 +444,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.uniform_compaction_enable " << veh_start_end.veh_param.uniform_compaction_enable << endl;
             }
             else {
-                cout << "无法找到车参 uniform_compaction_enable" << endl;
+                cout << "无法找到车参 uniform_compaction_enable ，即将赋予默认值 true" << endl;
                 veh_start_end.veh_param.uniform_compaction_enable = true;
             }
 
@@ -454,7 +454,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.is_light " << veh_start_end.veh_param.is_light << endl;
             }
             else {
-                cout << "无法找到车参 is_light ，即将赋予默认值" << endl;
+                cout << "无法找到车参 is_light ，即将赋予默认值 false" << endl;
                 veh_start_end.veh_param.is_light = false;
             }
 
@@ -464,7 +464,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.speed_limit_level " << static_cast<int>(veh_start_end.veh_param.speed_limit_level) << endl;
             }
             else {
-                cout << "无法找到车参 speed_limit_level ，即将赋予默认值" << endl;
+                cout << "无法找到车参 speed_limit_level ，即将赋予默认值 three" << endl;
                 veh_start_end.veh_param.speed_limit_level = SpeedLimitLevel::three;
             }
 
@@ -472,7 +472,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.L2 = val["L2"].GetUint();
             }
             else {
-                cout << "无法找到车参 L2 ，即将赋予默认值" << endl;
+                cout << "无法找到车参 L2 ，即将赋予默认值 8" << endl;
                 veh_start_end.veh_param.L2 = 8;
             }
 
@@ -480,7 +480,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.L3 = val["L3"].GetUint();
             }
             else {
-                cout << "无法找到车参 L3 ，即将赋予默认值" << endl;
+                cout << "无法找到车参 L3 ，即将赋予默认值 8" << endl;
                 veh_start_end.veh_param.L3 = 8;
             }
 
@@ -489,7 +489,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.rs_min_length = val["rs_min_length"].GetFloat();
             }
             else {
-                cout << "无法找到车参 rs_min_length ，即将赋予默认值" << endl;
+                cout << "无法找到车参 rs_min_length ，即将赋予默认值 1" << endl;
                 veh_start_end.veh_param.rs_min_length = 1;
             }
 
@@ -497,7 +497,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.L1 = val["L1"].GetFloat();
             }
             else {
-                cout << "无法找到车参 L1 ，即将赋予默认值" << endl;
+                cout << "无法找到车参 L1 ，即将赋予默认值 3" << endl;
                 veh_start_end.veh_param.L1 = 3;
             }
 
@@ -506,7 +506,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.offset_distance = std::min(std::max(veh_start_end.veh_param.offset_distance, float(0)), float(0.5));
             }
             else {
-                cout << "无法找到车参 offset_distance ，即将赋予默认值" << endl;
+                cout << "无法找到车参 offset_distance ，即将赋予默认值 0.3" << endl;
                 veh_start_end.veh_param.offset_distance = 0.3;
             }
 
@@ -514,7 +514,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.max_steering_wheel_speed = val["max_steering_wheel_speed"].GetFloat();
             }
             else {
-                cout << "无法找到车参 max_steering_wheel_speed ，即将赋予默认值" << endl;
+                cout << "无法找到车参 max_steering_wheel_speed ，即将赋予默认值 0.1396" << endl;
                 veh_start_end.veh_param.max_steering_wheel_speed = 0.1396;
             }
 
@@ -523,7 +523,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.sample_num = val["sample_num"].GetUint();
             }
             else {
-                cout << "无法找到车参 sample_num ，即将赋予默认值" << endl;
+                cout << "无法找到车参 sample_num ，即将赋予默认值 40" << endl;
                 veh_start_end.veh_param.sample_num = 40;
             }
 
@@ -531,7 +531,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.plan_time = val["plan_time"].GetFloat();
             }
             else {
-                cout << "无法找到车参 plan_time ，即将赋予默认值" << endl;
+                cout << "无法找到车参 plan_time ，即将赋予默认值 0.2" << endl;
                 veh_start_end.veh_param.plan_time = 0.2;
             }
 
@@ -539,7 +539,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.dis_threshold = val["dis_threshold"].GetFloat();
             }
             else {
-                cout << "无法找到车参 dis_threshold ，即将赋予默认值" << endl;
+                cout << "无法找到车参 dis_threshold ，即将赋予默认值 2.0" << endl;
                 veh_start_end.veh_param.dis_threshold = 2.0;
             }
 
@@ -547,16 +547,19 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.w_deviation = val["w_deviation"].GetFloat();
             }
             else {
-                cout << "无法找到车参 w_deviation ，即将赋予默认值" << endl;
+                cout << "无法找到车参 w_deviation ，即将赋予默认值 0.00012" << endl;
                 veh_start_end.veh_param.w_deviation = 0.00012;
             }
+
             if (val.HasMember("w_curvature")) {
                 veh_start_end.veh_param.w_curvature = val["w_curvature"].GetFloat();
             }
             else {
-                cout << "无法找到车参 w_curvature ，即将赋予默认值" << endl;
+                cout << "无法找到车参 w_curvature ，即将赋予默认值 100" << endl;
                 veh_start_end.veh_param.w_curvature = 100;
             }
+            if (val.HasMember("w_curvature_change")) {
+                veh_start_end.veh_param.w_curvature_change = val["w_curvature_change"].GetFloat();
             if (val.HasMember("w_curvature_change")) {
                 veh_start_end.veh_param.w_curvature_change = val["w_curvature_change"].GetFloat();
             }
@@ -609,9 +612,9 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
 
     if (doc.HasMember("dynamic_border") && doc["dynamic_border"].IsArray()) {
         cout << "解析 dynamic_border 中" << endl;
-        const Value& dynamicBorderArray = doc["dynamic_border"];
+        const Value&         dynamicBorderArray = doc["dynamic_border"];
         vector<_BorderPoint> dynamicBorderPoints;
-    
+
         for (SizeType i = 0; i < dynamicBorderArray.Size(); i++) {
             const Value& borderPoint = dynamicBorderArray[i];
 
@@ -622,9 +625,9 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             }
 
             _BorderPoint temp_point;
-            temp_point.x    = borderPoint["x"].GetDouble();
-            temp_point.y    = borderPoint["y"].GetDouble();
-            
+            temp_point.x = borderPoint["x"].GetDouble();
+            temp_point.y = borderPoint["y"].GetDouble();
+
 
             // 可以选择处理经纬度信息
             // if (borderPoint.HasMember("longitude") && borderPoint["longitude"].IsDouble()) {
@@ -827,7 +830,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.10.10.20250909" << endl;
         record.close();
     }
 
@@ -841,10 +844,9 @@ bool GetMap(char* parea) {
         // 解析JSON时可能出现异常
         doc.Parse(parea);
         if (doc.HasParseError()) {
-            unsigned int error = doc.GetParseError();
-            size_t offset = doc.GetErrorOffset();
-            throw std::runtime_error("JSON解析错误: 错误代码=" + std::to_string(error) + 
-                                    ", 偏移位置=" + std::to_string(offset));
+            unsigned int error  = doc.GetParseError();
+            size_t       offset = doc.GetErrorOffset();
+            throw std::runtime_error("JSON解析错误: 错误代码=" + std::to_string(error) + ", 偏移位置=" + std::to_string(offset));
         }
 
         // 确保有allocator可用
@@ -858,23 +860,20 @@ bool GetMap(char* parea) {
             throw std::runtime_error("JSON数据中缺少有效的external_border数组");
         }
 
-        const Value& borderPointsArray = doc["external_border"];
-        _BorderPoint bp;
+        const Value&         borderPointsArray = doc["external_border"];
+        _BorderPoint         bp;
         vector<_BorderPoint> v_bp;
 
         for (SizeType i = 0; i < borderPointsArray.Size(); i++) {
             const Value& point = borderPointsArray[i];
             // 检查点数据是否完整
-            if (!point.IsObject() || !point.HasMember("x") || !point["x"].IsDouble() ||
-                !point.HasMember("y") || !point["y"].IsDouble() ||
-                !point.HasMember("z") || !point["z"].IsDouble() ||
-                !point.HasMember("type") || !point["type"].IsInt()) {
+            if (!point.IsObject() || !point.HasMember("x") || !point["x"].IsDouble() || !point.HasMember("y") || !point["y"].IsDouble() || !point.HasMember("z") || !point["z"].IsDouble() || !point.HasMember("type") || !point["type"].IsInt()) {
                 throw std::runtime_error("边界点数据不完整或格式错误，索引: " + std::to_string(i));
             }
 
-            bp.x = point["x"].GetDouble();
-            bp.y = point["y"].GetDouble();
-            bp.z = point["z"].GetDouble();
+            bp.x    = point["x"].GetDouble();
+            bp.y    = point["y"].GetDouble();
+            bp.z    = point["z"].GetDouble();
             bp.type = static_cast<unsigned char>(point["type"].GetInt());
 
             if (bp.type == 0) {
@@ -890,20 +889,19 @@ bool GetMap(char* parea) {
             throw std::runtime_error("JSON数据中缺少有效的reference_trajs数组");
         }
 
-        const Value& trajsArray = doc["reference_trajs"];
+        const Value&               trajsArray = doc["reference_trajs"];
         std::map<int, _SingleTraj> m_traj_self_driving, m_traj_human_driving;
-        std::vector<_SingleTraj> input_paths, output_paths;
-        _SingleTraj traj;
-        _TrajectoryPoint tp;
-        int traj_type = -1;
-        double speed_limit = -1;
-        int guid_type = 0;
+        std::vector<_SingleTraj>   input_paths, output_paths;
+        _SingleTraj                traj;
+        _TrajectoryPoint           tp;
+        int                        traj_type   = -1;
+        double                     speed_limit = -1;
+        int                        guid_type   = 0;
 
         for (SizeType i = 0; i < trajsArray.Size(); i++) {
             const Value& trajObj = trajsArray[i];
             // 检查轨迹对象基本结构
-            if (!trajObj.IsObject() || !trajObj.HasMember("id") || !trajObj["id"].IsInt() ||
-                !trajObj.HasMember("trajectory") || !trajObj["trajectory"].IsArray()) {
+            if (!trajObj.IsObject() || !trajObj.HasMember("id") || !trajObj["id"].IsInt() || !trajObj.HasMember("trajectory") || !trajObj["trajectory"].IsArray()) {
                 throw std::runtime_error("轨迹数据不完整或格式错误，索引: " + std::to_string(i));
             }
 
@@ -911,58 +909,51 @@ bool GetMap(char* parea) {
             traj.id = trajObj["id"].GetInt();
 
             // 处理可选字段
-            traj_type = trajObj.HasMember("type") && trajObj["type"].IsInt() ? 
-                       trajObj["type"].GetInt() : 2;
+            traj_type = trajObj.HasMember("type") && trajObj["type"].IsInt() ? trajObj["type"].GetInt() : 2;
 
-            speed_limit = trajObj.HasMember("speed_limit") && trajObj["speed_limit"].IsDouble() ? 
-                         trajObj["speed_limit"].GetDouble() : -1;
+            speed_limit = trajObj.HasMember("speed_limit") && trajObj["speed_limit"].IsDouble() ? trajObj["speed_limit"].GetDouble() : -1;
 
-            guid_type = trajObj.HasMember("guid_type") && trajObj["guid_type"].IsInt() ? 
-                       trajObj["guid_type"].GetInt() : 0;
+            guid_type = trajObj.HasMember("guid_type") && trajObj["guid_type"].IsInt() ? trajObj["guid_type"].GetInt() : 0;
 
             const Value& trajPointsArray = trajObj["trajectory"];
             for (SizeType j = 0; j < trajPointsArray.Size(); j++) {
                 const Value& point = trajPointsArray[j];
                 // 检查轨迹点数据是否完整
-                if (!point.IsObject() || !point.HasMember("x") || !point["x"].IsDouble() ||
-                    !point.HasMember("y") || !point["y"].IsDouble() ||
-                    !point.HasMember("z") || !point["z"].IsDouble() ||
-                    !point.HasMember("yaw") || !point["yaw"].IsDouble() ||
-                    !point.HasMember("curvature") || !point["curvature"].IsDouble() ||
-                    !point.HasMember("attribute") || !point["attribute"].IsInt() ||
-                    !point.HasMember("direction") || !point["direction"].IsInt()) {
-                    throw std::runtime_error("轨迹点数据不完整或格式错误，轨迹索引: " + 
-                                           std::to_string(i) + ", 点索引: " + std::to_string(j));
+                if (!point.IsObject() || !point.HasMember("x") || !point["x"].IsDouble() || !point.HasMember("y") || !point["y"].IsDouble() || !point.HasMember("z") || !point["z"].IsDouble() || !point.HasMember("yaw") || !point["yaw"].IsDouble() || !point.HasMember("curvature") || !point["curvature"].IsDouble() || !point.HasMember("attribute") || !point["attribute"].IsInt() || !point.HasMember("direction") || !point["direction"].IsInt()) {
+                    throw std::runtime_error("轨迹点数据不完整或格式错误，轨迹索引: " + std::to_string(i) + ", 点索引: " + std::to_string(j));
                 }
 
-                tp.x = point["x"].GetDouble();
-                tp.y = point["y"].GetDouble();
-                tp.z = point["z"].GetDouble();
-                tp.yaw = point["yaw"].GetDouble() / 180.0 * M_PI;
-                tp.curvature = point["curvature"].GetDouble();
-                tp.attribute = static_cast<PointAttribute>(point["attribute"].GetInt());
-                tp.direction = static_cast<unsigned char>(point["direction"].GetInt());
+                tp.x           = point["x"].GetDouble();
+                tp.y           = point["y"].GetDouble();
+                tp.z           = point["z"].GetDouble();
+                tp.yaw         = point["yaw"].GetDouble() / 180.0 * M_PI;
+                tp.curvature   = point["curvature"].GetDouble();
+                tp.attribute   = static_cast<PointAttribute>(point["attribute"].GetInt());
+                tp.direction   = static_cast<unsigned char>(point["direction"].GetInt());
                 tp.speed_limit = speed_limit;
                 traj.trajectory.push_back(tp);
             }
 
             // 根据轨迹类型分类
             if (traj_type == 2) {
-                m_traj_self_driving[traj.id] = traj;
+                m_traj_self_driving[traj.id]  = traj;
                 m_traj_human_driving[traj.id] = traj;
-            } else if (traj_type == 0) {
+            }
+            else if (traj_type == 0) {
                 m_traj_self_driving[traj.id] = traj;
-            } else if (traj_type == 1) {
+            }
+            else if (traj_type == 1) {
                 m_traj_human_driving[traj.id] = traj;
-            } else {
-                throw std::runtime_error("未知的轨迹类型: " + std::to_string(traj_type) + 
-                                       ", 轨迹ID: " + std::to_string(traj.id));
+            }
+            else {
+                throw std::runtime_error("未知的轨迹类型: " + std::to_string(traj_type) + ", 轨迹ID: " + std::to_string(traj.id));
             }
 
             // 根据引导类型分类
             if (guid_type == 1) {
                 input_paths.push_back(traj);
-            } else if (guid_type == 2) {
+            }
+            else if (guid_type == 2) {
                 output_paths.push_back(traj);
             }
         }
@@ -978,18 +969,17 @@ bool GetMap(char* parea) {
             throw std::runtime_error("JSON数据中缺少有效的relation对象");
         }
 
-        const Value& relationObj = doc["relation"];
+        const Value&                    relationObj = doc["relation"];
         std::map<int, std::vector<int>> m_relation_self_driving;  // 无人车专用relation
         std::map<int, std::vector<int>> m_relation_human_driving; // 有人车专用relation
-        int key;
-        std::vector<int> relVec;
+        int                             key;
+        std::vector<int>                relVec;
 
         for (Value::ConstMemberIterator itr = relationObj.MemberBegin(); itr != relationObj.MemberEnd(); ++itr) {
             try {
                 key = std::stoi(itr->name.GetString());
             } catch (const std::exception& e) {
-                throw std::runtime_error("relation键转换为整数失败: " + std::string(itr->name.GetString()) + 
-                                       ", 错误: " + e.what());
+                throw std::runtime_error("relation键转换为整数失败: " + std::string(itr->name.GetString()) + ", 错误: " + e.what());
             }
 
             const Value& relArray = itr->value;
@@ -1000,8 +990,7 @@ bool GetMap(char* parea) {
             relVec.clear();
             for (SizeType k = 0; k < relArray.Size(); k++) {
                 if (!relArray[k].IsInt()) {
-                    throw std::runtime_error("relation数组元素不是整数，键: " + std::to_string(key) + 
-                                           ", 索引: " + std::to_string(k));
+                    throw std::runtime_error("relation数组元素不是整数，键: " + std::to_string(key) + ", 索引: " + std::to_string(k));
                 }
                 relVec.push_back(relArray[k].GetInt());
             }
@@ -1020,10 +1009,8 @@ bool GetMap(char* parea) {
         GlobalVariable::getInstance()->SetHumanDrivingReferencelineRelation(m_relation_human_driving);
 
         // 创建映射和有向图
-        GlobalVariable::getInstance()->CreateSelfDrivingSequenceMapping(
-            GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines());
-        GlobalVariable::getInstance()->CreateSelfDrivingDirectedGraph(
-            GlobalVariable::getInstance()->GetSelfDrivingReferencelineRelation());
+        GlobalVariable::getInstance()->CreateSelfDrivingSequenceMapping(GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines());
+        GlobalVariable::getInstance()->CreateSelfDrivingDirectedGraph(GlobalVariable::getInstance()->GetSelfDrivingReferencelineRelation());
 
         return true;
     } catch (const std::exception& e) {
@@ -1038,7 +1025,6 @@ bool GetMap(char* parea) {
         return false;
     }
 }
-
 
 
 _AllHumanVechicleInfos ParseHumanVehPredictingJson(char* str) {
@@ -1209,7 +1195,7 @@ string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<std::vector<
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << obj.key_ << "  库版本号:G_V1.4.0.20250310_beta" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << obj.key_ << "  库版本号:G_V1.10.10.20250909" << endl;
         record.close();
     }
 
@@ -1321,89 +1307,16 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         cout << "解析 m_Veh_Param 中" << endl;
         Value& val = doc["m_Veh_Param"];
         if (val.IsObject()) {
-            // 车辆参数
-            if (val.HasMember("radious") && val["radious"].IsNumber()) {
-                planning_info.veh_param.radious = val["radious"].GetDouble();
-                cout << "planning_info.veh_param.radious " << planning_info.veh_param.radious << endl;
+            // 装载排队点自动生成算法参数
+
+
+            if (val.HasMember("remove_dis") && val["remove_dis"].IsNumber()) {
+                planning_info.remove_dis = val["remove_dis"].GetDouble();
+                cout << "planning_info.remove_dis " << planning_info.remove_dis << endl;
             }
             else {
-                planning_info.veh_param.radious = 13;
-                cout << "无法找到车参 radious ，即将赋予默认值 13" << endl;
-            }
-
-
-            if (val.HasMember("safe_margin_bound") && val["safe_margin_bound"].IsNumber()) {
-                planning_info.veh_param.safe_margin_bound = val["safe_margin_bound"].GetDouble();
-                cout << "planning_info.veh_param.safe_margin_bound " << planning_info.veh_param.safe_margin_bound << endl;
-            }
-            else {
-                planning_info.veh_param.safe_margin_bound = 0.0;
-                cout << "无法找到车参 safe_margin_bound ，即将赋予默认值 0" << endl;
-            }
-
-            if (val.HasMember("safe_margin_wall") && val["safe_margin_wall"].IsNumber()) {
-                planning_info.veh_param.safe_margin_wall = val["safe_margin_wall"].GetDouble();
-                cout << "planning_info.veh_param.safe_margin_wall " << planning_info.veh_param.safe_margin_wall << endl;
-            }
-            else {
-                planning_info.veh_param.safe_margin_wall = 0.5;
-                cout << "无法找到车参 safe_margin_wall ，即将赋予默认值 0.5" << endl;
-            }
-
-
-            if (val.HasMember("veh_center_2_side") && val["veh_center_2_side"].IsNumber()) {
-                planning_info.veh_param.veh_center_2_side = val["veh_center_2_side"].GetDouble();
-                cout << "planning_info.veh_param.veh_center_2_side " << planning_info.veh_param.veh_center_2_side << endl;
-            }
-            else {
-                planning_info.veh_param.veh_center_2_side = 1.885;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.885" << endl;
-            }
-
-            if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
-                planning_info.veh_param.veh_center_2_front = val["veh_center_2_front"].GetDouble();
-                cout << "planning_info.veh_param.veh_center_2_front " << planning_info.veh_param.veh_center_2_front << endl;
-            }
-            else {
-                planning_info.veh_param.veh_center_2_front = 7.3;
-                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.3" << endl;
-            }
-
-            if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {
-                planning_info.veh_param.safe_margin_obstacle = val["safe_margin_obstacle"].GetDouble();
-                cout << "planning_info.veh_param.safe_margin_obstacle " << planning_info.veh_param.safe_margin_obstacle << endl;
-            }
-            else {
-                planning_info.veh_param.safe_margin_obstacle = 1.0;
-                cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值 1.0" << endl;
-            }
-
-            if (val.HasMember("veh_center_2_rear_bound") && val["veh_center_2_rear_bound"].IsNumber()) {
-                planning_info.veh_param.veh_center_2_rear_bound = val["veh_center_2_rear_bound"].GetDouble();
-                cout << "planning_info.veh_param.veh_center_2_rear_bound " << planning_info.veh_param.veh_center_2_rear_bound << endl;
-            }
-            else {
-                planning_info.veh_param.veh_center_2_rear_bound = 2.85;
-                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 2.85" << endl;
-            }
-
-
-            if (val.HasMember("safe_margin_error") && val["safe_margin_error"].IsNumber()) {
-                planning_info.veh_param.safe_margin_error = val["safe_margin_error"].GetDouble();
-                cout << "planning_info.veh_param.safe_margin_error " << planning_info.veh_param.safe_margin_error << endl;
-            }
-            else {
-                planning_info.veh_param.safe_margin_error = 0.0;
-                cout << "无法找到车参 safe_margin_error ，即将赋予默认值 0.0" << endl;
-            }
-
-            if (val.HasMember("grid_dist") && val["grid_dist"].IsNumber()) {
-                planning_info.veh_param.grid_dist = val["grid_dist"].GetDouble();
-                cout << "planning_info.veh_param.grid_dist " << planning_info.veh_param.grid_dist << endl;
-            }
-            else {
-                planning_info.veh_param.grid_dist = 0.5;
-                cout << "无法找到车参 grid_dist ，即将赋予默认值 0.5" << endl;
+                planning_info.remove_dis = 5.0;
+                cout << "无法找到车参 remove_dis ，即将赋予默认值 5.0" << endl;
             }
 
             if (val.HasMember("safe_margin_front") && val["safe_margin_front"].IsNumber()) {
@@ -1552,7 +1465,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.weight_length: " << planning_info.weight_length << std::endl;
             }
             else {
-                planning_info.weight_length = 1;
+                planning_info.weight_length = 2;
                 std::cerr << "无法找到车参 weight_length ，赋予默认值: " << planning_info.weight_length << std::endl;
             }
 
@@ -1561,7 +1474,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.weight_curve: " << planning_info.weight_curve << std::endl;
             }
             else {
-                planning_info.weight_curve = 2;
+                planning_info.weight_curve = 1;
                 std::cerr << "无法找到车参 weight_curve ，赋予默认值: " << planning_info.weight_curve << std::endl;
             }
 
@@ -1607,7 +1520,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.search_range: " << planning_info.search_range << std::endl;
             }
             else {
-                planning_info.search_range = 60; // 搜索范围默认值(mm)
+                planning_info.search_range = 80; // 搜索范围默认值(mm)
                 std::cerr << "无法找到车参 search_range ，赋予默认值: " << planning_info.search_range << std::endl;
             }
 
@@ -1729,12 +1642,32 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cerr << "无法找到车参 delta_straight_length_load ，赋予默认值: " << planning_info.delta_straight_length_load << std::endl;
             }
 
+
+            // 车辆hybridA*规划参数
+            if (val.HasMember("radious") && val["radious"].IsNumber()) {
+                planning_info.veh_param.radious = val["radious"].GetDouble();
+                std::cout << "planning_info.veh_param.radious " << planning_info.veh_param.radious << std::endl;
+            }
+            else {
+                planning_info.veh_param.radious = 10;
+                cout << "无法找到车参 radious ，即将赋予默认值 10" << endl;
+            }
+
+            if (val.HasMember("wheel_base") && val["wheel_base"].IsNumber()) {
+                planning_info.veh_param.wheel_base = val["wheel_base"].GetDouble();
+                std::cout << "planning_info.veh_param.wheel_base " << planning_info.veh_param.wheel_base << std::endl;
+            }
+            else {
+                planning_info.veh_param.wheel_base = 5.15;
+                cout << "无法找到车参 wheel_base ，即将赋予默认值 5.15" << endl;
+            }
+
             if (val.HasMember("heavy_forward_max_steering")) {
                 planning_info.veh_param.heavy_forward_max_steering = val["heavy_forward_max_steering"].GetDouble() * M_PI / 180.0;
             }
             else {
                 planning_info.veh_param.heavy_forward_max_steering = 27.24 * M_PI / 180.0;
-                cout << "无法找到车参 heavy_forward_max_steering ，即将赋予默认值" << endl;
+                cout << "无法找到车参 heavy_forward_max_steering ，即将赋予默认值 27.24" << endl;
             }
 
             if (val.HasMember("heavy_backward_max_steering")) {
@@ -1742,7 +1675,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.heavy_backward_max_steering = 22.39 * M_PI / 180.0;
-                cout << "无法找到车参 heavy_backward_max_steering ，即将赋予默认值" << endl;
+                cout << "无法找到车参 heavy_backward_max_steering ，即将赋予默认值 22.39" << endl;
             }
 
             if (val.HasMember("light_backward_max_steering")) {
@@ -1750,7 +1683,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.light_backward_max_steering = 27.24 * M_PI / 180.0;
-                cout << "无法找到车参 light_backward_max_steering ，即将赋予默认值" << endl;
+                cout << "无法找到车参 light_backward_max_steering ，即将赋予默认值 27.24" << endl;
             }
 
             if (val.HasMember("light_forward_max_steering")) {
@@ -1758,37 +1691,279 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.light_forward_max_steering = 30.63 * M_PI / 180.0;
-                cout << "无法找到车参 light_forward_max_steering ，即将赋予默认值" << endl;
+                cout << "无法找到车参 light_forward_max_steering ，即将赋予默认值 30.63" << endl;
             }
 
-            if (val.HasMember("wheel_base")) {
-                planning_info.veh_param.wheel_base = val["wheel_base"].GetDouble();
+            if (val.HasMember("safe_margin_bound") && val["safe_margin_bound"].IsNumber()) {
+                planning_info.veh_param.safe_margin_bound = val["safe_margin_bound"].GetDouble();
+                std::cout << "planning_info.veh_param.safe_margin_bound " << planning_info.veh_param.safe_margin_bound << std::endl;
             }
             else {
-                planning_info.veh_param.wheel_base = 5.15;
-                cout << "无法找到车参 wheel_base ，即将赋予默认值" << endl;
+                planning_info.veh_param.safe_margin_bound = 0.0;
+                cout << "无法找到车参 safe_margin_bound ，即将赋予默认值 0.0" << endl;
             }
+
+            if (val.HasMember("safe_margin_wall") && val["safe_margin_wall"].IsNumber()) {
+                planning_info.veh_param.safe_margin_wall = val["safe_margin_wall"].GetDouble();
+                std::cout << "planning_info.veh_param.safe_margin_wall " << planning_info.veh_param.safe_margin_wall << std::endl;
+            }
+            else {
+                planning_info.veh_param.safe_margin_wall = 0.5;
+                cout << "无法找到车参 safe_margin_wall ，即将赋予默认值 0.5" << endl;
+            }
+
+
+            if (val.HasMember("veh_center_2_side") && val["veh_center_2_side"].IsNumber()) {
+                planning_info.veh_param.veh_center_2_side = val["veh_center_2_side"].GetDouble();
+                std::cout << "planning_info.veh_param.veh_center_2_side " << planning_info.veh_param.veh_center_2_side << std::endl;
+            }
+            else {
+                planning_info.veh_param.veh_center_2_side = 1.735;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.735" << endl;
+            }
+
+            if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
+                planning_info.veh_param.veh_center_2_front = val["veh_center_2_front"].GetDouble();
+                std::cout << "planning_info.veh_param.veh_center_2_front " << planning_info.veh_param.veh_center_2_front << std::endl;
+            }
+            else {
+                planning_info.veh_param.veh_center_2_front = 7.3;
+                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.3" << endl;
+            }
+
+            if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {
+                planning_info.veh_param.safe_margin_obstacle = val["safe_margin_obstacle"].GetDouble();
+                std::cout << "planning_info.veh_param.safe_margin_obstacle " << planning_info.veh_param.safe_margin_obstacle << std::endl;
+            }
+            else {
+                planning_info.veh_param.safe_margin_obstacle = 1.0;
+                cout << "无法找到车参 safe_margin_obstacle ，即将赋予默认值 1.0" << endl;
+            }
+
+            if (val.HasMember("veh_center_2_rear_bound") && val["veh_center_2_rear_bound"].IsNumber()) {
+                planning_info.veh_param.veh_center_2_rear_bound = val["veh_center_2_rear_bound"].GetDouble();
+                std::cout << "planning_info.veh_param.veh_center_2_rear_bound " << planning_info.veh_param.veh_center_2_rear_bound << std::endl;
+            }
+            else {
+                planning_info.veh_param.veh_center_2_rear_bound = 2.85;
+                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 2.85  " << endl;
+            }
+
+
+            if (val.HasMember("delta_dist") && val["delta_dist"].IsNumber()) {
+                planning_info.veh_param.delta_dist = val["delta_dist"].GetDouble();
+                std::cout << "planning_info.veh_param.delta_dist " << planning_info.veh_param.delta_dist << std::endl;
+            }
+            else {
+                planning_info.veh_param.delta_dist = 1.0;
+                cout << "无法找到车参 delta_dist ，即将赋予默认值 1.0" << endl;
+            }
+
+            if (val.HasMember("grid_dist") && val["grid_dist"].IsNumber()) {
+                planning_info.veh_param.grid_dist = val["grid_dist"].GetDouble();
+                std::cout << "planning_info.veh_param.grid_dist " << planning_info.veh_param.grid_dist << std::endl;
+            }
+            else {
+                planning_info.veh_param.grid_dist = 0.7;
+                cout << "无法找到车参 grid_dist ，即将赋予默认值 1.0" << endl;
+            }
+
+
+            if (val.HasMember("path_error_term") && val["path_error_term"].IsNumber()) {
+                planning_info.veh_param.path_error_term = val["path_error_term"].GetDouble();
+                std::cout << "planning_info.veh_param.path_error_term " << planning_info.veh_param.path_error_term << std::endl;
+            }
+            else {
+                planning_info.veh_param.path_error_term = 0.0;
+                cout << "无法找到车参 path_error_term ，即将赋予默认值 0.0" << endl;
+            }
+
+            if (val.HasMember("grid_angle") && val["grid_angle"].IsNumber()) {
+                planning_info.veh_param.grid_angle = val["grid_angle"].GetDouble() * M_PI / 180.0;
+                std::cout << "planning_info.veh_param.grid_angle " << planning_info.veh_param.grid_angle << std::endl;
+            }
+            else {
+                planning_info.veh_param.grid_angle = 1.0 * M_PI / 180.0;
+                cout << "无法找到车参 grid_angle ，即将赋予默认值 1.0* M_PI / 180.0" << endl;
+            }
+
+            if (val.HasMember("hybridastar_step_length") && val["hybridastar_step_length"].IsNumber()) {
+                planning_info.veh_param.hybridastar_step_length = val["hybridastar_step_length"].GetDouble();
+                std::cout << "planning_info.veh_param.hybridastar_step_length " << planning_info.veh_param.hybridastar_step_length << std::endl;
+            }
+            else {
+                planning_info.veh_param.hybridastar_step_length = 1.0;
+                cout << "无法找到车参 hybridastar_step_length ，即将赋予默认值 1.0" << endl;
+            }
+
+            if (val.HasMember("path_curvature_term") && val["path_curvature_term"].IsNumber()) {
+                planning_info.veh_param.path_curvature_term = val["path_curvature_term"].GetDouble();
+                std::cout << "planning_info.veh_param.path_curvature_term " << planning_info.veh_param.path_curvature_term << std::endl;
+            }
+            else {
+                planning_info.veh_param.path_curvature_term = 0.0;
+                cout << "无法找到车参 path_curvature_term ，即将赋予默认值 0.0" << endl;
+            }
+
+            if (val.HasMember("switch_penalty") && val["switch_penalty"].IsNumber()) {
+                planning_info.veh_param.switch_penalty = val["switch_penalty"].GetDouble();
+                std::cout << "planning_info.veh_param.switch_penalty " << planning_info.veh_param.switch_penalty << std::endl;
+            }
+            else {
+                planning_info.veh_param.switch_penalty = 10;
+                cout << "无法找到车参 switch_penalty ，即将赋予默认值 10" << endl;
+            }
+
+            if (val.HasMember("forward_penalty") && val["forward_penalty"].IsNumber()) {
+                planning_info.veh_param.forward_penalty = val["forward_penalty"].GetDouble();
+                std::cout << "planning_info.veh_param.forward_penalty " << planning_info.veh_param.forward_penalty << std::endl;
+            }
+            else {
+                planning_info.veh_param.forward_penalty = 1.0;
+                cout << "无法找到车参 forward_penalty ，即将赋予默认值 1.0" << endl;
+            }
+
+
+            if (val.HasMember("path_smoothness_term") && val["path_smoothness_term"].IsNumber()) {
+                planning_info.veh_param.path_smoothness_term = val["path_smoothness_term"].GetDouble();
+                std::cout << "planning_info.veh_param.path_smoothness_term " << planning_info.veh_param.path_smoothness_term << std::endl;
+            }
+            else {
+                planning_info.veh_param.path_smoothness_term = 0.2;
+                cout << "无法找到车参 path_smoothness_term ，即将赋予默认值 0.2" << endl;
+            }
+
+            if (val.HasMember("backward_penalty") && val["backward_penalty"].IsNumber()) {
+                planning_info.veh_param.backward_penalty = val["backward_penalty"].GetDouble();
+                std::cout << "planning_info.veh_param.backward_penalty " << planning_info.veh_param.backward_penalty << std::endl;
+            }
+            else {
+                planning_info.veh_param.backward_penalty = 5.5;
+                cout << "无法找到车参 backward_penalty ，即将赋予默认值 5.5" << endl;
+            }
+
+            if (val.HasMember("turnning_penalty") && val["turnning_penalty"].IsNumber()) {
+                planning_info.veh_param.turnning_penalty = val["turnning_penalty"].GetDouble();
+                std::cout << "planning_info.veh_param.turnning_penalty " << planning_info.veh_param.turnning_penalty << std::endl;
+            }
+            else {
+                planning_info.veh_param.turnning_penalty = 2.468;
+                cout << "无法找到车参 turnning_penalty ，即将赋予默认值 2.468" << endl;
+            }
+
+            if (val.HasMember("angle_discrete_num") && val["angle_discrete_num"].IsNumber()) {
+                planning_info.veh_param.angle_discrete_num = val["angle_discrete_num"].GetUint();
+                std::cout << "planning_info.veh_param.angle_discrete_num " << planning_info.veh_param.angle_discrete_num << std::endl;
+            }
+            else {
+                planning_info.veh_param.angle_discrete_num = 3;
+                cout << "无法找到车参 angle_discrete_num ，即将赋予默认值 3" << endl;
+            }
+
+            if (val.HasMember("max_fitting_radius") && val["max_fitting_radius"].IsNumber()) {
+                planning_info.veh_param.max_fitting_radius = val["max_fitting_radius"].GetDouble();
+                std::cout << "planning_info.veh_param.max_fitting_radius " << planning_info.veh_param.max_fitting_radius << std::endl;
+            }
+            else {
+                planning_info.veh_param.max_fitting_radius = 100;
+                cout << "无法找到车参 max_fitting_radius ，即将赋予默认值 100" << endl;
+            }
+
+            if (val.HasMember("max_iterations_opti") && val["max_iterations_opti"].IsNumber()) {
+                planning_info.veh_param.max_iterations_opti = val["max_iterations_opti"].GetDouble();
+                std::cout << "planning_info.veh_param.max_iterations_opti " << planning_info.veh_param.max_iterations_opti << std::endl;
+            }
+            else {
+                planning_info.veh_param.max_iterations_opti = 1000;
+                cout << "无法找到车参 max_iterations_opti ，即将赋予默认值 1000" << endl;
+            }
+
+
+            if (val.HasMember("cusp_extension_distance") && val["cusp_extension_distance"].IsNumber()) {
+                planning_info.veh_param.cusp_extension_distance = val["cusp_extension_distance"].GetFloat();
+                std::cout << "planning_info.veh_param.cusp_extension_distance " << planning_info.veh_param.cusp_extension_distance << std::endl;
+            }
+            else {
+                planning_info.veh_param.cusp_extension_distance = 3.0;
+                cout << "无法找到车参 cusp_extension_distance ，即将赋予默认值 3.0" << endl;
+            }
+
+            if (val.HasMember("linear_preferred_distance") && val["linear_preferred_distance"].IsNumber()) {
+                planning_info.veh_param.linear_preferred_distance = val["linear_preferred_distance"].GetDouble();
+                std::cout << "planning_info.veh_param.linear_preferred_distance " << planning_info.veh_param.linear_preferred_distance << std::endl;
+            }
+            else {
+                planning_info.veh_param.linear_preferred_distance = 3.0;
+                cout << "无法找到车参 linear_preferred_distance ，即将赋予默认值 3.0" << endl;
+            }
+
+            if (val.HasMember("safe_margin_error") && val["safe_margin_error"].IsNumber()) {
+                planning_info.veh_param.safe_margin_error = val["safe_margin_error"].GetDouble();
+                std::cout << "planning_info.veh_param.safe_margin_error " << planning_info.veh_param.safe_margin_error << std::endl;
+            }
+            else {
+                planning_info.veh_param.safe_margin_error = 0.0;
+                cout << "无法找到车参 safe_margin_error ，即将赋予默认值 0.0" << endl;
+            }
+
+
+            if (val.HasMember("is_light") && val["is_light"].IsBool()) {
+                planning_info.veh_param.is_light = val["is_light"].GetBool();
+                cout << "planning_info.veh_param.is_light " << planning_info.veh_param.is_light << endl;
+            }
+            else {
+                cout << "无法找到车参 is_light ，即将赋予默认值 true" << endl;
+                planning_info.veh_param.is_light = true;
+            }
+
+
+            if (val.HasMember("rs_min_length") && val["rs_min_length"].IsNumber()) {
+                planning_info.veh_param.rs_min_length = val["rs_min_length"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 rs_min_length ，即将赋予默认值 1" << endl;
+                planning_info.veh_param.rs_min_length = 1;
+            }
+
+
+            if (val.HasMember("plan_time") && val["plan_time"].IsNumber()) {
+                planning_info.veh_param.plan_time = val["plan_time"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 plan_time ，即将赋予默认值 0.2" << endl;
+                planning_info.veh_param.plan_time = 0.2;
+            }
+
+            if (val.HasMember("dis_threshold") && val["dis_threshold"].IsNumber()) {
+                planning_info.veh_param.dis_threshold = val["dis_threshold"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 dis_threshold ，即将赋予默认值 2.0" << endl;
+                planning_info.veh_param.dis_threshold = 2.0;
+            }
+
             if (val.HasMember("w_deviation")) {
                 planning_info.veh_param.w_deviation = val["w_deviation"].GetFloat();
             }
             else {
+                cout << "无法找到车参 w_deviation ，即将赋予默认值 0.00012" << endl;
                 planning_info.veh_param.w_deviation = 0.00012;
-                cout << "无法找到车参 w_deviation ，即将赋予默认值" << endl;
             }
             if (val.HasMember("w_curvature")) {
                 planning_info.veh_param.w_curvature = val["w_curvature"].GetFloat();
             }
             else {
+                cout << "无法找到车参 w_curvature ，即将赋予默认值 100" << endl;
                 planning_info.veh_param.w_curvature = 100;
-                cout << "无法找到车参 w_curvature ，即将赋予默认值" << endl;
             }
             if (val.HasMember("w_curvature_change")) {
                 planning_info.veh_param.w_curvature_change = val["w_curvature_change"].GetFloat();
             }
             else {
+                cout << "无法找到车参 w_curvature_change ，即将赋予默认值 1" << endl;
                 planning_info.veh_param.w_curvature_change = 1;
-                cout << "无法找到车参 w_curvature_change ，即将赋予默认值" << endl;
             }
+
             std::cout << "车辆参数解析完成" << std::endl;
 
             if (val.HasMember("ipopt_max_offset")) {
@@ -2072,7 +2247,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<int, GlobalPlanning::Point, Globa
         }
         record.open(logFilePath, ios_base::app);
         record << timeStr << " ，处理完加载区域路径请求"
-               << "，成功状态: " << (success ? "成功" : "失败") << " ，库版本号:G_V1.4.0.20250310_beta" << endl;
+               << "，成功状态: " << (success ? "成功" : "失败") << " ，库版本号:G_V1.10.10.20250909" << endl;
         record.close();
     }
 

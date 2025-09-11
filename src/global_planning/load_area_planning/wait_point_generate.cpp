@@ -401,12 +401,12 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
     cout << "生成采样点完毕" << endl;
     cout << "wait_point_sample_.size() = " << wait_point_sample_.size() << endl;
 
-    ofstream file;
-    file.open("wait_point_sample.txt");
-    for (auto& point : wait_point_sample_) {
-        file << point.path_point.x << " " << point.path_point.y << " " << point.path_point.angle << endl;
-    }
-    file.close();
+    //ofstream file;
+    //file.open("wait_point_sample.txt");
+    //for (auto& point : wait_point_sample_) {
+    //    file << point.path_point.x << " " << point.path_point.y << " " << point.path_point.angle << endl;
+    //}
+    //file.close();
 
 
     CalculateWaitPointGrade(in_path, load_point);
@@ -449,19 +449,19 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
         temp_end_point.x     = point.path_point.x + 2.0 * cos(point.path_point.angle * M_PI / 180.0);
         temp_end_point.y     = point.path_point.y + 2.0 * sin(point.path_point.angle * M_PI / 180.0);
         temp_end_point.angle = point.path_point.angle;
-        auto     wait_path   = fitting_path_generator.WaitPathGenerateInterface(in_path, temp_end_point, collision_checker);
-        ofstream file;
-        string   file_name = "wait_pathes";
-        file_name += std::to_string(i);
-        file_name += ".txt";
-        file.open(file_name);
-        for (auto& path : fitting_path_generator.GetWaitPathCandis()) {
-            for (auto& point : path.first) {
-                file << point.x << " " << point.y << endl;
-            }
-            file << "--------------" << endl;
-        }
-        file.close();
+        auto wait_path       = fitting_path_generator.WaitPathGenerateInterface(in_path, temp_end_point, collision_checker);
+        // ofstream file;
+        // string   file_name = "wait_pathes";
+        // file_name += std::to_string(i);
+        // file_name += ".txt";
+        // file.open(file_name);
+        // for (auto& path : fitting_path_generator.GetWaitPathCandis()) {
+        //     for (auto& point : path.first) {
+        //         file << point.x << " " << point.y << endl;
+        //     }
+        //     file << "--------------" << endl;
+        // }
+        // file.close();
 
         if (!wait_path.first.empty()) {
             // cout << "wait_parh_end.x,y,yaw=" << wait_path.first.back().x << "," << wait_path.first.back().y << "," << wait_path.first.back().angle << endl;

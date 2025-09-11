@@ -21,7 +21,6 @@
         "is_light": true,
         "w_length": 0.0001,
         "grid_dist": 0.7,
-        "max_kappa": 0.07,
         "plan_time": 0.2,
         "delta_dist": 1,
         "grid_angle": 1,
