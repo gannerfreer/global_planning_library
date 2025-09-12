@@ -1,10 +1,12 @@
 #include "load_area_planning.h"
 namespace LoadAreaPlanning {
-std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanning::LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck& collision_checker, const vector<_BorderPoint>& static_bound, const vector<vector<_BorderPoint>>& wall_bound, const vector<vector<_BorderPoint>>& machine_bound) {
+std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanning::LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& temp_wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck& collision_checker, const vector<_BorderPoint>& static_bound, const vector<vector<_BorderPoint>>& wall_bound, const vector<vector<_BorderPoint>>& machine_bound) {
     cout << "收到地图" << static_bound.size() << "组" << endl;
     cout << "收到挡墙" << wall_bound.size() << "组" << "wall_bound.at(0).size():" << wall_bound.front().size() << endl;
     cout << "收到挖掘" << machine_bound.size() << "组" << "machine_bound.at(0).size():" << machine_bound.front().size() << endl;
 
+    auto wait_point  = temp_wait_point;
+    wait_point.angle = normalizeAngle(wait_point.angle);
     FittingPathGenerate::FittingPathGenerator fit_path_planner(out_put_path_dense_, search_range_, jump_dense_, length_weight_, curvature_weight_, critical_length_, min_straight_length_depart_, max_straight_length_depart_, delta_straight_length_depart_, min_straight_length_wait_, max_straight_length_wait_, delta_straight_length_wait_, min_straight_length_load_, max_straight_length_load_, delta_straight_length_load_, load_path_straight_length_weight_, load_path_curvature_weight_);
     GlobalPlanning::Path                      wait_path;
     GlobalPlanning::Path                      load_path;
@@ -44,14 +46,12 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         // file.close();
         if (PathSmoother(temp_depart_path, veh_param)) {
             cout << "line28 depart_path ipopt优化完成" << endl;
+            CalculateAngle(temp_depart_path);
             for (auto& point : temp_depart_path) {
                 point.angle = point.angle * M_PI / 180.0;
             }
             if (collision_checker.OptiPathCollisionCheckWithAll(temp_depart_path).empty()) {
                 cout << "line34 优化成功后碰撞检测成功" << endl;
-                for (auto& point : temp_depart_path) {
-                    point.angle = point.angle / M_PI * 180.0;
-                }
                 depart_path = temp_depart_path;
             }
             // 将temp_depart_path中的x y yaw curvature direction 保存为txt文件
@@ -62,24 +62,23 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             // file.close();
         }
         else {
-            cout << "line37 depart_path ipopt优化失败" << endl;
+            cout << "line47 depart_path ipopt优化失败" << endl;
         }
     }
     auto stitch_path = fit_path_planner.PathCuttoEnd(depart_path.back(), out_path);
     depart_path.insert(depart_path.end(), stitch_path.begin(), stitch_path.end());
     veh_param.is_light = true;
 
-    if (planning_mode == 1) { // 尝试人工指定排队点
-        cout << "人工指定排队点模式----------------------------" << endl;
+    if (planning_mode == 1 or planning_mode == 2) { // 尝试人工指定排队点
+        cout << "有排队点模式----------------------------" << endl;
         wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, wait_point, collision_checker).first;
         CalCurvature(wait_path, 1);
         if (wait_path.empty()) {
-            cout << "排队点驶入路径规划失败！" << endl;
+            cout << "有模式下排队点驶入路径规划失败！" << endl;
             return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
         }
-        wait_path_candidates = fit_path_planner.GetWaitPathCandis();
-        load_path            = fit_path_planner.LoadPathGenerateInterface(load_point, wait_point, collision_checker).first;
-        CalCurvature(load_path, 1);
+        // wait_path_candidates = fit_path_planner.GetWaitPathCandis();
+        load_path = fit_path_planner.LoadPathGenerateInterface(load_point, wait_point, collision_checker).first;
         if (load_path.empty()) {
             cout << "装载倒车路径规划失败,调用混合A*" << endl;
 
@@ -104,19 +103,16 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             long long threshold_time = 0.2 * 1000 * 1000; // 搜索时间(us)
 
             auto temp_wait_point = wait_point;
-            threadLogger_->info("wait_point.x:{} wait_point.y:{} wait_point.angle:{}", wait_point.x, wait_point.y, wait_point.angle);
+            // threadLogger_->info("wait_point.x:{} wait_point.y:{} wait_point.angle:{}", wait_point.x, wait_point.y, wait_point.angle);
             temp_wait_point.angle = temp_wait_point.angle * M_PI / 180.0;
             auto temp_load_point  = load_point;
-            threadLogger_->info("load_point.x:{} load_point.y:{} load_point.angle:{}", load_point.x, load_point.y, load_point.angle);
+            // threadLogger_->info("load_point.x:{} load_point.y:{} load_point.angle:{}", load_point.x, load_point.y, load_point.angle);
             temp_load_point.angle = temp_load_point.angle * M_PI / 180.0;                                                                                    // 调用时注意把起点终点角度转化为弧度
             auto plan_result      = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
 
             if (plan_result == GlobalPlanning::PlanResult::Plan_OK) {
                 load_path = load_path_final;
                 cout << "人工指定排队点模式，混合A*规划成功！";
-                for (auto& point : load_path) {
-                    point.angle = point.angle * 180.0 / M_PI;
-                }
             }
             else {
                 cout << "混合A*规划失败" << endl;
@@ -125,22 +121,14 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         }
 
         auto temp_wait_path = wait_path;
-        // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
-        // ofstream file;
-        // file.open("wait_path_before.txt");
-        // for (auto& point : temp_wait_path) {
-        //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-        // }
-        // file.close();
+        CalculateAngle(temp_wait_path);
         if (PathSmoother(temp_wait_path, veh_param)) {
             cout << "line62 wait_path ipopt优化完成" << endl;
+            CalculateAngle(temp_wait_path);
             for (auto& point : temp_wait_path) {
                 point.angle = point.angle * M_PI / 180.0;
             }
             if (collision_checker.OptiPathCollisionCheckWithAll(wait_path).empty()) {
-                for (auto& point : temp_wait_path) {
-                    point.angle = point.angle / M_PI * 180.0;
-                }
                 wait_path = temp_wait_path;
             }
             // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
@@ -157,21 +145,18 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         wait_path.insert(wait_path.begin(), stitch_path.begin(), stitch_path.end());
 
         auto temp_load_path = load_path;
-        // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-        // file.open("load_path_before.txt");
-        // for (auto& point : temp_load_path) {
-        //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-        // }
-        // file.close();
+        reverse(temp_load_path.begin(), temp_load_path.end());
+        CalCurvature(temp_load_path, 1);
+        CalculateAngle(temp_load_path);
+
         if (PathSmoother(temp_load_path, veh_param)) {
-            cout << "line79 load_path ipopt优化完成" << endl;
+            cout << "line170 load_path ipopt优化完成" << endl;
+            CalculateAngle(temp_load_path);
             for (auto& point : temp_load_path) {
                 point.angle = point.angle * M_PI / 180.0;
             }
             if (collision_checker.OptiPathCollisionCheckWithAll(temp_load_path).empty()) {
-                for (auto& point : temp_load_path) {
-                    point.angle = point.angle / M_PI * 180.0;
-                }
+                reverse(temp_load_path.begin(), temp_load_path.end());
                 load_path = temp_load_path;
             }
             // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
@@ -182,130 +167,26 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             // file.close();
         }
         else {
-            cout << "line95 load_path ipopt优化失败" << endl;
+            cout << "line159 load_path ipopt优化失败" << endl;
         }
+        CalculateAngle(wait_path);
+        CalCurvature(wait_path, 1);
+
+        reverse(load_path.begin(), load_path.end());
+        CalculateAngle(load_path);
+        reverse(load_path.begin(), load_path.end());
+        CalCurvature(load_path, 1);
+
+        CalculateAngle(depart_path);
+        CalCurvature(depart_path, 1);
+
         return std::make_tuple(1, wait_point, wait_path, load_path, depart_path);
     }
-    if (planning_mode == 2) {
-        cout << "复用排队点模式-----------------------------------" << endl;
-        load_path = fit_path_planner.LoadPathGenerateInterface(load_point, wait_point, collision_checker).first;
-        CalCurvature(load_path, 1);
-        wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, wait_point, collision_checker).first;
-        CalCurvature(wait_path, 1);
-        if (wait_path.empty()) {
-            cout << "排队点驶入路径规划失败！" << endl;
-            planning_mode = 0;
-        }
-        else {
-            ofstream file;
-            auto     temp_wait_path = wait_path;
-            // file.open("wait_path_before.txt");
-            // for (auto& point : temp_wait_path) {
-            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            // }
-            // file.close();
-            if (PathSmoother(temp_wait_path, veh_param)) {
-                cout << "line199 wait_path ipopt优化完成" << endl;
-                for (auto& point : temp_wait_path) {
-                    point.angle = point.angle * M_PI / 180.0;
-                }
-                if (collision_checker.OptiPathCollisionCheckWithAll(wait_path).empty()) {
-                    for (auto& point : temp_wait_path) {
-                        point.angle = point.angle / M_PI * 180.0;
-                    }
-                    wait_path = temp_wait_path;
-                }
-                // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
-                // file.open("wait_path_after.txt");
-                // for (auto& point : temp_wait_path) {
-                //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-                // }
-                // file.close();
-            }
-            else {
-                cout << "line217 wait_path ipopt优化失败" << endl;
-            }
-        }
-        auto stitch_path = fit_path_planner.PathCuttoStart(wait_path.front(), in_path);
-        wait_path.insert(wait_path.begin(), stitch_path.begin(), stitch_path.end());
 
-        if (load_path.empty()) {
-            cout << "复用模式装载倒车路径规划失败,调用混合A*" << endl;
-            GlobalPlanning::OptimalPath  hybrid_a_star; // 初始化混合a*规划器
-            GlobalPlanning::_SinglePoint start_point;   // 给起点赋值
-            start_point.x               = wait_point.x;
-            start_point.y               = wait_point.y;
-            start_point.yaw             = wait_point.angle * M_PI / 180.0; // 注意传入混合a*的起点应是弧度
-            hybrid_a_star.threadLogger_ = threadLogger_;
-            hybrid_a_star.InitBound(start_point, static_bound, machine_bound, wall_bound, veh_param); // 初始化边界
-
-            hybrid_a_star.start_offset_distance_ = 2.0;
-            hybrid_a_star.end_offset_distance_   = 2.0; // 暂定起点终点补偿都是2m
-
-            GlobalPlanning::Path load_path_final; // 定义规划起点接收路径
-
-            GlobalPlanning::PlanRule plan_rule = GlobalPlanning::PlanRule::Backward_All_Time; // 规定规划规则
-
-            long long threshold_time = 0.2 * 1000 * 1000; // 搜索时间(us)
-
-            auto temp_wait_point  = wait_point;
-            temp_wait_point.angle = temp_wait_point.angle * M_PI / 180.0;
-            auto temp_load_point  = load_point;
-            temp_load_point.angle = temp_load_point.angle * M_PI / 180.0;
-            // 调用时注意把起点终点角度转化为弧度
-            auto plan_result = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
-
-            if (plan_result == GlobalPlanning::PlanResult::Plan_OK) {
-                load_path = load_path_final;
-                cout << "复用排队点模式，混合A*规划成功！";
-                for (auto& point : load_path) {
-                    point.angle = point.angle * 180.0 / M_PI;
-                }
-                return std::make_tuple(1, wait_point, wait_path, load_path, depart_path);
-            }
-            else {
-                cout << "混合A*规划失败" << endl;
-                planning_mode = 0;
-            }
-        }
-        else {
-            auto temp_load_path = load_path;
-            // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-            // ofstream file;
-            // file.open("load_path_before.txt");
-            // for (auto& point : temp_load_path) {
-            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            // }
-            // file.close();
-            if (PathSmoother(temp_load_path, veh_param)) {
-                cout << "line108 load_path ipopt优化完成" << endl;
-                for (auto& point : temp_load_path) {
-                    point.angle = point.angle * M_PI / 180.0;
-                }
-                if (collision_checker.OptiPathCollisionCheckWithAll(temp_load_path).empty()) {
-                    for (auto& point : temp_load_path) {
-                        point.angle = point.angle / M_PI * 180.0;
-                    }
-                    load_path = temp_load_path;
-                }
-                // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-                // file.open("load_path_after.txt");
-                // for (auto& point : temp_load_path) {
-                //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-                // }
-                // file.close();
-            }
-            else {
-                cout << "line126 load_path ipopt优化失败" << endl;
-            }
-            return std::make_tuple(1, wait_point, wait_path, load_path, depart_path);
-        }
-    }
     if (planning_mode == 0) {
         cout << "自动生成排队点模式-----------------------------------" << endl;
         WaitPointGenerate::WaitPointGenerator wait_point_planner(max_curve_length_, min_curve_length_, delta_curve_length_, wheel_base_length_, max_straight_length_, min_straight_length_, delta_straight_length_, max_steering_angle_, min_steering_angle_, delta_steering_angle_, standard_steering_angle_, weight_length_, weight_curve_, out_put_path_dense_, center2front_, center2side_, center2rear_, safe_margin_front_, safe_margin_side_, safe_margin_rear_, collision_weight_);
-        load_path = wait_point_planner.GenerateWaitPointInterface(load_point, depart_path, collision_checker, fit_path_planner, in_path);
-        CalCurvature(load_path, 1);
+        load_path     = wait_point_planner.GenerateWaitPointInterface(load_point, depart_path, collision_checker, fit_path_planner, in_path);
         sample_points = wait_point_planner.wait_point_sample_;
         if (load_path.empty()) {
             cout << "驶入装载点路径生成失败" << endl;
@@ -315,72 +196,58 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         queue_point = load_path.front();
         cout << "最后一边调用：queue_point：x,y,angle = " << queue_point.x << "," << queue_point.y << "," << queue_point.angle << endl;
         wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, queue_point, collision_checker).first;
-        CalCurvature(wait_path, 1);
         if (wait_path.empty()) {
             cout << "驶入排队点路径生成失败" << endl;
             return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
         }
         auto temp_wait_path = wait_path;
-        // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
-        // ofstream file;
-        // file.open("wait_path_before.txt");
-        // for (auto& point : temp_wait_path) {
-        //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-        // }
-        // file.close();
+        CalculateAngle(temp_wait_path);
+        CalCurvature(temp_wait_path, 1);
         if (PathSmoother(temp_wait_path, veh_param)) {
             cout << "line146 wait_path ipopt优化完成" << endl;
+            CalculateAngle(temp_wait_path);
             for (auto& point : temp_wait_path) {
                 point.angle = point.angle * M_PI / 180.0;
             }
             if (collision_checker.OptiPathCollisionCheckWithAll(temp_wait_path).empty()) {
-                for (auto& point : temp_wait_path) {
-                    point.angle = point.angle / M_PI * 180.0;
-                }
                 wait_path = temp_wait_path;
             }
-            // 将temp_wait_path中的x y yaw curvature direction 保存为txt文件
-            // file.open("wait_path_after.txt");
-            // for (auto& point : temp_wait_path) {
-            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            // }
-            // file.close();
         }
         else {
-            cout << "line152 wait_path ipopt优化失败" << endl;
+            cout << " wait_path ipopt优化失败" << endl;
         }
         auto stitch_path = fit_path_planner.PathCuttoStart(wait_path.front(), in_path);
         wait_path.insert(wait_path.begin(), stitch_path.begin(), stitch_path.end());
 
         auto temp_load_path = load_path;
-        // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-        // file.open("load_path_before.txt");
-        // for (auto& point : temp_load_path) {
-        //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-        // }
-        // file.close();
+        reverse(temp_load_path.begin(), temp_load_path.end());
+        CalculateAngle(temp_load_path);
+        CalCurvature(temp_load_path, 1);
 
         if (PathSmoother(temp_load_path, veh_param)) {
-            cout << "line163 load_path ipopt优化完成" << endl;
+            cout << "load_path ipopt优化完成" << endl;
+            reverse(temp_load_path.begin(), temp_load_path.end());
+            CalculateAngle(temp_load_path);
             for (auto& point : temp_load_path) {
                 point.angle = point.angle * M_PI / 180.0;
             }
             if (collision_checker.OptiPathCollisionCheckWithAll(temp_load_path).empty()) {
-                for (auto& point : temp_load_path) {
-                    point.angle = point.angle / M_PI * 180.0;
-                }
                 load_path = temp_load_path;
             }
-            // 将temp_load_path中的x y yaw curvature direction 保存为txt文件
-            // file.open("load_path_after.txt");
-            // for (auto& point : temp_load_path) {
-            //     file << point.x << " " << point.y << " " << point.angle << " " << point.curvature << " " << point.direction << endl;
-            // }
-            // file.close();
         }
         else {
-            cout << "line172 load_path ipopt优化失败" << endl;
+            cout << "load_path ipopt优化失败" << endl;
         }
+
+        CalculateAngle(wait_path);
+        CalCurvature(wait_path, 1);
+
+        reverse(load_path.begin(), load_path.end());
+        CalculateAngle(load_path);
+        reverse(load_path.begin(), load_path.end());
+
+        CalculateAngle(depart_path);
+        CalCurvature(depart_path, 1);
         return std::make_tuple(1, queue_point, wait_path, load_path, depart_path);
     }
 }
@@ -460,6 +327,42 @@ void LoadAreaPlanning::CalCurvature(GlobalPlanning::Path& path, int check_dense)
     path[path.size() - 2].curvature = path[path.size() - 3].curvature;
     path[path.size() - 1].curvature = path[path.size() - 3].curvature;
 }
+
+double LoadAreaPlanning::normalizeAngle(double angle) {
+    // 使用fmod取余数，将角度缩放到(-360, 360)的范围
+    double normalized = std::fmod(angle, 360.0);
+
+    // 处理负数情况，将其转换到[0, 360)范围
+    if (normalized < 0) {
+        normalized += 360.0;
+    }
+
+    // 处理360度的情况（由于浮点精度可能恰好等于360）
+    if (normalized == 360.0) {
+        normalized = 0.0;
+    }
+
+    return normalized;
+}
+
+void LoadAreaPlanning::CalculateAngle(GlobalPlanning::Path& path) {
+    if (path.empty()) return;
+    for (int i = 0; i < path.size() - 1; i++) {
+        double deltaX = path[i + 1].x - path[i].x;
+        double deltaY = path[i + 1].y - path[i].y;
+
+        // 计算弧度值，atan2(y, x)返回从x轴到点(x,y)的角度
+        double radians = std::atan2(deltaY, deltaX);
+
+        // 将弧度转换为角度（1弧度 = 180/π 度）
+        path[i].angle = radians * 180.0 / M_PI;
+        cout << "angle = " << path[i].angle << endl;
+        path[i].angle = normalizeAngle(path[i].angle);
+        cout << "path[i].x,y,angle = " << path[i].x << "," << path[i].y << "," << path[i].angle << endl;
+    }
+    path[path.size() - 1].angle = path[path.size() - 2].angle;
+}
+
 
 LoadAreaPlanning::~LoadAreaPlanning() {}
 
