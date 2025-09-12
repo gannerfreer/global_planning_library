@@ -46,7 +46,15 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             if (val.HasMember("x")) veh_start_end.start_point.x = val["x"].GetDouble();
             if (val.HasMember("y")) veh_start_end.start_point.y = val["y"].GetDouble();
             if (val.HasMember("z")) veh_start_end.start_point.z = val["z"].GetFloat();
-            if (val.HasMember("yaw")) veh_start_end.start_point.yaw = val["yaw"].GetFloat();
+            if (val.HasMember("yaw")) {
+                veh_start_end.start_point.yaw = val["yaw"].GetFloat();
+                if (veh_start_end.start_point.yaw < 0) {
+                    veh_start_end.start_point.yaw += 360.0;
+                }
+                else if (veh_start_end.start_point.yaw > 360.0) {
+                    veh_start_end.start_point.yaw -= 360.0;
+                }
+            }
         }
     }
 
@@ -564,7 +572,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.w_curvature_change = val["w_curvature_change"].GetFloat();
             }
             else {
-                cout << "无法找到车参 w_curvature_change ，即将赋予默认值" << endl;
+                cout << "无法找到车参 w_curvature_change ，即将赋予默认值 1" << endl;
                 veh_start_end.veh_param.w_curvature_change = 1;
             }
 
@@ -572,7 +580,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 veh_start_end.veh_param.ipopt_max_offset = val["ipopt_max_offset"].GetFloat();
             }
             else {
-                cout << "无法找到车参 ipopt_max_offset ，即将赋予默认值" << endl;
+                cout << "无法找到车参 ipopt_max_offset ，即将赋予默认值 3" << endl;
                 veh_start_end.veh_param.ipopt_max_offset = 3;
             }
         }
@@ -658,9 +666,15 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             Value&                   pathPointsArray = val[i]["reference_path"];
             vector<_TrajectoryPoint> temp_reference_path;
             for (SizeType j = 0; j < pathPointsArray.Size(); j++) {
-                pp.x         = pathPointsArray[j]["x"].GetDouble();
-                pp.y         = pathPointsArray[j]["y"].GetDouble();
-                pp.yaw       = pathPointsArray[j]["yaw"].GetDouble() / 180.0 * M_PI;
+                pp.x   = pathPointsArray[j]["x"].GetDouble();
+                pp.y   = pathPointsArray[j]["y"].GetDouble();
+                pp.yaw = pathPointsArray[j]["yaw"].GetDouble() / 180.0 * M_PI;
+                if (pp.yaw >= 2 * M_PI) {
+                    pp.yaw -= 2 * M_PI;
+                }
+                else if (pp.yaw < 0) {
+                    pp.yaw += 2 * M_PI;
+                }
                 pp.direction = pathPointsArray[j]["direction"].GetInt();
                 pp.attribute = PointAttribute::dump_road;
                 temp_reference_path.push_back(pp);
@@ -831,7 +845,7 @@ string VecWaypoint2json(vector<_TrajectoryPoint>& vec_wp, Planning& plan_obj) {
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.10.10.20250909" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << plan_obj.key_ << "，车辆编号：" << plan_obj.vehicle_code_ << "  规划库版本号:G_V1.11.3.20250912" << endl;
         record.close();
     }
 
@@ -1012,7 +1026,7 @@ bool GetMap(char* parea) {
         // 创建映射和有向图
         GlobalVariable::getInstance()->CreateSelfDrivingSequenceMapping(GlobalVariable::getInstance()->GetAllSelfDrivingReferencelines());
         GlobalVariable::getInstance()->CreateSelfDrivingDirectedGraph(GlobalVariable::getInstance()->GetSelfDrivingReferencelineRelation());
-
+        cout << "**********************地图更新完毕***************************" << endl;
         return true;
     } catch (const std::exception& e) {
         std::cerr << "解析地图数据时发生错误: " << e.what() << std::endl;
@@ -1069,6 +1083,13 @@ _AllHumanVechicleInfos ParseHumanVehPredictingJson(char* str) {
 
         if (vehInfo.HasMember("yaw") && vehInfo["yaw"].IsDouble()) {
             humanVechicleInfo.pos.yaw = vehInfo["yaw"].GetDouble();
+            if (humanVechicleInfo.pos.yaw < 0) {
+                humanVechicleInfo.pos.yaw += 360.0;
+            }
+            else if (humanVechicleInfo.pos.yaw > 360.0) {
+                humanVechicleInfo.pos.yaw -= 360.0;
+            }
+            cout << "humanVechicleInfo.pos.yaw:" << humanVechicleInfo.pos.yaw << endl;
         }
         else {
             std::cerr << "JSON 格式错误: 缺少或类型错误的 yaw 字段" << std::endl;
@@ -1196,7 +1217,7 @@ string HumanVehFurtureVecWaypoint2json(std::map<string, std::vector<std::vector<
             }
         }
         record.open(filePath, ios_base::app);
-        record << timeStr << " ，处理完规划请求，请求号：" << obj.key_ << "  库版本号:G_V1.10.10.20250909" << endl;
+        record << timeStr << " ，处理完规划请求，请求号：" << obj.key_ << "  库版本号:G_V1.11.3.20250912" << endl;
         record.close();
     }
 
@@ -1251,6 +1272,12 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         // 解析yaw角度
         if (queue_point.HasMember("yaw") && queue_point["yaw"].IsDouble()) {
             planning_info.wait_point.yaw = queue_point["yaw"].GetDouble();
+            if (planning_info.wait_point.yaw < 0) {
+                planning_info.wait_point.yaw += 360.0;
+            }
+            else if (planning_info.wait_point.yaw > 360.0) {
+                planning_info.wait_point.yaw -= 360.0;
+            }
             std::cout << "解析 queue_point.yaw: " << planning_info.wait_point.yaw << std::endl;
         }
         else {
@@ -1295,6 +1322,12 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
 
         if (load_point.HasMember("yaw") && load_point["yaw"].IsDouble()) {
             planning_info.load_point.yaw = load_point["yaw"].GetDouble();
+            if (planning_info.load_point.yaw < 0) {
+                planning_info.load_point.yaw += 360.0;
+            }
+            else if (planning_info.load_point.yaw > 360.0) {
+                planning_info.load_point.yaw -= 360.0;
+            }
             std::cout << "解析 load_point.yaw: " << planning_info.load_point.yaw << std::endl;
         }
         else {
@@ -1972,7 +2005,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
             }
             else {
                 planning_info.veh_param.ipopt_max_offset = 3;
-                cout << "无法找到车参 ipopt_max_offset ，即将赋予默认值" << endl;
+                cout << "无法找到车参 ipopt_max_offset ，即将赋予默认值 3" << endl;
             }
         }
     }
@@ -2248,7 +2281,7 @@ string LoadAreaPathVecWaypoint2json(std::tuple<int, GlobalPlanning::Point, Globa
         }
         record.open(logFilePath, ios_base::app);
         record << timeStr << " ，处理完加载区域路径请求"
-               << "，成功状态: " << (success ? "成功" : "失败") << " ，库版本号:G_V1.10.10.20250909" << endl;
+               << "，成功状态: " << (success ? "成功" : "失败") << " ，库版本号:G_V1.11.3.20250912" << endl;
         record.close();
     }
 

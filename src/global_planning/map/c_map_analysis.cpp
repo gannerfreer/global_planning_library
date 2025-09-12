@@ -775,7 +775,7 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
                 veh_start_end.veh_param.w_curvature_change = val["w_curvature_change"].GetFloat();
             }
             else {
-                cout << "无法找到车参 w_curvature_change ，即将赋予默认值" << endl;
+                cout << "无法找到车参 w_curvature_change ，即将赋予默认值 1" << endl;
                 veh_start_end.veh_param.w_curvature_change = 1;
             }
 

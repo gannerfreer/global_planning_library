@@ -54,10 +54,10 @@ void GlobalVariable::CreateSelfDrivingDirectedGraph(const std::map<int, std::vec
         }
     }
     std::cout << "无人权重矩阵如下:" << self_driving_referenceline_graph_.size() << " " << self_driving_referenceline_graph_.at(0).size() << std::endl;
-    for (int i = 0; i < self_driving_referenceline_graph_.size(); i++) {
-        for (int j = 0; j < self_driving_referenceline_graph_.at(i).size(); j++) {
-            std::cout << self_driving_referenceline_graph_.at(i).at(j) << " ";
-        }
-        std::cout << std::endl;
-    }
+    // for (int i = 0; i < self_driving_referenceline_graph_.size(); i++) {
+    //     for (int j = 0; j < self_driving_referenceline_graph_.at(i).size(); j++) {
+    //         std::cout << self_driving_referenceline_graph_.at(i).at(j) << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 }

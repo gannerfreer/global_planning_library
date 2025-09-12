@@ -235,9 +235,9 @@ class OptimalPath {
         int_vertex.x         = static_cast<int>(floor(v.x / m_vehicle_param_.grid_dist));
         int_vertex.y         = static_cast<int>(floor(v.y / m_vehicle_param_.grid_dist));
         int_vertex.angle     = static_cast<int>(floor(v.angle / m_vehicle_param_.grid_angle));
-        threadLogger_->info("m_vehicle_param_.grid_dist:{} m_vehicle_param_.grid_angle:{}", m_vehicle_param_.grid_dist, m_vehicle_param_.grid_angle);
-        threadLogger_->info("v.x:{} v.y:{} v.angle:{}", v.x, v.y, v.angle / M_PI * 180.0);
-        threadLogger_->info("x:{} y:{} angle:{}", int_vertex.x, int_vertex.y, int_vertex.angle);
+        // threadLogger_->info("m_vehicle_param_.grid_dist:{} m_vehicle_param_.grid_angle:{}", m_vehicle_param_.grid_dist, m_vehicle_param_.grid_angle);
+        // threadLogger_->info("v.x:{} v.y:{} v.angle:{}", v.x, v.y, v.angle / M_PI * 180.0);
+        // threadLogger_->info("x:{} y:{} angle:{}", int_vertex.x, int_vertex.y, int_vertex.angle);
         int_vertex.direction = v.direction;
         return Point2Hash(int_vertex);
     }

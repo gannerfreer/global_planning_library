@@ -76,7 +76,7 @@ bool Dijkstra::searchpath(int start_, int end_) {
         // cout << "当前节点 " << curNode << endl;
         // 将curNode加入close中
         if (close.at(curNode) == true) {
-            cout << "当前轮弹出的节点竟然属于close集，不可能发生的事情 " << endl;
+            cout << "终点节点不可达 " << endl;
             return false;
         }
         close.at(curNode) = true;

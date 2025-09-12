@@ -142,7 +142,7 @@ int main() {
     char* map      = ReadFile(map_file);
 
     GetMap(map);
-    cout << "line643" << endl;
+    
     auto                          end  = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff = end - start;
     std::cout << "Time taken by testFunction(): " << diff.count() * 1000 << " ms\n";

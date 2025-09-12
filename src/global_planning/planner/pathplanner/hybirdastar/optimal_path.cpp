@@ -84,11 +84,14 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
     InitData(start, end);
     timelog.AddLog("InitData");
 
+    cout<<"hybridA* 初始化碰撞检测"<<endl;
+
     collison_check_.InitParam(m_vehicle_param_);
     collison_check_.InitBoundMap(offset_road_bound_);
     collison_check_.InitObstacleMap(offset_obstacle_bound_);
     collison_check_.InitWallMap(offset_dynamic_bound_);
     timelog.AddLog("InitBoundMap");
+    cout<<"hybridA* 初始化碰撞检测完毕"<<endl;
 
     GenerateBoundSet();
     threadLogger_->info("GenerateBoundSet 执行完毕");
@@ -117,43 +120,43 @@ PlanResult OptimalPath::SearchGlobalPath(const Point start, const Point end, con
 
 
     if ((plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front) && end_r_collison_flag) {
-        threadLogger_->info("PlanRule::Forward_All_Time||PlanRule::Start_Back_End_Front  ,but end_r_ 碰撞检测失败 ");
+        // threadLogger_->info("PlanRule::Forward_All_Time||PlanRule::Start_Back_End_Front  ,but end_r_ 碰撞检测失败 ");
         return PlanResult::EndPoint_Infeasible;
     }
     else {
-        threadLogger_->info("PlanRule::Forward_All_Time||PlanRule::Start_Back_End_Front  ,end_r_ 碰撞检测成功 ");
+        // threadLogger_->info("PlanRule::Forward_All_Time||PlanRule::Start_Back_End_Front  ,end_r_ 碰撞检测成功 ");
     }
 
     if ((plan_path_rule_ == PlanRule::Backward_All_Time || plan_path_rule_ == PlanRule::Start_Front_End_Back) && end_f_collison_flag) {
-        threadLogger_->info("PlanRule::Backward_All_Time||plan_path_rule_ == PlanRule::Start_Front_End_Back ,but end_f_ 碰撞检测失败 ");
+        // threadLogger_->info("PlanRule::Backward_All_Time||plan_path_rule_ == PlanRule::Start_Front_End_Back ,but end_f_ 碰撞检测失败 ");
         return PlanResult::EndPoint_Infeasible;
     }
     else {
-        threadLogger_->info("PlanRule::Backward_All_Time||plan_path_rule_ == PlanRule::Start_Front_End_Back ,end_f_ 碰撞检测成功 ");
+        // threadLogger_->info("PlanRule::Backward_All_Time||plan_path_rule_ == PlanRule::Start_Front_End_Back ,end_f_ 碰撞检测成功 ");
     }
     timelog.AddLog("IsVehicleCollisionWithAll");
 
 
     if (plan_path_rule_ == PlanRule::Start_Front_End_Back || plan_path_rule_ == PlanRule::Backward_All_Time) {
-        threadLogger_->info("plan_path_rule_ == PlanRule::Start_Front_End_Back || plan_path_rule_ == PlanRule::Backward_All_Time---  Backward_Fitting");
+        // threadLogger_->info("plan_path_rule_ == PlanRule::Start_Front_End_Back || plan_path_rule_ == PlanRule::Backward_All_Time---  Backward_Fitting");
         fitting_direction_ = FittingDirection::Backward_Fitting;
     }
     else if (plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front) {
-        threadLogger_->info("plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front---  Forword_Fitting");
+        // threadLogger_->info("plan_path_rule_ == PlanRule::Forward_All_Time || plan_path_rule_ == PlanRule::Start_Back_End_Front---  Forword_Fitting");
         fitting_direction_ = FittingDirection::Forword_Fitting;
     }
     else if (plan_path_rule_ == PlanRule::Normal_Planning) {
         if (end_r_collison_flag) {
             fitting_direction_ = FittingDirection::Backward_Fitting;
-            threadLogger_->info("plan_path_rule_ == PlanRule::Normal_Planning---  由于终点后向点碰撞，只能采用Backward_Fitting");
+            // threadLogger_->info("plan_path_rule_ == PlanRule::Normal_Planning---  由于终点后向点碰撞，只能采用Backward_Fitting");
         }
         else if (end_f_collison_flag) {
             fitting_direction_ = FittingDirection::Forword_Fitting;
-            threadLogger_->info("plan_path_rule_ == PlanRule::Normal_Planning---  由于终点前向点碰撞，只能采用Forward_Fitting");
+            // threadLogger_->info("plan_path_rule_ == PlanRule::Normal_Planning---  由于终点前向点碰撞，只能采用Forward_Fitting");
         }
         else {
             fitting_direction_ = FittingDirection::Both_Fitting;
-            threadLogger_->info("plan_path_rule_ == PlanRule::Normal_Planning---  Both_Fitting");
+            // threadLogger_->info("plan_path_rule_ == PlanRule::Normal_Planning---  Both_Fitting");
         }
     }
     else {
@@ -304,11 +307,11 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
     while (!open_map_f_.empty()) {
         long long cal_time = utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time); // 开始时间精确到微秒
-        threadLogger_->info("open_map_f_.size():{}", open_map_f_.size());
+        // threadLogger_->info("open_map_f_.size():{}", open_map_f_.size());
         // 打印open_map_f_
-        for (auto i : open_map_f_) {
-            threadLogger_->info("id:{}  x:{} y:{} angle:{} direction:{}", i.second.id, i.second.x, i.second.y, i.second.angle / M_PI * 180.0, static_cast<int>(i.second.direction));
-        }
+        // for (auto i : open_map_f_) {
+        //     threadLogger_->info("id:{}  x:{} y:{} angle:{} direction:{}", i.second.id, i.second.x, i.second.y, i.second.angle / M_PI * 180.0, static_cast<int>(i.second.direction));
+        // }
         // cout << "open_map_f_.size():" << open_map_f_.size() << endl;
         if (cal_time > timeThreshold) // 若超过最大迭代次数则直接返回
         {
@@ -326,7 +329,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
         // 从优先队列open集中取出第一个点索引，及取出f值最小的点索引
         unsigned long long current_point_index = open_map_f_.begin()->second.id;
         current_point                          = open_map_[current_point_index]; // 通过key值获取当前点
-        threadLogger_->info("新的一轮  current_point:{},{}", current_point.x, current_point.y);
+        // threadLogger_->info("新的一轮  current_point:{},{}", current_point.x, current_point.y);
         open_map_.erase(current_point_index);
         open_map_f_.erase(open_map_f_.begin()); // 将该点从open集中删除
         close_map_[current_point_index] = current_point;
@@ -353,7 +356,7 @@ PlanResult OptimalPath::AStarPath(Path& path, long long timeThreshold) {
 
         // 基于当前点进行节点拓展
         utility::CTimeClock start_time_expand;
-        threadLogger_->info("FindExpandVertex");
+        // threadLogger_->info("FindExpandVertex");
         FindExpandVertex(current_point, time_spend_dynamic, time_spend_collsion, time_spend_other);
         expand_time_collision += time_spend_collsion;
         expand_time_dynamic += time_spend_dynamic;
@@ -509,7 +512,7 @@ void OptimalPath::InitOpenClose() {
 bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
     // 判断是否可以进行RS曲线拟合
     double dis = hypot(min_point.x - end_.x, min_point.y - end_.y);
-    threadLogger_->info("判断是否可以进行RS曲线拟合,m_vehicle_param_.max_fitting_radius:{}", m_vehicle_param_.max_fitting_radius);
+    // threadLogger_->info("判断是否可以进行RS曲线拟合,m_vehicle_param_.max_fitting_radius:{}", m_vehicle_param_.max_fitting_radius);
     if (dis < m_vehicle_param_.max_fitting_radius) {
         All++;
         flag_dubins_ = true;
@@ -536,11 +539,11 @@ bool OptimalPath::IfExitAStar(const Vertex3D& min_point) {
                         return true;
                     }
                     else {
-                        threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，但碰撞检测失败");
+                        // threadLogger_->info("尝试RS曲线拟合，RS曲线拟合成功，但碰撞检测失败");
                     }
                 }
                 else {
-                    threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
+                    // threadLogger_->info("尝试RS曲线拟合，RS曲线因加入构型限制，规划失败");
                 }
                 break;
             case FittingDirection::Forword_Fitting:
@@ -655,8 +658,8 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
             }
             VehDynam(current_point, direction, temp_steering, end_point);
             time1 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs_);
-            threadLogger_->info("end_point.x:{} end_point.y:{} end_point.angle:{} end_point.direction:{}", end_point.x, end_point.y, end_point.angle / M_PI * 180.0, static_cast<int>(end_point.direction));
-            threadLogger_->info("即将计算哈希值");
+            // threadLogger_->info("end_point.x:{} end_point.y:{} end_point.angle:{} end_point.direction:{}", end_point.x, end_point.y, end_point.angle / M_PI * 180.0, static_cast<int>(end_point.direction));
+            // threadLogger_->info("即将计算哈希值");
             end_point.id = Vertex2Hash(end_point); // 计算哈希值索引
             // 判断拓展点是否碰撞
             Point               temp_point(end_point.x, end_point.y, end_point.z, end_point.angle, end_point.direction);
@@ -667,18 +670,18 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
             time2 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs);
             utility::CTimeClock start_time_rs__;
             if (flag == false) {
-                threadLogger_->info("不碰撞，end_point.id:{} end_point.x:{} end_point.y:{} end_point.angle:{} end_point.direction:{}",end_point.id, end_point.x, end_point.y, end_point.angle / M_PI * 180.0, static_cast<int>(end_point.direction));
+                // threadLogger_->info("不碰撞，end_point.id:{} end_point.x:{} end_point.y:{} end_point.angle:{} end_point.direction:{}",end_point.id, end_point.x, end_point.y, end_point.angle / M_PI * 180.0, static_cast<int>(end_point.direction));
                 // 计算该点g值
                 CalGValue(current_point, end_point);
                 // 判断该点是否已经存放于open集中或close集中
                 if (open_map_.find(end_point.id) != open_map_.end()) // 如果在open集中
                 {
                     // 打印end_point.id的具体x y z angle
-                    threadLogger_->info("哈希表中对应的相同点坐标信息：id:{} x:{} y:{}  angle:{} direction:{} ", end_point.id, open_map_[end_point.id].x, open_map_[end_point.id].y, open_map_[end_point.id].angle / M_PI * 180.0, static_cast<int>(open_map_[end_point.id].direction));
-                    threadLogger_->info("在open集中");
+                    // threadLogger_->info("哈希表中对应的相同点坐标信息：id:{} x:{} y:{}  angle:{} direction:{} ", end_point.id, open_map_[end_point.id].x, open_map_[end_point.id].y, open_map_[end_point.id].angle / M_PI * 180.0, static_cast<int>(open_map_[end_point.id].direction));
+                    // threadLogger_->info("在open集中");
                     // g值检查，判断该点g值是否小于open集中相应点g值
                     if (open_map_[end_point.id].g > end_point.g) {
-                        threadLogger_->info("g值小于open集中相应点g值");
+                        // threadLogger_->info("g值小于open集中相应点g值");
                         // 节点更新
                         double f                = open_map_[end_point.id].f;
                         end_point.h             = open_map_[end_point.id].h;
@@ -701,17 +704,17 @@ void OptimalPath::FindExpandVertex(const Vertex3D& current_point, unsigned long 
                 }
                 else if (close_map_.find(end_point.id) == close_map_.end()) // 如果不在close集中
                 {
-                    threadLogger_->info("不在close集中");
+                    // threadLogger_->info("不在close集中");
                     // open集中存入该点
                     CalHValue(end_point);
                     end_point.f             = end_point.g + end_point.h;
                     open_map_[end_point.id] = end_point;
                     open_map_f_.insert(make_pair(end_point.f, end_point));
-                    threadLogger_->info("open_map_f_.size():{}", open_map_f_.size());
+                    // threadLogger_->info("open_map_f_.size():{}", open_map_f_.size());
                 }
             }
             else {
-                threadLogger_->info("探索过程中的点碰撞");
+                // threadLogger_->info("探索过程中的点碰撞");
             }
             time3 += utility::CTimeHelper::GetTimeIntervalMicroseconds(start_time_rs__);
         }
@@ -876,9 +879,9 @@ void OptimalPath::RestoreData(Path& path) {
  *return
  */
 void OptimalPath::VehDynam(const Vertex3D& start, const MotionDirection direction, const double steering, Vertex3D& end) {
-    threadLogger_->info( "m_vehicle_param_.delta_dist = {}", m_vehicle_param_.delta_dist);
-    threadLogger_->info( "m_vehicle_param_.wheel_base = {}", m_vehicle_param_.wheel_base);
-    threadLogger_->info( " steering = {}" ,steering );
+    // threadLogger_->info( "m_vehicle_param_.delta_dist = {}", m_vehicle_param_.delta_dist);
+    // threadLogger_->info( "m_vehicle_param_.wheel_base = {}", m_vehicle_param_.wheel_base);
+    // threadLogger_->info( " steering = {}" ,steering );
 
     double flag_pos_neg;
     if (MotionDirection::Forward == direction)
@@ -893,7 +896,7 @@ void OptimalPath::VehDynam(const Vertex3D& start, const MotionDirection directio
         end.y     = start.y + flag_pos_neg * m_vehicle_param_.delta_dist * sin(start.angle);
         end.angle = start.angle;
         end.angle = Helper::NormalizeAngleRad(end.angle);
-        threadLogger_->info("直线拓展 end.x:{} end.y:{} end.angle:{}", end.x, end.y, end.angle / M_PI * 180.0);
+        // threadLogger_->info("直线拓展 end.x:{} end.y:{} end.angle:{}", end.x, end.y, end.angle / M_PI * 180.0);
     }
     else // 转向拓展
     {
@@ -905,7 +908,7 @@ void OptimalPath::VehDynam(const Vertex3D& start, const MotionDirection directio
         end.y     = start.y + flag_pos_neg * R * (cos(start.angle) - cos(start.angle + beta));
         end.angle = start.angle + beta;
         end.angle = Helper::NormalizeAngleRad(end.angle);
-        threadLogger_->info("转向拓展 end.x:{} end.y:{} end.angle:{}", end.x, end.y, end.angle / M_PI * 180.0);
+        // threadLogger_->info("转向拓展 end.x:{} end.y:{} end.angle:{}", end.x, end.y, end.angle / M_PI * 180.0);
     }
 
     end.direction = direction;
@@ -950,7 +953,7 @@ void OptimalPath::CalHValue(Vertex3D& point) {
         temp_point.x = current2D.getX();
         temp_point.y = current2D.getY();
         if (IsBoundGrid(temp_point)) {
-            threadLogger_->info("该节点为障碍物节点,坐标为{} {}", temp_point.x, temp_point.y);
+            // threadLogger_->info("该节点为障碍物节点,坐标为{} {}", temp_point.x, temp_point.y);
             a_start_h = numeric_limits<double>::max();
         }
         else {
