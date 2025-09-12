@@ -47,13 +47,15 @@ class LoadAreaPlanning {
 
   public:
     ~LoadAreaPlanning();
-    std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck& collision_checker, const vector<_BorderPoint>& static_bound, const vector<vector<_BorderPoint>>& wall_bound, const vector<vector<_BorderPoint>>& machine_bound);
+    std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& temp_wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck& collision_checker, const vector<_BorderPoint>& static_bound, const vector<vector<_BorderPoint>>& wall_bound, const vector<vector<_BorderPoint>>& machine_bound);
     bool                                                                                                     PathSmoother(GlobalPlanning::Path& input_path, const GlobalPlanning::_VehicleParam& veh_param);
     void                                                                                                     CalculatePathDistance(GlobalPlanning::Path& input_path);
     void                                                                                                     CalCurvature(GlobalPlanning::Path& path, int check_dense);
+    double                                                                                                   normalizeAngle(double angle);
     shared_ptr<spdlog::logger>                                                                               threadLogger_;
     vector<WaitPointGenerate::arc_sample_point>                                                              sample_points;
     std::vector<std::pair<GlobalPlanning::Path, double>>                                                     wait_path_candidates;
+    void                                                                                                     CalculateAngle(GlobalPlanning::Path& path);
 };
 } // namespace LoadAreaPlanning
 
