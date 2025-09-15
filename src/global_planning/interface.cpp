@@ -708,7 +708,10 @@ char* QueuePointGenerator(char* point_veh_start_end) {
 
     Bound                        wall_border_v;
     vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
-    cout << "收到挡墙" << wall_border.size() << "组" << "wall_border.at(0).size():" << wall_border.front().size() << endl;
+    cout << "收到挡墙" << wall_border.size() << "组" <<endl;
+    if(wall_border.size() > 0) {
+        cout << "wall_border.at(0).size():" << wall_border.front().size() << endl;
+    }
     // 对wall_border进行过滤，过滤掉距离load_point小于remove_dis的点
     for (auto& border : wall_border) {
         for (auto it = border.begin(); it != border.end();) {
@@ -720,7 +723,10 @@ char* QueuePointGenerator(char* point_veh_start_end) {
             }
         }
     }
-    cout << "收到挡墙（过滤后）" << wall_border.size() << "组" << "wall_border.at(0).size():" << wall_border.front().size() << endl;
+    cout << "收到挡墙（过滤后）" << wall_border.size() << "组" <<endl;
+    if(wall_border.size() > 0) {
+        cout << "wall_border.at(0).size():" << wall_border.front().size() << endl;
+    }
     vC.clear();
     for (unsigned int i = 0; i < wall_border.size(); ++i) {
         for (unsigned int j = 0; j < wall_border.at(i).size(); ++j) {
@@ -737,7 +743,10 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     Bound                        machine_border_v;
     vector<vector<_BorderPoint>> machine_border = veh_start_end.machine_borders;
     vC.clear();
-    cout << "收到挖掘" << machine_border.size() << "组" << "machine_border.at(0).size():" << machine_border.at(0).size() << endl;
+    cout << "收到挖掘" << machine_border.size() << "组" <<endl;
+    if(machine_border.size() > 0) {
+        cout << "machine_border.at(0).size():" << machine_border.front().size() << endl;
+    }
     for (unsigned int i = 0; i < machine_border.size(); ++i) {
         for (unsigned int j = 0; j < machine_border.at(i).size(); ++j) {
             Coordinate temp_point;
@@ -780,7 +789,9 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         temp_point.direction = static_cast<MotionDirection>(input_paths.at(neares_idx).trajectory.at(i).direction);
         input_path.push_back(temp_point);
     }
-    cout << "结合当前load_point位置，挑选出的驶入引导路径第一个点坐标为:(" << input_path.front().x << "," << input_path.front().y << ")" << endl;
+    if(input_path.size() > 0) {
+        cout << "结合当前load_point位置，挑选出的驶入引导路径第一个点坐标为:(" << input_path.front().x << "," << input_path.front().y << ")" << endl;
+    }
 
     nearest_dis = numeric_limits<double>::max();
     for (int i = 0; i < output_paths.size(); i++) {
@@ -802,7 +813,9 @@ char* QueuePointGenerator(char* point_veh_start_end) {
         temp_point.direction = static_cast<MotionDirection>(output_paths.at(neares_idx).trajectory.at(i).direction);
         out_path.push_back(temp_point);
     }
-    cout << "结合当前load_point位置，挑选出的驶出引导路径第一个点坐标为:(" << out_path.front().x << "," << out_path.front().y << ")" << endl;
+    if(out_path.size() > 0) {
+        cout << "结合当前load_point位置，挑选出的驶出引导路径第一个点坐标为:(" << out_path.front().x << "," << out_path.front().y << ")" << endl;
+    }
 
 
     GlobalPlanning::Point wait_point, load_point;

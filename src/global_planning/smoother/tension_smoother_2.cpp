@@ -26,9 +26,7 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
     std::cout << "w_curvature_change" << m_vehicle_param_.w_curvature_change << std::endl;
     std::cout << "w_curvature" << m_vehicle_param_.w_curvature << std::endl;
     std::cout << "w_deviation" << m_vehicle_param_.w_deviation << std::endl;
-    std::cout << "w_curvature_change" << m_vehicle_param_.w_curvature_change << std::endl;
-    std::cout << "w_curvature" << m_vehicle_param_.w_curvature << std::endl;
-    std::cout << "w_deviation" << m_vehicle_param_.w_deviation << std::endl;
+    
     for (size_t i = 0; i < point_num - 1; ++i) {
         ad cur_x      = vars[x_idx_begin + i];
         ad next_x     = vars[x_idx_begin + i + 1];
@@ -173,9 +171,11 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     }
     // 额外对前a个点的曲率进行约束
     // int a = 0;
-    // for (size_t i = 0; i < a; i++) {
-    //     vars_lowerbound[k_idx_begin + i] = 0;
-    //     vars_upperbound[k_idx_begin + i] = 0;
+    // for (size_t i = 0; i < point_num; i++) {
+    //     if (i == 0) {
+    //         vars_lowerbound[k_idx_begin + i] = 0;
+    //         vars_upperbound[k_idx_begin + i] = 0;
+    //     }
     // }
     // 约束角度
     for (size_t i = 0; i < point_num; i++) {

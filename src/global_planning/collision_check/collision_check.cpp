@@ -57,9 +57,9 @@ void CollisonCheck::InitBoundMap(const Bound road_bound) {
  */
 void CollisonCheck::InitObstacleMap(const Bound obstacle_bound) {
     obstacle_bound_map_.clear();
-    cout << "InitObstacleMap =>obstacle_bound.size():" << obstacle_bound.size() << " front():" << obstacle_bound.front().size() << endl;
     // 将所有障碍物边界点存入对应栅格中
     if (obstacle_bound.size() > 0) {
+        cout << "InitObstacleMap =>obstacle_bound.size():" << obstacle_bound.size() << " front():" << obstacle_bound.front().size() << endl;
         for (unsigned int i = 0; i < obstacle_bound.size(); ++i) {
             for (auto iter = obstacle_bound.at(i).begin(); iter != obstacle_bound.at(i).end(); ++iter) {
                 IntCoordinate temp_int_point;

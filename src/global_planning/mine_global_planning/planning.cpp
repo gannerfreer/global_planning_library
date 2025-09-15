@@ -311,8 +311,17 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
             }
             else {
                 threadLogger_->info("索引 {} dubins拟合失败", i);
-                result = PlanResult::StartPoint_Unreasonable;
+                if (i != max_search_index) {
+                    result = PlanResult::StartPoint_Unreasonable;
+                }
+                else {
+                    if (mul_score_index.empty()) {
+                        threadLogger_->info("mul_score_index为空，给最后一个路径点一次拟合机会");
+                        mul_score_index.insert({1.0, i});
+                    }
+                }
             }
+
         } // 这种规划规则，不采用dubins进行预先校验
         else {
             threadLogger_->info("第 {}个候选点，其索引：{},坐标：({},{},{}), rule_id:{}", cal, i, temp_end.x, temp_end.y, temp_end.yaw / M_PI * 180, static_cast<int>(rule_id));
@@ -331,7 +340,7 @@ PlanResult Planning::ProgressiveHybirdAStar(_SinglePoint& input_point, int& sear
                 auto end_time = std::chrono::high_resolution_clock::now();
                 auto time1    = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
                 threadLogger_->info("累积耗时：{} ms", time1);
-                if (time1 > 10 * 1000) {
+                if (time1 > 5 * 1000) {
                     threadLogger_->info("超时，返回");
                     return result;
                 }
@@ -1352,7 +1361,7 @@ PlanResult Planning::HybirdAStarFitting() {
         }
     }
     part_map_border.push_back(vC);
-    threadLogger_->info("part_map_border.size():{}", part_map_border.size());
+    threadLogger_->info("part_map_border.size():{} part_map_border.at(0).size():{}", part_map_border.size(), part_map_border.at(0).size());
 
     for (unsigned int i = 0; i < wall_borders_.size(); ++i) {
         vector<_BorderPoint> temp_bound = wall_borders_.at(i);
@@ -1540,7 +1549,7 @@ PlanResult Planning::HybirdAStarFitting() {
 
             threadLogger_->info("*****************脱困规划开始*****************");
             // 如果上述规划都失败，可以采用下述策略进行脱困规划，逻辑基本没变，变了拟合规则
-            start_point_offset_distance = 4;
+            start_point_offset_distance             = 4;
             my_optimal_path_.start_offset_distance_ = start_point_offset_distance;
             my_optimal_path_.end_offset_distance_   = 0;
             search_index                            = 0;
@@ -1700,24 +1709,24 @@ bool Planning::PoseVerificationInterface(const _SinglePoint& start_pose, const _
         if (flag == 0) {
             dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.light_forward_max_steering));
             dubins.SetMaxSteeringAngle(vehicle_param_.light_forward_max_steering);
-            threadLogger_->info("轻载前进 radius:{} light_forward_max_steering:{}", dubins.GetRadius(), vehicle_param_.light_forward_max_steering/M_PI*180.0);
+            threadLogger_->info("轻载前进 radius:{} light_forward_max_steering:{}", dubins.GetRadius(), vehicle_param_.light_forward_max_steering / M_PI * 180.0);
         }
         else {
             dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.light_backward_max_steering));
             dubins.SetMaxSteeringAngle(vehicle_param_.light_backward_max_steering);
-            threadLogger_->info("轻载倒车 radius:{} light_backward_max_steering:{}", dubins.GetRadius(), vehicle_param_.light_backward_max_steering/M_PI*180.0);
+            threadLogger_->info("轻载倒车 radius:{} light_backward_max_steering:{}", dubins.GetRadius(), vehicle_param_.light_backward_max_steering / M_PI * 180.0);
         }
     }
     else {
         if (flag == 0) {
             dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.heavy_forward_max_steering));
             dubins.SetMaxSteeringAngle(vehicle_param_.heavy_forward_max_steering);
-            threadLogger_->info("重载前进 radius:{} heavy_forward_max_steering:{}", dubins.GetRadius(), vehicle_param_.heavy_forward_max_steering/M_PI*180.0);
+            threadLogger_->info("重载前进 radius:{} heavy_forward_max_steering:{}", dubins.GetRadius(), vehicle_param_.heavy_forward_max_steering / M_PI * 180.0);
         }
         else {
             dubins.SetRadius(vehicle_param_.wheel_base / tan(vehicle_param_.heavy_backward_max_steering));
             dubins.SetMaxSteeringAngle(vehicle_param_.heavy_backward_max_steering);
-            threadLogger_->info("重载倒车 radius:{} heavy_backward_max_steering:{}", dubins.GetRadius(), vehicle_param_.heavy_backward_max_steering/M_PI*180.0);
+            threadLogger_->info("重载倒车 radius:{} heavy_backward_max_steering:{}", dubins.GetRadius(), vehicle_param_.heavy_backward_max_steering / M_PI * 180.0);
         }
     }
     bool is_reasonable = dubins.GetDubinsPath(dubins_start, dubins_end, output_path);
