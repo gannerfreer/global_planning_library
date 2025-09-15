@@ -134,7 +134,7 @@ class Planning {
     bool                 IsForwardAndBackwardReferencePath();
     // 检查全局路径是否与所有地图边界发生碰撞
     bool IsGlobalPathCollision();
-
+    PlanResult CheckStartPointAndEndPoint();
   public:
     _SinglePoint start_point_,
         end_point_;                                                                                                                                                        // 起、终点坐标

@@ -61,6 +61,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     // 路径规划：作业点参考路径匹配及裁剪拼接
     result = PathPlanning();
 
+
     if (result != PlanResult::Plan_OK) {
         threadLogger_->info("PathPlanning 失败");
         cout << "PathPlanning 失败" << endl;
@@ -69,8 +70,15 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     }
 
 
+
     threadLogger_->info("PathPlanning 成功");
     cout << "PathPlanning 成功" << endl;
+
+    result = CheckStartPointAndEndPoint();
+    if (result != PlanResult::Plan_OK) {
+        FillErrorCode(result);
+        return;
+    }
 
     result = HybirdAStarFitting();
     if (result != PlanResult::Plan_OK) {
@@ -2326,4 +2334,64 @@ bool Planning::IsGlobalPathCollision() {
     }
     threadLogger_->info("全局路径与地图边界未发生碰撞");
     return true;
+}
+
+PlanResult Planning::CheckStartPointAndEndPoint() {
+    // 规划库最后的路径平滑，需要考虑边界、动态挡墙（100m内）、挖掘机边界（100m内）
+    Bound              map_border, wall_borders, machine_borders;
+    vector<Coordinate> vC;
+    for (unsigned int i = 0; i < map_border_.size(); ++i) {
+        Coordinate temp_point;
+        temp_point.z = 0;
+        temp_point.x = map_border_.at(i).x;
+        temp_point.y = map_border_.at(i).y;
+        vC.push_back(temp_point);
+    }
+    map_border.push_back(vC);
+
+    for (unsigned int i = 0; i < wall_borders_.size(); ++i) {
+        vector<_BorderPoint> temp_bound = wall_borders_.at(i);
+        vector<Coordinate>   temp_bound_2;
+        for (int j = 0; j < temp_bound.size(); ++j) {
+            Coordinate temp_point;
+            temp_point.z = 0;
+            temp_point.x = temp_bound.at(j).x;
+            temp_point.y = temp_bound.at(j).y;
+
+            temp_bound_2.push_back(temp_point);
+        }
+        wall_borders.push_back(temp_bound_2);
+    }
+
+    for (unsigned int i = 0; i < machine_borders_.size(); ++i) {
+        vector<_BorderPoint> temp_bound = machine_borders_.at(i);
+        vector<Coordinate>   temp_bound_2;
+        for (int j = 0; j < temp_bound.size(); ++j) {
+            Coordinate temp_point;
+            temp_point.z = 0;
+            temp_point.x = temp_bound.at(j).x;
+            temp_point.y = temp_bound.at(j).y;
+
+            temp_bound_2.push_back(temp_point);
+        }
+        machine_borders.push_back(temp_bound_2);
+    }
+
+    CollisonCheck collison_check;
+    collison_check.InitParam(vehicle_param_);
+    collison_check.InitBoundMap(map_border);
+    collison_check.InitWallMap(wall_borders);
+    collison_check.InitObstacleMap(machine_borders);
+
+    Point start_point(start_point_.x, start_point_.y, 0, start_point_.yaw, MotionDirection::Forward);
+    if (collison_check.IsVehicleCollisionWithAll(start_point)) {
+        threadLogger_->info("起点碰撞检测不通过");
+        return PlanResult::StartPoint_Collision;
+    }
+    Point end_point(end_point_.x, end_point_.y, 0, end_point_.yaw, MotionDirection::Backward);
+    if (collison_check.IsVehicleCollisionWithAll(end_point)) {
+        threadLogger_->info("终点碰撞检测不通过");
+        return PlanResult::EndPoint_Collision;
+    }
+    return PlanResult::Plan_OK;
 }
