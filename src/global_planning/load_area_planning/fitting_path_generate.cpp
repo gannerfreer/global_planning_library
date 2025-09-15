@@ -27,9 +27,10 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     std::cout << "进入" << endl;
     GlobalPlanning::Path result;
     double               result_grade;
-    curve::Point         temp_wait_point(wait_point.x, wait_point.y, wait_point.angle, 0.0);
+    curve::Point         temp_wait_point(wait_point.x - 2.0 * cos(wait_point.angle * M_PI / 180.0), wait_point.y - 2.0 * sin(wait_point.angle * M_PI / 180.0), wait_point.angle, 0.0);
     curve::Dubins        dubins_planner;
     dubins_planner.threadLogger_ = threadLogger_;
+
     dubins_planner.SetRadius(10);
     std::vector<curve::Point> dubins_path;
     std::cout << "delta_straight_length_load_ = " << delta_straight_length_load_ << endl;
@@ -72,7 +73,15 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     std::sort(load_path_candidates_.begin(), load_path_candidates_.end(), [](const std::pair<GlobalPlanning::Path, double>& a, const std::pair<GlobalPlanning::Path, double>& b) {
         return a.second > b.second; // 按 double 值降序
     });
+
+    GlobalPlanning::Point stitch_point(temp_wait_point.GetX(), temp_wait_point.GetY(), 0.0, temp_wait_point.GetAngle(), GlobalPlanning::MotionDirection::Backward);
+    auto                  start_straight_path = GenerateStraitLine(stitch_point, wait_point);
+    reverse(start_straight_path.begin(), start_straight_path.end());
+    start_straight_path.insert(start_straight_path.begin(), wait_point);
+    start_straight_path.front().direction = GlobalPlanning::MotionDirection::Backward;
+    cout << "start+straight_path.front.direction = " << start_straight_path.front().direction << endl;
     for (auto& path_info : load_path_candidates_) {
+        path_info.first.insert(path_info.first.begin(), start_straight_path.begin(), start_straight_path.end());
         for (auto& point : path_info.first) {
             point.angle = point.angle * M_PI / 180.0;
         }
@@ -82,7 +91,6 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
                 point.angle     = point.angle * 180.0 / M_PI;
                 point.direction = GlobalPlanning::MotionDirection::Backward;
             }
-            path_info.first.insert(path_info.first.begin(), wait_point);
             return std::make_pair(path_info.first, path_info.second);
         }
         else {

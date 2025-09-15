@@ -100,7 +100,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
 
             GlobalPlanning::PlanRule plan_rule = GlobalPlanning::PlanRule::Backward_All_Time; // 规定规划规则
 
-            long long threshold_time = 0.2 * 1000 * 1000; // 搜索时间(us)
+            long long threshold_time = 2.0 * 1000 * 1000; // 搜索时间(us)
 
             auto temp_wait_point = wait_point;
             // threadLogger_->info("wait_point.x:{} wait_point.y:{} wait_point.angle:{}", wait_point.x, wait_point.y, wait_point.angle);
