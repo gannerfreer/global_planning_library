@@ -48,10 +48,10 @@ class FittingPathGenerator {
   public:
     FittingPathGenerator(double out_put_path_dense, double search_range, double jump_dense, double length_weight, double curvature_weight, double critical_length, double min_straight_line_length, double max_straight_line_length, double delta_straight_line_length, double min_straight_length_wait, double max_straight_length_wait, double delta_straight_length_wait, double min_straight_length_load, double max_straight_length_load, double delta_straight_length_load, double straight_length_weight, double load_path_curvature_weight);
     ~FittingPathGenerator();
-    std::pair<GlobalPlanning::Path, double>              DepartPathGenerateInterface(const GlobalPlanning::Path& target_path, const GlobalPlanning::Point& load_point, GlobalPlanning::CollisonCheck& collision_checker);
-    std::pair<GlobalPlanning::Path, double>              WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, bool need_completed = true);
-    std::pair<GlobalPlanning::Path, double>              WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point);
-    std::pair<GlobalPlanning::Path, double>              LoadPathGenerateInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker);
+    std::pair<GlobalPlanning::Path, double>              DepartPathGenerateInterface(const GlobalPlanning::Path& target_path, const GlobalPlanning::Point& load_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param);
+    std::pair<GlobalPlanning::Path, double>              WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param, bool need_completed = true);
+    std::pair<GlobalPlanning::Path, double>              WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, const GlobalPlanning::_VehicleParam& vehicle_param);
+    std::pair<GlobalPlanning::Path, double>              LoadPathGenerateInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param);
     std::vector<std::pair<GlobalPlanning::Path, double>> GetWaitPathCandis() {
         return wait_path_candidates_;
     }

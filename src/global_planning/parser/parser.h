@@ -1508,7 +1508,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.weight_curve: " << planning_info.weight_curve << std::endl;
             }
             else {
-                planning_info.weight_curve = 1;
+                planning_info.weight_curve = 1.5;
                 std::cerr << "无法找到车参 weight_curve ，赋予默认值: " << planning_info.weight_curve << std::endl;
             }
 
@@ -1535,7 +1535,7 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.collision_weight: " << planning_info.collision_weight << std::endl;
             }
             else {
-                planning_info.collision_weight = 0.5;
+                planning_info.collision_weight = 0.75;
                 std::cerr << "无法找到车参 collision_weight ，赋予默认值: " << planning_info.collision_weight << std::endl;
             }
 

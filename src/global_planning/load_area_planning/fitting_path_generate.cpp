@@ -23,7 +23,7 @@ FittingPathGenerator::FittingPathGenerator(double out_put_path_dense, double sea
 
 FittingPathGenerator::~FittingPathGenerator() {}
 
-std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker) {
+std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param) {
     std::cout << "进入" << endl;
     GlobalPlanning::Path result;
     double               result_grade;
@@ -32,6 +32,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     dubins_planner.threadLogger_ = threadLogger_;
 
     dubins_planner.SetRadius(10);
+    dubins_planner.SetMaxSteeringAngle(vehicle_param.light_backward_max_steering);
     std::vector<curve::Point> dubins_path;
     std::cout << "delta_straight_length_load_ = " << delta_straight_length_load_ << endl;
     std::cout << "max_straight_length_load_ = " << max_straight_length_load_ << endl;
@@ -103,13 +104,14 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     return std::make_pair(result, result_grade);
 }
 
-std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point) {
+std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, const GlobalPlanning::_VehicleParam& vehicle_param) {
     GlobalPlanning::Path result;
     double               grade = 0.0;
 
     curve::Dubins dubins_planner;
     dubins_planner.threadLogger_ = threadLogger_;
     dubins_planner.SetRadius(10.0);
+    dubins_planner.SetMaxSteeringAngle(vehicle_param.light_forward_max_steering);
     std::vector<GlobalPlanning::Point>                   start_point_sample = SamplePathSegment(origin_path, wait_point, 0);
     std::vector<std::pair<GlobalPlanning::Path, double>> wait_path_candidates;
     if (start_point_sample.empty()) {
@@ -140,7 +142,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     return std::make_pair(result, grade);
 }
 
-std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, bool need_completed) {
+std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param, bool need_completed) {
     GlobalPlanning::Path result;
     wait_path_candidates_.clear();
     double grade           = 0.0;
@@ -190,6 +192,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     curve::Dubins dubins_planner;
     dubins_planner.threadLogger_ = threadLogger_;
     dubins_planner.SetRadius(10.0);
+    dubins_planner.SetMaxSteeringAngle(vehicle_param.light_forward_max_steering);
     std::vector<GlobalPlanning::Point> start_point_sample = SamplePathSegment(origin_path, straight_path_with_wait_point.front(), 0);
     // cout << "驶出点寻找完毕" << endl;
     std::vector<std::pair<GlobalPlanning::Path, double>> wait_path_candidates;
@@ -244,12 +247,13 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     return std::make_pair(result, grade);
 }
 
-std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerateInterface(const GlobalPlanning::Path& target_path, const GlobalPlanning::Point& load_point, GlobalPlanning::CollisonCheck& collision_checker) {
+std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerateInterface(const GlobalPlanning::Path& target_path, const GlobalPlanning::Point& load_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param) {
     GlobalPlanning::Path result;
     double               grade;
     curve::Dubins        dubins_planner;
     dubins_planner.threadLogger_ = threadLogger_;
     dubins_planner.SetRadius(10);
+    dubins_planner.SetMaxSteeringAngle(vehicle_param.heavy_forward_max_steering);
     std::vector<GlobalPlanning::Point>                   end_point_sample = SamplePathSegment(target_path, load_point, 0);
     std::vector<std::pair<GlobalPlanning::Path, double>> depart_path_candidates;
     std::vector<std::pair<GlobalPlanning::Path, double>> temp_depart_path_candidates;

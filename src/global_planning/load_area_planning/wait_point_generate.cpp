@@ -296,7 +296,7 @@ double WaitPointGenerator::CalculateGradeAboutLoadPoint(const arc_sample_point& 
     angle_diff        = NormalizeAngle(angle_diff);
 
     // 3. 计算距离评分（越接近 target_dist_diff 越高）
-    double dist_score = LinearScore(sample_point.arc_length, 15, 35);
+    double dist_score = LinearScore(sample_point.arc_length, 15, 20);
 
     // 4. 计算角度评分（越接近 target_angle_diff 越高）
     double angle_score = LinearScore(angle_diff, 0, 90.0);
@@ -384,7 +384,7 @@ GlobalPlanning::Point WaitPointGenerator::FindNearestPoint(double x, double y, c
     return path[closest_idx];
 }
 
-GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& depart_path, GlobalPlanning::CollisonCheck& collision_checker, FittingPathGenerate::FittingPathGenerator& fitting_path_generator, const GlobalPlanning::Path& in_path) {
+GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& depart_path, GlobalPlanning::CollisonCheck& collision_checker, FittingPathGenerate::FittingPathGenerator& fitting_path_generator, const GlobalPlanning::Path& in_path, const GlobalPlanning::_VehicleParam& veh_param) {
     double expect_straight_length = DeterminateStraightLength(load_point, collision_checker);
     cout << "expect_straight_length = " << expect_straight_length << endl;
     GlobalPlanning::Point straight_end;
@@ -401,12 +401,12 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
     cout << "生成采样点完毕" << endl;
     cout << "wait_point_sample_.size() = " << wait_point_sample_.size() << endl;
 
-    //ofstream file;
-    //file.open("wait_point_sample.txt");
-    //for (auto& point : wait_point_sample_) {
-    //    file << point.path_point.x << " " << point.path_point.y << " " << point.path_point.angle << endl;
-    //}
-    //file.close();
+    // ofstream file;
+    // file.open("wait_point_sample.txt");
+    // for (auto& point : wait_point_sample_) {
+    //     file << point.path_point.x << " " << point.path_point.y << " " << point.path_point.angle << endl;
+    // }
+    // file.close();
 
 
     CalculateWaitPointGrade(in_path, load_point);
@@ -417,7 +417,7 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
         temp_end_point.x     = point.path_point.x + 2.0 * cos(point.path_point.angle * M_PI / 180.0);
         temp_end_point.y     = point.path_point.y + 2.0 * sin(point.path_point.angle * M_PI / 180.0);
         temp_end_point.angle = point.path_point.angle;
-        auto temp_wait_path  = fitting_path_generator.WaitPathGenerateInterface(in_path, temp_end_point, collision_checker, false);
+        auto temp_wait_path  = fitting_path_generator.WaitPathGenerateInterface(in_path, temp_end_point, collision_checker, veh_param, false);
         if (IsPathCollision(temp_wait_path.first, depart_path, center2front_, center2rear_, center2side_, safe_margin_front_, safe_margin_rear_, safe_margin_2side_)) {
             // cout << "与装载路径碰撞了:" << point.path_point.x << "," << point.path_point.y << "," << point.path_point.angle << endl;
             // if (fabs(point.path_point.x - 149.1 < 0.1) and fabs(point.path_point.y - -815.93 < 0.1)) {
@@ -449,7 +449,7 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
         temp_end_point.x     = point.path_point.x + 2.0 * cos(point.path_point.angle * M_PI / 180.0);
         temp_end_point.y     = point.path_point.y + 2.0 * sin(point.path_point.angle * M_PI / 180.0);
         temp_end_point.angle = point.path_point.angle;
-        auto wait_path       = fitting_path_generator.WaitPathGenerateInterface(in_path, temp_end_point, collision_checker);
+        auto wait_path       = fitting_path_generator.WaitPathGenerateInterface(in_path, temp_end_point, collision_checker, veh_param, true);
         // ofstream file;
         // string   file_name = "wait_pathes";
         // file_name += std::to_string(i);

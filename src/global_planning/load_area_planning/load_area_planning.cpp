@@ -13,7 +13,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
     GlobalPlanning::Path                      depart_path;
     GlobalPlanning::Point                     queue_point;
     fit_path_planner.threadLogger_ = threadLogger_;
-    depart_path                    = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker).first;
+    depart_path                    = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker, veh_param).first;
     // ofstream file;
     // string   file_name = "depart_parthes.txt";
     // file.open(file_name);
@@ -71,14 +71,14 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
 
     if (planning_mode == 1 or planning_mode == 2) { // 尝试人工指定排队点
         cout << "有排队点模式----------------------------" << endl;
-        wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, wait_point, collision_checker).first;
+        wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, wait_point, collision_checker, veh_param, true).first;
         CalCurvature(wait_path, 1);
         if (wait_path.empty()) {
             cout << "有模式下排队点驶入路径规划失败！" << endl;
             return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
         }
         // wait_path_candidates = fit_path_planner.GetWaitPathCandis();
-        load_path = fit_path_planner.LoadPathGenerateInterface(load_point, wait_point, collision_checker).first;
+        load_path = fit_path_planner.LoadPathGenerateInterface(load_point, wait_point, collision_checker, veh_param).first;
         if (load_path.empty()) {
             cout << "装载倒车路径规划失败,调用混合A*" << endl;
 
@@ -139,7 +139,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             // file.close();
         }
         else {
-            cout << "line74 wait_path ipopt优化失败" << endl;
+            cout << "wait_path ipopt优化失败" << endl;
         }
         auto stitch_path = fit_path_planner.PathCuttoStart(wait_path.front(), in_path);
         wait_path.insert(wait_path.begin(), stitch_path.begin(), stitch_path.end());
@@ -150,7 +150,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         CalculateAngle(temp_load_path);
 
         if (PathSmoother(temp_load_path, veh_param)) {
-            cout << "line170 load_path ipopt优化完成" << endl;
+            cout << "load_path ipopt优化完成" << endl;
             CalculateAngle(temp_load_path);
             for (auto& point : temp_load_path) {
                 point.angle = point.angle * M_PI / 180.0;
@@ -167,7 +167,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
             // file.close();
         }
         else {
-            cout << "line159 load_path ipopt优化失败" << endl;
+            cout << "load_path ipopt优化失败" << endl;
         }
         CalculateAngle(wait_path);
         CalCurvature(wait_path, 1);
@@ -186,7 +186,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
     if (planning_mode == 0) {
         cout << "自动生成排队点模式-----------------------------------" << endl;
         WaitPointGenerate::WaitPointGenerator wait_point_planner(max_curve_length_, min_curve_length_, delta_curve_length_, wheel_base_length_, max_straight_length_, min_straight_length_, delta_straight_length_, max_steering_angle_, min_steering_angle_, delta_steering_angle_, standard_steering_angle_, weight_length_, weight_curve_, out_put_path_dense_, center2front_, center2side_, center2rear_, safe_margin_front_, safe_margin_side_, safe_margin_rear_, collision_weight_);
-        load_path     = wait_point_planner.GenerateWaitPointInterface(load_point, depart_path, collision_checker, fit_path_planner, in_path);
+        load_path     = wait_point_planner.GenerateWaitPointInterface(load_point, depart_path, collision_checker, fit_path_planner, in_path, veh_param);
         sample_points = wait_point_planner.wait_point_sample_;
         if (load_path.empty()) {
             cout << "驶入装载点路径生成失败" << endl;
@@ -195,7 +195,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         cout << "load_path.size() = " << load_path.size() << endl;
         queue_point = load_path.front();
         cout << "最后一边调用：queue_point：x,y,angle = " << queue_point.x << "," << queue_point.y << "," << queue_point.angle << endl;
-        wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, queue_point, collision_checker).first;
+        wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, queue_point, collision_checker, veh_param, true).first;
         if (wait_path.empty()) {
             cout << "驶入排队点路径生成失败" << endl;
             return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
