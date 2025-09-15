@@ -48,12 +48,7 @@ class CollisonCheck {
 
      */
     bool IsRSPathCollision(const Path& my_rspath);
-    /**
-     * @brief 判断优化路径是否跟边界碰撞函数
-     * @param[in] my_optipath  优化路径
-     * @return 返回碰撞点索引
-     */
-    vector<unsigned int> OptiPathCollisionCheck(const Path& my_optipath);
+    
 
     /**
      * @brief 判断优化路径是否跟所有障碍物碰撞函数
