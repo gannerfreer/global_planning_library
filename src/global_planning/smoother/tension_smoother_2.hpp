@@ -10,7 +10,7 @@
 #include <cppad/cppad.hpp>
 #include <cppad/ipopt/solve.hpp>
 #include <vector>
-
+#include "../globalvariable.h"
 #include "../common/common_struct.h"
 #include "OsqpEigen/OsqpEigen.h"
 

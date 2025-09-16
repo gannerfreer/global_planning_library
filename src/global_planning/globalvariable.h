@@ -103,23 +103,21 @@ class GlobalVariable // 单例类
         self_driving_sequence_mapping_ = newMapping;
     }
 
-     // 新增的 self_driving_sequence_mapping_ 的 get 和 set 方法
-     const std::vector<_SingleTraj>& GetInGuidingPaths() const {
+    // 新增的 self_driving_sequence_mapping_ 的 get 和 set 方法
+    const std::vector<_SingleTraj>& GetInGuidingPaths() const {
         return in_guiding_paths_;
     }
     void SetInGuidingPaths(const std::vector<_SingleTraj>& input_paths) {
         in_guiding_paths_ = input_paths;
     }
 
-     // 新增的 self_driving_sequence_mapping_ 的 get 和 set 方法
-     const std::vector<_SingleTraj>& GetOutGuidingPaths() const {
+    // 新增的 self_driving_sequence_mapping_ 的 get 和 set 方法
+    const std::vector<_SingleTraj>& GetOutGuidingPaths() const {
         return out_guiding_paths_;
     }
     void SetOutGuidingPaths(const std::vector<_SingleTraj>& output_paths) {
         out_guiding_paths_ = output_paths;
     }
-
-
 
 
     // Setters
@@ -144,7 +142,7 @@ class GlobalVariable // 单例类
 
 
     // 全局锁
-    std::shared_mutex parse_func_write_lock, record_file_write_lock, return_write_lock, assignment_operation_lock;
+    std::shared_mutex parse_func_write_lock, record_file_write_lock, return_write_lock, assignment_operation_lock, cppad_operation_lock;
 
     void CreateSelfDrivingDirectedGraph(const std::map<int, std::vector<int>>& self_driving_referenceline_relation);
 
@@ -158,7 +156,7 @@ class GlobalVariable // 单例类
     std::map<int, std::vector<int>>  self_driving_referenceline_relation_, human_driving_referenceline_relation_;
     std::vector<std::vector<double>> self_driving_referenceline_graph_;
     std::vector<int>                 self_driving_sequence_mapping_; // 序列映射关系
-    int                              dispatch_nums=0;
+    int                              dispatch_nums = 0;
     std::vector<_SingleTraj>         in_guiding_paths_, out_guiding_paths_;
     std::string                      global_str;
     char*                            receive_ptr;

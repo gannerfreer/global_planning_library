@@ -238,51 +238,56 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     options += "Sparse  true        forward\n";
     options += "Sparse  true        reverse\n";
     options += "Numeric max_cpu_time          1\n";
+    {
+        std::unique_lock<std::shared_mutex> lock(GlobalVariable::getInstance()->cppad_operation_lock);
+        // place to return solution
+        CppAD::ipopt::solve_result<Dvector> solution;
+        // weights of the cost function
 
-    // place to return solution
-    CppAD::ipopt::solve_result<Dvector> solution;
-    // weights of the cost function
 
-    FgEvalQPSmoothing fg_eval_reference_smoothing(x_list, y_list, s_list, angle_list, k_list, m_vehicle_param_);
+        FgEvalQPSmoothing fg_eval_reference_smoothing(x_list, y_list, s_list, angle_list, k_list, m_vehicle_param_);
 
-    // solve the problem
-    CppAD::ipopt::solve<Dvector, FgEvalQPSmoothing>(options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound, constraints_upperbound, fg_eval_reference_smoothing, solution);
+        // solve the problem
+        CppAD::ipopt::solve<Dvector, FgEvalQPSmoothing>(options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound, constraints_upperbound, fg_eval_reference_smoothing, solution);
 
-    // Check if it works
-    bool ok = solution.status == CppAD::ipopt::solve_result<Dvector>::success;
-    std::cout << "solution.status: " << solution.status << std::endl;
-    if (!ok) {
-        // LOG(ERROR) << "Tension smoothing 2 ipopt solver failed!";
-        return false;
+        // Check if it works
+        bool ok = solution.status == CppAD::ipopt::solve_result<Dvector>::success;
+        std::cout << "solution.status: " << solution.status << std::endl;
+
+        if (!ok) {
+            // LOG(ERROR) << "Tension smoothing 2 ipopt solver failed!";
+            return false;
+        }
+
+
+        // 输出所有优化后的变量
+        std::cout << "优化后的变量结果：" << std::endl;
+        std::cout << "索引\tx\ty\ttheta\tk" << std::endl;
+        for (size_t i = 0; i != point_num; ++i) {
+            std::cout << i << "\t" << solution.x[x_idx_begin + i] << "\t" << solution.x[y_idx_begin + i] << "\t" << solution.x[theta_idx_begin + i] << "\t";
+            std::cout << solution.x[k_idx_begin + i];
+
+            std::cout << std::endl;
+        }
+
+        // output
+        result_s_list->clear();
+        result_x_list->clear();
+        result_y_list->clear();
+        result_curvature_list->clear();
+        result_angle_list->clear();
+        double tmp_s = 0;
+        for (size_t i = 0; i < point_num; ++i) {
+            result_x_list->emplace_back(solution.x[x_idx_begin + i]);
+            result_y_list->emplace_back(solution.x[y_idx_begin + i]);
+            if (i != 0) tmp_s += sqrt(pow(result_x_list->at(i) - result_x_list->at(i - 1), 2) + pow(result_y_list->at(i) - result_y_list->at(i - 1), 2));
+            result_s_list->emplace_back(tmp_s);
+            result_angle_list->emplace_back(solution.x[theta_idx_begin + i]);
+
+            result_curvature_list->emplace_back(solution.x[k_idx_begin + i]);
+        }
+        std::cout << "success ipopt" << std::endl;
     }
-
-    // 输出所有优化后的变量
-    std::cout << "\n优化后的变量结果：" << std::endl;
-    std::cout << "索引\tx\ty\ttheta\tk" << std::endl;
-    for (size_t i = 0; i != point_num; ++i) {
-        std::cout << i << "\t" << solution.x[x_idx_begin + i] << "\t" << solution.x[y_idx_begin + i] << "\t" << solution.x[theta_idx_begin + i] << "\t";
-        std::cout << solution.x[k_idx_begin + i];
-
-        std::cout << std::endl;
-    }
-
-    // output
-    result_s_list->clear();
-    result_x_list->clear();
-    result_y_list->clear();
-    result_curvature_list->clear();
-    result_angle_list->clear();
-    double tmp_s = 0;
-    for (size_t i = 0; i < point_num; ++i) {
-        result_x_list->emplace_back(solution.x[x_idx_begin + i]);
-        result_y_list->emplace_back(solution.x[y_idx_begin + i]);
-        if (i != 0) tmp_s += sqrt(pow(result_x_list->at(i) - result_x_list->at(i - 1), 2) + pow(result_y_list->at(i) - result_y_list->at(i - 1), 2));
-        result_s_list->emplace_back(tmp_s);
-        result_angle_list->emplace_back(solution.x[theta_idx_begin + i]);
-
-        result_curvature_list->emplace_back(solution.x[k_idx_begin + i]);
-    }
-    // LOG(INFO) << "Tension smoothing 2 ipopt solver succeeded!";
     return true;
 }
 
