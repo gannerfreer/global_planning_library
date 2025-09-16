@@ -51,6 +51,7 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
         next_k                                = vars[k_idx_begin + i + 1];
         fg[cons_curvature_rate_idx_begin + i] = pow((cur_k - next_k), 2); // 曲率变化约束，要求相邻路径点之前的曲率变化不能太大，否则会导致路径不平滑
     }
+    cout<<"operator() success"<<std::endl;
 }
 
 TensionSmoother2::TensionSmoother2(const std::vector<Point>& input_points, _VehicleParam m_vehicle_param) : input_points_(input_points), m_vehicle_param_(m_vehicle_param) {}
@@ -85,6 +86,7 @@ bool TensionSmoother2::smooth(std::vector<Point>& result) {
         std::cout << "Tension smoother failed!" << std::endl;
         return false;
     }
+    cout << "solver_ok " << solver_ok << std::endl;
 
     result.resize(result_x_list.size());
     for (int i = 0; i < result_x_list.size(); i++) {
@@ -94,6 +96,7 @@ bool TensionSmoother2::smooth(std::vector<Point>& result) {
         result.at(i).curvature = result_curvature_list.at(i);
         result.at(i).angle     = result_angle_list.at(i);
     }
+    cout << "smooth success" << std::endl;
 
     return true;
 }
@@ -255,7 +258,7 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     }
 
     // 输出所有优化后的变量
-    std::cout << "\n优化后的变量结果：" << std::endl;
+    std::cout << "优化后的变量结果：" << std::endl;
     std::cout << "索引\tx\ty\ttheta\tk" << std::endl;
     for (size_t i = 0; i != point_num; ++i) {
         std::cout << i << "\t" << solution.x[x_idx_begin + i] << "\t" << solution.x[y_idx_begin + i] << "\t" << solution.x[theta_idx_begin + i] << "\t";
@@ -280,7 +283,7 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
 
         result_curvature_list->emplace_back(solution.x[k_idx_begin + i]);
     }
-    // LOG(INFO) << "Tension smoothing 2 ipopt solver succeeded!";
+    std::cout << "success ipopt" << std::endl;
     return true;
 }
 
@@ -380,15 +383,15 @@ bool TensionSmoother2::osqpSmooth(const std::vector<double>& x_list, const std::
             result_curvature_list->emplace_back(result_curvature_list->back());
         }
 
-        // 打印 temp_x temp_y temp_s temp_angle temp_curvature
-        std::ofstream outfile("/home/yyf/test_ipopt/tension_smoother_2.txt", std::ios::app);
-        if (i != point_num - 1) {
-            std::cout << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
-            // 将上述数据保存为文件
+        // // 打印 temp_x temp_y temp_s temp_angle temp_curvature
+        // std::ofstream outfile("/home/yyf/test_ipopt/tension_smoother_2.txt", std::ios::app);
+        // if (i != point_num - 1) {
+        //     std::cout << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
+        //     // 将上述数据保存为文件
 
-            outfile << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
-        }
-        outfile.close();
+        //     outfile << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
+        // }
+        // outfile.close();
     }
     return true;
 }

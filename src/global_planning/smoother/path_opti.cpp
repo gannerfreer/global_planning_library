@@ -10,7 +10,6 @@
 #include <thread>
 
 
-
 using namespace GlobalPlanning;
 
 /**
@@ -44,11 +43,11 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     // file_out.close();
 
 
-    file_out.open("path_smooth_before.txt");
-    for (size_t index = 0; index < path_.size(); index++) {
-        file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
-    }
-    file_out.close();
+    // file_out.open("path_smooth_before.txt");
+    // for (size_t index = 0; index < path_.size(); index++) {
+    //     file_out << setprecision(4) << path_.at(index).x << " " << path_.at(index).y << " " << path_.at(index).angle / M_PI * 180 << " " << path_.at(index).direction << " " << path_.at(index).curvature << endl;
+    // }
+    // file_out.close();
     // 采用优化方案失败，则继续采用传统平滑方案
     // 得到节点和固定点索引
     GetCuspIndex();     // 得到尖点索引查询表cuspLookup
@@ -86,11 +85,11 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     Helper::CalDistance(new_path_);
 
 
-    file_out.open("path_smooth_after_tidu.txt");
-    for (size_t index = 0; index < new_path_.size(); index++) {
-        file_out << setprecision(4) << new_path_.at(index).x << " " << new_path_.at(index).y << " " << new_path_.at(index).angle / M_PI * 180 << " " << new_path_.at(index).direction << " " << new_path_.at(index).curvature << endl;
-    }
-    file_out.close();
+    // file_out.open("path_smooth_after_tidu.txt");
+    // for (size_t index = 0; index < new_path_.size(); index++) {
+    //     file_out << setprecision(4) << new_path_.at(index).x << " " << new_path_.at(index).y << " " << new_path_.at(index).angle / M_PI * 180 << " " << new_path_.at(index).direction << " " << new_path_.at(index).curvature << endl;
+    // }
+    // file_out.close();
 
 
     // InterpolationPath(new_path_);
@@ -106,11 +105,11 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
         threadLogger_->info("osqp优化失败，继续采用传统平滑方案");
         opti_path = new_path_;
     }
-    file_out.open("path_smooth_after_ipopt_new_curvature.txt");
-    for (size_t index = 0; index < opti_path.size(); index++) {
-        file_out << setprecision(4) << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
-    }
-    file_out.close();
+    // file_out.open("path_smooth_after_ipopt_new_curvature.txt");
+    // for (size_t index = 0; index < opti_path.size(); index++) {
+    //     file_out << setprecision(4) << opti_path.at(index).x << " " << opti_path.at(index).y << " " << opti_path.at(index).angle / M_PI * 180 << " " << opti_path.at(index).direction << " " << opti_path.at(index).curvature << endl;
+    // }
+    // file_out.close();
 }
 
 void Path_Opti::SmoothPath() {
@@ -326,19 +325,21 @@ void Path_Opti::UpdateFixPointSet(const vector<unsigned int> points) {
 bool Path_Opti::SmoothSegmentPath(const Path& input_path, Path& output_path, CollisonCheck& collison_check) {
     TensionSmoother2 smoother(input_path, m_vehicle_param_);
     smoother.threadLogger_ = threadLogger_;
-
+    cout << "开始优化" << endl;
     if (!smoother.smooth(output_path)) {
         threadLogger_->info("优化方案优化失败");
+        cout << "优化方案优化失败" << endl;
         return false;
     }
     threadLogger_->info("优化方案优化成功");
+    cout << "优化方案优化成功" << endl;
 
-    std::ofstream file_out;
-    file_out.open("path_smooth_after_ipopt.txt");
-    for (size_t index = 0; index < output_path.size(); index++) {
-        file_out << setprecision(4) << output_path.at(index).x << " " << output_path.at(index).y << " " << output_path.at(index).angle / M_PI * 180 << " " << output_path.at(index).direction << " " << output_path.at(index).curvature << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("path_smooth_after_ipopt.txt");
+    // for (size_t index = 0; index < output_path.size(); index++) {
+    //     file_out << setprecision(4) << output_path.at(index).x << " " << output_path.at(index).y << " " << output_path.at(index).angle / M_PI * 180 << " " << output_path.at(index).direction << " " << output_path.at(index).curvature << endl;
+    // }
+    // file_out.close();
 
     // 计算曲率
     CurvatureCal(output_path);
@@ -401,6 +402,7 @@ bool Path_Opti::OsqpSmooth(const Path& path_, Path& opti_path, CollisonCheck& co
         }
     }
     threadLogger_->info("准备对hybridA*路径进行优化，一共分 {} 段", segments.size());
+    cout << "准备对hybridA*路径进行优化，一共分 " << segments.size() << " 段" << endl;
     // 对每一段进行优化
     for (const auto& segment : segments) {
         Path segment_path(segment);
@@ -409,14 +411,17 @@ bool Path_Opti::OsqpSmooth(const Path& path_, Path& opti_path, CollisonCheck& co
         // 判断segment_path为前进还是后退路段，如果为后退，则将segment_path反向,否则会因为角度反向问题导致优化失败
         if (segment_path.at(0).direction == MotionDirection::Backward) {
             threadLogger_->info("倒车路段");
+            cout << "倒车路段" << endl;
             std::reverse(segment_path.begin(), segment_path.end());
         }
         else {
             threadLogger_->info("前进路段");
+            cout << "前进路段" << endl;
         }
         // 重新计算segment_path的累积s
         Helper::CalDistance(segment_path);
         threadLogger_->info("开始优化当前段");
+        cout << "开始优化当前段" << endl;
         if (!SmoothSegmentPath(segment_path, opti_segment, collison_check)) {
             return false;
         }
