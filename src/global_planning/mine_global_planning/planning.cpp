@@ -70,7 +70,6 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     }
 
 
-
     threadLogger_->info("PathPlanning 成功");
     cout << "PathPlanning 成功" << endl;
 
@@ -498,7 +497,21 @@ PlanResult Planning::PathPlanning() {
     end_point_.yaw   = end_point_.yaw / 180.0 * M_PI;
     threadLogger_->info(" task_type_: {}", (int)task_type_);
 
+
+    // 先判断是否有下发的路径，如果有下发的路径，则判断下发的路径是否合理，过远则不采用，优先走引导路径（此处代码是为了处理后台下发路径不合理的情况，属于为后台兜底，打了个补丁）
+    double nearest_distance = std::numeric_limits<double>::max();
     if (reference_paths_.size() > 0) {
+        for (int i = 0; i < reference_paths_.back().size(); i++) {
+            double distance = hypot(reference_paths_.back()[i].x - start_point_.x, reference_paths_.back()[i].y - start_point_.y);
+            if (distance < nearest_distance) {
+                nearest_distance = distance;
+            }
+        }
+        threadLogger_->info("收到后台下发的路径，车辆距离出去的路径最近距离:{}", nearest_distance);
+        cout << "收到后台下发的路径，车辆距离出去的路径最近距离: " << nearest_distance << endl;
+    }
+
+    if (reference_paths_.size() > 0 && nearest_distance < 100) {
         // 如果后台下发的要求拟合的参考路径不为空，则采用拟合的参考路径
         // 遍历每个路径的最后一个点，判断哪条路径的最后一个点距离end_point_最近，挑选出的这条路径,并算出start_point_距离这条路最近点的索引
         threadLogger_->info("reference_paths_.size():{}", reference_paths_.size());
@@ -608,7 +621,8 @@ PlanResult Planning::PathPlanning() {
         }
     }
     else {
-        threadLogger_->info("reference_paths_为空");
+        threadLogger_->info("没有收到后台下发的路径,或者后台下发的路径不合理，采用引导路径规划");
+        cout << "没有收到后台下发的路径,或者后台下发的路径不合理，采用引导路径规划" << endl;
     }
 
     if (task_type_ == TaskType::TEMP_MOVE_CAR) {
@@ -618,7 +632,7 @@ PlanResult Planning::PathPlanning() {
         return result;
     }
     else {
-        threadLogger_->info("调度、装载、卸载");
+        threadLogger_->info("调度、装载、卸载、驶离装载区");
         // 在这里判断装载和卸载任务终点是否位于参考路径上
         double temp_end_lat_dis, temp_end_lon_dis     = 0;
         double temp_start_lat_dis, temp_start_lon_dis = 0;
