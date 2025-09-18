@@ -149,8 +149,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.veh_center_2_side " << veh_start_end.veh_param.veh_center_2_side << endl;
             }
             else {
-                veh_start_end.veh_param.veh_center_2_side = 1.735;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.735" << endl;
+                veh_start_end.veh_param.veh_center_2_side = 1.77;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.77" << endl;
             }
 
             if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
@@ -158,8 +158,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.veh_center_2_front " << veh_start_end.veh_param.veh_center_2_front << endl;
             }
             else {
-                veh_start_end.veh_param.veh_center_2_front = 7.3;
-                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.3" << endl;
+                veh_start_end.veh_param.veh_center_2_front = 7.102;
+                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.102" << endl;
             }
 
             if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {
@@ -1752,8 +1752,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.veh_param.veh_center_2_side " << planning_info.veh_param.veh_center_2_side << std::endl;
             }
             else {
-                planning_info.veh_param.veh_center_2_side = 1.735;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.735" << endl;
+                planning_info.veh_param.veh_center_2_side = 1.77;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.77" << endl;
             }
 
             if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
@@ -1761,8 +1761,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.veh_param.veh_center_2_front " << planning_info.veh_param.veh_center_2_front << std::endl;
             }
             else {
-                planning_info.veh_param.veh_center_2_front = 7.3;
-                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.3" << endl;
+                planning_info.veh_param.veh_center_2_front = 7.102;
+                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.102" << endl;
             }
 
             if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {

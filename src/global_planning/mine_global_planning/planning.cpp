@@ -153,6 +153,8 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     }
     file_out.close();
 
+   
+
 
     // 对进行速度规划前的路径基于梯度下降进行平滑
     // std::ofstream file_out;
@@ -518,10 +520,18 @@ PlanResult Planning::PathPlanning() {
         double min_distance = 1000;
         int    min_index    = 0;
         for (int i = 0; i < reference_paths_.size(); i++) {
+            // 判断距离是否合理
             double distance = hypot(reference_paths_[i].back().x - end_point_.x, reference_paths_[i].back().y - end_point_.y);
             if (distance < min_distance) {
                 min_distance = distance;
                 min_index    = i;
+            }
+            // 判断角度是否合理
+            double angle_diff = fabs(end_point_.yaw - reference_paths_[min_index].back().yaw) > M_PI ? 2 * M_PI - fabs(end_point_.yaw - reference_paths_[min_index].back().yaw) : fabs(end_point_.yaw - reference_paths_[min_index].back().yaw);
+            if (angle_diff > 5.0 / M_PI * 180.0) {
+                threadLogger_->info("给定终点角度偏离参考路径，角度差:{}", angle_diff / M_PI * 180.0);
+                threadLogger_->error("给定终点角度偏离参考路径，放弃此次规划");
+                return PlanResult::EndPoint_Deviation;
             }
         }
         if (min_distance > 0.3) {
@@ -1448,6 +1458,7 @@ PlanResult Planning::HybirdAStarFitting() {
     // 只看起点
     if (start_need_fitting) // 起点需要进行HybirdA*拟合
     {
+        threadLogger_->info("起点需要进行HybirdA*拟合");
         // 对global_path的构型进行识别，
         if (IsForwardAndBackwardReferencePath()) {
             threadLogger_->info("识别出global_path_为特殊构型");
@@ -1857,7 +1868,7 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
         vC.push_back(temp_point);
     }
     map_border.push_back(vC);
-    threadLogger_->info("part_map_border.size():{}", map_border.size());
+    threadLogger_->info("part_map_border.size():{} part_map_border.front().size():{}", map_border.size(), map_border.front().size());
 
     for (unsigned int i = 0; i < wall_borders_.size(); ++i) {
         vector<_BorderPoint> temp_bound = wall_borders_.at(i);
@@ -1889,7 +1900,7 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
         }
         machine_borders.push_back(temp_bound_2);
     }
-    threadLogger_->info("machine_borders.size():{}", machine_borders.size());
+    threadLogger_->info("machine_borders.size():{} machine_borders.front().size():{}", machine_borders.size(), machine_borders.front().size());
 
     CollisonCheck collison_check;
     collison_check.InitParam(vehicle_param_);
@@ -1960,11 +1971,39 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
                 input_path.at(i).y -= 0.2 * (e2 - 4 * d2 + 6 * c2 - 4 * b2 + a2);
             }
         }
+        //重新计算优化一轮后的路径点角度
+        for (unsigned int i = 1; i < input_path.size() - 1; i++) {
+            if (cusp_set.count(i)) {
+                continue;
+            }
+            double dx    = (input_path.at(i + 1).x - input_path.at(i - 1).x);
+            double dy    = (input_path.at(i + 1).y - input_path.at(i - 1).y);
+            double angle = atan(dy / dx);
+            if (dx < 0)
+                angle = angle + M_PI;
+            else if (dx >= 0 && dy < 0)
+                angle = angle + 2 * M_PI;
+            else
+                ;
+            if (input_path.at(i).direction == MotionDirection::Backward) // 表示后退
+            {
+                input_path.at(i).yaw = Helper::NormalizeAngleRad(angle + M_PI);
+            }
+            else {
+                input_path.at(i).yaw = Helper::NormalizeAngleRad(angle);
+            }
+        }
+        //检查重新计算优化一轮后的路径点是否与地图边界发生碰撞，如果发生碰撞，则将碰撞点固定，继续优化
         vector<unsigned int> collision_point;
         for (int i = 0; i < input_path.size(); i++) {
+            
             if (collison_check.IsVehicleCollisionWithAll(Point(input_path.at(i).x, input_path.at(i).y, input_path.at(i).z, input_path.at(i).yaw, static_cast<GlobalPlanning::MotionDirection>(input_path.at(i).direction)))) {
                 collision_point.push_back(i);
+                if (i - 1 >= 0) {
+                    collision_point.push_back(i - 1);
+                }
             }
+           
         }
 
         auto curvature_exceed = CurvatureCheck(input_path);
@@ -1989,29 +2028,6 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
     if (out_iterations >= 10) {
         threadLogger_->info("梯度下降法迭代10轮后，仍存在点曲率超标或者碰撞，保持原样路径输出");
         input_path = origin_path;
-    }
-
-
-    for (unsigned int i = 1; i < input_path.size() - 1; i++) {
-        if (cusp_set.count(i)) {
-            continue;
-        }
-        double dx    = (input_path.at(i + 1).x - input_path.at(i - 1).x);
-        double dy    = (input_path.at(i + 1).y - input_path.at(i - 1).y);
-        double angle = atan(dy / dx);
-        if (dx < 0)
-            angle = angle + M_PI;
-        else if (dx >= 0 && dy < 0)
-            angle = angle + 2 * M_PI;
-        else
-            ;
-        if (input_path.at(i).direction == MotionDirection::Backward) // 表示后退
-        {
-            input_path.at(i).yaw = Helper::NormalizeAngleRad(angle + M_PI);
-        }
-        else {
-            input_path.at(i).yaw = Helper::NormalizeAngleRad(angle);
-        }
     }
 }
 
@@ -2342,13 +2358,15 @@ bool Planning::IsGlobalPathCollision() {
         const auto& pt = global_path_[i];
         Point       check_point(pt.x, pt.y, pt.z, pt.yaw / 180.0 * M_PI, static_cast<MotionDirection>(pt.direction));
         if (collison_check.IsVehicleCollisionWithAll(check_point)) {
-            threadLogger_->info("全局路径与地图边界发生碰撞，碰撞点：{} {} {}", pt.x, pt.y, pt.yaw);
+            threadLogger_->info("全局路径与地图边界发生碰撞，碰撞点：{} {} {} {}", pt.x, pt.y, pt.yaw, static_cast<int>(pt.direction));
             return false;
         }
     }
     threadLogger_->info("全局路径与地图边界未发生碰撞");
     return true;
 }
+
+
 
 PlanResult Planning::CheckStartPointAndEndPoint() {
     // 规划库最后的路径平滑，需要考虑边界、动态挡墙（100m内）、挖掘机边界（100m内）
