@@ -1,9 +1,9 @@
 #include "load_area_planning.h"
 namespace LoadAreaPlanning {
 std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Path, GlobalPlanning::Path> LoadAreaPlanning::LoadAreaPlanningInterface(int planning_mode, const GlobalPlanning::Point& temp_wait_point, const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& in_path, GlobalPlanning::Path out_path, GlobalPlanning::CollisonCheck& collision_checker, const vector<_BorderPoint>& static_bound, const vector<vector<_BorderPoint>>& wall_bound, const vector<vector<_BorderPoint>>& machine_bound) {
-    cout << "收到地图" << static_bound.size() << "组" << endl;
-    cout << "收到挡墙" << wall_bound.size() << "组" << "wall_bound.at(0).size():" << wall_bound.front().size() << endl;
-    cout << "收到挖掘" << machine_bound.size() << "组" << "machine_bound.at(0).size():" << machine_bound.front().size() << endl;
+    // cout << "收到地图" << static_bound.size() << "组" << endl;
+    // cout << "收到挡墙" << wall_bound.size() << "组" << "wall_bound.at(0).size():" << wall_bound.front().size() << endl;
+    // cout << "收到挖掘" << machine_bound.size() << "组" << "machine_bound.at(0).size():" << machine_bound.front().size() << endl;
 
     auto wait_point  = temp_wait_point;
     wait_point.angle = normalizeAngle(wait_point.angle);
