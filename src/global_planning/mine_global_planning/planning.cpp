@@ -1,5 +1,7 @@
 #include "planning.h"
 
+#include <sys/stat.h>
+
 
 Planning::Planning() {
     InitialFunction();
@@ -16,6 +18,7 @@ bool Planning::InitialFunction() {
     wall_borders_.clear();
     all_referencelines_.clear();
     global_path_.clear();
+    all_possible_global_paths_.clear();
     v_has_calculate_pair_.clear();
     reference_paths_.clear();
 
@@ -56,6 +59,7 @@ bool Planning::ReadAllMapFile() {
 void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
     path.clear();
     global_path_.clear();
+    all_possible_global_paths_.clear();
     PlanResult result = PlanResult::Plan_OK;
     error_type_       = ErrorType::SUCCESS;
     // 路径规划：作业点参考路径匹配及裁剪拼接
@@ -152,8 +156,6 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
         file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
     }
     file_out.close();
-
-   
 
 
     // 对进行速度规划前的路径基于梯度下降进行平滑
@@ -605,6 +607,7 @@ PlanResult Planning::PathPlanning() {
                             Helper::CalNearestIndex(end_point_, temp_end_traj, end_index_, end_lat_dis_, end_lon_dis_, end_distance_, end_angle_diff_);
                             start_index_ = 0;
                             PathClipAndSplice();
+                            all_possible_global_paths_.push_back(global_path_);
                             return PlanResult::Plan_OK;
                         }
                     }
@@ -795,9 +798,14 @@ PlanResult Planning::FollowReferencelinePlanning() {
     }
     cout << endl;
 
-    start_search_radius = 0.5;
+    start_search_radius              = 0.5;
+    bool   found_reasonable_vec_path = false;
+    bool   first_found               = true;
+    double first_found_dis           = std::numeric_limits<double>::max();
+
+
     // 起点采用渐进式扩大搜索策略，从0.5m初始搜索半径开始
-    while (start_search_radius <= 100) {
+    while (start_search_radius <= 100 && found_reasonable_vec_path == false) {
         if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
             cout << "起点搜索半径：:" << start_search_radius << "  搜索到路径数量:  " << start_path_vec.size() << endl;
 
@@ -818,6 +826,11 @@ PlanResult Planning::FollowReferencelinePlanning() {
                     }
                     threadLogger_->info("索引  start:{},end:{}", start, end);
                     if (IsConnect(start, end)) {
+                        if (first_found) {
+                            threadLogger_->info("首次找到联通路径，起点搜索半径:{}", start_search_radius);
+                            first_found_dis = start_search_radius;
+                            first_found     = false;
+                        }
                         threadLogger_->info("路径{}与路径{}联通", sequence_mapping_.at(start), sequence_mapping_.at(end));
                         cout << "路径 " << sequence_mapping_.at(start) << " 与路径 " << sequence_mapping_.at(end) << " 联通" << endl;
 
@@ -839,7 +852,8 @@ PlanResult Planning::FollowReferencelinePlanning() {
 
                         // 路径裁剪拼接
                         PathClipAndSplice();
-                        return PlanResult::Plan_OK;
+                        all_possible_global_paths_.push_back(global_path_);
+                        global_path_.clear();
                     }
                     else {
                         threadLogger_->info("start:{},end:{}", start, end);
@@ -855,6 +869,14 @@ PlanResult Planning::FollowReferencelinePlanning() {
             cout << "起点搜索半径" << start_search_radius << "无参考路径 " << endl;
         }
         start_search_radius += 0.5;
+        if (start_search_radius >= first_found_dis + 10) {
+            found_reasonable_vec_path = true;
+        }
+    }
+
+    if (all_possible_global_paths_.size()) {
+        threadLogger_->info("找到合理的路径集，路径集数量:{},最近距离:{}", all_possible_global_paths_.size(), first_found_dis);
+        return PlanResult::Plan_OK;
     }
     if (is_found) {
         // 起点周围有参考路径，但是没有联通的参考路径
@@ -1437,6 +1459,24 @@ PlanResult Planning::HybirdAStarFitting() {
     cout << "dubins 预拟合碰撞检测完毕" << endl;
     // 基于横纵向距离来判断是否进行hybirdA*拟合
     threadLogger_->info("Enter HybirdAStarFitting");
+
+
+    // 选择最短路径
+    int min_distance = std::numeric_limits<int>::max();
+    for (auto& path : all_possible_global_paths_) {
+        if (path.size() < min_distance) {
+            min_distance = path.size();
+            global_path_ = path;
+        }
+    }
+
+
+    threadLogger_->info("最终挑选出来的global_path_信息");
+    for (int i = 0; i < global_path_.size(); i++) {
+        threadLogger_->info("x:{} y:{} yaw:{} direction:{} attribute:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).yaw / M_PI * 180.0, static_cast<int>(global_path_.at(i).direction), static_cast<int>(global_path_.at(i).attribute));
+    }
+
+
     bool   start_need_fitting     = false;
     bool   load_unload_start_flag = false; // 此标志位为true时，表明是从装载点\卸载点出来的调度任务
     double nearest_distance       = 0;
@@ -1868,8 +1908,9 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
         vC.push_back(temp_point);
     }
     map_border.push_back(vC);
-    threadLogger_->info("part_map_border.size():{} part_map_border.front().size():{}", map_border.size(), map_border.front().size());
-
+    if (map_border.size() > 0) {
+        threadLogger_->info("part_map_border.size():{} part_map_border.front().size():{}", map_border.size(), map_border.front().size());
+    }
     for (unsigned int i = 0; i < wall_borders_.size(); ++i) {
         vector<_BorderPoint> temp_bound = wall_borders_.at(i);
         vector<Coordinate>   temp_bound_2;
@@ -1886,6 +1927,7 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
     }
     threadLogger_->info("wall_borders.size():{}", wall_borders.size());
 
+
     for (unsigned int i = 0; i < machine_borders_.size(); ++i) {
         vector<_BorderPoint> temp_bound = machine_borders_.at(i);
         vector<Coordinate>   temp_bound_2;
@@ -1900,7 +1942,9 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
         }
         machine_borders.push_back(temp_bound_2);
     }
-    threadLogger_->info("machine_borders.size():{} machine_borders.front().size():{}", machine_borders.size(), machine_borders.front().size());
+    if (machine_borders.size() > 0) {
+        threadLogger_->info("machine_borders.size():{} machine_borders.front().size():{}", machine_borders.size(), machine_borders.front().size());
+    }
 
     CollisonCheck collison_check;
     collison_check.InitParam(vehicle_param_);
@@ -1971,7 +2015,7 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
                 input_path.at(i).y -= 0.2 * (e2 - 4 * d2 + 6 * c2 - 4 * b2 + a2);
             }
         }
-        //重新计算优化一轮后的路径点角度
+        // 重新计算优化一轮后的路径点角度
         for (unsigned int i = 1; i < input_path.size() - 1; i++) {
             if (cusp_set.count(i)) {
                 continue;
@@ -1993,17 +2037,15 @@ void Planning::SmoothPath(vector<_TrajectoryPoint>& input_path) {
                 input_path.at(i).yaw = Helper::NormalizeAngleRad(angle);
             }
         }
-        //检查重新计算优化一轮后的路径点是否与地图边界发生碰撞，如果发生碰撞，则将碰撞点固定，继续优化
+        // 检查重新计算优化一轮后的路径点是否与地图边界发生碰撞，如果发生碰撞，则将碰撞点固定，继续优化
         vector<unsigned int> collision_point;
         for (int i = 0; i < input_path.size(); i++) {
-            
             if (collison_check.IsVehicleCollisionWithAll(Point(input_path.at(i).x, input_path.at(i).y, input_path.at(i).z, input_path.at(i).yaw, static_cast<GlobalPlanning::MotionDirection>(input_path.at(i).direction)))) {
                 collision_point.push_back(i);
                 if (i - 1 >= 0) {
                     collision_point.push_back(i - 1);
                 }
             }
-           
         }
 
         auto curvature_exceed = CurvatureCheck(input_path);
@@ -2365,7 +2407,6 @@ bool Planning::IsGlobalPathCollision() {
     threadLogger_->info("全局路径与地图边界未发生碰撞");
     return true;
 }
-
 
 
 PlanResult Planning::CheckStartPointAndEndPoint() {
