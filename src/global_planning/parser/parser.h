@@ -904,14 +904,16 @@ bool GetMap(char* parea) {
             throw std::runtime_error("JSON数据中缺少有效的reference_trajs数组");
         }
 
-        const Value&               trajsArray = doc["reference_trajs"];
-        std::map<int, _SingleTraj> m_traj_self_driving, m_traj_human_driving;
-        std::vector<_SingleTraj>   input_paths, output_paths;
-        _SingleTraj                traj;
-        _TrajectoryPoint           tp;
-        int                        traj_type   = -1;
-        double                     speed_limit = -1;
-        int                        guid_type   = 0;
+        const Value&                  trajsArray = doc["reference_trajs"];
+        std::map<int, _SingleTraj>    m_traj_self_driving, m_traj_human_driving;
+        map<int, vector<_SingleTraj>> input_paths;
+        map<int, vector<_SingleTraj>> output_paths;
+        _SingleTraj                   traj;
+        _TrajectoryPoint              tp;
+        int                           traj_type   = -1;
+        double                        speed_limit = -1;
+        int                           guid_type   = 0;
+        int                           region_id   = -1;
 
         for (SizeType i = 0; i < trajsArray.Size(); i++) {
             const Value& trajObj = trajsArray[i];
@@ -929,6 +931,9 @@ bool GetMap(char* parea) {
             speed_limit = trajObj.HasMember("speed_limit") && trajObj["speed_limit"].IsDouble() ? trajObj["speed_limit"].GetDouble() : -1;
 
             guid_type = trajObj.HasMember("guid_type") && trajObj["guid_type"].IsInt() ? trajObj["guid_type"].GetInt() : 0;
+
+            region_id = trajObj.HasMember("region_id") && trajObj["region_id"].IsInt() ? trajObj["region_id"].GetInt() : -1;
+
 
             const Value& trajPointsArray = trajObj["trajectory"];
             for (SizeType j = 0; j < trajPointsArray.Size(); j++) {
@@ -966,10 +971,10 @@ bool GetMap(char* parea) {
 
             // 根据引导类型分类
             if (guid_type == 1) {
-                input_paths.push_back(traj);
+                input_paths[region_id].push_back(traj);
             }
             else if (guid_type == 2) {
-                output_paths.push_back(traj);
+                output_paths[region_id].push_back(traj);
             }
         }
 
@@ -2082,6 +2087,15 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         // 将解析到的动态边界点添加到planning_info
         planning_info.wall_borders.emplace_back(dynamicBorderPoints);
         cout << "解析 dynamic_border 完毕，共 " << dynamicBorderPoints.size() << " 个点" << endl;
+    }
+
+    if (doc.HasMember("region_id") && doc["region_id"].IsInt()) {
+        planning_info.region_id = doc["region_id"].GetInt();
+        std::cout << "解析 region_id: " << planning_info.region_id << std::endl;
+    }
+    else {
+        planning_info.region_id = -1;
+        cout << "无法找到 region_id ，即将赋予默认值 -1" << endl;
     }
 
     return planning_info;

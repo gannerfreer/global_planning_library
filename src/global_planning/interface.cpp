@@ -629,8 +629,8 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     std::string dirPath = "log/" + id;
     filesystem::create_directories(dirPath);
     // 构造文件路径
-    std::string        filePath = dirPath + "/log_" + timeStr + ".log";
-  
+    std::string filePath = dirPath + "/log_" + timeStr + ".log";
+
     id += timeStr;
     cout << "id:" << id << endl;
 
@@ -662,8 +662,6 @@ char* QueuePointGenerator(char* point_veh_start_end) {
 
         // 给planning对象的有向图、地图边界、路段进行赋值
         planning.threadLogger_->info("map_border_:{}", GlobalVariable::getInstance()->GetMapBorder().size());
-        planning.threadLogger_->info("装载区驶入引导路径:{}", GlobalVariable::getInstance()->GetInGuidingPaths().size());
-        planning.threadLogger_->info("装载区驶出引导路径:{}", GlobalVariable::getInstance()->GetOutGuidingPaths().size());
 
 
     } // 获取传入的内边界并将其存入对应的r区域内
@@ -708,8 +706,8 @@ char* QueuePointGenerator(char* point_veh_start_end) {
 
     Bound                        wall_border_v;
     vector<vector<_BorderPoint>> wall_border = veh_start_end.wall_borders;
-    cout << "收到挡墙" << wall_border.size() << "组" <<endl;
-    if(wall_border.size() > 0) {
+    cout << "收到挡墙" << wall_border.size() << "组" << endl;
+    if (wall_border.size() > 0) {
         cout << "wall_border.at(0).size():" << wall_border.front().size() << endl;
     }
     // 对wall_border进行过滤，过滤掉距离load_point小于remove_dis的点
@@ -723,8 +721,8 @@ char* QueuePointGenerator(char* point_veh_start_end) {
             }
         }
     }
-    cout << "收到挡墙（过滤后）" << wall_border.size() << "组" <<endl;
-    if(wall_border.size() > 0) {
+    cout << "收到挡墙（过滤后）" << wall_border.size() << "组" << endl;
+    if (wall_border.size() > 0) {
         cout << "wall_border.at(0).size():" << wall_border.front().size() << endl;
     }
     vC.clear();
@@ -743,8 +741,8 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     Bound                        machine_border_v;
     vector<vector<_BorderPoint>> machine_border = veh_start_end.machine_borders;
     vC.clear();
-    cout << "收到挖掘" << machine_border.size() << "组" <<endl;
-    if(machine_border.size() > 0) {
+    cout << "收到挖掘" << machine_border.size() << "组" << endl;
+    if (machine_border.size() > 0) {
         cout << "machine_border.at(0).size():" << machine_border.front().size() << endl;
     }
     for (unsigned int i = 0; i < machine_border.size(); ++i) {
@@ -760,60 +758,93 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     collison_check.InitObstacleMap(machine_border_v);
 
 
-    Path                input_path, out_path;
-    vector<_SingleTraj> input_paths, output_paths;
-    input_paths  = GlobalVariable::getInstance()->GetInGuidingPaths();
-    output_paths = GlobalVariable::getInstance()->GetOutGuidingPaths();
-    cout << "驶入引导路径一共" << input_paths.size() << "条" << endl;
-    cout << "驶出引导路径一共" << output_paths.size() << "条" << endl;
+    Path                          input_path, out_path;
+    map<int, vector<_SingleTraj>> input_paths, output_paths;
+    input_paths = GlobalVariable::getInstance()->GetInGuidingPaths();
 
-    int    neares_idx  = -1;
+    output_paths = GlobalVariable::getInstance()->GetOutGuidingPaths();
+
+    cout << "地图中的驶入引导路径" << endl;
+    for (auto& input_path_vec : input_paths) {
+        cout << "区域id:" << input_path_vec.first << endl;
+        for (auto& traj : input_path_vec.second) {
+            cout << "轨迹id:" << traj.id << endl;
+        }
+    }
+
+    cout << "地图中的驶出引导路径" << endl;
+    for (auto& output_path_vec : output_paths) {
+        cout << "区域id:" << output_path_vec.first << endl;
+        for (auto& traj : output_path_vec.second) {
+            cout << "轨迹id:" << traj.id << endl;
+        }
+    }
+
+
     double nearest_dis = numeric_limits<double>::max();
-    for (int i = 0; i < input_paths.size(); i++) {
-        for (int j = 0; j < input_paths.at(i).trajectory.size(); j++) {
-            double temp_dis = hypot(veh_start_end.load_point.x - input_paths.at(i).trajectory.at(j).x, veh_start_end.load_point.y - input_paths.at(i).trajectory.at(j).y);
-            if (temp_dis < nearest_dis) {
-                nearest_dis = temp_dis;
-                neares_idx  = i;
+    int    nearest_id  = -1;
+    Point  temp_point;
+    for (auto& input_path_vec : input_paths) {
+        if (input_path_vec.first == veh_start_end.region_id) {
+            for (int i = 0; i < input_path_vec.second.size(); i++) {
+                auto& traj = input_path_vec.second.at(i);
+                // 将距离veh_start_end.load_point最近的traj.trajectory赋值给input_path
+                for (int j = 0; j < traj.trajectory.size(); j++) {
+                    double temp_dis = hypot(veh_start_end.load_point.x - traj.trajectory.at(j).x, veh_start_end.load_point.y - traj.trajectory.at(j).y);
+                    if (temp_dis < nearest_dis) {
+                        nearest_dis = temp_dis;
+                        nearest_id  = i;
+                    }
+                }
+            }
+            for (int i = 0; i < input_path_vec.second.at(nearest_id).trajectory.size(); i++) {
+                temp_point.x         = input_path_vec.second.at(nearest_id).trajectory.at(i).x;
+                temp_point.y         = input_path_vec.second.at(nearest_id).trajectory.at(i).y;
+                temp_point.z         = input_path_vec.second.at(nearest_id).trajectory.at(i).z;
+                temp_point.angle     = input_path_vec.second.at(nearest_id).trajectory.at(i).yaw / M_PI * 180.0;
+                temp_point.curvature = input_path_vec.second.at(nearest_id).trajectory.at(i).curvature;
+                temp_point.distance  = input_path_vec.second.at(nearest_id).trajectory.at(i).distance;
+                temp_point.direction = static_cast<MotionDirection>(input_path_vec.second.at(nearest_id).trajectory.at(i).direction);
+                input_path.push_back(temp_point);
             }
         }
     }
-    Point temp_point;
-    for (int i = 0; i < input_paths.at(neares_idx).trajectory.size(); i++) {
-        temp_point.x         = input_paths.at(neares_idx).trajectory.at(i).x;
-        temp_point.y         = input_paths.at(neares_idx).trajectory.at(i).y;
-        temp_point.z         = input_paths.at(neares_idx).trajectory.at(i).z;
-        temp_point.angle     = input_paths.at(neares_idx).trajectory.at(i).yaw / M_PI * 180.0;
-        temp_point.curvature = input_paths.at(neares_idx).trajectory.at(i).curvature;
-        temp_point.distance  = input_paths.at(neares_idx).trajectory.at(i).distance;
-        temp_point.direction = static_cast<MotionDirection>(input_paths.at(neares_idx).trajectory.at(i).direction);
-        input_path.push_back(temp_point);
-    }
-    if(input_path.size() > 0) {
+
+    if (input_path.size() > 0) {
         cout << "结合当前load_point位置，挑选出的驶入引导路径第一个点坐标为:(" << input_path.front().x << "," << input_path.front().y << ")" << endl;
     }
 
+
     nearest_dis = numeric_limits<double>::max();
-    for (int i = 0; i < output_paths.size(); i++) {
-        for (int j = 0; j < output_paths.at(i).trajectory.size(); j++) {
-            double temp_dis = hypot(veh_start_end.load_point.x - output_paths.at(i).trajectory.at(j).x, veh_start_end.load_point.y - output_paths.at(i).trajectory.at(j).y);
-            if (temp_dis < nearest_dis) {
-                nearest_dis = temp_dis;
-                neares_idx  = i;
+    nearest_id  = -1;
+
+    for (auto& output_path_vec : output_paths) {
+        if (output_path_vec.first == veh_start_end.region_id) {
+            for (int i = 0; i < output_path_vec.second.size(); i++) {
+                // 将距离veh_start_end.load_point最近的traj.trajectory赋值给input_path
+                for (int j = 0; j < output_path_vec.second.at(i).trajectory.size(); j++) {
+                    double temp_dis = hypot(veh_start_end.load_point.x - output_path_vec.second.at(i).trajectory.at(j).x, veh_start_end.load_point.y - output_path_vec.second.at(i).trajectory.at(j).y);
+                    if (temp_dis < nearest_dis) {
+                        nearest_dis = temp_dis;
+                        nearest_id  = i;
+                    }
+                }
+            }
+            for (int i = 0; i < output_path_vec.second.at(nearest_id).trajectory.size(); i++) {
+                temp_point.x         = output_path_vec.second.at(nearest_id).trajectory.at(i).x;
+                temp_point.y         = output_path_vec.second.at(nearest_id).trajectory.at(i).y;
+                temp_point.z         = output_path_vec.second.at(nearest_id).trajectory.at(i).z;
+                temp_point.angle     = output_path_vec.second.at(nearest_id).trajectory.at(i).yaw / M_PI * 180.0;
+                temp_point.curvature = output_path_vec.second.at(nearest_id).trajectory.at(i).curvature;
+                temp_point.distance  = output_path_vec.second.at(nearest_id).trajectory.at(i).distance;
+                temp_point.direction = static_cast<MotionDirection>(output_path_vec.second.at(nearest_id).trajectory.at(i).direction);
+                out_path.push_back(temp_point);
             }
         }
     }
-    for (int i = 0; i < output_paths.at(neares_idx).trajectory.size(); i++) {
-        temp_point.x         = output_paths.at(neares_idx).trajectory.at(i).x;
-        temp_point.y         = output_paths.at(neares_idx).trajectory.at(i).y;
-        temp_point.z         = output_paths.at(neares_idx).trajectory.at(i).z;
-        temp_point.angle     = output_paths.at(neares_idx).trajectory.at(i).yaw / M_PI * 180.0;
-        temp_point.curvature = output_paths.at(neares_idx).trajectory.at(i).curvature;
-        temp_point.distance  = output_paths.at(neares_idx).trajectory.at(i).distance;
-        temp_point.direction = static_cast<MotionDirection>(output_paths.at(neares_idx).trajectory.at(i).direction);
-        out_path.push_back(temp_point);
-    }
-    if(out_path.size() > 0) {
+
+
+    if (out_path.size() > 0) {
         cout << "结合当前load_point位置，挑选出的驶出引导路径第一个点坐标为:(" << out_path.front().x << "," << out_path.front().y << ")" << endl;
     }
 

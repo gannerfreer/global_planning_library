@@ -104,18 +104,18 @@ class GlobalVariable // 单例类
     }
 
     // 新增的 self_driving_sequence_mapping_ 的 get 和 set 方法
-    const std::vector<_SingleTraj>& GetInGuidingPaths() const {
+    const map<int,vector<_SingleTraj>>& GetInGuidingPaths() const {
         return in_guiding_paths_;
     }
-    void SetInGuidingPaths(const std::vector<_SingleTraj>& input_paths) {
+    void SetInGuidingPaths(const map<int,vector<_SingleTraj>>& input_paths) {
         in_guiding_paths_ = input_paths;
     }
 
     // 新增的 self_driving_sequence_mapping_ 的 get 和 set 方法
-    const std::vector<_SingleTraj>& GetOutGuidingPaths() const {
+    const map<int,vector<_SingleTraj>>& GetOutGuidingPaths() const {
         return out_guiding_paths_;
     }
-    void SetOutGuidingPaths(const std::vector<_SingleTraj>& output_paths) {
+    void SetOutGuidingPaths(const map<int,vector<_SingleTraj>>& output_paths) {
         out_guiding_paths_ = output_paths;
     }
 
@@ -157,7 +157,7 @@ class GlobalVariable // 单例类
     std::vector<std::vector<double>> self_driving_referenceline_graph_;
     std::vector<int>                 self_driving_sequence_mapping_; // 序列映射关系
     int                              dispatch_nums = 0;
-    std::vector<_SingleTraj>         in_guiding_paths_, out_guiding_paths_;
+    std::map<int,vector<_SingleTraj>>         in_guiding_paths_, out_guiding_paths_;
     std::string                      global_str;
     char*                            receive_ptr;
     // 静态成员变量，存储类的唯一实例
