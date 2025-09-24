@@ -379,13 +379,13 @@ bool TensionSmoother2::osqpSmooth(const std::vector<double>& x_list, const std::
         result_angle_list->emplace_back(QPSolution(2 * point_num + i));
         result_curvature_list->emplace_back(QPSolution(3 * point_num + i));
         // 打印 temp_x temp_y temp_s temp_angle temp_curvature
-        std::ofstream outfile("/home/yyf/test_ipopt/tension_smoother_2.txt", std::ios::app);
-        if (i != point_num - 1) {
-            std::cout << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
-            // 将上述数据保存为文件
-            outfile << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
-        }
-        outfile.close();
+        // std::ofstream outfile("/home/yyf/test_ipopt/tension_smoother_2.txt", std::ios::app);
+        // if (i != point_num - 1) {
+        //     std::cout << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
+        //     // 将上述数据保存为文件
+        //     outfile << tmp_x << " " << tmp_y << " " << tmp_s << " " << QPSolution(2 * point_num + i) << " " << QPSolution(3 * point_num + i) << std::endl;
+        // }
+        // outfile.close();
     }
     return true;
 }

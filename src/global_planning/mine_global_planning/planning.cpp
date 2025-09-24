@@ -117,12 +117,12 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
         threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{}", global_path_.at(i).x, global_path_.at(i).y, global_path_.at(i).direction, global_path_.at(i).curvature, global_path_.at(i).yaw / M_PI * 180, static_cast<int>(global_path_.at(i).attribute));
     }
     // 将global_path_保存到 before_uniform_compaction.txt文件中
-    std::ofstream file_out;
-    file_out.open("before_uniform_compaction.txt");
-    for (auto i : global_path_) {
-        file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
-    }
-    file_out.close();
+    // std::ofstream file_out;
+    // file_out.open("before_uniform_compaction.txt");
+    // for (auto i : global_path_) {
+    //     file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
+    // }
+    // file_out.close();
 
 
     // 均匀碾压：对除了过磅、洗车和倒车之外的路段进行横向偏移
@@ -151,11 +151,11 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
         }
     }
     // 将global_path_保存到 after_uniform_compaction.txt文件中
-    file_out.open("after_uniform_compaction.txt");
-    for (auto i : global_path_) {
-        file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
-    }
-    file_out.close();
+    // file_out.open("after_uniform_compaction.txt");
+    // for (auto i : global_path_) {
+    //     file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
+    // }
+    // file_out.close();
 
 
     // 对进行速度规划前的路径基于梯度下降进行平滑
@@ -180,11 +180,11 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
         threadLogger_->info("x:{}  y:{}  direction:{}  curvature:{}   yaw:{}  attribute:{} speed_limit:{} acc:{}", i.x, i.y, i.direction, i.curvature, i.yaw / M_PI * 180, static_cast<int>(i.attribute), i.speed_limit, i.acc);
     }
     // 将global_path_保存到 after_smooth.txt文件中
-    file_out.open("after_smooth.txt");
-    for (auto i : global_path_) {
-        file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
-    }
-    file_out.close();
+    // file_out.open("after_smooth.txt");
+    // for (auto i : global_path_) {
+    //     file_out << i.x << " " << i.y << " " << i.yaw / M_PI * 180 << " " << (int)i.direction << " " << i.curvature << " " << static_cast<int>(i.attribute) << endl;
+    // }
+    // file_out.close();
 
 
     // 角度转换
