@@ -118,7 +118,7 @@ double WaitPointGenerator::DeterminateStraightLength(const GlobalPlanning::Point
     cout << "delta_straight_length_=" << delta_straight_length_ << endl;
     cout << "max_straight_length_=" << max_straight_length_ << endl;
     for (double i = 0.0; i * delta_straight_length_ + max_straight_length_ >= min_straight_length_; i -= 1.0) {
-        double                temp_length   = i * delta_curve_length_ + max_straight_length_;
+        double                temp_length   = i * delta_straight_length_ + max_straight_length_;
         double                succeed_count = 0;
         GlobalPlanning::Point start_end;
         start_end.x         = load_point.x + temp_length * cos(load_point.angle * M_PI / 180.0);
