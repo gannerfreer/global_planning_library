@@ -32,7 +32,7 @@ plt.legend()
 #绘制第二张图：加速度对比  
 plt.figure(2)  # 创建一个新的图形窗口，编号为2  
 plt.plot(acceleration_before, label='Init')  
-plt.plot(acceleration_after, label='FixLocalMax')
+plt.plot(acceleration_after, label='FixLocalMin')
 plt.plot(acceleration_after2, label='Smooth')  
 plt.xlabel('distance')  
 plt.ylabel('acceleration')  

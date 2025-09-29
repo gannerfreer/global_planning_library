@@ -79,9 +79,6 @@ void GlobalSpeedPlanning::SpeedPlanning(vector<_TrajectoryPoint>& trajectory, co
     // }
     // file.close();
 
-    // 速度曲线平滑
-    // Smooth(trajectory);
-
     threadLogger_->info("进入FixLocalMininum");
     FixLocalMininum(trajectory);
     Helper::calculateAcceleration(trajectory);
@@ -307,7 +304,7 @@ void GlobalSpeedPlanning::Smooth(vector<_TrajectoryPoint>& trajectory) {
     vector<_TrajectoryPoint> trajectory_copy = trajectory;
     unsigned int             iterations      = 0;
     // 最大遍历次数为100次
-    while (iterations++ < 100) {
+    while (iterations++ < 1000) {
         // 遍历稀疏速度曲线，分别计算出目标函数中每一项的梯度值，采用梯度下降法对速度曲线优化。
         for (unsigned int i = 1; i < trajectory.size() - 1; i++) {
             float v0     = trajectory.at(i - 1).speed;
@@ -329,7 +326,7 @@ void GlobalSpeedPlanning::Smooth(vector<_TrajectoryPoint>& trajectory) {
     }
 }
 void GlobalSpeedPlanning::FixLocalMininum(vector<_TrajectoryPoint>& trajectory) {
-    const double JERK = 0.01; // 基准jerk值 (m/s³/m)
+    const double JERK = 0.05; // 基准jerk值 (m/s³/m)
 
     // 找出所有极小值点的索引（不包括起点和终点）
     vector<size_t> minima_indices;

@@ -164,6 +164,7 @@ class RSCurve {
     _VehicleParam                   m_vehicle_prarm_;
     ReedsSheppPath                  opti_rs_path; // 最优RS曲线路段
     std::shared_ptr<spdlog::logger> threadLogger_;
+    double                          radious_ = 12.5;
 
   private:
     /**
