@@ -13,7 +13,8 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
     GlobalPlanning::Path                      depart_path;
     GlobalPlanning::Point                     queue_point;
     fit_path_planner.threadLogger_ = threadLogger_;
-    depart_path                    = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker, veh_param).first;
+
+    depart_path = fit_path_planner.DepartPathGenerateInterface(out_path, load_point, collision_checker, veh_param).first;
     // ofstream file;
     // string   file_name = "depart_parthes.txt";
     // file.open(file_name);
@@ -71,7 +72,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
 
     if (planning_mode == 1 or planning_mode == 2) { // 尝试人工指定排队点
         cout << "有排队点模式----------------------------" << endl;
-        wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, wait_point, collision_checker, veh_param, true).first;
+        wait_path = fit_path_planner.WaitPathGenerateInterface(depart_path, in_path, wait_point, collision_checker, veh_param, true).first;
         CalCurvature(wait_path, 1);
         if (wait_path.empty()) {
             cout << "有模式下排队点驶入路径规划失败！" << endl;
@@ -82,9 +83,9 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         if (load_path.empty()) {
             cout << "装载倒车路径规划失败,调用混合A*" << endl;
 
-            GlobalPlanning::OptimalPath hybrid_a_star; // 初始化混合a*规划器
-
+            GlobalPlanning::OptimalPath hybrid_a_star;   // 初始化混合a*规划器
             hybrid_a_star.threadLogger_ = threadLogger_; // 给日志系统赋值
+
 
             GlobalPlanning::_SinglePoint start_point; // 给起点赋值
             start_point.x   = wait_point.x;
@@ -102,11 +103,9 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
 
             long long threshold_time = 2.0 * 1000 * 1000; // 搜索时间(us)
 
-            auto temp_wait_point = wait_point;
-            // threadLogger_->info("wait_point.x:{} wait_point.y:{} wait_point.angle:{}", wait_point.x, wait_point.y, wait_point.angle);
+            auto temp_wait_point  = wait_point;
             temp_wait_point.angle = temp_wait_point.angle * M_PI / 180.0;
             auto temp_load_point  = load_point;
-            // threadLogger_->info("load_point.x:{} load_point.y:{} load_point.angle:{}", load_point.x, load_point.y, load_point.angle);
             temp_load_point.angle = temp_load_point.angle * M_PI / 180.0;                                                                                    // 调用时注意把起点终点角度转化为弧度
             auto plan_result      = hybrid_a_star.SearchGlobalPath(temp_wait_point, temp_load_point, veh_param, load_path_final, threshold_time, plan_rule); // 调用接口
 
@@ -195,7 +194,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
         cout << "load_path.size() = " << load_path.size() << endl;
         queue_point = load_path.front();
         cout << "最后一边调用：queue_point：x,y,angle = " << queue_point.x << "," << queue_point.y << "," << queue_point.angle << endl;
-        wait_path = fit_path_planner.WaitPathGenerateInterface(in_path, queue_point, collision_checker, veh_param, true).first;
+        wait_path = fit_path_planner.WaitPathGenerateInterface(depart_path, in_path, queue_point, collision_checker, veh_param, true).first;
         if (wait_path.empty()) {
             cout << "驶入排队点路径生成失败" << endl;
             return std::make_tuple(0, queue_point, wait_path, load_path, depart_path);
@@ -276,6 +275,7 @@ bool LoadAreaPlanning::PathSmoother(GlobalPlanning::Path& input_path, const Glob
     CalculatePathDistance(input_path);
     GlobalPlanning::TensionSmoother2 smoother(input_path, veh_param);
     smoother.threadLogger_ = threadLogger_;
+
     if (smoother.smooth(input_path)) {
         for (auto& point : input_path) {
             point.angle = point.angle * 180.0 / M_PI;

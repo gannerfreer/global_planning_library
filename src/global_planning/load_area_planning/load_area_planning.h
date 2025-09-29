@@ -53,9 +53,10 @@ class LoadAreaPlanning {
     void                                                                                                     CalCurvature(GlobalPlanning::Path& path, int check_dense);
     double                                                                                                   normalizeAngle(double angle);
     shared_ptr<spdlog::logger>                                                                               threadLogger_;
-    vector<WaitPointGenerate::arc_sample_point>                                                              sample_points;
-    std::vector<std::pair<GlobalPlanning::Path, double>>                                                     wait_path_candidates;
-    void                                                                                                     CalculateAngle(GlobalPlanning::Path& path);
+
+    vector<WaitPointGenerate::arc_sample_point>          sample_points;
+    std::vector<std::pair<GlobalPlanning::Path, double>> wait_path_candidates;
+    void                                                 CalculateAngle(GlobalPlanning::Path& path);
 };
 } // namespace LoadAreaPlanning
 

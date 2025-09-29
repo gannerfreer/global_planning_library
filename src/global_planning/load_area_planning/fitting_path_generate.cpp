@@ -104,12 +104,13 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
     return std::make_pair(result, result_grade);
 }
 
-std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, const GlobalPlanning::_VehicleParam& vehicle_param) {
+std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& depart_path, const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, const GlobalPlanning::_VehicleParam& vehicle_param) {
     GlobalPlanning::Path result;
     double               grade = 0.0;
 
     curve::Dubins dubins_planner;
     dubins_planner.threadLogger_ = threadLogger_;
+
     dubins_planner.SetRadius(10.0);
     dubins_planner.SetMaxSteeringAngle(vehicle_param.light_forward_max_steering);
     std::vector<GlobalPlanning::Point>                   start_point_sample = SamplePathSegment(origin_path, wait_point, 0);
@@ -129,7 +130,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
         wait_path_candidates.emplace_back(std::make_pair(wait_path, 0.0));
     }
 
-    PathRateAndSort(wait_path_candidates);
+    PathRateAndSort(wait_path_candidates, depart_path, vehicle_param);
     wait_path_candidates_ = wait_path_candidates;
     for (int i = 0; i < wait_path_candidates.size(); i++) {
         result = wait_path_candidates_[i].first;
@@ -142,7 +143,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     return std::make_pair(result, grade);
 }
 
-std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param, bool need_completed) {
+std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateInterface(const GlobalPlanning::Path& depart_path, const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param, bool need_completed) {
     GlobalPlanning::Path result;
     wait_path_candidates_.clear();
     double grade           = 0.0;
@@ -191,6 +192,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
 
     curve::Dubins dubins_planner;
     dubins_planner.threadLogger_ = threadLogger_;
+
     dubins_planner.SetRadius(10.0);
     dubins_planner.SetMaxSteeringAngle(vehicle_param.light_forward_max_steering);
     std::vector<GlobalPlanning::Point> start_point_sample = SamplePathSegment(origin_path, straight_path_with_wait_point.front(), 0);
@@ -212,10 +214,11 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
     }
     // cout << "驶入等待点候选路径生成完毕：" << wait_path_candidates.size() << endl;
 
-    PathRateAndSort(wait_path_candidates);
+    PathRateAndSort(wait_path_candidates, depart_path, vehicle_param);
     // cout << "候选路径评分完毕完毕" << endl;
 
     wait_path_candidates_ = wait_path_candidates;
+
     for (int i = 0; i < wait_path_candidates_.size(); i++) {
         for (auto& point : wait_path_candidates_[i].first) {
             point.angle = point.angle * M_PI / 180.0;
@@ -236,8 +239,9 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::WaitPathGenerateIn
         return std::make_pair(result, 0.0);
     }
 
+
     // std::cout << "stitch_path .size()=" << stitch_path.size() << endl;
-    if (need_completed) result.insert(result.end(), straight_path_with_wait_point.begin(), straight_path_with_wait_point.end());
+    result.insert(result.end(), straight_path_with_wait_point.begin(), straight_path_with_wait_point.end());
     // auto stitch_path = PathCuttoStart(result.front(), origin_path);
     // result.insert(result.begin(), stitch_path.begin(), stitch_path.end());
     // std::cout << "straight_path_with_wait_point .size()=" << straight_path_with_wait_point.size() << endl;
@@ -252,6 +256,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::DepartPathGenerate
     double               grade;
     curve::Dubins        dubins_planner;
     dubins_planner.threadLogger_ = threadLogger_;
+
     dubins_planner.SetRadius(10);
     dubins_planner.SetMaxSteeringAngle(vehicle_param.heavy_forward_max_steering);
     std::vector<GlobalPlanning::Point>                   end_point_sample = SamplePathSegment(target_path, load_point, 0);
@@ -400,6 +405,40 @@ GlobalPlanning::Path FittingPathGenerator::PathCuttoStart(const GlobalPlanning::
     return result;
 }
 
+bool FittingPathGenerator::IsPathCollision(const GlobalPlanning::Path& wait_path, const GlobalPlanning::Path& depart_path, double center2front, double center2rear, double center2side, double safe_margin_front, double safe_margin_rear, double safe_margin_side) {
+    for (const auto& wait_path_point : wait_path) {
+        GlobalPlanning::Box2d wait_path_box(wait_path_point.x, wait_path_point.y, wait_path_point.angle * M_PI / 180.0, center2front + safe_margin_front, center2rear + safe_margin_rear, center2side + safe_margin_side);
+        for (const auto& depart_path_point : depart_path) {
+            GlobalPlanning::Box2d depart_path_box(depart_path_point.x, depart_path_point.y, depart_path_point.angle * M_PI / 180.0, center2front, center2rear, center2side);
+            if (wait_path_box.IsOverlap(depart_path_box)) {
+                // cout << "wait_path_point:" << wait_path_point.x << "," << wait_path_point.y << "," << wait_path_point.angle << endl;
+                // cout << "depart_path_point:" << depart_path_point.x << "," << depart_path_point.y << "," << depart_path_point.angle << endl;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void FittingPathGenerator::PathRateAndSort(std::vector<std::pair<GlobalPlanning::Path, double>>& candi_pathes, const GlobalPlanning::Path& depart_path, const GlobalPlanning::_VehicleParam veh_parm) {
+    // cout << "candi_pathes.size()=" << candi_pathes.size() << endl;
+    for (int i = 0; i < candi_pathes.size(); i++) {
+        // cout << "对i路径进行评分:" << i << endl;
+        // cout << "candi_pathes[i].first.size = " << candi_pathes[i].first.size() << endl;
+        CalCurvature(candi_pathes[i].first, 1);
+        candi_pathes[i].second = CalPathQuality(candi_pathes[i].first, length_weight_, curvature_weight_, critical_length_);
+    }
+    for (int i = 0; i < candi_pathes.size(); i++) {
+        if (IsPathCollision(depart_path, candi_pathes[i].first, veh_parm.veh_center_2_front, veh_parm.veh_center_2_rear_bound, veh_parm.veh_center_2_side, veh_parm.safe_margin_bound, veh_parm.safe_margin_bound, veh_parm.safe_margin_bound)) {
+            cout << "该驶入排队点路径与depart路径有干涉：" << candi_pathes[i].first.front().x << "," << candi_pathes[i].first.front().y << endl;
+            candi_pathes[i].second -= 0.5;
+        }
+    }
+    std::sort(candi_pathes.begin(), candi_pathes.end(), [](const std::pair<GlobalPlanning::Path, double>& a, const std::pair<GlobalPlanning::Path, double>& b) {
+        return a.second > b.second; // 按 double 值降序
+    });
+}
+
 void FittingPathGenerator::PathRateAndSort(std::vector<std::pair<GlobalPlanning::Path, double>>& candi_pathes) {
     // cout << "candi_pathes.size()=" << candi_pathes.size() << endl;
     for (int i = 0; i < candi_pathes.size(); i++) {
@@ -408,11 +447,11 @@ void FittingPathGenerator::PathRateAndSort(std::vector<std::pair<GlobalPlanning:
         CalCurvature(candi_pathes[i].first, 1);
         candi_pathes[i].second = CalPathQuality(candi_pathes[i].first, length_weight_, curvature_weight_, critical_length_);
     }
+
     std::sort(candi_pathes.begin(), candi_pathes.end(), [](const std::pair<GlobalPlanning::Path, double>& a, const std::pair<GlobalPlanning::Path, double>& b) {
         return a.second > b.second; // 按 double 值降序
     });
 }
-
 
 double FittingPathGenerator::CalPathQuality(const GlobalPlanning::Path& path, double length_weight, double curvature_weight, double critical_length) {
     // 1. 计算路径总长度

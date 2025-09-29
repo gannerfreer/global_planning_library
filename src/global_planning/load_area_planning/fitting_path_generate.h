@@ -37,6 +37,7 @@ class FittingPathGenerator {
     std::vector<std::pair<GlobalPlanning::Path, double>> load_path_candidates_;
     GlobalPlanning::Path                                 PathTransFormer(const std::vector<curve::Point> curve_path);
     double                                               CalPathQuality(const GlobalPlanning::Path& path, double length_weight = 1.0, double curvature_weight = 1.0, double critical_length = 25.0);
+    void                                                 PathRateAndSort(std::vector<std::pair<GlobalPlanning::Path, double>>& candi_pathes, const GlobalPlanning::Path& depart_path, const GlobalPlanning::_VehicleParam veh_parm);
     void                                                 PathRateAndSort(std::vector<std::pair<GlobalPlanning::Path, double>>& candi_pathes);
     void                                                 CalCurvature(GlobalPlanning::Path& path, int check_dense);
     std::vector<GlobalPlanning::Point>                   SamplePathSegment(const GlobalPlanning::Path& target_path, const GlobalPlanning::Point& load_point, int flag);
@@ -49,8 +50,8 @@ class FittingPathGenerator {
     FittingPathGenerator(double out_put_path_dense, double search_range, double jump_dense, double length_weight, double curvature_weight, double critical_length, double min_straight_line_length, double max_straight_line_length, double delta_straight_line_length, double min_straight_length_wait, double max_straight_length_wait, double delta_straight_length_wait, double min_straight_length_load, double max_straight_length_load, double delta_straight_length_load, double straight_length_weight, double load_path_curvature_weight);
     ~FittingPathGenerator();
     std::pair<GlobalPlanning::Path, double>              DepartPathGenerateInterface(const GlobalPlanning::Path& target_path, const GlobalPlanning::Point& load_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param);
-    std::pair<GlobalPlanning::Path, double>              WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param, bool need_completed = true);
-    std::pair<GlobalPlanning::Path, double>              WaitPathGenerateInterface(const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, const GlobalPlanning::_VehicleParam& vehicle_param);
+    std::pair<GlobalPlanning::Path, double>              WaitPathGenerateInterface(const GlobalPlanning::Path& depart_path, const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param, bool need_completed = true);
+    std::pair<GlobalPlanning::Path, double>              WaitPathGenerateInterface(const GlobalPlanning::Path& depart_path, const GlobalPlanning::Path& origin_path, const GlobalPlanning::Point& wait_point, const GlobalPlanning::_VehicleParam& vehicle_param);
     std::pair<GlobalPlanning::Path, double>              LoadPathGenerateInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Point& wait_point, GlobalPlanning::CollisonCheck& collision_checker, const GlobalPlanning::_VehicleParam& vehicle_param);
     std::vector<std::pair<GlobalPlanning::Path, double>> GetWaitPathCandis() {
         return wait_path_candidates_;
@@ -61,9 +62,11 @@ class FittingPathGenerator {
     std::vector<std::pair<GlobalPlanning::Path, double>> GetLoadPathCandis() {
         return load_path_candidates_;
     }
-    GlobalPlanning::Path       PathCuttoEnd(const GlobalPlanning::Point& point, const GlobalPlanning::Path& path);
-    GlobalPlanning::Path       PathCuttoStart(const GlobalPlanning::Point& point, const GlobalPlanning::Path& path);
     shared_ptr<spdlog::logger> threadLogger_;
+
+    GlobalPlanning::Path PathCuttoEnd(const GlobalPlanning::Point& point, const GlobalPlanning::Path& path);
+    GlobalPlanning::Path PathCuttoStart(const GlobalPlanning::Point& point, const GlobalPlanning::Path& path);
+    bool                 IsPathCollision(const GlobalPlanning::Path& wait_path, const GlobalPlanning::Path& depart_path, double center2front, double center2rear, double center2side, double safe_margin_front, double safe_margin_rear, double safe_margin_side);
 };
 } // namespace FittingPathGenerate
 #endif
