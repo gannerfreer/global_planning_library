@@ -133,23 +133,24 @@ class Planning {
     PlanResult           IsPath4Success(vector<_TrajectoryPoint>& input_path);
     bool                 IsForwardAndBackwardReferencePath();
     // 检查全局路径是否与所有地图边界发生碰撞
-    bool IsGlobalPathCollision();
+    bool       IsGlobalPathCollision();
     PlanResult CheckStartPointAndEndPoint();
+
   public:
     _SinglePoint start_point_,
         end_point_;                                                                                                                                                        // 起、终点坐标
     int    start_key_, end_key_, start_index_, end_index_;                                                                                                                 // 起点、终点匹配上的参考路径id以及在在参考路径上的具体索引
     double start_lat_dis_ = 0, start_lon_dis_ = 0, start_distance_ = 0, start_angle_diff_ = 0, end_lat_dis_ = 0, end_lon_dis_ = 0, end_distance_ = 0, end_angle_diff_ = 0; // 起点、终点与匹配上的参考路径的横纵向距离
 
-    vector<vector<double>>       road_directed_graph_; // 路段有向图
-    vector<_BorderPoint>         map_border_;          // 地图外边界
-    vector<vector<_BorderPoint>> machine_borders_;     // 挖掘机边界
-    vector<vector<_BorderPoint>> wall_borders_;        // 动态挡墙边界
-    map<int, _SingleTraj>        all_referencelines_;  // 所有可供无人车行使的参考路段
-    vector<_TrajectoryPoint>     global_path_;         // 全局路径
+    vector<vector<double>>           road_directed_graph_;       // 路段有向图
+    vector<_BorderPoint>             map_border_;                // 地图外边界
+    vector<vector<_BorderPoint>>     machine_borders_;           // 挖掘机边界
+    vector<vector<_BorderPoint>>     wall_borders_;              // 动态挡墙边界
+    map<int, _SingleTraj>            all_referencelines_;        // 所有可供无人车行使的参考路段
+    vector<_TrajectoryPoint>         global_path_;               // 全局路径
     vector<vector<_TrajectoryPoint>> all_possible_global_paths_; // 合理的全局路径
-    vector<int>                  road_sequence_;       // 路段拓扑结果
-    vector<int>                  sequence_mapping_;    // 序列映射关系
+    vector<int>                      road_sequence_;             // 路段拓扑结果
+    vector<int>                      sequence_mapping_;          // 序列映射关系
 
     Dijkstra               dijkstra_;        // dijkstra对象
     OptimalPath            my_optimal_path_; // hibrid A star类的实例对象

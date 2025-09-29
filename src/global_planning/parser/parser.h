@@ -75,14 +75,6 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
         Value& val = doc["m_Veh_Param"];
         if (val.IsObject()) {
             // 车辆参数
-            if (val.HasMember("radious") && val["radious"].IsNumber()) {
-                veh_start_end.veh_param.radious = val["radious"].GetDouble();
-                cout << "veh_start_end.veh_param.radious " << veh_start_end.veh_param.radious << endl;
-            }
-            else {
-                veh_start_end.veh_param.radious = 13;
-                cout << "无法找到车参 radious ，即将赋予默认值 13" << endl;
-            }
 
             if (val.HasMember("wheel_base") && val["wheel_base"].IsNumber()) {
                 veh_start_end.veh_param.wheel_base = val["wheel_base"].GetDouble();
@@ -1683,15 +1675,6 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
 
 
             // 车辆hybridA*规划参数
-            if (val.HasMember("radious") && val["radious"].IsNumber()) {
-                planning_info.veh_param.radious = val["radious"].GetDouble();
-                std::cout << "planning_info.veh_param.radious " << planning_info.veh_param.radious << std::endl;
-            }
-            else {
-                planning_info.veh_param.radious = 10;
-                cout << "无法找到车参 radious ，即将赋予默认值 10" << endl;
-            }
-
             if (val.HasMember("wheel_base") && val["wheel_base"].IsNumber()) {
                 planning_info.veh_param.wheel_base = val["wheel_base"].GetDouble();
                 std::cout << "planning_info.veh_param.wheel_base " << planning_info.veh_param.wheel_base << std::endl;

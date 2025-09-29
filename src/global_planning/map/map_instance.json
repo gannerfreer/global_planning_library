@@ -17,7 +17,6 @@
         "L1": 3,
         "L2": 8,
         "L3": 8,
-        "radious": 12.5,
         "is_light": true,
         "w_length": 0.0001,
         "grid_dist": 0.7,

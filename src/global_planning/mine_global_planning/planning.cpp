@@ -807,6 +807,7 @@ PlanResult Planning::FollowReferencelinePlanning() {
     // 起点采用渐进式扩大搜索策略，从0.5m初始搜索半径开始
     while (start_search_radius <= 100 && found_reasonable_vec_path == false) {
         if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
+            threadLogger_->info("起点搜索半径{},参考路径数量:{}", start_search_radius, start_path_vec.size());
             cout << "起点搜索半径：:" << start_search_radius << "  搜索到路径数量:  " << start_path_vec.size() << endl;
 
             vector<int> start_path_vec_switch, end_path_vec_switch;
@@ -869,7 +870,7 @@ PlanResult Planning::FollowReferencelinePlanning() {
             cout << "起点搜索半径" << start_search_radius << "无参考路径 " << endl;
         }
         start_search_radius += 0.5;
-        if (start_search_radius >= first_found_dis + 10) {
+        if (start_search_radius >= first_found_dis + (vehicle_param_.veh_center_2_side+1) * 2) {
             found_reasonable_vec_path = true;
         }
     }
@@ -1461,7 +1462,7 @@ PlanResult Planning::HybirdAStarFitting() {
     threadLogger_->info("Enter HybirdAStarFitting");
 
 
-    // 选择最短路径
+    // 选择最短路径,如果任务起点非常靠近
     int min_distance = std::numeric_limits<int>::max();
     for (auto& path : all_possible_global_paths_) {
         if (path.size() < min_distance) {
@@ -1469,6 +1470,8 @@ PlanResult Planning::HybirdAStarFitting() {
             global_path_ = path;
         }
     }
+
+    
 
 
     threadLogger_->info("最终挑选出来的global_path_信息");

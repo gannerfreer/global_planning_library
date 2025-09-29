@@ -1,6 +1,5 @@
 {
   "m_Veh_Param": {
-    "radious": 9.0,
     "grid_dist": 0.7,
     "delta_dist": 1,
     "path_error_term": 0.1,

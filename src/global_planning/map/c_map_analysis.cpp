@@ -321,14 +321,6 @@ bool CConfigureIO::GetVehicleParam(_VehicleParam& vehicle_param) {
             // 车辆参数
 
 
-            if (val.HasMember("radious")) {
-                veh_start_end.veh_param.radious = val["radious"].GetDouble();
-            }
-            else {
-                veh_start_end.veh_param.radious = 13;
-                cout << "无法找到车参 radious ，即将赋予默认值" << endl;
-            }
-
             if (val.HasMember("wheel_base")) {
                 veh_start_end.veh_param.wheel_base = val["wheel_base"].GetDouble();
             }
