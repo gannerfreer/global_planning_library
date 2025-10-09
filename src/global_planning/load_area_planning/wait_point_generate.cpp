@@ -384,7 +384,7 @@ GlobalPlanning::Point WaitPointGenerator::FindNearestPoint(double x, double y, c
     return path[closest_idx];
 }
 
-GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& depart_path, GlobalPlanning::CollisonCheck& collision_checker, FittingPathGenerate::FittingPathGenerator& fitting_path_generator, const GlobalPlanning::Path& in_path, const GlobalPlanning::_VehicleParam& veh_param) {
+GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& depart_path, GlobalPlanning::CollisonCheck& collision_checker, FittingPathGenerate::FittingPathGenerator& fitting_path_generator, const GlobalPlanning::Path& in_path, const GlobalPlanning::Path& out_path, const GlobalPlanning::_VehicleParam& veh_param) {
     double expect_straight_length = DeterminateStraightLength(load_point, collision_checker);
     cout << "expect_straight_length = " << expect_straight_length << endl;
     GlobalPlanning::Point straight_end;
@@ -432,29 +432,17 @@ GlobalPlanning::Path WaitPointGenerator::GenerateWaitPointInterface(const Global
             // }
             point.grade -= collision_weight_;
         }
+        else {
+            GlobalPlanning::Path temp_wait_point_path;
+            temp_wait_point_path.emplace_back(temp_end_point);
+            if (IsPathCollision(temp_wait_point_path, in_path, center2front_, center2rear_, center2side_, 0.0, 0.0, 0.0)) {
+                point.grade -= collision_weight_;
+            }
+            else if (IsPathCollision(temp_wait_point_path, out_path, center2front_, center2rear_, center2side_, 0.0, 0.0, 0.0)) {
+                point.grade -= collision_weight_;
+            }
+        }
     }
-
-    // for (auto& point : wait_point_sample_) {
-    //     GlobalPlanning::Point temp_end_point;
-    //     temp_end_point.x     = point.path_point.x + 2.0 * cos(point.path_point.angle * M_PI / 180.0);
-    //     temp_end_point.y     = point.path_point.y + 2.0 * sin(point.path_point.angle * M_PI / 180.0);
-    //     temp_end_point.angle = point.path_point.angle;
-    //     GlobalPlanning::Path temp_wait_point_path;
-    //     temp_wait_point_path.emplace_back(temp_end_point);
-    //     if (IsPathCollision(temp_wait_path.first, depart_path, center2front_, center2rear_, center2side_, 0.0, 0.0, 0.0)) {
-    //         cout << "与装载路径碰撞了:" << point.path_point.x << "," << point.path_point.y << "," << point.path_point.angle << endl;
-    //         // if (fabs(point.path_point.x - 159.371 < 0.1) and fabs(point.path_point.y - -820.232 < 0.1)) {
-    //         //     cout << "wait_point.x,y,angle = " << point.path_point.x << "," << point.path_point.y << "," << point.path_point.angle << endl;
-    //         //     cout << "inpath.front = " << in_path.front().x << "," << in_path.front().y << "," << in_path.front().angle << endl;
-    //         //     cout << "inpath.back = " << in_path.back().x << "," << in_path.back().y << "," << in_path.back().angle << endl;
-    //         //     cout << "inpath.size() = " << in_path.size() << endl;
-    //         //     cout << "wai_path.size()=" << temp_wait_path.first.size() << endl;
-    //         //     cout << "wai_path.front=" << temp_wait_path.first.front().x << "," << temp_wait_path.first.front().y << "," << temp_wait_path.first.front().angle << endl;
-    //         //     cout << "wai_path.back=" << temp_wait_path.first.back().x << "," << temp_wait_path.first.back().y << "," << temp_wait_path.first.back().angle << endl;
-    //         // }
-    //         point.grade -= collision_weight_;
-    //     }
-    // }
 
 
     std::sort(wait_point_sample_.begin(), wait_point_sample_.end(), [](const arc_sample_point& a, const arc_sample_point& b) {

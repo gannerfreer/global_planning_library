@@ -50,7 +50,7 @@ class WaitPointGenerator {
     bool                     IsPathCollision(const GlobalPlanning::Path& wait_path, const GlobalPlanning::Path& depart_path, double center2front, double center2rear, double center2side, double safe_margin_front, double safe_margin_rear, double safe_margin_side);
 
   public:
-    GlobalPlanning::Path GenerateWaitPointInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& depart_path, GlobalPlanning::CollisonCheck& collision_checker, FittingPathGenerate::FittingPathGenerator& fitting_path_generator, const GlobalPlanning::Path& in_path, const GlobalPlanning::_VehicleParam& veh_param);
+    GlobalPlanning::Path GenerateWaitPointInterface(const GlobalPlanning::Point& load_point, const GlobalPlanning::Path& depart_path, GlobalPlanning::CollisonCheck& collision_checker, FittingPathGenerate::FittingPathGenerator& fitting_path_generator, const GlobalPlanning::Path& in_path, const GlobalPlanning::Path& out_path, const GlobalPlanning::_VehicleParam& veh_param);
     WaitPointGenerator(double max_curve_length, double min_curve_length, double delta_curve_length, double wheel_base_length, double max_straight_length, double min_straight_length, double delta_straight_length, double max_steering_angle, double min_steering_angle, double delta_steering_angle, double standard_steering_angle, double weight_length, double weight_curve, double out_put_path_dense, double center2front, double center2side, double center2rear, double safe_margin_front, double safe_margin_2side, double safe_margin_rear, double collision_weight);
     vector<arc_sample_point>   wait_point_sample_;
     shared_ptr<spdlog::logger> threadLogger_;
