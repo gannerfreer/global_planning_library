@@ -61,14 +61,14 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     auto start_time = std::chrono::high_resolution_clock::now();
 
     while (opti_num++ < path_.size() + 1) {
-        // threadLogger_->info("第 {} 次优化,fixpoint_set_.size():{}", opti_num, fixpoint_set_.size());
+        threadLogger_->info("第 {} 次优化,fixpoint_set_.size():{}", opti_num, fixpoint_set_.size());
         SmoothPath();
         CalculatePathAngle();
         CurvatureCal(new_path_);
 
         auto collision_point  = collison_check.OptiPathCollisionCheckWithAll(new_path_); // 判断优化路径是否碰撞
         auto curvature_exceed = CurvatureCheck(new_path_);
-        // threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
+        threadLogger_->info("curvature_exceed.size():{}", curvature_exceed.size());
         if (true == collision_point.empty() && curvature_exceed.empty() == true) // 若无碰撞且曲率不超标
         {
             break;
@@ -82,6 +82,8 @@ void Path_Opti::OptimizePath(Path& original_path, Path& opti_path, CollisonCheck
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     threadLogger_->info("梯度下降优化耗时: {}ms", duration.count());
+
+
 
     Helper::CalDistance(new_path_);
 
@@ -260,11 +262,14 @@ vector<unsigned int> Path_Opti::CurvatureCheck(const Path& input_path) {
                 curvature_threshold = tan(m_vehicle_param_.heavy_backward_max_steering) / m_vehicle_param_.wheel_base;
             }
         }
-        if (fabs(curvature) > curvature_threshold + 1e-2) {
+        if (fabs(curvature) > curvature_threshold + 1e-6) {
             threadLogger_->info("第 {} 个点曲率超标，点坐标为({},{}),曲率为{},此点将被列为anchor点,> {}", i, input_path.at(i).x, input_path.at(i).y, input_path.at(i).curvature, curvature_threshold);
             curvature_exceed_point.push_back(i);
             curvature_exceed_point.push_back(i - 1);
             curvature_exceed_point.push_back(i + 1);
+        }
+        else {
+            threadLogger_->info("第 {} 个点曲率未超标，点坐标为({},{}),曲率为{},此点将不被列为anchor点,> {}", i, input_path.at(i).x, input_path.at(i).y, input_path.at(i).curvature, curvature_threshold);
         }
     }
     return curvature_exceed_point;
