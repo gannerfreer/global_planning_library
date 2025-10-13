@@ -185,7 +185,7 @@ std::tuple<int, GlobalPlanning::Point, GlobalPlanning::Path, GlobalPlanning::Pat
     if (planning_mode == 0) {
         cout << "自动生成排队点模式-----------------------------------" << endl;
         WaitPointGenerate::WaitPointGenerator wait_point_planner(max_curve_length_, min_curve_length_, delta_curve_length_, wheel_base_length_, max_straight_length_, min_straight_length_, delta_straight_length_, max_steering_angle_, min_steering_angle_, delta_steering_angle_, standard_steering_angle_, weight_length_, weight_curve_, out_put_path_dense_, center2front_, center2side_, center2rear_, safe_margin_front_, safe_margin_side_, safe_margin_rear_, collision_weight_);
-        load_path     = wait_point_planner.GenerateWaitPointInterface(load_point, depart_path, collision_checker, fit_path_planner, in_path, veh_param);
+        load_path     = wait_point_planner.GenerateWaitPointInterface(load_point, depart_path, collision_checker, fit_path_planner, in_path, out_path, veh_param);
         sample_points = wait_point_planner.wait_point_sample_;
         if (load_path.empty()) {
             cout << "驶入装载点路径生成失败" << endl;

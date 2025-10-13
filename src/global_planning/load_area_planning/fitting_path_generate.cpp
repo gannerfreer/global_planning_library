@@ -33,7 +33,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
 
     dubins_planner.SetRadius(10);
     dubins_planner.SetMaxSteeringAngle(vehicle_param.light_backward_max_steering);
-    std::vector<curve::Point> dubins_path;
+
     std::cout << "delta_straight_length_load_ = " << delta_straight_length_load_ << endl;
     std::cout << "max_straight_length_load_ = " << max_straight_length_load_ << endl;
     std::cout << "min_straight_length_load_ = " << min_straight_length_load_ << endl;
@@ -50,7 +50,7 @@ std::pair<GlobalPlanning::Path, double> FittingPathGenerator::LoadPathGenerateIn
         // cout << "temp_straight_line_start.xyangle = " << temp_straight_line_start.GetX() << "," << temp_straight_line_start.GetY() << "," << temp_straight_line_start.GetAngle() << endl;
         // cout << "temp_wait_point.xyangle = " << temp_wait_point.GetX() << "," << temp_wait_point.GetY() << "," << temp_wait_point.GetAngle() << endl;
         cout << "temp_wait_point.x,y=" << temp_wait_point.GetX() << "," << temp_wait_point.GetY() << endl;
-
+        std::vector<curve::Point> dubins_path;
 
         if (dubins_planner.GetDubinsPath(temp_straight_line_start, temp_wait_point, dubins_path)) {
             reverse(dubins_path.begin(), dubins_path.end());
