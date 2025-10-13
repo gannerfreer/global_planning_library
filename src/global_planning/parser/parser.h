@@ -905,7 +905,7 @@ bool GetMap(char* parea) {
         int                           traj_type   = -1;
         double                        speed_limit = -1;
         int                           guid_type   = 0;
-        int                           region_id   = -1;
+        int                           area_id   = -1;
 
         for (SizeType i = 0; i < trajsArray.Size(); i++) {
             const Value& trajObj = trajsArray[i];
@@ -924,7 +924,7 @@ bool GetMap(char* parea) {
 
             guid_type = trajObj.HasMember("guid_type") && trajObj["guid_type"].IsInt() ? trajObj["guid_type"].GetInt() : 0;
 
-            region_id = trajObj.HasMember("region_id") && trajObj["region_id"].IsInt() ? trajObj["region_id"].GetInt() : -1;
+            area_id = trajObj.HasMember("area_id") && trajObj["area_id"].IsInt() ? trajObj["area_id"].GetInt() : -1;
 
 
             const Value& trajPointsArray = trajObj["trajectory"];
@@ -963,10 +963,10 @@ bool GetMap(char* parea) {
 
             // 根据引导类型分类
             if (guid_type == 1) {
-                input_paths[region_id].push_back(traj);
+                input_paths[area_id].push_back(traj);
             }
             else if (guid_type == 2) {
-                output_paths[region_id].push_back(traj);
+                output_paths[area_id].push_back(traj);
             }
         }
 
@@ -2072,13 +2072,13 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
         cout << "解析 dynamic_border 完毕，共 " << dynamicBorderPoints.size() << " 个点" << endl;
     }
 
-    if (doc.HasMember("region_id") && doc["region_id"].IsInt()) {
-        planning_info.region_id = doc["region_id"].GetInt();
-        std::cout << "解析 region_id: " << planning_info.region_id << std::endl;
+    if (doc.HasMember("area_id") && doc["area_id"].IsInt()) {
+        planning_info.area_id = doc["area_id"].GetInt();
+        std::cout << "解析 area_id: " << planning_info.area_id << std::endl;
     }
     else {
-        planning_info.region_id = -1;
-        cout << "无法找到 region_id ，即将赋予默认值 -1" << endl;
+        planning_info.area_id = -1;
+        cout << "无法找到 area_id ，即将赋予默认值 -1" << endl;
     }
 
     return planning_info;

@@ -785,7 +785,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     int    nearest_id  = -1;
     Point  temp_point;
     for (auto& input_path_vec : input_paths) {
-        if (input_path_vec.first == veh_start_end.region_id) {
+        if (input_path_vec.first == veh_start_end.area_id) {
             for (int i = 0; i < input_path_vec.second.size(); i++) {
                 auto& traj = input_path_vec.second.at(i);
                 // 将距离veh_start_end.load_point最近的traj.trajectory赋值给input_path
@@ -819,7 +819,7 @@ char* QueuePointGenerator(char* point_veh_start_end) {
     nearest_id  = -1;
 
     for (auto& output_path_vec : output_paths) {
-        if (output_path_vec.first == veh_start_end.region_id) {
+        if (output_path_vec.first == veh_start_end.area_id) {
             for (int i = 0; i < output_path_vec.second.size(); i++) {
                 // 将距离veh_start_end.load_point最近的traj.trajectory赋值给input_path
                 for (int j = 0; j < output_path_vec.second.at(i).trajectory.size(); j++) {

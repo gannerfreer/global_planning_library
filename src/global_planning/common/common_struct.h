@@ -418,7 +418,7 @@ struct _LoadAreaPlanningInfos {
     _SinglePoint                 load_point;
     vector<vector<_BorderPoint>> wall_borders;    // 动态挡墙边界
     vector<vector<_BorderPoint>> machine_borders; // 挖掘机边界
-    int                          region_id     = -1;
+    int                          area_id     = -1;
 };
 
 
