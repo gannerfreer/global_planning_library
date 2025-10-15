@@ -141,8 +141,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.veh_center_2_side " << veh_start_end.veh_param.veh_center_2_side << endl;
             }
             else {
-                veh_start_end.veh_param.veh_center_2_side = 1.77;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.77" << endl;
+                veh_start_end.veh_param.veh_center_2_side = 1.80;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.80" << endl;
             }
 
             if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
@@ -150,8 +150,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.veh_center_2_front " << veh_start_end.veh_param.veh_center_2_front << endl;
             }
             else {
-                veh_start_end.veh_param.veh_center_2_front = 7.102;
-                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.102" << endl;
+                veh_start_end.veh_param.veh_center_2_front = 7.10;
+                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.10" << endl;
             }
 
             if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {
@@ -168,8 +168,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.veh_center_2_rear_bound " << veh_start_end.veh_param.veh_center_2_rear_bound << endl;
             }
             else {
-                veh_start_end.veh_param.veh_center_2_rear_bound = 2.85;
-                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 2.85" << endl;
+                veh_start_end.veh_param.veh_center_2_rear_bound = 2.65;
+                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 2.65" << endl;
             }
 
 
@@ -1740,8 +1740,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.veh_param.veh_center_2_side " << planning_info.veh_param.veh_center_2_side << std::endl;
             }
             else {
-                planning_info.veh_param.veh_center_2_side = 1.77;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.77" << endl;
+                planning_info.veh_param.veh_center_2_side = 1.80;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.80" << endl;
             }
 
             if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
@@ -1749,8 +1749,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.veh_param.veh_center_2_front " << planning_info.veh_param.veh_center_2_front << std::endl;
             }
             else {
-                planning_info.veh_param.veh_center_2_front = 7.102;
-                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.102" << endl;
+                planning_info.veh_param.veh_center_2_front = 7.10;
+                cout << "无法找到车参 veh_center_2_front ，即将赋予默认值 7.10" << endl;
             }
 
             if (val.HasMember("safe_margin_obstacle") && val["safe_margin_obstacle"].IsNumber()) {
@@ -1767,8 +1767,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.veh_param.veh_center_2_rear_bound " << planning_info.veh_param.veh_center_2_rear_bound << std::endl;
             }
             else {
-                planning_info.veh_param.veh_center_2_rear_bound = 2.85;
-                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 2.85  " << endl;
+                planning_info.veh_param.veh_center_2_rear_bound = 2.65;
+                cout << "无法找到车参 veh_center_2_rear_bound ，即将赋予默认值 2.65  " << endl;
             }
 
 
