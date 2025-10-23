@@ -141,8 +141,8 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "veh_start_end.veh_param.veh_center_2_side " << veh_start_end.veh_param.veh_center_2_side << endl;
             }
             else {
-                veh_start_end.veh_param.veh_center_2_side = 1.80;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.80" << endl;
+                veh_start_end.veh_param.veh_center_2_side = 1.90;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.90" << endl;
             }
 
             if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {
@@ -574,6 +574,14 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
             else {
                 cout << "无法找到车参 ipopt_max_offset ，即将赋予默认值 3" << endl;
                 veh_start_end.veh_param.ipopt_max_offset = 3;
+            }
+
+            if (val.HasMember("lat_dis_threshold")) {
+                veh_start_end.veh_param.lat_dis_threshold = val["lat_dis_threshold"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 lat_dis_threshold ，即将赋予默认值 0.2" << endl;
+                veh_start_end.veh_param.lat_dis_threshold = 0.2;
             }
         }
     }
@@ -1740,8 +1748,8 @@ _LoadAreaPlanningInfos ParseLoadAreaPlanningJson(char* str) {
                 std::cout << "planning_info.veh_param.veh_center_2_side " << planning_info.veh_param.veh_center_2_side << std::endl;
             }
             else {
-                planning_info.veh_param.veh_center_2_side = 1.80;
-                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.80" << endl;
+                planning_info.veh_param.veh_center_2_side = 1.90;
+                cout << "无法找到车参 veh_center_2_side ，即将赋予默认值 1.90" << endl;
             }
 
             if (val.HasMember("veh_center_2_front") && val["veh_center_2_front"].IsNumber()) {

@@ -248,6 +248,7 @@ struct _VehicleParam {
     float w_curvature        = 100;
     float w_curvature_change = 1;
     float ipopt_max_offset   = 10;
+    float lat_dis_threshold  = 0.2;
 };
 
 // 调用全局规划时，需要传入的参数

@@ -1487,7 +1487,7 @@ PlanResult Planning::HybirdAStarFitting() {
     nearest_distance = hypot(start_point_.x - global_path_.front().x, start_point_.y - global_path_.front().y);
     threadLogger_->info("起点与参考路径最近点的几何距离:{},其中，横向距离：{},纵向距离：{}", nearest_distance, start_lat_dis_, start_lon_dis_);
 
-    if (fabs(start_lat_dis_) > 0.3 || fabs(start_lon_dis_) > 0.8 || start_angle_diff_ > 8.0 / 180.0 * M_PI) {
+    if (fabs(start_lat_dis_) > vehicle_param_.lat_dis_threshold || fabs(start_lon_dis_) > 0.8 || start_angle_diff_ > 8.0 / 180.0 * M_PI) {
         // 车端自适应阈值为20cm，所以规划库拟合阈值为30cm
         start_need_fitting = true;
 
