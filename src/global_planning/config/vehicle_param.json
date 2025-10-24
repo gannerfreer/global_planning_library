@@ -39,7 +39,7 @@
     "slope_road_speed_limit": 8.0,
     "narrow_road_speed_limit": 8.0,
     "intersection_road_speed_limit": 8.0,
-    "task_type": 2,
+    "task_type": 1,
     "is_light": true,
     "speed_limit_level": 3,
     "L2": 4,

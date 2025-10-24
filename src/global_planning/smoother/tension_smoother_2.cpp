@@ -26,7 +26,7 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
     std::cout << "w_curvature_change" << m_vehicle_param_.w_curvature_change << std::endl;
     std::cout << "w_curvature" << m_vehicle_param_.w_curvature << std::endl;
     std::cout << "w_deviation" << m_vehicle_param_.w_deviation << std::endl;
-    
+
     for (size_t i = 0; i < point_num - 1; ++i) {
         ad cur_x      = vars[x_idx_begin + i];
         ad next_x     = vars[x_idx_begin + i + 1];
@@ -37,7 +37,7 @@ void FgEvalQPSmoothing::operator()(GlobalPlanning::FgEvalQPSmoothing::ADvector& 
         ad cur_theta  = vars[theta_idx_begin + i];
         ad next_theta = vars[theta_idx_begin + i + 1];
         ad ds         = seg_s_list_[i + 1] - seg_s_list_[i];
-        ad cur_k = vars[k_idx_begin + i];
+        ad cur_k      = vars[k_idx_begin + i];
 
         // cost
         fg[0] += m_vehicle_param_.w_deviation * (pow(cur_x - ref_x, 2) + pow(cur_y - ref_y, 2)); // 代价函数：xy方向偏差代价
@@ -152,7 +152,7 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     }
     for (size_t i = 0; i < point_num; i++) {
         // 起点和终点x y 不优化
-        if (i == 0 || i == point_num - 1) {
+        if (i == 0 || i == point_num - 1 || i == 1 || i == point_num - 2) {
             vars_lowerbound[x_idx_begin + i] = vars_upperbound[x_idx_begin + i] = x_list[i];
             vars_lowerbound[y_idx_begin + i] = vars_upperbound[y_idx_begin + i] = y_list[i];
         }
@@ -178,12 +178,12 @@ bool TensionSmoother2::ipoptSmooth(const std::vector<double>& x_list, const std:
     //     }
     // }
     // 约束角度
-    for (size_t i = 0; i < point_num; i++) {
-        // 起点和终点角度不优化
-        if (i == 0 || i == point_num - 1) {
-            vars_lowerbound[theta_idx_begin + i] = vars_upperbound[theta_idx_begin + i] = angle_list[i];
-        }
-    }
+    // for (size_t i = 0; i < point_num; i++) {
+    //     // 起点和终点角度不优化
+    //     if (i == 0 || i == point_num - 1) {
+    //         vars_lowerbound[theta_idx_begin + i] = vars_upperbound[theta_idx_begin + i] = angle_list[i];
+    //     }
+    // }
 
     std::cout << "打印 vars_lowerbound[] 信息" << std::endl;
     for (int i = 0; i < vars_lowerbound.size(); i++) {
