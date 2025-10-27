@@ -583,6 +583,22 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
                 cout << "无法找到车参 lat_dis_threshold ，即将赋予默认值 0.2" << endl;
                 veh_start_end.veh_param.lat_dis_threshold = 0.2;
             }
+
+            if (val.HasMember("coff_light")) {
+                veh_start_end.veh_param.coff_light = val["coff_light"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 coff_light ，即将赋予默认值 0.5" << endl;
+                veh_start_end.veh_param.coff_light = 0.5;
+            }
+
+            if (val.HasMember("coff_heavy")) {
+                veh_start_end.veh_param.coff_heavy = val["coff_heavy"].GetFloat();
+            }
+            else {
+                cout << "无法找到车参 coff_heavy ，即将赋予默认值 0.2" << endl;
+                veh_start_end.veh_param.coff_heavy = 0.2;
+            }
         }
     }
 

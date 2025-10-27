@@ -277,10 +277,11 @@ void GlobalSpeedPlanning::ReplanPointMaxSpeed(vector<_TrajectoryPoint>& trajecto
     // file_out.close();
 
 
-    double coff = 0.4;
+    double coff = vehicle_param.coff_light;
     if (vehicle_param.is_light == false) {
-        coff = 0.2;
+        coff = vehicle_param.coff_heavy;
     }
+    threadLogger_->info("coff:{}", coff);
     // 曲率限速
     iter = trajectory.begin();
     for (; iter != trajectory.end(); iter++) {
