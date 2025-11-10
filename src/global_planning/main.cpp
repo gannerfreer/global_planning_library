@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
     planning.threadLogger_->info("本地仿真环境日志");
 
     string path_predicting_filePath = path_predicting_dir_path + "/log_" + timeStr + ".log";
-    predicting.threadLogger_        = spdlog::rotating_logger_mt(logger_id2, path_predicting_filePath, 10 * 1024 * 1024, 15, true);
+    predicting.threadLogger_= spdlog::rotating_logger_mt(logger_id2, path_predicting_filePath, 10 * 1024 * 1024, 15, true);
     predicting.threadLogger_->flush_on(spdlog::level::info);
     predicting.threadLogger_->info("本地仿真环境日志");
 

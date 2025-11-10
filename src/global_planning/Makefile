@@ -50,7 +50,7 @@ $(BUILD_DIR)/%.o: %.cpp
 # 包含依赖文件
 -include $(DEPS)
 
-.PHONY: clean package
+.PHONY: cleanz package
 clean: 
 	-rm -f $(TARGET)
 	-rm -rf $(BUILD_DIR) lib

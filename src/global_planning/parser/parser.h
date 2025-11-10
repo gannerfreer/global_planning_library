@@ -75,7 +75,7 @@ _TarStartEnd ParseGlobalPlanningJson(char* str) {
         Value& val = doc["m_Veh_Param"];
         if (val.IsObject()) {
             // 车辆参数
-
+            // [TODO]: 参数读取代码冗余
             if (val.HasMember("wheel_base") && val["wheel_base"].IsNumber()) {
                 veh_start_end.veh_param.wheel_base = val["wheel_base"].GetDouble();
                 cout << "veh_start_end.veh_param.wheel_base " << veh_start_end.veh_param.wheel_base << endl;
@@ -942,6 +942,7 @@ bool GetMap(char* parea) {
             traj.id = trajObj["id"].GetInt();
 
             // 处理可选字段
+            // TODO: 这里可以做成函数，方便统一处理和检查错误
             traj_type = trajObj.HasMember("type") && trajObj["type"].IsInt() ? trajObj["type"].GetInt() : 2;
 
             speed_limit = trajObj.HasMember("speed_limit") && trajObj["speed_limit"].IsDouble() ? trajObj["speed_limit"].GetDouble() : -1;

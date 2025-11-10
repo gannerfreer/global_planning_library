@@ -9,3 +9,4 @@ src/global_planning/*.o
 src/global_planning/*.d
 src/global_planning/*/*.o
 src/global_planning/*/*.d
+*.log

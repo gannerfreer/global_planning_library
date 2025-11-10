@@ -126,6 +126,7 @@ void Planning::GlobalPathPlanningInterface(vector<_TrajectoryPoint>& path) {
 
 
     // 均匀碾压：对除了过磅、洗车和倒车之外的路段进行横向偏移
+    // [QUESTION]:什么时候需要开
     if (vehicle_param_.uniform_compaction_enable == true) {
         // 先检查一遍global_path_的曲率，如果超标就不执行均匀碾压
         double curvature_threshold = -1;

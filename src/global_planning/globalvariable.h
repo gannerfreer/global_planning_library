@@ -136,6 +136,7 @@ class GlobalVariable // 单例类
 
     // 注意：直接设置char*可能导致内存泄漏，通常建议使用智能指针或其他内存管理策略
     // 这里仅提供示例，实际使用中应谨慎
+    // [QUESTION]
     void SetReceivePtr(char* newReceivePtr) {
         receive_ptr = newReceivePtr;
     }
