@@ -87,7 +87,8 @@
         "slist": "cpp",
         "future": "cpp",
         "scoped_allocator": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "coroutine": "cpp"
     },
     "cmake.sourceDirectory": "/home/yyf/global_planning_library/src/msgs/msg_lidar_shape",
     "python.autoComplete.extraPaths": [

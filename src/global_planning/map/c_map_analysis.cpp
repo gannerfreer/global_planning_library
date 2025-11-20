@@ -55,6 +55,27 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
             v_bp.emplace_back(bp);
         }
     }
+
+            // 设置区域，区域设置为硬边界
+    if (!doc.HasMember("areas") || !doc["areas"].IsArray()) {
+        throw std::runtime_error("JSON数据中缺少有效的areas数组");
+    }
+    const Value&         borderAreas= doc["areas"];
+    for (int i = 0; i < borderAreas.Size(); i++) {
+        const Value& area = borderAreas[i];
+        if (!area.IsObject() || !area.HasMember("border_points") || !area["border_points"].IsArray()) {
+            throw std::runtime_error("区域数据不完整或格式错误，索引: " + std::to_string(i));
+        }
+        const Value& borderPointsArray = area["border_points"];
+        std::cout << "borderPointsArray border_points:" << borderPointsArray.Size() << std::endl;
+        for (int j = 0; j < borderPointsArray.Size(); j++) { 
+            bp.x    = borderPointsArray[j]["x"].GetDouble();
+            bp.y    = borderPointsArray[j]["y"].GetDouble();
+            bp.z    = 0.0;
+            bp.type = 0;
+            v_bp.emplace_back(bp);
+        }
+    }
     map_border_ = v_bp;
     std::cout << "解析border_points完毕,边界点数量：" << map_border_.size() << endl;
 

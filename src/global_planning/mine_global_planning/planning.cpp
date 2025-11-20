@@ -1689,6 +1689,7 @@ PlanResult Planning::HybirdAStarFitting() {
     }
     return result;
 }
+
 bool Planning::JudgeFittingDirection(vector<_TrajectoryPoint>& input_path) {
     if (input_path.front().direction == 0) {
         threadLogger_->info("正向起步");
@@ -2171,6 +2172,7 @@ bool Planning::IsForwardAndBackwardReferencePath() {
     }
     return false;
 }
+
 PlanResult Planning::IsPath1Success(vector<_TrajectoryPoint>& input_path) {
     cout << "IsPath1Success" << endl;
     threadLogger_->info("");
@@ -2221,6 +2223,7 @@ PlanResult Planning::IsPath1Success(vector<_TrajectoryPoint>& input_path) {
     }
     return result;
 }
+
 PlanResult Planning::IsPath2Success(vector<_TrajectoryPoint>& input_path) {
     cout << "IsPath2Success" << endl;
     threadLogger_->info("");
