@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
 
         //     cout << "main-human_vehicle_global_path.size():" << human_vehicle_global_path.size() << endl;
         // }
-        if (is_receive_start == false || is_receive_end == false) {}
+        if (is_receive_start == false && is_receive_end == false) {}
         else {
             is_receive_start = false;
             is_receive_end   = false;
