@@ -49,6 +49,7 @@ void GlobalVariable::CreateSelfDrivingDirectedGraph(const std::map<int, std::vec
         for (int num : pair.second) {
             col_index = BinarySearch(self_driving_sequence_mapping_, num);
             if (col_index != -1) {
+                // [Note]: 直接赋1
                 self_driving_referenceline_graph_.at(row_index).at(col_index) = 1;
             }
         }

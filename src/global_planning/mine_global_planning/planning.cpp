@@ -806,7 +806,7 @@ PlanResult Planning::FollowReferencelinePlanning() {
 
 
     // 起点采用渐进式扩大搜索策略，从0.5m初始搜索半径开始
-    while (start_search_radius <= 100 && found_reasonable_vec_path == false) {
+    while (start_search_radius <= 5 && found_reasonable_vec_path == false) {
         if (Helper::GetReferencelinesWithRadius(start_point_, all_referencelines_, start_search_radius, start_path_vec)) {
             threadLogger_->info("起点搜索半径{},参考路径数量:{}", start_search_radius, start_path_vec.size());
             cout << "起点搜索半径：:" << start_search_radius << "  搜索到路径数量:  " << start_path_vec.size() << endl;

@@ -89,7 +89,7 @@
         "scoped_allocator": "cpp",
         "valarray": "cpp"
     },
-    "cmake.sourceDirectory": "/home/yyf/global_planning_library/src/msgs/msg_lidar_shape",
+    "cmake.sourceDirectory": "/home/gray/Code/global_planning_library/src/global_planning",
     "python.autoComplete.extraPaths": [
         "/opt/ros/noetic/lib/python3/dist-packages"
     ],

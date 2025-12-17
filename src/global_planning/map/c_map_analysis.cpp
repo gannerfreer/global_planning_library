@@ -138,6 +138,46 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
 
     road_directed_graph_ = GlobalVariable::getInstance()->GetSelfDrivingReferencelineGraph();
 
+        // 1. 检查邻接矩阵是否为空
+    if (road_directed_graph_.empty()) {
+        cout << "【邻接矩阵】当前矩阵为空！" << endl;
+    }
+    else {
+        int nodeNum = road_directed_graph_.size(); // 节点总数
+        const double infinf = 100000;   // 匹配你代码中的伪无穷大值
+
+        // 2. 打印表头（节点编号）
+        cout << "========================================" << endl;
+        cout << "【邻接矩阵】节点总数：" << nodeNum << endl;
+        cout << "说明：INF表示节点间无直接边，数值为边的代价（权重）" << endl;
+        cout << "----------------------------------------" << endl;
+        // 打印列编号（对齐用）
+        cout << setw(8) << " "; // 第一列空出，用于行编号
+        for (int j = 0; j < nodeNum; j++) {
+            cout << setw(8) << "节点" + to_string(j);
+        }
+        cout << endl;
+
+        // 3. 打印矩阵内容（逐行）
+        for (int i = 0; i < nodeNum; i++) {
+            // 打印行编号
+            cout << setw(8) << "节点" + to_string(i);
+            // 打印当前行的所有列值
+            for (int j = 0; j < nodeNum; j++) {
+                double cost = road_directed_graph_[i][j];
+                if (cost >= infinf - 1e-6) { // 浮点精度容错，判定为无穷大
+                    cout << setw(8) << "INF";
+                } else {
+                    // 格式化输出：保留2位小数，对齐8个字符宽度
+                    cout << setw(8) << fixed << setprecision(2) << cost;
+                }
+            }
+            cout << resetiosflags(ios::fixed); // 重置格式
+            cout << endl;
+        }
+        cout << "========================================" << endl;
+    }
+
     std::cout << "生成sequence_mapping_和referenceline_graph_完毕" << endl;
     // 将地图边界和参考路径放进tar_rviz.vec_point中
     for (int i = 0; i < map_border_.size(); i++) {
