@@ -777,13 +777,15 @@ PlanResult Planning::NotFollowReferencelinePlanning() {
 
 
 PlanResult Planning::FollowReferencelinePlanning() {
-    // 搜索策略，终点只搜索0.2m范围内的参考路径，起点采用渐进式扩大搜索策略，从0.5m初始搜索半径开始
+    // 搜索策略，终点只搜索 0.2m 范围内的参考路径，起点采用渐进式扩大搜索策略，从 0.5m 初始搜索半径开始
     bool        is_found          = false; // 用于跟踪是否找到了成功的路径对  hello
     double      end_search_radius = 0.3, start_search_radius = 0.5;
     vector<int> start_path_vec, end_path_vec;
     cout << "开始进入起点、终点搜索环节" << endl;
     cout << "end_search_radius:" << end_search_radius << endl;
 
+    // [Note]: 清空之前的计算标志位，允许重复调用计算
+    v_has_calculate_pair_.clear();
 
     Helper::GetReferencelinesWithRadiusAndAngle(end_point_, all_referencelines_, end_search_radius, end_path_vec);
     threadLogger_->info("终点搜索半径：{},搜索到路径数量:{}", end_search_radius, end_path_vec.size());
@@ -819,17 +821,21 @@ PlanResult Planning::FollowReferencelinePlanning() {
             for (auto i : end_path_vec) {
                 end_path_vec_switch.push_back(GlobalVariable::getInstance()->BinarySearch(sequence_mapping_, i));
             }
-
+            std::cout<<"start_path_vec_switch size:"<<start_path_vec_switch.size()<<std::endl;
+            std::cout<<"end_path_vec_switch size:"<<end_path_vec_switch.size()<<std::endl;
             // 在start_path_vec_switch和end_path_vec_switch中查找连通路径
+
             for (auto start : start_path_vec_switch) {
                 for (auto end : end_path_vec_switch) {
                     if (HasSearched(start, end)) {
                         continue;
                     }
                     threadLogger_->info("索引  start:{},end:{}", start, end);
+                    std::cout<< "索引  start:" << start << ",end:" << std::endl;
                     if (IsConnect(start, end)) {
                         if (first_found) {
                             threadLogger_->info("首次找到联通路径，起点搜索半径:{}", start_search_radius);
+                            std::cout<< "首次找到联通路径，起点搜索半径:" << start_search_radius << std::endl;
                             first_found_dis = start_search_radius;
                             first_found     = false;
                         }

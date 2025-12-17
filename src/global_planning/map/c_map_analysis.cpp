@@ -149,24 +149,24 @@ bool CConfigureIO::GetMap(vector<vector<double>>& road_directed_graph_, vector<_
         // 2. 打印表头（节点编号）
         cout << "========================================" << endl;
         cout << "【邻接矩阵】节点总数：" << nodeNum << endl;
-        cout << "说明：INF表示节点间无直接边，数值为边的代价（权重）" << endl;
+        cout << "说明：N表示节点间无直接边，数值为边的代价（权重）" << endl;
         cout << "----------------------------------------" << endl;
         // 打印列编号（对齐用）
         cout << setw(8) << " "; // 第一列空出，用于行编号
         for (int j = 0; j < nodeNum; j++) {
-            cout << setw(8) << "节点" + to_string(j);
+            cout << setw(8) << to_string(GlobalVariable::getInstance()->GetSelfDrivingSequenceMapping()[j]);
         }
         cout << endl;
 
         // 3. 打印矩阵内容（逐行）
         for (int i = 0; i < nodeNum; i++) {
             // 打印行编号
-            cout << setw(8) << "节点" + to_string(i);
+            cout << setw(8) << to_string(GlobalVariable::getInstance()->GetSelfDrivingSequenceMapping()[i]);
             // 打印当前行的所有列值
             for (int j = 0; j < nodeNum; j++) {
                 double cost = road_directed_graph_[i][j];
                 if (cost >= infinf - 1e-6) { // 浮点精度容错，判定为无穷大
-                    cout << setw(8) << "INF";
+                    cout << setw(8) << "N";
                 } else {
                     // 格式化输出：保留2位小数，对齐8个字符宽度
                     cout << setw(8) << fixed << setprecision(2) << cost;

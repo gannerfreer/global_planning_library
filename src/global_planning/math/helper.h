@@ -145,7 +145,7 @@ inline bool GetReferencelinesWithRadius(_SinglePoint point, const map<int, _Sing
         // cout << "nearest_dis:" << nearest_dis << "            id:" << pair.first << endl;
         if (nearest_dis < radius) {
             vec.push_back(pair.first);
-            cout << "index:" << index << endl;
+            cout << "id:" << pair.first << endl;
             temp_bool = true;
         }
     }
